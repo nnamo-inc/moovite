@@ -26,10 +26,33 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- Libreria per GTFS Statico -->
     <dependency>
       <groupId>org.onebusaway</groupId>
       <artifactId>onebusaway-gtfs</artifactId>
       <version>8.0.0</version>
+    </dependency>
+
+    <!-- Libreria ORM per interagire con SQLite -->
+    <!-- ORMLite core -->
+    <dependency>
+      <groupId>com.j256.ormlite</groupId>
+      <artifactId>ormlite-core</artifactId>
+      <version>6.1</version>
+    </dependency>
+
+    <!-- ORMLite JDBC support -->
+    <dependency>
+      <groupId>com.j256.ormlite</groupId>
+      <artifactId>ormlite-jdbc</artifactId>
+      <version>6.1</version>
+    </dependency>
+
+    <!-- SQLite JDBC driver -->
+    <dependency>
+      <groupId>org.xerial</groupId>
+      <artifactId>sqlite-jdbc</artifactId>
+      <version>3.45.2.0</version>
     </dependency>
 
     <dependency>
@@ -40,6 +63,43 @@
   </dependencies>
 
   <build>
+    <plugins>
+      <!-- Plugin to bundle dependencies inside JAR -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.4.1</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>com.nnamo.App</mainClass>
+                </transformer>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.0.2</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>org.nnamo.App</mainClass> <!-- replace with your actual class -->
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
         <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
