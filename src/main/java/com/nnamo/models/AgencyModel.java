@@ -19,10 +19,10 @@ public class AgencyModel {
     private String timezone;
 
     @DatabaseField(canBeNull = true)
-    private String phone = null;
+    private final String phone = null;
 
     @DatabaseField(canBeNull = true)
-    private String email = null;
+    private final String email = null;
 
     public AgencyModel() { // Empty constructor required by OrmLite
     }

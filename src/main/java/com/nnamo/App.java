@@ -1,45 +1,39 @@
 package com.nnamo;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-
+import com.j256.ormlite.dao.Dao;
+import com.nnamo.models.AgencyModel;
+import com.nnamo.models.RouteModel;
+import com.nnamo.models.StopModel;
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.Route;
 import org.onebusaway.gtfs.model.Stop;
-import org.onebusaway.gtfs.serialization.GtfsReader;
 
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.DaoManager;
-import com.j256.ormlite.jdbc.JdbcConnectionSource;
-import com.j256.ormlite.table.TableUtils;
-import com.nnamo.DatabaseService.Tables;
-import com.nnamo.models.AgencyModel;
-import com.nnamo.models.RouteModel;
-import com.nnamo.models.StopModel;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
-public class App 
-{
-    public static void main( String[] args ) {
+public class App {
+    public static void main(String[] args) {
         // TODO need to extract this logic somewhere else, maybe DatabaseService or StaticGtfsService
         try {
             DatabaseService db = new DatabaseService();
-            Dao<StopModel, String> stopDao = db.getDao(Tables.STOPS);
-            Dao<RouteModel, String> routeDao = db.getDao(Tables.ROUTES);
-            Dao<AgencyModel, String> agencyDao = db.getDao(Tables.AGENCIES);
+            Dao<StopModel, String> stopDao = db.getStopDao();
+            Dao<RouteModel, String> routeDao = db.getRouteDao();
+            Dao<AgencyModel, String> agencyDao = db.getAgencyDao();
 
             if (db.needsCaching()) {
                 StaticGtfsService gtfs = null;
                 try {
                     gtfs = new StaticGtfsService();
                 } catch (IOException e) {
-                    System.out.println("IO error:\n\t" + e.toString());
+                    System.out.println("IO error:\n\t" + e);
                     System.exit(1);
                 }
 
                 GtfsRelationalDaoImpl store = gtfs.getStore();
                 if (stopDao.countOf() == 0) {
+                    ArrayList<StopModel> stops = new ArrayList<>();
                     for (Stop stop : store.getAllStops()) {
                         System.out.println("Caching " + stop.getName() + " ...");
                         StopModel instance = new StopModel(
@@ -47,8 +41,19 @@ public class App
                                 stop.getName(),
                                 stop.getLat(),
                                 stop.getLon()
-                                );
-                        stopDao.createIfNotExists(instance);
+                        );
+                        stops.add(instance);
+                        // stopDao.createIfNotExists(instance);
+
+                        if (stops.size() >= 200) {
+                            stopDao.create(stops);
+                            stops.clear();
+                        }
+                    }
+
+                    if (!stops.isEmpty()) {
+                        stopDao.create(stops);
+                        stops.clear();
                     }
                 }
 
@@ -57,19 +62,19 @@ public class App
                         System.out.println(route.getShortName());
                         Agency agency = route.getAgency();
                         AgencyModel agencyModel = new AgencyModel(
-                            agency.getId(),
-                            agency.getName(),
-                            agency.getTimezone(),
-                            agency.getUrl()
+                                agency.getId(),
+                                agency.getName(),
+                                agency.getTimezone(),
+                                agency.getUrl()
                         );
                         agencyDao.createIfNotExists(agencyModel);
 
                         System.out.println("Caching " + route.getShortName() + " ...");
                         RouteModel routeModel = new RouteModel(
-                            route.getId().getId(),
-                            agencyModel,
-                            route.getShortName(),
-                            route.getLongName()
+                                route.getId().getId(),
+                                agencyModel,
+                                route.getShortName(),
+                                route.getLongName()
                         );
                         routeDao.createIfNotExists(routeModel);
                     }
@@ -80,7 +85,7 @@ public class App
                 }
             }
         } catch (SQLException e) {
-            System.out.println(e.toString());
+            System.out.println(e);
         }
     }
 }

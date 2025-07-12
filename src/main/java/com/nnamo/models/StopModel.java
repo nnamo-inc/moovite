@@ -19,7 +19,7 @@ public class StopModel {
     private double longitude;
 
     @DatabaseField(canBeNull = true)
-    private String location_type = null;
+    private final String location_type = null;
 
     public StopModel() { // Empty constructor required by OrmLite
     }

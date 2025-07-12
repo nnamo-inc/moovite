@@ -1,14 +1,14 @@
 package com.nnamo;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.serialization.GtfsReader;
 
+import java.io.File;
+import java.io.IOException;
+
 public class StaticGtfsService {
 
-    private GtfsRelationalDaoImpl store;
+    private final GtfsRelationalDaoImpl store;
 
     public StaticGtfsService() throws IOException {
         GtfsReader reader = new GtfsReader(); // Lettore del buffer

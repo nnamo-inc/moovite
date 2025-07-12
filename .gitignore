@@ -3,3 +3,4 @@ data.db
 dependency-reduced-pom.xml
 assets/gtfs/*.txt
 .settings/
+.idea/
