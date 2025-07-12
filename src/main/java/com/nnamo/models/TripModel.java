@@ -10,8 +10,10 @@ public class TripModel {
     @DatabaseField(id = true)
     private String id;
 
-    @DatabaseField(foreign = true)
-    private ServiceModel service_id; // 
+    /*
+     * @DatabaseField(foreign = true)
+     * private ServiceModel service_id; //
+     */
 
     @DatabaseField(foreign = true)
     private RouteModel route_id;
@@ -25,9 +27,9 @@ public class TripModel {
     public TripModel() { // Empty constructor required by OrmLite
     }
 
-    public TripModel(String id, ServiceModel service_id, RouteModel route_id, String headsign, String direction) {
+    public TripModel(String id, RouteModel route_id, String headsign, String direction) {
         this.id = id;
-        this.service_id = service_id;
+        // this.service_id = service_id;
         this.route_id = route_id;
         this.headsign = headsign;
         this.direction = direction;

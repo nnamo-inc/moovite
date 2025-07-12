@@ -6,11 +6,15 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
 
+// Table that specifies dates when a trip exception occurs (trip added or deleted for that date)
 @DatabaseTable(tableName = "services")
 public class ServiceModel {
 
-    @DatabaseField(id = true)
-    private String id;
+    @DatabaseField(generatedId = true)
+    private int id;
+
+    @DatabaseField
+    private String service_id;
 
     @DatabaseField(dataType = DataType.DATE_STRING)
     private Date date;
@@ -21,8 +25,8 @@ public class ServiceModel {
     public ServiceModel() { // Empty constructor required by OrmLite
     }
 
-    public ServiceModel(String id, Date date, int exception_type) { // Empty constructor required by OrmLite
-        this.id = id;
+    public ServiceModel(String service_id, Date date, int exception_type) { // Empty constructor required by OrmLite
+        this.service_id = service_id;
         this.date = date;
         this.exception_type = exception_type;
     }

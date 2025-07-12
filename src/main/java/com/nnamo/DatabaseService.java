@@ -6,56 +6,81 @@ import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import com.nnamo.models.*;
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
+import org.onebusaway.gtfs.model.Agency;
+import org.onebusaway.gtfs.model.AgencyAndId;
+import org.onebusaway.gtfs.model.Route;
+import org.onebusaway.gtfs.model.ServiceCalendarDate;
 import org.onebusaway.gtfs.model.Stop;
+import org.onebusaway.gtfs.model.StopTime;
+import org.onebusaway.gtfs.model.Trip;
+import org.onebusaway.gtfs.model.calendar.ServiceDate;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class DatabaseService {
 
     private final JdbcConnectionSource connection;
 
-    public enum Tables {
-        STOPS,
-        ROUTES,
-        AGENCIES,
-        SERVICES,
-        TRIPS
-    }
-
-    private final Dao<StopModel, String> stopDao;
-    private final Dao<RouteModel, String> routeDao;
-    private final Dao<AgencyModel, String> agencyDao;
-    private final Dao<TripModel, String> tripDao;
-    private final Dao<ServiceModel, String> serviceDao;
+    private Dao<StopModel, String> stopDao;
+    private Dao<RouteModel, String> routeDao;
+    private Dao<AgencyModel, String> agencyDao;
+    private Dao<TripModel, String> tripDao;
+    private Dao<ServiceModel, Integer> serviceDao;
+    private Dao<UserModel, String> userDao;
+    private Dao<StopTimeModel, String> stopTimeDao;
+    private Dao<FavoriteStopModel, String> favoriteStopDao;
+    private Dao<FavoriteLineModel, String> favoriteLineDao;
 
     public DatabaseService() throws SQLException {
         this.connection = new JdbcConnectionSource("jdbc:sqlite:data.db");
+        initDaos();
+        initTables();
+    }
 
-        TableUtils.createTableIfNotExists(connection, StopModel.class);
-        TableUtils.createTableIfNotExists(connection, RouteModel.class);
-        TableUtils.createTableIfNotExists(connection, AgencyModel.class);
-        TableUtils.createTableIfNotExists(connection, TripModel.class);
-        TableUtils.createTableIfNotExists(connection, ServiceModel.class);
-
+    private void initDaos() throws SQLException {
         this.stopDao = DaoManager.createDao(connection, StopModel.class);
         this.routeDao = DaoManager.createDao(connection, RouteModel.class);
         this.agencyDao = DaoManager.createDao(connection, AgencyModel.class);
         this.tripDao = DaoManager.createDao(connection, TripModel.class);
         this.serviceDao = DaoManager.createDao(connection, ServiceModel.class);
+        this.userDao = DaoManager.createDao(connection, UserModel.class);
+        this.stopTimeDao = DaoManager.createDao(connection, StopTimeModel.class);
+        this.favoriteLineDao = DaoManager.createDao(connection, FavoriteLineModel.class);
+        this.favoriteStopDao = DaoManager.createDao(connection, FavoriteStopModel.class);
+    }
+
+    private void initTables() throws SQLException {
+        TableUtils.createTableIfNotExists(connection, StopModel.class);
+        TableUtils.createTableIfNotExists(connection, RouteModel.class);
+        TableUtils.createTableIfNotExists(connection, AgencyModel.class);
+        TableUtils.createTableIfNotExists(connection, TripModel.class);
+        // TableUtils.createTableIfNotExists(connection, ServiceModel.class);
+        TableUtils.createTableIfNotExists(connection, UserModel.class);
+        TableUtils.createTableIfNotExists(connection, StopTimeModel.class);
+        TableUtils.createTableIfNotExists(connection, FavoriteStopModel.class);
+        TableUtils.createTableIfNotExists(connection, FavoriteLineModel.class);
     }
 
     // Checks if any of the tables is empty and needs to be populated
     public boolean needsCaching() throws SQLException {
-        return stopDao.countOf() == 0 || routeDao.countOf() == 0 || agencyDao.countOf() == 0;
+        return stopDao.countOf() == 0 || routeDao.countOf() == 0 || agencyDao.countOf() == 0
+                || tripDao.countOf() == 0 || serviceDao.countOf() == 0; /* || stopTimeDao.countOf() == 0; */
+
     }
 
     public void importStopsFromGtfs(StaticGtfsService gtfs) throws SQLException {
         Dao<StopModel, String> stopDao = this.getStopDao();
         GtfsRelationalDaoImpl store = gtfs.getStore();
 
-        if (stopDao.countOf() != 0) return;
+        if (stopDao.countOf() != 0)
+            return;
 
         ArrayList<StopModel> stops = new ArrayList<>();
         for (Stop stop : store.getAllStops()) {
@@ -63,8 +88,7 @@ public class DatabaseService {
                     stop.getId().getId(),
                     stop.getName(),
                     stop.getLat(),
-                    stop.getLon()
-            );
+                    stop.getLon());
             stops.add(instance);
 
             if (stops.size() >= 200) {
@@ -78,43 +102,174 @@ public class DatabaseService {
         }
     }
 
-    public void importRoutesFromGtfs(StaticGtfsService gtfs) throws SQLException {
-        Dao<RouteModel, String> routeDao = this.getRouteDao();
+    public void importTripsFromGtfs(StaticGtfsService gtfs) throws SQLException {
+        Dao<TripModel, String> tripDao = this.getTripDao();
         GtfsRelationalDaoImpl store = gtfs.getStore();
 
-        if (routeDao.countOf() != 0) return;
+        if (tripDao.countOf() != 0)
+            return;
 
-        for (org.onebusaway.gtfs.model.Route route : store.getAllRoutes()) {
+        ArrayList<TripModel> trips = new ArrayList<TripModel>();
+        for (Trip trip : store.getAllTrips()) {
+            Route route = trip.getRoute();
+            Agency agency = route.getAgency();
             AgencyModel agencyModel = new AgencyModel(
-                    route.getAgency().getId(),
-                    route.getAgency().getName(),
-                    route.getAgency().getTimezone(),
-                    route.getAgency().getUrl()
-            );
+                    agency.getId(),
+                    agency.getName(),
+                    agency.getTimezone(),
+                    agency.getUrl());
             agencyDao.createIfNotExists(agencyModel);
 
             RouteModel routeModel = new RouteModel(
                     route.getId().getId(),
                     agencyModel,
                     route.getShortName(),
-                    route.getLongName()
-            );
+                    route.getLongName());
+            routeDao.createIfNotExists(routeModel);
+
+            /*
+             * ServiceModel serviceModel = serviceDao.queryBuilder()
+             * .where()
+             * .eq("service_id", trip.getServiceId().getId())
+             * .and()
+             * .eq("date", trip.getServiceId().)
+             * .query();
+             */
+            TripModel tripModel = new TripModel(
+                    trip.getId().getId(),
+                    // serviceModel,
+                    routeModel,
+                    trip.getTripHeadsign(),
+                    trip.getDirectionId());
+
+            trips.add(tripModel);
+            if (trips.size() >= 200) {
+                tripDao.create(trips);
+                trips.clear();
+            }
+        }
+        if (!trips.isEmpty()) {
+            tripDao.create(trips);
+            trips.clear();
+        }
+    }
+
+    /*
+     * public void importServicesFromGtfs(StaticGtfsService gtfs) throws
+     * SQLException {
+     * System.out.println("Loading services");
+     * Dao<ServiceModel, String> serviceDao = this.getServiceDao();
+     * GtfsRelationalDaoImpl store = gtfs.getStore();
+     * 
+     * if (serviceDao.countOf() != 0)
+     * return;
+     * 
+     * ArrayList<ServiceModel> services = new ArrayList<>();
+     * for (ServiceCalendarDate date : store.getAllCalendarDates()) {
+     * if (date.getServiceId() == null || date.getDate() == null) {
+     * continue;
+     * }
+     * 
+     * ServiceModel serviceModel = new ServiceModel(
+     * date.getServiceId().getId(),
+     * date.getDate().getAsDate(),
+     * date.getExceptionType());
+     * services.add(serviceModel);
+     * 
+     * if (services.size() >= 200) {
+     * serviceDao.create(services);
+     * services.clear();
+     * }
+     * }
+     * 
+     * if (!services.isEmpty()) {
+     * serviceDao.create(services);
+     * services.clear();
+     * }
+     * }
+     */
+
+    // TODO Needs to be finished
+    /*
+     * public void importStopTimesFromGtfs(StaticGtfsService gtfs) throws
+     * SQLException {
+     * Dao<StopTimeModel, String> stopTimeDao = this.getStopTimeDao();
+     * GtfsRelationalDaoImpl store = gtfs.getStore();
+     * 
+     * if (stopTimeDao.countOf() != 0)
+     * return;
+     * 
+     * ArrayList<StopTimeModel> stopTimes = new ArrayList<>();
+     * for (Trip trip : store.getAllTrips()) {
+     * for (StopTime stopTime : trip.getStopTimes()) {
+     * StopModel stopModel = stopDao.queryForId(stopTime.getStop().getId().getId());
+     * if (stopModel == null) {
+     * continue; // Skip if the stop is not found
+     * }
+     * 
+     * Date arrivalTime = new
+     * java.sql.Timestamp.valueOf(LocalDateTime.of(LocalDate.now(),
+     * LocalTime.MIDNIGHT.plusSeconds(stopTime.getArrivalTime())));
+     * 
+     * Date departureTime = new
+     * java.sql.Timestamp.valueOf(LocalDateTime.of(LocalDate.now(),
+     * LocalTime.MIDNIGHT.plusSeconds(stopTime.getArrivalTime())));
+     * 
+     * StopTimeModel instance = new StopTimeModel(
+     * trip.getId().getId(),
+     * arrivalTime,
+     * departureTime);
+     * stopTimes.add(instance);
+     * 
+     * if (stopTimes.size() >= 200) {
+     * stopTimeDao.create(stopTimes);
+     * stopTimes.clear();
+     * }
+     * }
+     * }
+     * if (!stopTimes.isEmpty()) {
+     * stopTimeDao.create(stopTimes);
+     * stopTimes.clear();
+     * }
+     * }
+     */
+
+    public void importRoutesFromGtfs(StaticGtfsService gtfs) throws SQLException {
+        Dao<RouteModel, String> routeDao = this.getRouteDao();
+        GtfsRelationalDaoImpl store = gtfs.getStore();
+
+        if (routeDao.countOf() != 0)
+            return;
+
+        for (Route route : store.getAllRoutes()) {
+            AgencyModel agencyModel = new AgencyModel(
+                    route.getAgency().getId(),
+                    route.getAgency().getName(),
+                    route.getAgency().getTimezone(),
+                    route.getAgency().getUrl());
+            agencyDao.createIfNotExists(agencyModel);
+
+            RouteModel routeModel = new RouteModel(
+                    route.getId().getId(),
+                    agencyModel,
+                    route.getShortName(),
+                    route.getLongName());
             routeDao.createIfNotExists(routeModel);
         }
     }
 
-    public void preloadGtfsData(StaticGtfsService gtfs) throws SQLException {
+    public void preloadGtfsData(StaticGtfsService gtfs) throws SQLException, IOException {
         if (needsCaching()) {
             System.out.println("Preloading GTFS data into the database...");
-            try {
-                gtfs.load(); // Load GTFS data from the static file
-            } catch (IOException e) {
-                System.err.println("Error loading GTFS data: " + e.getMessage());
-                return;
-            }
+            gtfs.load(); // Load GTFS data from the static file
 
+            // Important! Order Matters, do not touch
+            // importServicesFromGtfs(gtfs);
             importStopsFromGtfs(gtfs);
             importRoutesFromGtfs(gtfs);
+            importTripsFromGtfs(gtfs); // Requires routes to be imported first
+            // importStopTimesFromGtfs(gtfs); // Requires trips and stops to be imported
+            // first
 
             System.out.println("GTFS data preloaded successfully.");
         } else {
@@ -138,7 +293,25 @@ public class DatabaseService {
         return tripDao;
     }
 
-    public Dao<ServiceModel, String> getServiceDao() {
-        return serviceDao;
+    /*
+     * public Dao<ServiceModel, String> getServiceDao() {
+     * return serviceDao;
+     * }
+     */
+
+    public Dao<UserModel, String> getUserDao() {
+        return userDao;
+    }
+
+    public Dao<StopTimeModel, String> getStopTimeDao() {
+        return stopTimeDao;
+    }
+
+    public Dao<FavoriteStopModel, String> getFavoriteStopDao() {
+        return favoriteStopDao;
+    }
+
+    public Dao<FavoriteLineModel, String> getFavoriteLineDao() {
+        return favoriteLineDao;
     }
 }
