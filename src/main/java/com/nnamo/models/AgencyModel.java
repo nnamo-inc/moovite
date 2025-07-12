@@ -34,6 +34,4 @@ public class AgencyModel {
         this.timezone = timezone;
         this.url = url;
     }
-
-
 }

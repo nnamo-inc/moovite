@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
-
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.Route;
@@ -15,6 +14,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+import com.nnamo.DatabaseService.Tables;
 import com.nnamo.models.AgencyModel;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
@@ -22,33 +22,23 @@ import com.nnamo.models.StopModel;
 public class App 
 {
     public static void main( String[] args ) {
-        
-        File gtfsFile = new File("assets/gtfs/rome_static_gtfs.zip");
-
-        GtfsReader reader = new GtfsReader();
-        GtfsRelationalDaoImpl store = new GtfsRelationalDaoImpl();
-
-        reader.setEntityStore(store);
+        // TODO need to extract this logic somewhere else, maybe DatabaseService or StaticGtfsService
         try {
-            JdbcConnectionSource source = new JdbcConnectionSource("jdbc:sqlite:data.db");
+            DatabaseService db = new DatabaseService();
+            Dao<StopModel, String> stopDao = db.getDao(Tables.STOPS);
+            Dao<RouteModel, String> routeDao = db.getDao(Tables.ROUTES);
+            Dao<AgencyModel, String> agencyDao = db.getDao(Tables.AGENCIES);
 
-            TableUtils.createTableIfNotExists(source, StopModel.class);
-            TableUtils.createTableIfNotExists(source, RouteModel.class);
-            TableUtils.createTableIfNotExists(source, AgencyModel.class);
-            Dao<StopModel, String> stopDao = DaoManager.createDao(source, StopModel.class);
-            Dao<RouteModel, String> routeDao = DaoManager.createDao(source, RouteModel.class);
-            Dao<AgencyModel, String> agencyDao = DaoManager.createDao(source, AgencyModel.class);
-
-            if (stopDao.countOf() == 0 || routeDao.countOf() == 0) {
+            if (db.needsCaching()) {
+                StaticGtfsService gtfs = null;
                 try {
-                    reader.setInputLocation(gtfsFile);
-                    System.out.println("Caricamento dati GTFS statici..."); // Lento, caricarli solo quando è necessario
-                    reader.run();
+                    gtfs = new StaticGtfsService();
                 } catch (IOException e) {
                     System.out.println("IO error:\n\t" + e.toString());
                     System.exit(1);
                 }
 
+                GtfsRelationalDaoImpl store = gtfs.getStore();
                 if (stopDao.countOf() == 0) {
                     for (Stop stop : store.getAllStops()) {
                         System.out.println("Caching " + stop.getName() + " ...");
