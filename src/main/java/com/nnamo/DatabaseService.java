@@ -109,6 +109,7 @@ public class DatabaseService {
         Dao<TripModel, String> tripDao = this.getDao(TripModel.class);
         Dao<AgencyModel, String> agencyDao = this.getDao(AgencyModel.class);
         Dao<RouteModel, String> routeDao = this.getDao(RouteModel.class);
+
         GtfsRelationalDaoImpl store = gtfs.getStore();
 
         if (tripDao.countOf() != 0)
@@ -286,5 +287,10 @@ public class DatabaseService {
     @SuppressWarnings("unchecked")
     public <T, ID> Dao<T, ID> getDao(Class<T> modelClass) {
         return (Dao<T, ID>) daos.get(modelClass);
+    }
+
+    public List<StopModel> getAllStops() throws SQLException {
+        Dao<StopModel, String> stopDao = this.getDao(StopModel.class);
+        return stopDao.queryForAll();
     }
 }

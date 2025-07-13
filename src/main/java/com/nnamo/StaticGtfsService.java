@@ -14,8 +14,6 @@ public class StaticGtfsService {
         GtfsReader reader = new GtfsReader(); // Lettore del buffer
         GtfsRelationalDaoImpl store = new GtfsRelationalDaoImpl(); // API per interagire con i dati letti
 
-        System.out.println("Caricamento dati GTFS statici..."); // Lento, caricarli solo quando è necessario
-
         this.store = store;
     }
 
