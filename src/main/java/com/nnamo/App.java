@@ -11,9 +11,11 @@ public class App {
                 StaticGtfsService gtfs = new StaticGtfsService();
                 db.preloadGtfsData(gtfs);
             } catch (SQLException e) {
-                System.out.println(e);
+                e.printStackTrace();
+                return;
             } catch (IOException e) {
-                System.err.println("Error loading GTFS data: " + e.getMessage());
+                System.err.println("Error loading GTFS data");
+                e.printStackTrace();
                 return;
             }
 

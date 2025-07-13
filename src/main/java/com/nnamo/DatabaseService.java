@@ -7,19 +7,12 @@ import com.j256.ormlite.table.TableUtils;
 import com.nnamo.models.*;
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.model.Agency;
-import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Route;
-import org.onebusaway.gtfs.model.ServiceCalendarDate;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.StopTime;
 import org.onebusaway.gtfs.model.Trip;
-import org.onebusaway.gtfs.model.calendar.ServiceDate;
-
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -45,7 +38,7 @@ public class DatabaseService {
                 RouteModel.class,
                 AgencyModel.class,
                 TripModel.class,
-                ServiceModel.class,
+                // ServiceModel.class,
                 StopTimeModel.class
         };
         this.gtfs_models = Arrays.asList(models);
@@ -55,7 +48,7 @@ public class DatabaseService {
         this.daos.put(AgencyModel.class, DaoManager.createDao(connection, AgencyModel.class));
         this.daos.put(TripModel.class, DaoManager.createDao(connection, TripModel.class));
         this.daos.put(ServiceModel.class, DaoManager.createDao(connection, ServiceModel.class));
-        this.daos.put(StopTime.class, DaoManager.createDao(connection, StopTimeModel.class));
+        this.daos.put(StopTimeModel.class, DaoManager.createDao(connection, StopTimeModel.class));
 
         this.daos.put(UserModel.class, DaoManager.createDao(connection, UserModel.class));
         this.daos.put(FavoriteLineModel.class, DaoManager.createDao(connection, FavoriteLineModel.class));
@@ -67,7 +60,7 @@ public class DatabaseService {
         TableUtils.createTableIfNotExists(connection, RouteModel.class);
         TableUtils.createTableIfNotExists(connection, AgencyModel.class);
         TableUtils.createTableIfNotExists(connection, TripModel.class);
-        // TableUtils.createTableIfNotExists(connection, ServiceModel.class);
+        TableUtils.createTableIfNotExists(connection, ServiceModel.class);
         TableUtils.createTableIfNotExists(connection, UserModel.class);
         TableUtils.createTableIfNotExists(connection, StopTimeModel.class);
         TableUtils.createTableIfNotExists(connection, FavoriteStopModel.class);
@@ -109,6 +102,7 @@ public class DatabaseService {
             stopDao.create(stops);
             stops.clear();
         }
+        System.out.println("Stops imported successfully in the database");
     }
 
     public void importTripsFromGtfs(StaticGtfsService gtfs) throws SQLException {
@@ -163,6 +157,7 @@ public class DatabaseService {
             tripDao.create(trips);
             trips.clear();
         }
+        System.out.println("Trips imported successfully in the database");
     }
 
     /*
@@ -200,50 +195,48 @@ public class DatabaseService {
      * }
      */
 
-    // TODO Needs to be finished
-    /*
-     * public void importStopTimesFromGtfs(StaticGtfsService gtfs) throws
-     * SQLException {
-     * Dao<StopTimeModel, String> stopTimeDao = this.getStopTimeDao();
-     * GtfsRelationalDaoImpl store = gtfs.getStore();
-     * 
-     * if (stopTimeDao.countOf() != 0)
-     * return;
-     * 
-     * ArrayList<StopTimeModel> stopTimes = new ArrayList<>();
-     * for (Trip trip : store.getAllTrips()) {
-     * for (StopTime stopTime : trip.getStopTimes()) {
-     * StopModel stopModel = stopDao.queryForId(stopTime.getStop().getId().getId());
-     * if (stopModel == null) {
-     * continue; // Skip if the stop is not found
-     * }
-     * 
-     * Date arrivalTime = new
-     * java.sql.Timestamp.valueOf(LocalDateTime.of(LocalDate.now(),
-     * LocalTime.MIDNIGHT.plusSeconds(stopTime.getArrivalTime())));
-     * 
-     * Date departureTime = new
-     * java.sql.Timestamp.valueOf(LocalDateTime.of(LocalDate.now(),
-     * LocalTime.MIDNIGHT.plusSeconds(stopTime.getArrivalTime())));
-     * 
-     * StopTimeModel instance = new StopTimeModel(
-     * trip.getId().getId(),
-     * arrivalTime,
-     * departureTime);
-     * stopTimes.add(instance);
-     * 
-     * if (stopTimes.size() >= 200) {
-     * stopTimeDao.create(stopTimes);
-     * stopTimes.clear();
-     * }
-     * }
-     * }
-     * if (!stopTimes.isEmpty()) {
-     * stopTimeDao.create(stopTimes);
-     * stopTimes.clear();
-     * }
-     * }
-     */
+    public void importStopTimesFromGtfs(StaticGtfsService gtfs) throws SQLException {
+        Dao<TripModel, String> tripDao = this.getDao(TripModel.class);
+        Dao<StopTimeModel, String> stopTimeDao = this.getDao(StopTimeModel.class);
+        GtfsRelationalDaoImpl store = gtfs.getStore();
+
+        if (stopTimeDao.countOf() != 0)
+            return;
+
+        if (tripDao.countOf() == 0) {
+            System.out.println("Can't cache stop times: there are no trips cached.\n" +
+                    "Reminder to devs: import trips before import stop times");
+            return;
+        }
+
+        ArrayList<StopTimeModel> stopTimes = new ArrayList<>();
+        for (StopTime stopTime : store.getAllStopTimes()) {
+            TripModel tripModel = tripDao.queryForId(stopTime.getTrip().getId().getId());
+            if (tripModel == null) {
+                continue; // Skip if the stop is not found
+            }
+
+            Date arrivalTime = new Date(stopTime.getArrivalTime() * 1000L);
+            Date departureTime = new Date(stopTime.getDepartureTime() * 1000L);
+
+            StopTimeModel stopTimeModel = new StopTimeModel(
+                    tripModel,
+                    arrivalTime,
+                    departureTime);
+            stopTimes.add(stopTimeModel);
+
+            if (stopTimes.size() >= 1000000) {
+                stopTimeDao.create(stopTimes);
+                stopTimes.clear();
+            }
+        }
+
+        if (!stopTimes.isEmpty()) {
+            stopTimeDao.create(stopTimes);
+            stopTimes.clear();
+        }
+        System.out.println("Stop Times imported successfully in the database");
+    }
 
     public void importRoutesFromGtfs(StaticGtfsService gtfs) throws SQLException {
         Dao<RouteModel, String> routeDao = this.getDao(RouteModel.class);
@@ -268,6 +261,7 @@ public class DatabaseService {
                     route.getLongName());
             routeDao.createIfNotExists(routeModel);
         }
+        System.out.println("Routes imported successfully in the database");
     }
 
     public void preloadGtfsData(StaticGtfsService gtfs) throws SQLException, IOException {
@@ -280,7 +274,7 @@ public class DatabaseService {
             importStopsFromGtfs(gtfs);
             importRoutesFromGtfs(gtfs);
             importTripsFromGtfs(gtfs); // Requires routes to be imported first
-            // importStopTimesFromGtfs(gtfs); // Requires trips and stops to be imported
+            importStopTimesFromGtfs(gtfs); // Requires trips and stops to be imported
             // first
 
             System.out.println("GTFS data preloaded successfully.");
