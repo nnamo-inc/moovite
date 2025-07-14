@@ -6,7 +6,6 @@ import org.jxmapviewer.input.PanMouseInputListener;
 import org.jxmapviewer.viewer.DefaultTileFactory;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -24,14 +23,12 @@ import org.jxmapviewer.viewer.WaypointPainter;
 
 import com.nnamo.models.StopModel;
 
-public class MapService {
+public class MapView {
 
     JXMapViewer viewer = new JXMapViewer();
-    DatabaseService db; // TODO Move to controller
-
-    public MapService(DatabaseService db) {
-        this.db = db;
-    }
+    WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
+    CompoundPainter<JXMapViewer> mapPainter = new CompoundPainter<JXMapViewer>();
+    GeoPosition romePosition = new GeoPosition(41.902782, 12.496366);
 
     private void init() {
         // Create a TileFactoryInfo for OpenStreetMap
@@ -42,6 +39,17 @@ public class MapService {
         tileFactory.setThreadPoolSize(8);
 
         viewer.setTileFactory(tileFactory);
+        viewer.setZoom(5);
+        viewer.setAddressLocation(this.romePosition);
+
+    }
+
+    public void renderStops(List<StopModel> stops) {
+        Set<Waypoint> waypoints = new HashSet<Waypoint>();
+        for (StopModel stop : stops) {
+            waypoints.add(new DefaultWaypoint(stop.getLatitude(), stop.getLongitude()));
+        }
+        this.waypointPainter.setWaypoints(waypoints);
     }
 
     private void handleMouse() {
@@ -50,37 +58,19 @@ public class MapService {
         this.viewer.addMouseListener(mouseClick);
         this.viewer.addMouseMotionListener(mouseClick);
         this.viewer.addMouseWheelListener(mouseWheel);
+        this.viewer.addMouseWheelListener(new ZoomLevelListener(this.viewer, this.mapPainter));
     }
 
-    public void run() throws SQLException {
+    public void run() {
         init();
 
-        GeoPosition rome = new GeoPosition(41.902782, 12.496366);
-
-        viewer.setZoom(5);
-        viewer.setAddressLocation(rome);
-
-        // TODO Move it to MapController
-        Set<Waypoint> waypoints = new HashSet<Waypoint>();
-        for (StopModel stop : db.getAllStops()) {
-            waypoints.add(new DefaultWaypoint(stop.getLatitude(), stop.getLongitude()));
-        }
-
-        // Create a waypoint painter that takes all the waypoints
-        WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
-        waypointPainter.setWaypoints(waypoints);
-
-        // Create a compound painter that uses both the route-painter and the
-        // waypoint-painter
         List<Painter<JXMapViewer>> painters = new ArrayList<Painter<JXMapViewer>>();
-        painters.add(waypointPainter);
-
-        CompoundPainter<JXMapViewer> painter = new CompoundPainter<JXMapViewer>(painters);
+        painters.add(this.waypointPainter);
+        this.mapPainter.setPainters(painters);
 
         handleMouse();
-        this.viewer.addMouseWheelListener(new ZoomLevelListener(viewer, painter));
 
-        // Display the viewer in a JFrame
+        // TODO Needs to be extracted in a Frame class
         JFrame frame = new JFrame("Moovite");
         frame.getContentPane().add(viewer);
         frame.setSize(800, 600);
