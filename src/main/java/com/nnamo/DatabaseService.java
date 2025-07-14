@@ -77,7 +77,7 @@ public class DatabaseService {
         return false;
     }
 
-    public void importStopsFromGtfs(StaticGtfsService gtfs) throws SQLException {
+    private void importStopsFromGtfs(StaticGtfsService gtfs) throws SQLException {
         Dao<StopModel, String> stopDao = this.getDao(StopModel.class);
         GtfsRelationalDaoImpl store = gtfs.getStore();
 
@@ -105,7 +105,7 @@ public class DatabaseService {
         System.out.println("Stops imported successfully in the database");
     }
 
-    public void importTripsFromGtfs(StaticGtfsService gtfs) throws SQLException {
+    private void importTripsFromGtfs(StaticGtfsService gtfs) throws SQLException {
         Dao<TripModel, String> tripDao = this.getDao(TripModel.class);
         Dao<AgencyModel, String> agencyDao = this.getDao(AgencyModel.class);
         Dao<RouteModel, String> routeDao = this.getDao(RouteModel.class);
@@ -196,7 +196,7 @@ public class DatabaseService {
      * }
      */
 
-    public void importStopTimesFromGtfs(StaticGtfsService gtfs) throws SQLException {
+    private void importStopTimesFromGtfs(StaticGtfsService gtfs) throws SQLException {
         Dao<TripModel, String> tripDao = this.getDao(TripModel.class);
         Dao<StopTimeModel, String> stopTimeDao = this.getDao(StopTimeModel.class);
         GtfsRelationalDaoImpl store = gtfs.getStore();
@@ -239,7 +239,7 @@ public class DatabaseService {
         System.out.println("Stop Times imported successfully in the database");
     }
 
-    public void importRoutesFromGtfs(StaticGtfsService gtfs) throws SQLException {
+    private void importRoutesFromGtfs(StaticGtfsService gtfs) throws SQLException {
         Dao<RouteModel, String> routeDao = this.getDao(RouteModel.class);
         Dao<AgencyModel, String> agencyDao = this.getDao(AgencyModel.class);
         GtfsRelationalDaoImpl store = gtfs.getStore();
