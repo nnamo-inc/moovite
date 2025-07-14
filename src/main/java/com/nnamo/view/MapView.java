@@ -1,11 +1,15 @@
 package com.nnamo.view;
 
+import com.nnamo.controllers.MapController;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
 import org.jxmapviewer.input.PanMouseInputListener;
 import org.jxmapviewer.viewer.DefaultTileFactory;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -61,6 +65,16 @@ public class MapView {
         this.viewer.addMouseWheelListener(new ZoomLevelListener(this.viewer, this.mapPainter));
     }
 
+    private void waypointPopUp() { // TODO: Need to be checked
+        this.viewer.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                System.out.println("Hai cliccato sulla mappa -> " + e.getPoint());
+                MapController.checkWayPointClicked(e.getPoint());
+                }
+            });
+    }
+
     public void run() {
         init();
 
@@ -69,6 +83,7 @@ public class MapView {
         this.mapPainter.setPainters(painters);
 
         handleMouse();
+        waypointPopUp();
 
         // TODO Needs to be extracted in a Frame class
         JFrame frame = new JFrame("Moovite");
@@ -76,6 +91,10 @@ public class MapView {
         frame.setSize(800, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+    }
+
+    public JXMapViewer getViewer() {
+        return viewer;
     }
 
 }
