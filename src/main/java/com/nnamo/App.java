@@ -11,9 +11,10 @@ public class App {
             try {
                 DatabaseService db = new DatabaseService();
                 StaticGtfsService gtfs = new StaticGtfsService();
-                MapService map = new MapService(db);
                 db.preloadGtfsData(gtfs);
-                map.run();
+
+                MapController controller = new MapController(db);
+                controller.run();
             } catch (SQLException e) {
                 e.printStackTrace();
                 return;
