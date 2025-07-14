@@ -1,4 +1,4 @@
-package com.nnamo;
+package com.nnamo.view;
 
 import java.awt.event.MouseWheelEvent;
 

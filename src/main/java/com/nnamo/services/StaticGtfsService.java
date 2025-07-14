@@ -1,4 +1,4 @@
-package com.nnamo;
+package com.nnamo.services;
 
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.serialization.GtfsReader;

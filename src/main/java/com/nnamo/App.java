@@ -3,7 +3,9 @@ package com.nnamo;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import com.nnamo.models.StopModel;
+import com.nnamo.controllers.MapController;
+import com.nnamo.services.DatabaseService;
+import com.nnamo.services.StaticGtfsService;
 
 public class App {
     public static void main(String[] args) throws InterruptedException {
@@ -19,7 +21,7 @@ public class App {
                 e.printStackTrace();
                 return;
             } catch (IOException e) {
-                System.err.println("Error loading GTFS data");
+                System.err.println("Error loading GTFS dataa");
                 e.printStackTrace();
                 return;
             }

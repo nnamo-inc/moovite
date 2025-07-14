@@ -1,4 +1,5 @@
-package testGUI.login;
+/*
+package com.nnamo.ui.testGUI.login;
 
 import testGUI.Mappa.MapFrame;
 
@@ -37,3 +38,4 @@ public class LoginFrame extends JFrame implements LoginListener {
         }
     }
 }
+*/

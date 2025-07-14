@@ -1,4 +1,4 @@
-package com.nnamo;
+package com.nnamo.services;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;

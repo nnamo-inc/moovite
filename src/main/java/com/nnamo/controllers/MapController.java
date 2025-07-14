@@ -1,4 +1,7 @@
-package com.nnamo;
+package com.nnamo.controllers;
+
+import com.nnamo.view.MapView;
+import com.nnamo.services.DatabaseService;
 
 import java.sql.SQLException;
 

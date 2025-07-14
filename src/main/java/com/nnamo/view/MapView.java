@@ -1,4 +1,4 @@
-package com.nnamo;
+package com.nnamo.view;
 
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
