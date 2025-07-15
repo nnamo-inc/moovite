@@ -1,12 +1,13 @@
 package com.nnamo.view;
 
-import com.nnamo.controllers.MapController;
+import com.nnamo.interfaces.WaypointListener;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
 import org.jxmapviewer.input.PanMouseInputListener;
 import org.jxmapviewer.viewer.DefaultTileFactory;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
@@ -33,6 +34,7 @@ public class MapView {
     WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
     CompoundPainter<JXMapViewer> mapPainter = new CompoundPainter<JXMapViewer>();
     GeoPosition romePosition = new GeoPosition(41.902782, 12.496366);
+    WaypointListener waypointListener;
 
     private void init() {
         // Create a TileFactoryInfo for OpenStreetMap
@@ -65,14 +67,23 @@ public class MapView {
         this.viewer.addMouseWheelListener(new ZoomLevelListener(this.viewer, this.mapPainter));
     }
 
+    public void setWaypointListener(WaypointListener waypointListener) {
+        this.waypointListener = waypointListener;
+    }
+
+    public void notifyWaypointClicked(Point point) throws SQLException {
+
+    }
+
     private void waypointPopUp() { // TODO: Need to be checked
         this.viewer.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                System.out.println("Hai cliccato sulla mappa -> " + e.getPoint());
-                MapController.checkWayPointClicked(e.getPoint());
+                if (waypointListener != null) {
+                    waypointListener.waypointClicked(e.getPoint().getX(), e.getPoint().getY());
                 }
-            });
+            }
+        });
     }
 
     public void run() {
@@ -81,6 +92,7 @@ public class MapView {
         List<Painter<JXMapViewer>> painters = new ArrayList<Painter<JXMapViewer>>();
         painters.add(this.waypointPainter);
         this.mapPainter.setPainters(painters);
+
 
         handleMouse();
         waypointPopUp();
