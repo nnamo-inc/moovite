@@ -93,7 +93,6 @@ public class MapView {
         painters.add(this.waypointPainter);
         this.mapPainter.setPainters(painters);
 
-
         handleMouse();
         waypointPopUp();
 

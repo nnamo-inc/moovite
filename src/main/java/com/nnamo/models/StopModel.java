@@ -31,6 +31,10 @@ public class StopModel {
         this.longitude = longitude;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
     public double getLatitude() {
         return latitude;
     }

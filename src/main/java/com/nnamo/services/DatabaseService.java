@@ -24,7 +24,7 @@ public class DatabaseService {
     private final JdbcConnectionSource connection;
 
     HashMap<Class<?>, Dao<?, ?>> daos = new HashMap<Class<?>, Dao<?, ?>>();
-    List<Class> gtfs_models;
+    List<Class<?>> gtfs_models;
 
     public DatabaseService() throws SQLException {
         this.connection = new JdbcConnectionSource("jdbc:sqlite:data.db");
@@ -292,5 +292,14 @@ public class DatabaseService {
     public List<StopModel> getAllStops() throws SQLException {
         Dao<StopModel, String> stopDao = this.getDao(StopModel.class);
         return stopDao.queryForAll();
+    }
+
+    public List<StopModel> getStopsByName(String stopName) throws SQLException {
+        Dao<StopModel, String> stopDao = this.getDao(StopModel.class);
+        return stopDao
+                .queryBuilder()
+                .where()
+                .like("name", "%" + stopName + "%") // Case Insensitive Search
+                .query();
     }
 }

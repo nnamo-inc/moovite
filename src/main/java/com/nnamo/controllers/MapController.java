@@ -1,10 +1,12 @@
 package com.nnamo.controllers;
 
 import com.nnamo.interfaces.WaypointListener;
+import com.nnamo.models.StopModel;
 import com.nnamo.view.MapView;
 import com.nnamo.services.DatabaseService;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class MapController {
 
@@ -23,6 +25,7 @@ public class MapController {
                 System.out.println("Clicked on waypoint at coordinates: " + x + ", " + y);
             }
         });
+
         mapView.run();
     }
 }
