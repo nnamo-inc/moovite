@@ -4,27 +4,23 @@ import com.nnamo.interfaces.WaypointListener;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
 import org.jxmapviewer.input.PanMouseInputListener;
-import org.jxmapviewer.viewer.DefaultTileFactory;
-import org.jxmapviewer.viewer.TileFactoryInfo;
+import org.jxmapviewer.viewer.*;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 
 import org.jxmapviewer.input.ZoomMouseWheelListenerCursor;
 import org.jxmapviewer.painter.CompoundPainter;
 import org.jxmapviewer.painter.Painter;
-import org.jxmapviewer.viewer.DefaultWaypoint;
-import org.jxmapviewer.viewer.GeoPosition;
-import org.jxmapviewer.viewer.Waypoint;
-import org.jxmapviewer.viewer.WaypointPainter;
 
 import com.nnamo.models.StopModel;
 
@@ -33,6 +29,7 @@ public class MapView {
     JXMapViewer viewer = new JXMapViewer();
     WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
     CompoundPainter<JXMapViewer> mapPainter = new CompoundPainter<JXMapViewer>();
+    TileFactory tileFactory;
     GeoPosition romePosition = new GeoPosition(41.902782, 12.496366);
     WaypointListener waypointListener;
 
@@ -40,6 +37,7 @@ public class MapView {
         // Create a TileFactoryInfo for OpenStreetMap
         TileFactoryInfo info = new OSMTileFactoryInfo();
         DefaultTileFactory tileFactory = new DefaultTileFactory(info);
+        tileFactory = new DefaultTileFactory(info);
 
         // Use 8 threads in parallel to load the tiles
         tileFactory.setThreadPoolSize(8);
@@ -80,7 +78,14 @@ public class MapView {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (waypointListener != null) {
-                    waypointListener.waypointClicked(e.getPoint().getX(), e.getPoint().getY());
+                    try {
+                        GeoPosition geo = viewer.convertPointToGeoPosition(new Point(e.getX(), e.getY()));
+                        waypointListener.waypointClicked(geo);
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }
             }
         });
@@ -92,7 +97,6 @@ public class MapView {
         List<Painter<JXMapViewer>> painters = new ArrayList<Painter<JXMapViewer>>();
         painters.add(this.waypointPainter);
         this.mapPainter.setPainters(painters);
-
 
         handleMouse();
         waypointPopUp();
@@ -107,6 +111,10 @@ public class MapView {
 
     public JXMapViewer getViewer() {
         return viewer;
+    }
+
+    public TileFactory getTileFactory() {
+        return tileFactory;
     }
 
 }
