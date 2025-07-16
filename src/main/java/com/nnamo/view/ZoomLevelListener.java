@@ -18,9 +18,9 @@ public class ZoomLevelListener implements java.awt.event.MouseWheelListener {
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         int zoom = viewer.getZoom();
-        if (zoom == 3) {
+        if (zoom == 4) {
             viewer.setOverlayPainter(painter);
-        } else if (zoom > 3) {
+        } else if (zoom > 4) {
             viewer.setOverlayPainter(null);
         }
     }

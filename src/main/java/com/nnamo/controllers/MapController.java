@@ -60,6 +60,7 @@ public class MapController {
                             JFrame f = new JFrame("Stop Details");
                             f.setSize(400, 300);
                             f.setVisible(true);
+                            break;
                         }
                     }
                 }
