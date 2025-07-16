@@ -4,19 +4,13 @@ import com.nnamo.interfaces.WaypointListener;
 import com.nnamo.models.StopModel;
 import com.nnamo.view.MapView;
 import com.nnamo.services.DatabaseService;
-import org.jxmapviewer.viewer.DefaultWaypointRenderer;
 import org.jxmapviewer.viewer.GeoPosition;
-import org.onebusaway.gtfs.model.Stop;
-
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Objects;
-import java.util.List;
 
 public class MapController {
 
@@ -27,21 +21,28 @@ public class MapController {
         this.db = db;
     }
 
-    public void run() throws SQLException {
+    public void run() throws SQLException, IOException {
         mapView.renderStops(db.getAllStops());
         mapView.setWaypointListener(new WaypointListener() {
             @Override
             public void waypointClicked(GeoPosition geo) throws SQLException, IOException {
-                Point2D clickPixel = mapView.getViewer().convertGeoPositionToPoint(geo); // convert click GeoPosition to pixel
-                BufferedImage iconImg = ImageIO.read(Objects.requireNonNull(DefaultWaypointRenderer.class.getResource("/images/waypoint_white.png"))); // read maps icon
+                Point2D clickPixel = mapView.getViewer().convertGeoPositionToPoint(geo); // convert click GeoPosition to
+                                                                                         // pixel
+                BufferedImage currentIcon = mapView.getStopPainter().getCurrentIcon();
+
+                if (currentIcon == null) {
+                    return;
+                }
 
                 for (StopModel stop : db.getAllStops()) {
-                    GeoPosition stopGeo = new GeoPosition(stop.getLatitude(), stop.getLongitude()); // lat and lon of the stop
-                    Point2D stopPixel = mapView.getViewer().convertGeoPositionToPoint(stopGeo); // convert stop GeoPosition to pixel
+                    GeoPosition stopGeo = new GeoPosition(stop.getLatitude(), stop.getLongitude()); // lat and lon of
+                                                                                                    // the stop
+                    Point2D stopPixel = mapView.getViewer().convertGeoPositionToPoint(stopGeo); // convert stop
+                                                                                                // GeoPosition to pixel
 
                     // get icon dimensions
-                    int iconWidth = iconImg.getWidth();
-                    int iconImgHeight = iconImg.getHeight();
+                    int iconWidth = currentIcon.getWidth();
+                    int iconImgHeight = currentIcon.getHeight();
                     // get icon relative pointer position
                     int iconPointerWidth = iconWidth / 2;
                     int iconPointerHeight = iconImgHeight;
@@ -51,7 +52,7 @@ public class MapController {
                     // check if the click is inside the icon bounds
                     if (clickX >= 0 && clickX < iconWidth && clickY >= 0 && clickY < iconImgHeight) {
                         // get the pixel
-                        int argb = iconImg.getRGB(clickX, clickY);
+                        int argb = currentIcon.getRGB(clickX, clickY);
                         // create a Color object to check the alpha(transparency) value
                         int alpha = new Color(argb, true).getAlpha();
                         // check alpha

@@ -35,6 +35,7 @@ public class MapView {
     TileFactory tileFactory;
     GeoPosition romePosition = new GeoPosition(41.902782, 12.496366);
 
+    StopPainter stopPainter;
     WaypointListener waypointListener;
 
     private void initMap() {
@@ -58,34 +59,16 @@ public class MapView {
             waypoints.add(new DefaultWaypoint(stop.getLatitude(), stop.getLongitude()));
         }
 
-        // - - - - - - - - personal icon, need to be checked - - - - - - - - //
-        try {
-            final BufferedImage icon = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/images/waypoint_white.png")));
-            this.waypointPainter.setRenderer(new WaypointRenderer<Waypoint>() {
-                @Override
-                public void paintWaypoint(Graphics2D g, JXMapViewer viewer, Waypoint waypoint) {
-                    Point2D point = viewer.getTileFactory().geoToPixel(waypoint.getPosition(), viewer.getZoom());
-                    int x = (int) point.getX() - icon.getWidth() / 2;
-                    int y = (int) point.getY() - icon.getHeight();
-                    g.drawImage(icon, x, y, null);
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-            this.waypointPainter.setRenderer(new DefaultWaypointRenderer());
-        }
-        // - - - - - - - - - - - - - - - - //
-
         this.waypointPainter.setWaypoints(waypoints);
     }
 
-    private void handleMouse() {
+    private void handleMouse() throws IOException {
         PanMouseInputListener mouseClick = new PanMouseInputListener(viewer);
         ZoomMouseWheelListenerCursor mouseWheel = new ZoomMouseWheelListenerCursor(viewer);
         this.viewer.addMouseListener(mouseClick);
         this.viewer.addMouseMotionListener(mouseClick);
         this.viewer.addMouseWheelListener(mouseWheel);
-        this.viewer.addMouseWheelListener(new ZoomLevelListener(this.viewer, this.mapPainter));
+        this.viewer.addMouseWheelListener(stopPainter.getZoomLevelListener());
     }
 
     public void setWaypointListener(WaypointListener waypointListener) {
@@ -110,12 +93,13 @@ public class MapView {
         });
     }
 
-    public void run() {
+    public void run() throws IOException {
         initMap();
 
         List<Painter<JXMapViewer>> painters = new ArrayList<Painter<JXMapViewer>>();
         painters.add(this.waypointPainter);
         this.mapPainter.setPainters(painters);
+        this.stopPainter = new StopPainter(this.viewer, this.mapPainter, this.waypointPainter);
 
         handleMouse();
         waypointPopUp();
@@ -134,6 +118,10 @@ public class MapView {
 
     public TileFactory getTileFactory() {
         return tileFactory;
+    }
+
+    public StopPainter getStopPainter() {
+        return this.stopPainter;
     }
 
 }
