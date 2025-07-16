@@ -17,27 +17,25 @@ public class MapController {
     DatabaseService db;
     MapView mapView = new MapView();
 
-    public MapController(DatabaseService db) {
+    public MapController(DatabaseService db) throws IOException {
         this.db = db;
     }
 
     public void run() throws SQLException, IOException {
-        mapView.renderStops(db.getAllStops());
-        mapView.setWaypointListener(new WaypointListener() {
+        mapView.getMapPanel().renderStops(db.getAllStops());
+        mapView.getMapPanel().setWaypointListener(new WaypointListener() {
             @Override
             public void waypointClicked(GeoPosition geo) throws SQLException, IOException {
-                Point2D clickPixel = mapView.getViewer().convertGeoPositionToPoint(geo); // convert click GeoPosition to
-                                                                                         // pixel
-                BufferedImage currentIcon = mapView.getStopPainter().getCurrentIcon();
+                Point2D clickPixel = mapView.getMapPanel().getMap().convertGeoPositionToPoint(geo); // convert click GeoPosition to pixel
+                BufferedImage currentIcon = mapView.getMapPanel().getStopPainter().getCurrentIcon();
 
                 if (currentIcon == null) {
                     return;
                 }
 
                 for (StopModel stop : db.getAllStops()) {
-                    GeoPosition stopGeo = new GeoPosition(stop.getLatitude(), stop.getLongitude()); // lat and lon of
-                                                                                                    // the stop
-                    Point2D stopPixel = mapView.getViewer().convertGeoPositionToPoint(stopGeo); // convert stop
+                    GeoPosition stopGeo = new GeoPosition(stop.getLatitude(), stop.getLongitude()); // lat and lon of the stop
+                    Point2D stopPixel = mapView.getMapPanel().getMap().convertGeoPositionToPoint(stopGeo); // convert stop
                                                                                                 // GeoPosition to pixel
 
                     // get icon dimensions
@@ -68,6 +66,9 @@ public class MapController {
             }
         });
 
-        mapView.run();
+        //mapView.run();
+        System.out.println("In");
+        mapView.setVisible(true);
+        System.out.println("out");
     }
 }
