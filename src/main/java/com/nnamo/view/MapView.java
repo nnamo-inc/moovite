@@ -9,13 +9,14 @@ import org.jxmapviewer.viewer.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import org.jxmapviewer.input.ZoomMouseWheelListenerCursor;
@@ -27,13 +28,16 @@ import com.nnamo.models.StopModel;
 public class MapView {
 
     JXMapViewer viewer = new JXMapViewer();
+
     WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
     CompoundPainter<JXMapViewer> mapPainter = new CompoundPainter<JXMapViewer>();
+
     TileFactory tileFactory;
     GeoPosition romePosition = new GeoPosition(41.902782, 12.496366);
+
     WaypointListener waypointListener;
 
-    private void init() {
+    private void initMap() {
         // Create a TileFactoryInfo for OpenStreetMap
         TileFactoryInfo info = new OSMTileFactoryInfo();
         DefaultTileFactory tileFactory = new DefaultTileFactory(info);
@@ -53,6 +57,25 @@ public class MapView {
         for (StopModel stop : stops) {
             waypoints.add(new DefaultWaypoint(stop.getLatitude(), stop.getLongitude()));
         }
+
+        // - - - - - - - - personal icon, need to be checked - - - - - - - - //
+        try {
+            final BufferedImage icon = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/images/waypoint_white.png")));
+            this.waypointPainter.setRenderer(new WaypointRenderer<Waypoint>() {
+                @Override
+                public void paintWaypoint(Graphics2D g, JXMapViewer viewer, Waypoint waypoint) {
+                    Point2D point = viewer.getTileFactory().geoToPixel(waypoint.getPosition(), viewer.getZoom());
+                    int x = (int) point.getX() - icon.getWidth() / 2;
+                    int y = (int) point.getY() - icon.getHeight();
+                    g.drawImage(icon, x, y, null);
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+            this.waypointPainter.setRenderer(new DefaultWaypointRenderer());
+        }
+        // - - - - - - - - - - - - - - - - //
+
         this.waypointPainter.setWaypoints(waypoints);
     }
 
@@ -67,10 +90,6 @@ public class MapView {
 
     public void setWaypointListener(WaypointListener waypointListener) {
         this.waypointListener = waypointListener;
-    }
-
-    public void notifyWaypointClicked(Point point) throws SQLException {
-
     }
 
     private void waypointPopUp() { // TODO: Need to be checked
@@ -92,7 +111,7 @@ public class MapView {
     }
 
     public void run() {
-        init();
+        initMap();
 
         List<Painter<JXMapViewer>> painters = new ArrayList<Painter<JXMapViewer>>();
         painters.add(this.waypointPainter);
