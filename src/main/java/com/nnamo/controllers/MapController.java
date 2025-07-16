@@ -16,6 +16,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Objects;
+import java.util.List;
 
 public class MapController {
 
@@ -31,23 +32,29 @@ public class MapController {
         mapView.setWaypointListener(new WaypointListener() {
             @Override
             public void waypointClicked(GeoPosition geo) throws SQLException, IOException {
-                Point2D clickPixel = mapView.getViewer().convertGeoPositionToPoint(geo);
-                BufferedImage iconImg = ImageIO.read(Objects.requireNonNull(DefaultWaypointRenderer.class.getResource("/images/waypoint_white.png")));
+                Point2D clickPixel = mapView.getViewer().convertGeoPositionToPoint(geo); // convert click GeoPosition to pixel
+                BufferedImage iconImg = ImageIO.read(Objects.requireNonNull(DefaultWaypointRenderer.class.getResource("/images/waypoint_white.png"))); // read maps icon
 
                 for (StopModel stop : db.getAllStops()) {
-                    GeoPosition stopGeo = new GeoPosition(stop.getLatitude(), stop.getLongitude());
-                    Point2D stopPixel = mapView.getViewer().convertGeoPositionToPoint(stopGeo);
+                    GeoPosition stopGeo = new GeoPosition(stop.getLatitude(), stop.getLongitude()); // lat and lon of the stop
+                    Point2D stopPixel = mapView.getViewer().convertGeoPositionToPoint(stopGeo); // convert stop GeoPosition to pixel
 
-                    int iconW = iconImg.getWidth();
-                    int iconH = iconImg.getHeight();
-                    int anchorX = iconW / 2;
-                    int anchorY = iconH;
-                    int dx = (int) (clickPixel.getX() - (stopPixel.getX() - anchorX));
-                    int dy = (int) (clickPixel.getY() - (stopPixel.getY() - iconH));
-
-                    if (dx >= 0 && dx < iconW && dy >= 0 && dy < iconH) {
-                        int argb = iconImg.getRGB(dx, dy);
-                        int alpha = (argb >> 24) & 0xff;
+                    // get icon dimensions
+                    int iconWidth = iconImg.getWidth();
+                    int iconImgHeight = iconImg.getHeight();
+                    // get icon relative pointer position
+                    int iconPointerWidth = iconWidth / 2;
+                    int iconPointerHeight = iconImgHeight;
+                    // calculate the click position relative to the icon
+                    int clickX = (int) (clickPixel.getX() - (stopPixel.getX() - iconPointerWidth));
+                    int clickY = (int) (clickPixel.getY() - (stopPixel.getY() - iconImgHeight));
+                    // check if the click is inside the icon bounds
+                    if (clickX >= 0 && clickX < iconWidth && clickY >= 0 && clickY < iconImgHeight) {
+                        // get the pixel
+                        int argb = iconImg.getRGB(clickX, clickY);
+                        // create a Color object to check the alpha(transparency) value
+                        int alpha = new Color(argb, true).getAlpha();
+                        // check alpha
                         if (alpha > 0) {
                             System.out.println("Click su pixel visibile!");
                             JFrame f = new JFrame("Stop Details");
@@ -58,6 +65,7 @@ public class MapController {
                 }
             }
         });
+
         mapView.run();
     }
 }
