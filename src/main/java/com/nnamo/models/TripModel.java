@@ -34,4 +34,20 @@ public class TripModel {
         this.headsign = headsign;
         this.direction = direction;
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public RouteModel getRouteId() {
+        return route_id;
+    }
+
+    public String getHeadsign() {
+        return headsign;
+    }
+
+    public String getDirection() {
+        return direction;
+    }
 }
