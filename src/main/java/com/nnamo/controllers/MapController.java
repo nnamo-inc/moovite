@@ -14,15 +14,13 @@ import java.sql.SQLException;
 
 public class MapController {
 
-    DatabaseService db;
-    MapView mapView = new MapView();
+    DatabaseService db; // reference to the DatabaseService (models)
+    MapView mapView = new MapView(); // reference to the MapView (view)
 
-    public MapController(DatabaseService db) throws IOException {
-        this.db = db;
-    }
+    public MapController(DatabaseService db) throws IOException { this.db = db; } // constructor
 
     public void run() throws SQLException, IOException {
-        mapView.getMapPanel().renderStops(db.getAllStops());
+        mapView.getMapPanel().renderStops(db.getAllStops()); // render all stops on the map
         mapView.getMapPanel().setWaypointListener(new WaypointListener() {
             @Override
             public void waypointClicked(GeoPosition geo) throws SQLException, IOException {
@@ -65,10 +63,5 @@ public class MapController {
                 }
             }
         });
-
-        //mapView.run();
-        System.out.println("In");
-        mapView.setVisible(true);
-        System.out.println("out");
     }
 }

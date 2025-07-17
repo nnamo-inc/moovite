@@ -18,14 +18,16 @@ import org.jxmapviewer.viewer.WaypointRenderer;
 
 public class StopPainter {
 
-    private JXMapViewer viewer;
-    private WaypointPainter waypointPainter;
+    private JXMapViewer map;
     private Painter mapPainter;
+    private WaypointPainter waypointPainter;
 
     private HashMap<Sizes, BufferedImage> icons = new HashMap<Sizes, BufferedImage>();
     private BufferedImage currentIcon;
 
     private ZoomLevelListener zoomListener;
+
+    private int zoomLimit = 4;
 
     public enum Sizes {
         EXTRA_SMALL,
@@ -34,8 +36,8 @@ public class StopPainter {
         LARGE,
     }
 
-    public StopPainter(JXMapViewer viewer, Painter mapPainter, WaypointPainter painter) throws IOException {
-        this.viewer = viewer;
+    public StopPainter(JXMapViewer map, Painter mapPainter, WaypointPainter painter) throws IOException {
+        this.map = map;
         this.waypointPainter = painter;
         this.mapPainter = mapPainter;
         this.zoomListener = new ZoomLevelListener(waypointPainter, mapPainter);
@@ -62,6 +64,10 @@ public class StopPainter {
         return this.zoomListener;
     }
 
+    public int getZoomLimit() {
+        return this.zoomLimit;
+    }
+
     private class ZoomLevelListener implements java.awt.event.MouseWheelListener {
 
         protected WaypointPainter waypointPainter;
@@ -75,12 +81,12 @@ public class StopPainter {
 
         @Override
         public void mouseWheelMoved(MouseWheelEvent event) {
-            int zoom = viewer.getZoom();
-
+            int zoom = map.getZoom();
+            currentIcon = icons.get(Sizes.MEDIUM);
             final BufferedImage icon = (zoom <= 1) ? icons.get(Sizes.MEDIUM) : icons.get(Sizes.SMALL);
-            System.out.println(icon);
+/*            System.out.println(icon);*/
             currentIcon = icon;
-            System.out.println(currentIcon);
+/*            System.out.println(currentIcon);*/
 
             this.waypointPainter.setRenderer(new WaypointRenderer<Waypoint>() {
                 @Override
@@ -92,10 +98,10 @@ public class StopPainter {
                 }
             });
 
-            if (zoom == 4) {
-                viewer.setOverlayPainter(mapPainter);
-            } else if (zoom > 4) {
-                viewer.setOverlayPainter(null);
+            if (zoom == zoomLimit) {
+                map.setOverlayPainter(mapPainter);
+            } else if (zoom > zoomLimit) {
+                map.setOverlayPainter(null);
             }
         }
 
