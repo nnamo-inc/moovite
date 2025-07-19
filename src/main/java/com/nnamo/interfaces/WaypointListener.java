@@ -2,7 +2,6 @@ package com.nnamo.interfaces;
 
 import org.jxmapviewer.viewer.GeoPosition;
 
-import java.awt.*;
 import java.io.IOException;
 import java.sql.SQLException;
 

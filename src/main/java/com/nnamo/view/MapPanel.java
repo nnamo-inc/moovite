@@ -22,43 +22,39 @@ import java.util.List;
 import java.util.Set;
 
 public class MapPanel extends JPanel {
-
+    // Map components
     JXMapViewer map = new JXMapViewer();
     GeoPosition romePosition = new GeoPosition(41.902782, 12.496366);
-
-    WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
-    CompoundPainter<JXMapViewer> mapPainter = new CompoundPainter<JXMapViewer>();
     DefaultTileFactory tileFactory;
 
-    WaypointListener waypointListener;
+    // Waypoint painter and Map Painter
+    WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
+    CompoundPainter<JXMapViewer> mapPainter = new CompoundPainter<JXMapViewer>();
     StopPainter stopPainter;
 
+    // Listener for waypoint clicks (Anonymous inner class in MapController)
+    WaypointListener waypointListener;
 
+    // CONSTRUCTOR //
     public MapPanel() throws IOException {
         // Create TileFactoryInfo(OpenStreetMap) to get tiles, then assign it to the DefaultTileFactory and finally set it to the map
         TileFactoryInfo info = new OSMTileFactoryInfo();
         tileFactory = new DefaultTileFactory(info);
         map.setTileFactory(tileFactory);
-
         // Use 8 threads in parallel to load the tiles
         tileFactory.setThreadPoolSize(8);
-
         // Set map zoom and center position
         map.setZoom(5);
         map.setAddressLocation(this.romePosition);
-
         // Create a list of painters, add the waypointPainter to it, assign it to the mapPainter
         List<Painter<JXMapViewer>> painters = new ArrayList<Painter<JXMapViewer>>();
         painters.add(this.waypointPainter);
         this.mapPainter.setPainters(painters);
-
         // Create a StopPainter instance to handle the stops on the map
         this.stopPainter = new StopPainter(this.map, this.mapPainter, this.waypointPainter);
-
         // Set the layout to show the map on the panel
         setLayout(new BorderLayout());
         add(map, BorderLayout.CENTER);
-
         // Initialize the map input listeners for panning and zooming
         mapInputInit();
         // Initialize the behavior for clicking on waypoints
@@ -67,18 +63,18 @@ public class MapPanel extends JPanel {
         zoomOnWaypoint();
     }
 
+    // METHODS //
     public void renderStops(List<StopModel> stops) {
         // Create a set of waypoints from the list of stops, then set it to the waypointPainter
         Set<Waypoint> waypoints = new HashSet<Waypoint>();
         for (StopModel stop : stops) {
             waypoints.add(new DefaultWaypoint(stop.getLatitude(), stop.getLongitude()));
         }
-
         this.waypointPainter.setWaypoints(waypoints);
     }
 
     private void mapInputInit() throws IOException {
-        // Set the map to be draggable and zoomable
+        // Set the map to be draggable and zoomable with mouse and wheel listeners
         PanMouseInputListener mouseClick = new PanMouseInputListener(map);
         ZoomMouseWheelListenerCursor mouseWheel = new ZoomMouseWheelListenerCursor(map);
         this.map.addMouseListener(mouseClick);
@@ -87,7 +83,8 @@ public class MapPanel extends JPanel {
     }
 
     private void clickOnWaypoint() {
-        // Add a mouse listener to the map to handle clicks on waypoints only if the zoom level is less than 4
+        // Add a personalized mouse listener to the map with an anonymous inner class
+        // to handle clicks on waypoints only if the zoom level is less than 4
         this.map.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -95,9 +92,7 @@ public class MapPanel extends JPanel {
                     try {
                         GeoPosition geo = map.convertPointToGeoPosition(new Point(e.getX(), e.getY()));
                         waypointListener.waypointClicked(geo);
-                    } catch (SQLException ex) {
-                        throw new RuntimeException(ex);
-                    } catch (IOException ex) {
+                    } catch (SQLException | IOException ex) {
                         throw new RuntimeException(ex);
                     }
                 }
@@ -108,10 +103,7 @@ public class MapPanel extends JPanel {
     public void zoomOnWaypoint() {
         this.map.addMouseWheelListener(stopPainter.getZoomLevelListener()); }
 
-    public void setWaypointListener(WaypointListener waypointListener) {
-        this.waypointListener = waypointListener;
-    }
-
+    // GETTERS AND SETTERS //
     public JXMapViewer getMap() {
         return map;
     }
@@ -123,4 +115,9 @@ public class MapPanel extends JPanel {
     public TileFactory getTileFactory() {
         return tileFactory;
     }
+
+    public void setWaypointListener(WaypointListener waypointListener) {
+        this.waypointListener = waypointListener;
+    }
+
 }

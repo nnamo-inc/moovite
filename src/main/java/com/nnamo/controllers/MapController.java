@@ -14,54 +14,70 @@ import java.sql.SQLException;
 
 public class MapController {
 
-    DatabaseService db; // reference to the DatabaseService (models)
-    MapView mapView = new MapView(); // reference to the MapView (view)
+    // reference to the DatabaseService (models)
+    DatabaseService db;
+    // reference to the MapView (view)
+    MapView mapView = new MapView();
 
-    public MapController(DatabaseService db) throws IOException { this.db = db; } // constructor
+    // CONSTRUCTOR //
+    public MapController(DatabaseService db) throws IOException {
+        this.db = db;
+    }
 
+    // METHODS //
     public void run() throws SQLException, IOException {
-        mapView.getMapPanel().renderStops(db.getAllStops()); // render all stops on the map
+        // Create all the stops waypoints, then set them to the waypointPainter
+        mapView.getMapPanel().renderStops(db.getAllStops());
+        // Set the listener for the waypoint clicks with an anonymous inner class
         mapView.getMapPanel().setWaypointListener(new WaypointListener() {
             @Override
             public void waypointClicked(GeoPosition geo) throws SQLException, IOException {
-                Point2D clickPixel = mapView.getMapPanel().getMap().convertGeoPositionToPoint(geo); // convert click GeoPosition to pixel
+                // Convert the GeoPosition of the click to pixel coordinates
+                // then get the current icon from the StopPainter
+                Point2D clickPixel = mapView.getMapPanel().getMap().convertGeoPositionToPoint(geo);
                 BufferedImage currentIcon = mapView.getMapPanel().getStopPainter().getCurrentIcon();
-
                 if (currentIcon == null) {
                     return;
                 }
-
+                // For each stop in the database, create and then convert the GeoPosition to pixel coordinates
+                // then check if the click position is inside the icon bounds
                 for (StopModel stop : db.getAllStops()) {
-                    GeoPosition stopGeo = new GeoPosition(stop.getLatitude(), stop.getLongitude()); // lat and lon of the stop
-                    Point2D stopPixel = mapView.getMapPanel().getMap().convertGeoPositionToPoint(stopGeo); // convert stop
-                                                                                                // GeoPosition to pixel
-
-                    // get icon dimensions
+                    GeoPosition stopGeo = new GeoPosition(stop.getLatitude(), stop.getLongitude());
+                    Point2D stopPixel = mapView.getMapPanel().getMap().convertGeoPositionToPoint(stopGeo);
+                    // Get icon width and height
                     int iconWidth = currentIcon.getWidth();
                     int iconImgHeight = currentIcon.getHeight();
-                    // get icon relative pointer position
+                    // Get icon pixel pointer position
                     int iconPointerWidth = iconWidth / 2;
                     int iconPointerHeight = iconImgHeight;
-                    // calculate the click position relative to the icon
+                    // Calculate the click position relative to the icon
                     int clickX = (int) (clickPixel.getX() - (stopPixel.getX() - iconPointerWidth));
                     int clickY = (int) (clickPixel.getY() - (stopPixel.getY() - iconImgHeight));
-                    // check if the click is inside the icon bounds
+                    // Check if the click is inside the icon bounds and find witch stop was clicked
                     if (clickX >= 0 && clickX < iconWidth && clickY >= 0 && clickY < iconImgHeight) {
-                        // get the pixel
+                        // Get the pixel color at the click position
                         int argb = currentIcon.getRGB(clickX, clickY);
-                        // create a Color object to check the alpha(transparency) value
+                        // Create a Color object to check the alpha(transparency) value
                         int alpha = new Color(argb, true).getAlpha();
-                        // check alpha
+                        // Check alpha
                         if (alpha > 0) {
                             System.out.println("Click su pixel visibile!");
-                            JFrame f = new JFrame("Stop Details");
-                            f.setSize(400, 300);
-                            f.setVisible(true);
-                            break;
+                            StopPanelManager(stop);
+                            mapView.getStopPanel().setVisible(true);
+                            return;
                         }
                     }
                 }
+                mapView.getStopPanel().setVisible((false));
             }
         });
+    }
+
+    private void StopPanelManager(StopModel stop) throws SQLException, IOException {
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+        // HERE WE'LL GET ALL THE INFO FROM THE DATABASE AND SET IT TO THE STOP PANEL
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+        mapView.getStopPanel().getTextID().setText(stop.getId()); // Get and modify the stop ID
+        mapView.getStopPanel().getTextName().setText(stop.getName()); // Get and modify the stop name
     }
 }
