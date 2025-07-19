@@ -66,7 +66,8 @@ public class DatabaseService {
         Dao<StopModel, String> stopDao = getDao(StopModel.class);
         GtfsRelationalDaoImpl store = gtfs.getStore();
 
-        if (stopDao.countOf() != 0) return;
+        if (stopDao.countOf() != 0)
+            return;
 
         System.out.println("Starting stops import...");
 
@@ -105,7 +106,8 @@ public class DatabaseService {
         Dao<RouteModel, String> routeDao = getDao(RouteModel.class);
         GtfsRelationalDaoImpl store = gtfs.getStore();
 
-        if (tripDao.countOf() != 0) return;
+        if (tripDao.countOf() != 0)
+            return;
 
         System.out.println("Starting agencies, routes, and trips import...");
 
@@ -179,9 +181,11 @@ public class DatabaseService {
     private void importStopTimesFromGtfs(StaticGtfsService gtfs) throws SQLException {
         Dao<TripModel, String> tripDao = getDao(TripModel.class);
         Dao<StopTimeModel, String> stopTimeDao = getDao(StopTimeModel.class);
+        Dao<StopModel, String> stopDao = getDao(StopModel.class);
         GtfsRelationalDaoImpl store = gtfs.getStore();
 
-        if (stopTimeDao.countOf() != 0) return;
+        if (stopTimeDao.countOf() != 0)
+            return;
 
         if (tripDao.countOf() == 0) {
             System.out.println("No trips found - skipping stop times");
@@ -195,6 +199,13 @@ public class DatabaseService {
         }
         System.out.println("Loaded " + tripMap.size() + " trips");
 
+        System.out.println("Loading stops into memory...");
+        HashMap<String, StopModel> stopMap = new HashMap<>();
+        for (StopModel stop : stopDao.queryForAll()) {
+            stopMap.put(stop.getId(), stop);
+        }
+        System.out.println("Loaded " + stopMap.size() + " stops");
+
         System.out.println("Starting stop times import...");
 
         TransactionManager.callInTransaction(connection, (Callable<Void>) () -> {
@@ -204,14 +215,16 @@ public class DatabaseService {
 
             for (StopTime stopTime : store.getAllStopTimes()) {
                 TripModel tripModel = tripMap.get(stopTime.getTrip().getId().getId());
+                StopModel stopModel = stopMap.get(stopTime.getStop().getId().getId());
 
-                if (tripModel == null) {
+                if (tripModel == null || stopModel == null) {
                     skipped++;
                     continue;
                 }
 
                 stopTimes.add(new StopTimeModel(
                         tripModel,
+                        stopModel,
                         new Date(stopTime.getArrivalTime() * 1000L),
                         new Date(stopTime.getDepartureTime() * 1000L)));
 
@@ -261,6 +274,11 @@ public class DatabaseService {
         return stopDao.queryForAll();
     }
 
+    public StopModel getStopById(String id) throws SQLException {
+        Dao<StopModel, String> stopDao = getDao(StopModel.class);
+        return stopDao.queryForId(id);
+    }
+
     public List<StopModel> getStopsByName(String stopName) throws SQLException {
         Dao<StopModel, String> stopDao = getDao(StopModel.class);
         return stopDao
@@ -268,5 +286,12 @@ public class DatabaseService {
                 .where()
                 .like("name", "%" + stopName + "%")
                 .query();
+    }
+
+    public List<StopTimeModel> getStopTimes(String stopId) throws SQLException {
+        Dao<StopTimeModel, String> stopTimeDao = getDao(StopTimeModel.class);
+        Dao<StopModel, String> stopDao = getDao(StopModel.class);
+
+        return stopTimeDao.queryBuilder().where().eq("stop_id", stopId).query();
     }
 }

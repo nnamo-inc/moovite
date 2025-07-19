@@ -13,6 +13,9 @@ public class StopTimeModel {
     private int id;
 
     @DatabaseField(foreign = true)
+    private StopModel stop;
+
+    @DatabaseField(foreign = true)
     private TripModel trip;
 
     @DatabaseField(dataType = DataType.DATE_STRING, canBeNull = true)
@@ -24,9 +27,16 @@ public class StopTimeModel {
     public StopTimeModel() { // Empty constructor required by OrmLite
     }
 
-    public StopTimeModel(TripModel trip, Date arrival_time, Date departure_time) {
+    public StopTimeModel(TripModel trip, StopModel stop, Date arrival_time, Date departure_time) {
         this.trip = trip;
+        this.stop = stop;
         this.arrival_time = arrival_time;
         this.departure_time = departure_time;
+    }
+
+    @Override
+    public String toString() {
+        return "Stop ID: " + this.stop.getId() + "\nTrip ID: " + this.trip.getId() + "\nArrival Time: "
+                + arrival_time.getTime();
     }
 }
