@@ -1,6 +1,7 @@
 package com.nnamo.view;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class StopPanel extends JPanel {
 
@@ -13,17 +14,21 @@ public class StopPanel extends JPanel {
     // CONSTRUCTOR //
     public StopPanel() {
         super();
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        add(labelName);
-        add(textName);
-        add(labelId);
-        add(textID);
-        add(listBus);
+        setLayout(new GridLayout(3, 3));
+        add(newLine(labelName, textName));
+        add(newLine(labelId, textID));
+        add(newLine(new JLabel("Buses at Stop:"), listBus));
         setVisible(false);
     }
 
     // METHODS //
-
+    private JPanel newLine(JLabel label, Component component) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        panel.add(label);
+        panel.add(component);
+        return panel;
+    }
 
     // GETTERS AND SETTERS //
     public JTextField getTextID() {
@@ -32,6 +37,10 @@ public class StopPanel extends JPanel {
 
     public JTextField getTextName() {
         return textName;
+    }
+
+    public JList getListBus() {
+        return listBus;
     }
 
 }

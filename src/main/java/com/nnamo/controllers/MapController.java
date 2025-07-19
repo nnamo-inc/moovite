@@ -63,12 +63,14 @@ public class MapController {
                         if (alpha > 0) {
                             System.out.println("Click su pixel visibile!");
                             StopPanelManager(stop);
-                            mapView.getStopPanel().setVisible(true);
+                            mapView.getGUIPanel().getStopPanel().revalidate();
+                            mapView.getGUIPanel().getStopPanel().setVisible(true);
                             return;
                         }
                     }
                 }
-                mapView.getStopPanel().setVisible((false));
+                mapView.getGUIPanel().getStopPanel().setVisible((false));
+                mapView.getMapPanel().repaint();
             }
         });
     }
@@ -77,7 +79,7 @@ public class MapController {
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
         // HERE WE'LL GET ALL THE INFO FROM THE DATABASE AND SET IT TO THE STOP PANEL
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
-        mapView.getStopPanel().getTextID().setText(stop.getId()); // Get and modify the stop ID
-        mapView.getStopPanel().getTextName().setText(stop.getName()); // Get and modify the stop name
+        mapView.getGUIPanel().getStopPanel().getTextID().setText(stop.getId()); // Get and modify the stop ID
+        mapView.getGUIPanel().getStopPanel().getTextName().setText(stop.getName()); // Get and modify the stop name
     }
 }
