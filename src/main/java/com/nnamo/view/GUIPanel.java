@@ -7,14 +7,12 @@ public class GUIPanel extends JPanel {
 
     StopPanel stopPanel = new StopPanel();
     SearchPanel searchPanel = new SearchPanel();
-    GridBagConstraints gbc = new GridBagConstraints();
 
     // CONSTRUCTOR //
     public GUIPanel() {
         super();
-        setLayout(new GridBagLayout());
-        gbc.anchor = GridBagConstraints.CENTER;
-        add(stopPanel, gbc);
+        setLayout(new BorderLayout());
+        add(stopPanel, BorderLayout.PAGE_END);
         add(searchPanel, BorderLayout.WEST);
         setVisible(true);
     }
