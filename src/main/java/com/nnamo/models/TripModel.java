@@ -27,10 +27,10 @@ public class TripModel {
     public TripModel() { // Empty constructor required by OrmLite
     }
 
-    public TripModel(String id, RouteModel route_id, String headsign, String direction) {
+    public TripModel(String id, RouteModel route, String headsign, String direction) {
         this.id = id;
         // this.service_id = service_id;
-        this.route_id = route_id;
+        this.route = route;
         this.headsign = headsign;
         this.direction = direction;
     }
