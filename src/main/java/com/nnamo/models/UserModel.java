@@ -24,4 +24,12 @@ public class UserModel {
         this.username = username;
         this.password_hash = password_hash;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
 }

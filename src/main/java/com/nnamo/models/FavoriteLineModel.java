@@ -23,4 +23,16 @@ public class FavoriteLineModel {
         this.user = user;
         this.route = route;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public UserModel getUser() {
+        return user;
+    }
+
+    public TripModel getRoute() {
+        return route;
+    }
 }

@@ -23,4 +23,16 @@ public class FavoriteStopModel {
         this.user = user;
         this.stop = stop;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public UserModel getUser() {
+        return user;
+    }
+
+    public StopModel getStop() {
+        return stop;
+    }
 }

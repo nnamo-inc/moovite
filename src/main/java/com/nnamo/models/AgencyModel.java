@@ -34,4 +34,28 @@ public class AgencyModel {
         this.timezone = timezone;
         this.url = url;
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getTimezone() {
+        return timezone;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
 }

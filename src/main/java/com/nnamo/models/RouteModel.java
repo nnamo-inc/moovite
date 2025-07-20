@@ -9,7 +9,8 @@ public class RouteModel {
     @DatabaseField(id = true)
     private String id;
 
-    // Agency Foreign Key required if there are multiple agencies, recommended otherwise
+    // Agency Foreign Key required if there are multiple agencies, recommended
+    // otherwise
     @DatabaseField(foreign = true, canBeNull = true)
     private AgencyModel agency;
 
@@ -27,12 +28,27 @@ public class RouteModel {
     public RouteModel() { // Empty constructor required by OrmLite
     }
 
-    public RouteModel(String id, AgencyModel agency, String longName, String shortName) { // Empty constructor required by OrmLite
+    public RouteModel(String id, AgencyModel agency, String longName, String shortName) { // Empty constructor required
+                                                                                          // by OrmLite
         this.id = id;
         this.longName = longName;
         this.shortName = shortName;
         this.agency = agency;
     }
 
+    public String getId() {
+        return id;
+    }
 
+    public String getLongName() {
+        return longName;
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    public AgencyModel getAgency() {
+        return agency;
+    }
 }

@@ -46,4 +46,8 @@ public class StopModel {
     public double getLongitude() {
         return longitude;
     }
+
+    public String getLocationType() {
+        return location_type;
+    }
 }

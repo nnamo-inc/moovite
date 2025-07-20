@@ -34,9 +34,29 @@ public class StopTimeModel {
         this.departure_time = departure_time;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public StopModel getStop() {
+        return stop;
+    }
+
+    public TripModel getTrip() {
+        return trip;
+    }
+
+    public Date getArrivalTime() {
+        return arrival_time;
+    }
+
+    public Date getDepartureTime() {
+        return departure_time;
+    }
+
     @Override
     public String toString() {
-        return "Stop ID: " + this.stop.getId() + "\nTrip ID: " + this.trip.getId() + "\nArrival Time: "
-                + arrival_time.getTime();
+        return String.format("Stop ID: %s, Trip ID: %s, Arrival Time: %s, Departure Time: %s",
+                stop.getId(), trip.getId(), arrival_time, departure_time);
     }
 }

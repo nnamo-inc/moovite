@@ -16,7 +16,7 @@ public class TripModel {
      */
 
     @DatabaseField(foreign = true)
-    private RouteModel route_id;
+    private RouteModel route;
 
     @DatabaseField(canBeNull = true)
     private String headsign; // Stringa che segnala la direzione della corsa
@@ -40,7 +40,7 @@ public class TripModel {
     }
 
     public RouteModel getRouteId() {
-        return route_id;
+        return route;
     }
 
     public String getHeadsign() {
