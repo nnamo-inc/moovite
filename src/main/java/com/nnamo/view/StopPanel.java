@@ -14,6 +14,10 @@ public class StopPanel extends JPanel {
     // CONSTRUCTOR //
     public StopPanel() {
         super();
+
+        this.textName.setEditable(false);
+        this.textID.setEditable(false);
+
         setLayout(new GridLayout(3, 3));
         add(newLine(labelName, textName));
         add(newLine(labelId, textID));
