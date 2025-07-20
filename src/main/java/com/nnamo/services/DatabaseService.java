@@ -15,6 +15,10 @@ import org.onebusaway.gtfs.model.Trip;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -281,6 +285,7 @@ public class DatabaseService {
 
     public List<StopModel> getStopsByName(String stopName) throws SQLException {
         Dao<StopModel, String> stopDao = getDao(StopModel.class);
+
         return stopDao
                 .queryBuilder()
                 .where()
@@ -291,7 +296,33 @@ public class DatabaseService {
     public List<StopTimeModel> getStopTimes(String stopId) throws SQLException {
         Dao<StopTimeModel, String> stopTimeDao = getDao(StopTimeModel.class);
         Dao<StopModel, String> stopDao = getDao(StopModel.class);
+        boolean ascending = true;
 
-        return stopTimeDao.queryBuilder().where().eq("stop_id", stopId).query();
+        return stopTimeDao
+                .queryBuilder()
+                .orderBy("arrival_time", ascending)
+                .where()
+                .eq("stop_id", stopId)
+                .query();
+    }
+
+    public List<StopTimeModel> getNextStopTimes(String stopId, LocalTime time) throws SQLException {
+        Dao<StopTimeModel, String> stopTimeDao = getDao(StopTimeModel.class);
+        Dao<StopModel, String> stopDao = getDao(StopModel.class);
+
+        // Conversion from LocalTime to Date, since the time is stored in the db at the
+        // EPOCH Date (1970-01-01)
+        Instant epochDateTime = time.atDate(LocalDate.EPOCH).atZone(ZoneId.systemDefault()).toInstant();
+        Date timedate = Date.from(epochDateTime);
+
+        boolean ascending = true;
+        return stopTimeDao
+                .queryBuilder()
+                .orderBy("arrival_time", ascending)
+                .where()
+                .eq("stop_id", stopId)
+                .and()
+                .gt("arrival_time", timedate)
+                .query();
     }
 }
