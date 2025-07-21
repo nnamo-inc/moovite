@@ -51,22 +51,24 @@ public class MapController {
                     int iconPointerWidth = iconWidth / 2;
                     int iconPointerHeight = iconImgHeight;
                     // Calculate the click position relative to the icon
-                    int clickX = (int) (clickPixel.getX() - (stopPixel.getX() - iconPointerWidth));
-                    int clickY = (int) (clickPixel.getY() - (stopPixel.getY() - iconImgHeight));
+                    int clickXIcon = (int) (clickPixel.getX() - (stopPixel.getX() - iconPointerWidth));
+                    int clickYIcon = (int) (clickPixel.getY() - (stopPixel.getY() - iconImgHeight));
                     // Check if the click is inside the icon bounds and find witch stop was clicked
-                    if (clickX >= 0 && clickX < iconWidth && clickY >= 0 && clickY < iconImgHeight) {
+                    if (clickXIcon >= 0 && clickXIcon < iconWidth && clickYIcon >= 0 && clickYIcon < iconImgHeight && !guiClicked(clickPixel.getX(), clickPixel.getY())) {
                         // Get the pixel color at the click position
-                        int argb = currentIcon.getRGB(clickX, clickY);
+                        int argb = currentIcon.getRGB(clickXIcon, clickYIcon);
                         // Create a Color object to check the alpha(transparency) value
                         int alpha = new Color(argb, true).getAlpha();
                         // Check alpha
                         if (alpha > 0) {
-                            System.out.println("Click su pixel visibile!");
+                            System.out.println("Click su fermata!");
                             StopPanelManager(stop);
                             mapView.getGUIPanel().getStopPanel().revalidate();
                             mapView.getGUIPanel().getStopPanel().setVisible(true);
                             return;
                         }
+                    } else if (mapView.getGUIPanel().getStopPanel().isVisible() && guiClicked(clickPixel.getX(), clickPixel.getY())) {
+                        return;
                     }
                 }
                 mapView.getGUIPanel().getStopPanel().setVisible((false));
@@ -81,5 +83,25 @@ public class MapController {
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
         mapView.getGUIPanel().getStopPanel().getTextID().setText(stop.getId()); // Get and modify the stop ID
         mapView.getGUIPanel().getStopPanel().getTextName().setText(stop.getName()); // Get and modify the stop name
+    }
+
+    private boolean guiClicked(double clickX, double clickY) {
+        for (Component component : mapView.getGUIPanel().getComponents()) {
+            Rectangle componentArea = component.getBounds();
+            System.out.println(componentArea);// Check if the click is within the bounds of the component
+            System.out.println(componentArea.contains(clickX, clickY));
+
+            System.out.println("Click coordinates: " + clickX + ", " + clickY);
+            System.out.println("Component position: " + component.getX() + ", " + component.getY());
+            System.out.println("Component size: " + component.getWidth() + ", " + component.getHeight());
+
+
+
+
+            if ( componentArea.contains(clickX, clickY)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
