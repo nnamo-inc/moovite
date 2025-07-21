@@ -12,7 +12,7 @@ public class StopTimeModel {
     @DatabaseField(generatedId = true)
     private int id;
 
-    @DatabaseField(foreign = true)
+    @DatabaseField(foreign = true, index = true)
     private StopModel stop;
 
     @DatabaseField(foreign = true)
