@@ -4,6 +4,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.misc.TransactionManager;
+import com.j256.ormlite.stmt.SelectArg;
 import com.j256.ormlite.table.TableUtils;
 import com.nnamo.models.*;
 import com.nnamo.utils.FuzzyMatch;
@@ -294,10 +295,14 @@ public class DatabaseService {
         double scoreThreshold = 0.6;
 
         return stopDao
-                .queryBuilder()
-                .where()
-                .raw("FUZZY_SCORE(name, '" + stopName + "') > " + scoreThreshold)
-                .query();
+            .queryBuilder()
+            .where()
+            .raw(
+                    "FUZZY_SCORE(name, ?) > ?",
+                    new SelectArg(stopName),
+                    new SelectArg(scoreThreshold)
+            )
+            .query();
     }
 
     public List<StopTimeModel> getStopTimes(String stopId) throws SQLException {
