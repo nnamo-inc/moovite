@@ -6,14 +6,17 @@ import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.misc.TransactionManager;
 import com.j256.ormlite.table.TableUtils;
 import com.nnamo.models.*;
+import com.nnamo.utils.FuzzyMatch;
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.Route;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.StopTime;
 import org.onebusaway.gtfs.model.Trip;
+import org.sqlite.Function;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -32,8 +35,11 @@ public class DatabaseService {
 
     public DatabaseService() throws SQLException {
         this.connection = new JdbcConnectionSource("jdbc:sqlite:data.db");
+
         initDaos();
         initTables();
+
+        Function.create(this.connection.getReadWriteConnection(null).getUnderlyingConnection(), "FUZZY_SCORE", new FuzzyMatch());
     }
 
     private void initDaos() throws SQLException {
@@ -285,11 +291,12 @@ public class DatabaseService {
 
     public List<StopModel> getStopsByName(String stopName) throws SQLException {
         Dao<StopModel, String> stopDao = getDao(StopModel.class);
+        double scoreThreshold = 0.6;
 
         return stopDao
                 .queryBuilder()
                 .where()
-                .like("name", "%" + stopName + "%")
+                .raw("FUZZY_SCORE(name, '" + stopName + "') > " + scoreThreshold)
                 .query();
     }
 
