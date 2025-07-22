@@ -18,7 +18,7 @@ public class App {
                 RealtimeGtfsService realtimeGtfs = new RealtimeGtfsService();
                 db.preloadGtfsData(staticGtfs);
 
-                realtimeGtfs.load();
+                /*realtimeGtfs.load();*/
                 // add thread with periodic schedule realtimeGtfs.updateFeed() every 30 seconds
 
                 MapController controller = new MapController(db);

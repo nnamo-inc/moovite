@@ -5,7 +5,7 @@ import com.nnamo.models.StopModel;
 import com.nnamo.view.MapView;
 import com.nnamo.services.DatabaseService;
 import org.jxmapviewer.viewer.GeoPosition;
-import javax.swing.*;
+
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
@@ -63,7 +63,7 @@ public class MapController {
                         // Check alpha
                         if (alpha > 0) {
                             System.out.println("Click su fermata!");
-                            StopPanelManager(stop);
+                            updateStopPanel(stop);
                             mapView.getStopPanel().revalidate();
                             mapView.getStopPanel().setVisible(true);
                             return;
@@ -76,7 +76,7 @@ public class MapController {
         });
     }
 
-    private void StopPanelManager(StopModel stop) throws SQLException, IOException {
+    private void updateStopPanel(StopModel stop) throws SQLException, IOException {
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
         // HERE WE'LL GET ALL THE INFO FROM THE DATABASE AND SET IT TO THE STOP PANEL
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //

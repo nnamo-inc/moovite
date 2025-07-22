@@ -7,9 +7,9 @@ import javax.swing.*;
 public class MapView extends JFrame {
     MapPanel mapPanel = new MapPanel();
     StopPanel stopPanel = new StopPanel();
-    JPanel centerPanel = new JPanel();
-
     SearchPanel searchPanel = new SearchPanel();
+
+    JPanel centerPanel = new JPanel();
 
     // COSTRUCTOR //
     public MapView() throws IOException {

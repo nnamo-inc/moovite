@@ -3,22 +3,27 @@ package com.nnamo.view;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class StopPanel extends JPanel {
+    // Stop info components
+    private final JLabel labelName = new JLabel("Stop Name:");
+    private JTextField textName = new JTextField(20);
+    private final JLabel labelId = new JLabel("Stop ID:");
+    private JTextField textID = new JTextField(20);
+    // Bus info components
+    private final JLabel labelBus = new JLabel("Bus in arrivo:");
+    private JTextField textBus = new JTextField(20);
+    private final JLabel labelState = new JLabel("Stato:");
+    private JTextField textState = new JTextField(20);
+    private final JLabel labelPosti = new JLabel("Posti disponibili:");
+    private JTextField textPosti = new JTextField(20);
+    // Route info components
+    private JTable busTable;
+    private DefaultTableModel busTableModel;
 
-    JLabel labelName = new JLabel("Stop Name:");
-    JTextField textName = new JTextField(20);
-    JLabel labelId = new JLabel("Stop ID:");
-    JTextField textID = new JTextField(20);
-
-    JLabel labelBus = new JLabel("Bus in arrivo:");
-    JTextField textBus = new JTextField(20);
-    JLabel labelState = new JLabel("Stato:");
-    JTextField textState = new JTextField(20);
-    JLabel labelPosti = new JLabel("Posti disponibili:");
-    JTextField textPosti = new JTextField(20);
-
+    Builder gbcBuilder = new Builder();
 
 
     // CONSTRUCTOR //
@@ -27,23 +32,19 @@ public class StopPanel extends JPanel {
         // set the layout, create the border and the gbc, set the background color
         setLayout(new GridBagLayout());
         setBorder(BorderFactory.createLineBorder(Color.ORANGE, 2));
-        GridBagConstraints gbcMainPanel = new GridBagConstraints();
         setBackground(Color.ORANGE);
         // Stop info panel
-        gbcMainPanel.insets = new Insets(10, 10, 10, 10);
-        gbcMainPanel.gridx = 0;
-        gbcMainPanel.gridy = 0;
-        gbcMainPanel.weightx = 1.0;
-        gbcMainPanel.fill = GridBagConstraints.HORIZONTAL;
+        GridBagConstraints gbcStopInfo = gbcBuilder.setGrid(0, 0).setWeight(1.0, 0.0).build();
         JPanel StopInfoPanel = newStopInfoPanel();
-        add(StopInfoPanel, gbcMainPanel);
+        add(StopInfoPanel, gbcStopInfo);
         // Bus info panel
-        gbcMainPanel.gridx = 0;
-        gbcMainPanel.gridy = 1;
-        gbcMainPanel.weightx = 1.0;
-        gbcMainPanel.fill = GridBagConstraints.HORIZONTAL;
+        GridBagConstraints gbcBusInfo = gbcBuilder.setGrid(0, 1).setWeight(1.0, 0.0).build();
         JPanel busInfoPanel = newBusInfoPanel();
-        add(busInfoPanel, gbcMainPanel);
+        add(busInfoPanel, gbcBusInfo);
+        // Route info panel
+        GridBagConstraints gbcRouteInfo = gbcBuilder.setGrid(1, 0).setWeight(1.0, 0.0).setHeight(2).build();
+        JPanel busInfoTable = newRouteInfoPanel();
+        add(busInfoTable, gbcRouteInfo);
         // set initial visibility to false
         setVisible(false);
     }
@@ -156,6 +157,33 @@ public class StopPanel extends JPanel {
         return infoBus;
     }
 
+    private JPanel newRouteInfoPanel() {
+        // Column names for the bus table
+        String[] columnNames = {"Autobus", "Orario Arrivo", "Stato", "In ritardo"};
+        // Model for the bus table, with non-editable cells
+        busTableModel = new DefaultTableModel(columnNames, 0) {;
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        // Create the bus table with the model
+        busTable = new JTable(busTableModel);
+        // Create a scroll pane for the bus table
+        JScrollPane scrollPane = new JScrollPane(busTable);
+        scrollPane.setPreferredSize(new Dimension(400, 100));
+        // Create a panel for the bus table with a titled border
+        JPanel panel = new JPanel(new BorderLayout());
+        TitledBorder border = new TitledBorder(new LineBorder(Color.lightGray, 2), "Tabella autobus in arrivo");
+        // Add the border and the scroll pane to the panel
+        panel.setBorder(border);
+        panel.add(scrollPane, BorderLayout.CENTER);
+        // Just for testing
+        for (int i = 0; i < 100; i++) {
+            busTableModel.addRow(new Object[]{i + "", "10", "Stato"});
+        }
+        return panel;
+    }
 
     // GETTERS AND SETTERS //
     public JTextField getTextID() {
@@ -166,4 +194,47 @@ public class StopPanel extends JPanel {
         return textName;
     }
 
+    private class Builder {
+        private GridBagConstraints gbc;
+
+
+        public Builder() {
+            this.gbc = new GridBagConstraints();
+            this.gbc.insets = new Insets(10, 10, 10, 10);
+            this.gbc.gridx = 0;
+            this.gbc.gridy = 0;
+        }
+
+        public Builder setGrid(int x, int y) {
+            this.gbc.gridx = x;
+            this.gbc.gridy = y;
+            return this;
+        }
+
+        public Builder setIpad(int ipadx, int ipady) {
+            this.gbc.ipadx = ipadx;
+            this.gbc.ipady = ipady;
+            return this;
+        }
+
+        public Builder setWeight(double weightX, double weightY) {
+            this.gbc.weightx = weightX;
+            this.gbc.weighty = weightY;
+            return this;
+        }
+
+        public Builder setHeight(int height) {
+            this.gbc.gridheight = height;
+            return this;
+        }
+        
+        public Builder setAnchor(int anchor) {
+            this.gbc.anchor = anchor;
+            return this;
+        }
+
+        public GridBagConstraints build() {
+            return this.gbc;
+        }
+    }
 }
