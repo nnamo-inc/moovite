@@ -26,6 +26,7 @@ public class MapController {
 
     // METHODS //
     public void run() throws SQLException, IOException {
+        System.out.println("MapController started");
         // Create all the stops waypoints, then set them to the waypointPainter
         mapView.getMapPanel().renderStops(db.getAllStops());
         // Set the listener for the waypoint clicks with an anonymous inner class
@@ -54,7 +55,7 @@ public class MapController {
                     int clickXIcon = (int) (clickPixel.getX() - (stopPixel.getX() - iconPointerWidth));
                     int clickYIcon = (int) (clickPixel.getY() - (stopPixel.getY() - iconImgHeight));
                     // Check if the click is inside the icon bounds and find witch stop was clicked
-                    if (clickXIcon >= 0 && clickXIcon < iconWidth && clickYIcon >= 0 && clickYIcon < iconImgHeight && !guiClicked(clickPixel.getX(), clickPixel.getY())) {
+                    if (clickXIcon >= 0 && clickXIcon < iconWidth && clickYIcon >= 0 && clickYIcon < iconImgHeight) {
                         // Get the pixel color at the click position
                         int argb = currentIcon.getRGB(clickXIcon, clickYIcon);
                         // Create a Color object to check the alpha(transparency) value
@@ -63,15 +64,13 @@ public class MapController {
                         if (alpha > 0) {
                             System.out.println("Click su fermata!");
                             StopPanelManager(stop);
-                            mapView.getGUIPanel().getStopPanel().revalidate();
-                            mapView.getGUIPanel().getStopPanel().setVisible(true);
+                            mapView.getStopPanel().revalidate();
+                            mapView.getStopPanel().setVisible(true);
                             return;
                         }
-                    } else if (mapView.getGUIPanel().getStopPanel().isVisible() && guiClicked(clickPixel.getX(), clickPixel.getY())) {
-                        return;
                     }
                 }
-                mapView.getGUIPanel().getStopPanel().setVisible((false));
+                mapView.getStopPanel().setVisible((false));
                 mapView.getMapPanel().repaint();
             }
         });
@@ -81,27 +80,7 @@ public class MapController {
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
         // HERE WE'LL GET ALL THE INFO FROM THE DATABASE AND SET IT TO THE STOP PANEL
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
-        mapView.getGUIPanel().getStopPanel().getTextID().setText(stop.getId()); // Get and modify the stop ID
-        mapView.getGUIPanel().getStopPanel().getTextName().setText(stop.getName()); // Get and modify the stop name
-    }
-
-    private boolean guiClicked(double clickX, double clickY) {
-        for (Component component : mapView.getGUIPanel().getComponents()) {
-            Rectangle componentArea = component.getBounds();
-            System.out.println(componentArea);// Check if the click is within the bounds of the component
-            System.out.println(componentArea.contains(clickX, clickY));
-
-            System.out.println("Click coordinates: " + clickX + ", " + clickY);
-            System.out.println("Component position: " + component.getX() + ", " + component.getY());
-            System.out.println("Component size: " + component.getWidth() + ", " + component.getHeight());
-
-
-
-
-            if ( componentArea.contains(clickX, clickY)) {
-                return true;
-            }
-        }
-        return false;
+        mapView.getStopPanel().getTextID().setText(stop.getId()); // Get and modify the stop ID
+        mapView.getStopPanel().getTextName().setText(stop.getName()); // Get and modify the stop name
     }
 }

@@ -5,26 +5,26 @@ import java.io.IOException;
 import javax.swing.*;
 
 public class MapView extends JFrame {
-
     MapPanel mapPanel = new MapPanel();
-    GUIPanel guiPanel = new GUIPanel();
-    JLayeredPane layeredPane = new JLayeredPane();
+    StopPanel stopPanel = new StopPanel();
+    JPanel centerPanel = new JPanel();
+
+    SearchPanel searchPanel = new SearchPanel();
 
     // COSTRUCTOR //
     public MapView() throws IOException {
+        // Set the JFrame properties
         super("Moovite Map View");
-        setSize(getScreenSize());
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        mapPanel.setBounds(0, 0, getWidth(), getHeight());
-        layeredPane.add(mapPanel, JLayeredPane.DEFAULT_LAYER);
-
-        guiPanel.setBounds(0, 0, getWidth(), getHeight());
-        guiPanel.setOpaque(false);
-        layeredPane.add(guiPanel, JLayeredPane.PALETTE_LAYER);
-
-        setContentPane(layeredPane);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setLayout(new BorderLayout());
+        // Initialize the center panel with the map and stop panels then add it to the JFrame
+        centerPanel.setLayout(new BorderLayout());
+        centerPanel.add(mapPanel, BorderLayout.CENTER);
+        centerPanel.add(stopPanel, BorderLayout.SOUTH);
+        add(centerPanel, BorderLayout.CENTER);
+        // Add the search panel to the JFrame
+        add(searchPanel, BorderLayout.WEST);
         setVisible(true);
     }
 
@@ -33,19 +33,12 @@ public class MapView extends JFrame {
         return Toolkit.getDefaultToolkit().getScreenSize();
     }
 
-    private int getScreenWidth() {
-        return (int) getScreenSize().getWidth();
-    }
-
-    private int getScreenHeight() {
-        return (int) getScreenSize().getHeight();
-    }
     // GETTERS AND SETTERS //
     public MapPanel getMapPanel() {
         return mapPanel;
     }
 
-    public GUIPanel getGUIPanel() {
-        return guiPanel;
+    public StopPanel getStopPanel() {
+        return stopPanel;
     }
 }
