@@ -38,8 +38,8 @@ public class StopPanel extends JPanel {
         super();
         // set the layout, create the border and the gbc, set the background color
         setLayout(new GridBagLayout());
-        setBorder(BorderFactory.createLineBorder(Color.ORANGE, 2));
-        setBackground(Color.ORANGE);
+        setBorder(BorderFactory.createLineBorder(new Color(60, 63, 65), 2));
+        setBackground(new Color(60, 63, 65));
         // Stop info panel
         GridBagConstraints gbcStopInfo = gbcBuilder.setPosition(0, 0).setWeight(1.0, 1.0)
                 .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 5, 5).build();

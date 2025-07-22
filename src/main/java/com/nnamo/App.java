@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
 import com.nnamo.controllers.MapController;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
 import com.nnamo.services.StaticGtfsService;
+
+import javax.swing.*;
 
 public class App {
     public static void main(String[] args) throws InterruptedException {
@@ -20,6 +23,13 @@ public class App {
 
                 /* realtimeGtfs.load(); */
                 // add thread with periodic schedule realtimeGtfs.updateFeed() every 30 seconds
+
+                try {
+                    UIManager.setLookAndFeel( new FlatDarculaLaf() );
+                } catch( Exception ex ) {
+                    System.err.println( "Failed to initialize LaF" );
+                }
+
 
                 MapController controller = new MapController(db);
                 controller.run();
