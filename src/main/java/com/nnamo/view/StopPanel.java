@@ -4,7 +4,15 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+
+import com.nnamo.models.RouteModel;
+import com.nnamo.models.StopTimeModel;
+import com.nnamo.models.TripModel;
+
 import java.awt.*;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.List;
 
 public class StopPanel extends JPanel {
     // Stop info components
@@ -12,6 +20,7 @@ public class StopPanel extends JPanel {
     private JTextField textName = new JTextField(20);
     private final JLabel labelId = new JLabel("Stop ID:");
     private JTextField textID = new JTextField(20);
+
     // Bus info components
     private final JLabel labelBus = new JLabel("Bus in arrivo:");
     private JTextField textBus = new JTextField(20);
@@ -19,12 +28,12 @@ public class StopPanel extends JPanel {
     private JTextField textState = new JTextField(20);
     private final JLabel labelPosti = new JLabel("Posti disponibili:");
     private JTextField textPosti = new JTextField(20);
+
     // Route info components
     private JTable busTable;
     private DefaultTableModel busTableModel;
 
     Builder gbcBuilder = new Builder();
-
 
     // CONSTRUCTOR //
     public StopPanel() {
@@ -159,9 +168,10 @@ public class StopPanel extends JPanel {
 
     private JPanel newRouteInfoPanel() {
         // Column names for the bus table
-        String[] columnNames = {"Autobus", "Orario Arrivo", "Stato", "In ritardo"};
+        String[] columnNames = { "Autobus", "Orario Arrivo", "Stato", "In ritardo" };
         // Model for the bus table, with non-editable cells
-        busTableModel = new DefaultTableModel(columnNames, 0) {;
+        busTableModel = new DefaultTableModel(columnNames, 0) {
+            ;
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -178,10 +188,6 @@ public class StopPanel extends JPanel {
         // Add the border and the scroll pane to the panel
         panel.setBorder(border);
         panel.add(scrollPane, BorderLayout.CENTER);
-        // Just for testing
-        for (int i = 0; i < 100; i++) {
-            busTableModel.addRow(new Object[]{i + "", "10", "Stato"});
-        }
         return panel;
     }
 
@@ -194,9 +200,32 @@ public class StopPanel extends JPanel {
         return textName;
     }
 
+    public void updateStopTimes(List<StopTimeModel> stopTimes) {
+        this.busTableModel.setRowCount(0); // Remove previous rows
+        for (StopTimeModel stopTime : stopTimes) {
+            LocalTime arrivalTime = LocalTime.ofInstant(stopTime.getArrivalTime().toInstant(), ZoneId.systemDefault());
+            TripModel trip = stopTime.getTrip(); // Corsa
+
+            if (trip == null) {
+                continue;
+            }
+
+            RouteModel route = trip.getRoute(); // Linea
+            if (route == null || route.getShortName() == null) {
+                continue;
+            }
+
+            busTableModel.addRow(new Object[] {
+                    route.getShortName(),
+                    arrivalTime.toString(),
+                    "In Orario", // DA AGGIORNARE CON DATI IN REALTIME
+                    null
+            });
+        }
+    }
+
     private class Builder {
         private GridBagConstraints gbc;
-
 
         public Builder() {
             this.gbc = new GridBagConstraints();
@@ -227,7 +256,7 @@ public class StopPanel extends JPanel {
             this.gbc.gridheight = height;
             return this;
         }
-        
+
         public Builder setAnchor(int anchor) {
             this.gbc.anchor = anchor;
             return this;

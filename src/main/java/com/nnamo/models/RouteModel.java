@@ -29,7 +29,6 @@ public class RouteModel {
     }
 
     public RouteModel(String id, AgencyModel agency, String longName, String shortName) { // Empty constructor required
-                                                                                          // by OrmLite
         this.id = id;
         this.longName = longName;
         this.shortName = shortName;

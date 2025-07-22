@@ -2,6 +2,7 @@ package com.nnamo.controllers;
 
 import com.nnamo.interfaces.WaypointListener;
 import com.nnamo.models.StopModel;
+import com.nnamo.models.StopTimeModel;
 import com.nnamo.view.MapView;
 import com.nnamo.services.DatabaseService;
 import org.jxmapviewer.viewer.GeoPosition;
@@ -11,6 +12,8 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalTime;
+import java.util.List;
 
 public class MapController {
 
@@ -40,7 +43,8 @@ public class MapController {
                 if (currentIcon == null) {
                     return;
                 }
-                // For each stop in the database, create and then convert the GeoPosition to pixel coordinates
+                // For each stop in the database, create and then convert the GeoPosition to
+                // pixel coordinates
                 // then check if the click position is inside the icon bounds
                 for (StopModel stop : db.getAllStops()) {
                     GeoPosition stopGeo = new GeoPosition(stop.getLatitude(), stop.getLongitude());
@@ -63,7 +67,9 @@ public class MapController {
                         // Check alpha
                         if (alpha > 0) {
                             System.out.println("Click su fermata!");
-                            updateStopPanel(stop);
+
+                            var stopTimes = db.getNextStopTimes(stop.getId(), LocalTime.now());
+                            updateStopPanel(stop, stopTimes);
                             mapView.getStopPanel().revalidate();
                             mapView.getStopPanel().setVisible(true);
                             return;
@@ -76,11 +82,12 @@ public class MapController {
         });
     }
 
-    private void updateStopPanel(StopModel stop) throws SQLException, IOException {
+    private void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes) throws SQLException, IOException {
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
         // HERE WE'LL GET ALL THE INFO FROM THE DATABASE AND SET IT TO THE STOP PANEL
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
         mapView.getStopPanel().getTextID().setText(stop.getId()); // Get and modify the stop ID
         mapView.getStopPanel().getTextName().setText(stop.getName()); // Get and modify the stop name
+        mapView.updateStopTimes(stopTimes);
     }
 }

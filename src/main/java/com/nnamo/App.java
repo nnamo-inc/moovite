@@ -15,10 +15,10 @@ public class App {
             try {
                 DatabaseService db = new DatabaseService();
                 StaticGtfsService staticGtfs = new StaticGtfsService();
-                RealtimeGtfsService realtimeGtfs = new RealtimeGtfsService();
+                // RealtimeGtfsService realtimeGtfs = new RealtimeGtfsService();
                 db.preloadGtfsData(staticGtfs);
 
-                /*realtimeGtfs.load();*/
+                /* realtimeGtfs.load(); */
                 // add thread with periodic schedule realtimeGtfs.updateFeed() every 30 seconds
 
                 MapController controller = new MapController(db);
@@ -30,11 +30,12 @@ public class App {
                 System.err.println("Error loading GTFS data");
                 e.printStackTrace();
                 return;
-            } catch (URISyntaxException e) {
-                System.err.println("Error loading realtime GTFS data");
-                e.printStackTrace();
-                return;
             }
+            // } catch (URISyntaxException e) {
+            // System.err.println("Error loading realtime GTFS data");
+            // e.printStackTrace();
+            // return;
+            // }
 
         });
         preloadThread.start();

@@ -15,7 +15,7 @@ public class TripModel {
      * private ServiceModel service_id; //
      */
 
-    @DatabaseField(foreign = true)
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private RouteModel route;
 
     @DatabaseField(canBeNull = true)
@@ -39,7 +39,7 @@ public class TripModel {
         return id;
     }
 
-    public RouteModel getRouteId() {
+    public RouteModel getRoute() {
         return route;
     }
 

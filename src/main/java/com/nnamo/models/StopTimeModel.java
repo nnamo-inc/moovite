@@ -15,7 +15,7 @@ public class StopTimeModel {
     @DatabaseField(foreign = true, index = true)
     private StopModel stop;
 
-    @DatabaseField(foreign = true)
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private TripModel trip;
 
     @DatabaseField(dataType = DataType.DATE_STRING, canBeNull = true)

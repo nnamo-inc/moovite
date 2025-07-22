@@ -2,7 +2,11 @@ package com.nnamo.view;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.List;
+
 import javax.swing.*;
+
+import com.nnamo.models.StopTimeModel;
 
 public class MapView extends JFrame {
     MapPanel mapPanel = new MapPanel();
@@ -18,7 +22,8 @@ public class MapView extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
-        // Initialize the center panel with the map and stop panels then add it to the JFrame
+        // Initialize the center panel with the map and stop panels then add it to the
+        // JFrame
         centerPanel.setLayout(new BorderLayout());
         centerPanel.add(mapPanel, BorderLayout.CENTER);
         centerPanel.add(stopPanel, BorderLayout.SOUTH);
@@ -40,5 +45,9 @@ public class MapView extends JFrame {
 
     public StopPanel getStopPanel() {
         return stopPanel;
+    }
+
+    public void updateStopTimes(List<StopTimeModel> stopTimes) {
+        this.stopPanel.updateStopTimes(stopTimes);
     }
 }
