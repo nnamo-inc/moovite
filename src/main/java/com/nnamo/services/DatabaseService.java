@@ -17,7 +17,6 @@ import org.onebusaway.gtfs.model.Trip;
 import org.sqlite.Function;
 
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -40,7 +39,8 @@ public class DatabaseService {
         initDaos();
         initTables();
 
-        Function.create(this.connection.getReadWriteConnection(null).getUnderlyingConnection(), "FUZZY_SCORE", new FuzzyMatch());
+        Function.create(this.connection.getReadWriteConnection(null).getUnderlyingConnection(), "FUZZY_SCORE",
+                new FuzzyMatch());
     }
 
     private void initDaos() throws SQLException {
@@ -146,8 +146,8 @@ public class DatabaseService {
                     RouteModel routeModel = new RouteModel(
                             route.getId().getId(),
                             agencyMap.get(route.getAgency().getId()),
-                            route.getShortName(),
-                            route.getLongName());
+                            route.getLongName(),
+                            route.getShortName());
                     routes.add(routeModel);
                     routeMap.put(route.getId().getId(), routeModel);
                 }
@@ -295,14 +295,13 @@ public class DatabaseService {
         double scoreThreshold = 0.6;
 
         return stopDao
-            .queryBuilder()
-            .where()
-            .raw(
-                    "FUZZY_SCORE(name, ?) > ?",
-                    new SelectArg(stopName),
-                    new SelectArg(scoreThreshold)
-            )
-            .query();
+                .queryBuilder()
+                .where()
+                .raw(
+                        "FUZZY_SCORE(name, ?) > ?",
+                        new SelectArg(stopName),
+                        new SelectArg(scoreThreshold))
+                .query();
     }
 
     public List<StopTimeModel> getStopTimes(String stopId) throws SQLException {
