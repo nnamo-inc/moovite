@@ -336,4 +336,54 @@ public class DatabaseService {
                 .gt("arrival_time", timedate)
                 .query();
     }
+
+    // TODO: extract user and favorites logic in a separate UserService
+    public void addFavoriteStop(int userId, String stopId) throws SQLException {
+        Dao<FavoriteStopModel, String> favoriteStopDao = getDao(FavoriteStopModel.class);
+        Dao<UserModel, Integer> userDao = getDao(UserModel.class);
+        Dao<StopModel, String> stopDao = getDao(StopModel.class);
+
+        UserModel user = userDao.queryForId(userId);
+        StopModel stop = stopDao.queryForId(stopId);
+
+        if (user == null || stop == null) {
+            return;
+        }
+
+        favoriteStopDao.create(new FavoriteStopModel(user, stop));
+    }
+
+    public void addFavoriteStop(UserModel user, StopModel stop) throws SQLException {
+        Dao<FavoriteStopModel, String> favoriteStopDao = getDao(FavoriteStopModel.class);
+        favoriteStopDao.create(new FavoriteStopModel(user, stop));
+    }
+
+    // TODO: possibile optimization with raw query and join to fix N+1 problem
+    public List<StopModel> getFavoriteStops(int userId) throws SQLException {
+        Dao<FavoriteStopModel, String> favoriteStopDao = getDao(FavoriteStopModel.class);
+
+        var favorites = favoriteStopDao
+                .queryBuilder()
+                .where()
+                .eq("user_id", userId)
+                .query();
+
+        List<StopModel> stops = new ArrayList<>();
+        for (FavoriteStopModel favorite : favorites) {
+            stops.add(favorite.getStop());
+        }
+        return stops;
+    }
+
+    public List<StopModel> getFavoriteStops(UserModel user) throws SQLException {
+        return getFavoriteStops(user.getId());
+    }
+
+    public boolean hasFavoriteStop(int userId) throws SQLException {
+        return getFavoriteStops(userId).size() >= 1;
+    }
+
+    public boolean hasFavoriteStop(UserModel user) throws SQLException {
+        return hasFavoriteStop(user.getId());
+    }
 }
