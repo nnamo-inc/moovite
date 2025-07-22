@@ -4,12 +4,16 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.TripModel;
 
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
@@ -19,17 +23,21 @@ public class StopPanel extends JPanel {
     private final JLabel labelName = new JLabel("Stop Name:");
     private final JTextField textName = new JTextField(20);
     private final JLabel labelId = new JLabel("Stop ID:");
-    private JTextField textID = new JTextField(20);
+    private final JTextField textID = new JTextField(20);
     // Bus info components
     private final JLabel labelBus = new JLabel("Bus in arrivo:");
-    private JTextField textBus = new JTextField(20);
+    private final JTextField textBus = new JTextField(20);
     private final JLabel labelState = new JLabel("Stato:");
-    private JTextField textState = new JTextField(20);
+    private final JTextField textState = new JTextField(20);
     private final JLabel labelPosti = new JLabel("Posti disponibili:");
-    private JTextField textPosti = new JTextField(20);
+    private final JTextField textPosti = new JTextField(20);
     // Route info components
     private JTable busTable;
     private DefaultTableModel busTableModel;
+    private final JLabel labelSearchBus = new JLabel("Search Bus:");
+    private JTextField textSearchBus = new JTextField(20);
+
+
 
     Builder gbcBuilder = new Builder();
 
@@ -129,32 +137,55 @@ public class StopPanel extends JPanel {
     }
 
     private JPanel newRouteInfoPanel() {
-        // Column names for the bus table
         String[] columnNames = { "Autobus", "Orario Arrivo", "Stato", "In ritardo" };
-        // Model for the bus table, with non-editable cells
+
         busTableModel = new DefaultTableModel(columnNames, 0) {
-            ;
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        // Create the bus table with the model
         busTable = new JTable(busTableModel);
-        // Create a scroll pane for the bus table
+
         JScrollPane scrollPane = new JScrollPane(busTable);
         scrollPane.setPreferredSize(new Dimension(400, 100));
-        // Create a panel for the bus table with a titled border
-        JPanel panel = new JPanel(new BorderLayout());
+
+        JPanel mainPanel = new JPanel(new BorderLayout());
         TitledBorder border = new TitledBorder(new LineBorder(Color.lightGray, 2), "Tabella autobus in arrivo");
-        // Add the border and the scroll pane to the panel
-        panel.setBorder(border);
-        panel.add(scrollPane, BorderLayout.CENTER);
-        // Just for testing
-        for (int i = 0; i < 100; i++) {
-            busTableModel.addRow(new Object[] { i + "", "10", "Stato" });
-        }
-        return panel;
+        mainPanel.setBorder(border);
+        JPanel northPanel = new JPanel(new GridBagLayout());
+
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+
+        mainPanel.add(northPanel, BorderLayout.NORTH);
+        // label search bus
+        GridBagConstraints gbcLabelSearchBar = gbcBuilder.setPosition(0, 0)
+                .setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.WEST)
+                .build();
+        northPanel.add(labelSearchBus, gbcLabelSearchBar);
+        // text search bus
+        GridBagConstraints gbcTextSearchBar = gbcBuilder.setPosition(1, 0).setWeight(1.0, 1.0)
+                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.WEST)
+                .build();
+        northPanel.add(textSearchBus, gbcTextSearchBar);
+
+        TableRowSorter sorter = new TableRowSorter(busTableModel);
+        sorter.setSortable(1, false);
+        busTable.setRowSorter(sorter);
+
+        textSearchBus.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                String searchText = textSearchBus.getText().trim();
+                if (searchText.isEmpty()) {
+                    sorter.setRowFilter(null);
+                } else {
+                    sorter.setRowFilter(RowFilter.regexFilter("^" + searchText, 0));
+                }
+            }
+        });
+
+        return mainPanel;
     }
 
     // GETTERS AND SETTERS //
