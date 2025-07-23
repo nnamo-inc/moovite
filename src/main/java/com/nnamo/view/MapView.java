@@ -25,6 +25,10 @@ public class MapView extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
+
+        // set the application icon
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/application-bar-icon.png")));
+
         // Initialize the center panel with the map and stop panels then add it to the
         // JFrame
         centerPanel.setLayout(new BorderLayout());
