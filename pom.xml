@@ -75,6 +75,12 @@
     </dependency>
 
     <dependency>
+      <groupId>de.mkammerer</groupId>
+      <artifactId>argon2-jvm</artifactId>
+      <version>2.12</version>
+    </dependency>
+
+    <dependency>
       <groupId>com.formdev</groupId>
       <artifactId>flatlaf</artifactId>
       <version>3.6</version>

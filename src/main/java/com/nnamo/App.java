@@ -5,7 +5,7 @@ import java.net.URISyntaxException;
 import java.sql.SQLException;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
-import com.nnamo.controllers.MapController;
+import com.nnamo.controllers.MainController;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
 import com.nnamo.services.StaticGtfsService;
@@ -23,12 +23,12 @@ public class App {
                 realtimeGtfs.startBackgroundThread();
 
                 try {
-                    UIManager.setLookAndFeel( new FlatDarculaLaf() );
-                } catch( Exception ex ) {
-                    System.err.println( "Failed to initialize LaF" );
+                    UIManager.setLookAndFeel(new FlatDarculaLaf());
+                } catch (Exception ex) {
+                    System.err.println("Failed to initialize LaF");
                 }
 
-                MapController controller = new MapController(db);
+                MainController controller = new MainController(db);
                 controller.run();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -37,8 +37,7 @@ public class App {
                 System.err.println("Error loading GTFS data");
                 e.printStackTrace();
                 return;
-            }
-            catch (URISyntaxException e) {
+            } catch (URISyntaxException e) {
                 System.err.println("Error loading realtime GTFS data");
                 e.printStackTrace();
                 return;

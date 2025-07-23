@@ -3,7 +3,7 @@ package com.nnamo.controllers;
 import com.nnamo.interfaces.WaypointListener;
 import com.nnamo.models.StopModel;
 import com.nnamo.models.StopTimeModel;
-import com.nnamo.view.MapView;
+import com.nnamo.view.MainFrame;
 import com.nnamo.services.DatabaseService;
 import org.jxmapviewer.viewer.GeoPosition;
 
@@ -15,24 +15,22 @@ import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.List;
 
-public class MapController {
+public class MainController {
 
-    // reference to the DatabaseService (models)
     DatabaseService db;
-    // reference to the MapView (view)
-    MapView mapView = new MapView();
+    MainFrame mapView = new MainFrame();
+    UserController userController;
 
-    // CONSTRUCTOR //
-    public MapController(DatabaseService db) throws IOException {
+    public MainController(DatabaseService db) throws IOException {
         this.db = db;
+        this.userController = new UserController(db);
     }
 
-    // METHODS //
     public void run() throws SQLException, IOException {
         System.out.println("MapController started");
-        // Create all the stops waypoints, then set them to the waypointPainter
+        userController.run();
+
         mapView.getMapPanel().renderStops(db.getAllStops());
-        // Set the listener for the waypoint clicks with an anonymous inner class
         mapView.getMapPanel().setWaypointListener(new WaypointListener() {
             @Override
             public void waypointClicked(GeoPosition geo) throws SQLException, IOException {

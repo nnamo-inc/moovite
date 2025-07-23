@@ -11,7 +11,7 @@ import com.nnamo.view.components.MapPanel;
 import com.nnamo.view.components.SearchPanel;
 import com.nnamo.view.components.StopPanel;
 
-public class MapView extends JFrame {
+public class MainFrame extends JFrame {
     MapPanel mapPanel = new MapPanel();
     StopPanel stopPanel = new StopPanel();
     SearchPanel searchPanel = new SearchPanel();
@@ -19,16 +19,12 @@ public class MapView extends JFrame {
     JPanel centerPanel = new JPanel();
 
     // COSTRUCTOR //
-    public MapView() throws IOException {
+    public MainFrame() throws IOException {
         // Set the JFrame properties
         super("Moovite Map View");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
-
-        // set the application icon
-        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/application-bar-icon.png")));
-
         // Initialize the center panel with the map and stop panels then add it to the
         // JFrame
         centerPanel.setLayout(new BorderLayout());

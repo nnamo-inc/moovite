@@ -337,6 +337,19 @@ public class DatabaseService {
                 .query();
     }
 
+    public void addUser(UserModel user) throws SQLException {
+        getDao(UserModel.class).createIfNotExists(user);
+    }
+
+    public void addUser(String username, String passwordHash) throws SQLException {
+        getDao(UserModel.class)
+                .createIfNotExists(new UserModel(username, passwordHash));
+    }
+
+    public UserModel getUserByName(String username) throws SQLException {
+        return getDao(UserModel.class).queryForEq("username", username).getFirst();
+    }
+
     // TODO: extract user and favorites logic in a separate UserService
     public void addFavoriteStop(int userId, String stopId) throws SQLException {
         Dao<FavoriteStopModel, String> favoriteStopDao = getDao(FavoriteStopModel.class);

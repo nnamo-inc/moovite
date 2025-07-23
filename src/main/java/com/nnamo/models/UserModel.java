@@ -14,15 +14,14 @@ public class UserModel {
     private String username;
 
     @DatabaseField
-    private String password_hash;
+    private String passwordHash;
 
     public UserModel() { // Empty constructor required by OrmLite
     }
 
-    public UserModel(int id, String username, String password_hash) { // Empty constructor required by OrmLite
-        this.id = id;
+    public UserModel(String username, String passwordHash) { // Empty constructor required by OrmLite
         this.username = username;
-        this.password_hash = password_hash;
+        this.passwordHash = passwordHash;
     }
 
     public int getId() {
@@ -31,5 +30,9 @@ public class UserModel {
 
     public String getUsername() {
         return username;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
     }
 }
