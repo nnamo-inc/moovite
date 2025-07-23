@@ -1,10 +1,9 @@
-package com.nnamo.view;
+package com.nnamo.view.components;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import com.nnamo.models.RouteModel;
@@ -32,14 +31,13 @@ public class StopPanel extends JPanel {
     private final JLabel labelPosti = new JLabel("Posti disponibili:");
     private final JTextField textPosti = new JTextField(20);
     // Route info components
-    private JTable busTable;
-    private DefaultTableModel busTableModel;
+    private JTable tableBus;
+    private DefaultTableModel tableModelBus;
     private final JLabel labelSearchBus = new JLabel("Search Bus:");
     private JTextField textSearchBus = new JTextField(20);
-
-
-
-    Builder gbcBuilder = new Builder();
+    // Prefer components
+    private JButton buttonPreferStop = new JButton("Stop");
+    private JButton buttonPreferRoute = new JButton("Route");
 
     // CONSTRUCTOR //
     public StopPanel() {
@@ -49,20 +47,21 @@ public class StopPanel extends JPanel {
         setBorder(BorderFactory.createLineBorder(new Color(60, 63, 65), 2));
         setBackground(new Color(60, 63, 65));
         // Stop info panel
-        GridBagConstraints gbcStopInfo = gbcBuilder.setPosition(0, 0).setWeight(1.0, 1.0)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 5, 5).build();
         JPanel PanelStopInfo = newStopInfoPanel();
-        add(PanelStopInfo, gbcStopInfo);
+        add(PanelStopInfo, new GbcCustom().setPosition(0, 0).setWeight(1.0, 1.0)
+                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 5, 5));
         // Bus info panel
-        GridBagConstraints gbcBusInfo = gbcBuilder.setPosition(0, 1).setWeight(1.0, 1.0)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 5, 5).build();
         JPanel PanelbusInfo = newBusInfoPanel();
-        add(PanelbusInfo, gbcBusInfo);
+        add(PanelbusInfo, new GbcCustom().setPosition(0, 1).setWeight(1.0, 1.0)
+                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 5, 5));
         // Route info panel
-        GridBagConstraints gbcRouteInfo = gbcBuilder.setPosition(1, 0).setWeight(1.0, 1.0)
-                .setFill(GridBagConstraints.BOTH).setHeight(2).setInsets(10, 10, 5, 5).build();
         JPanel TableRouteInfo = newRouteInfoPanel();
-        add(TableRouteInfo, gbcRouteInfo);
+        add(TableRouteInfo, new GbcCustom().setPosition(1, 0).setWeight(1.0, 1.0).setHeight(2)
+                .setFill(GridBagConstraints.BOTH).setInsets(10, 10, 5, 5));
+        // Buttons prefer
+        JPanel PanelPrefer = newPanelPrefer();
+        add(PanelPrefer, new GbcCustom().setPosition(2, 0).setWeight(1.0, 1.0).setHeight(2)
+                .setFill(GridBagConstraints.BOTH).setInsets(10, 10, 5, 5));
         // set initial visibility to false
         setVisible(false);
     }
@@ -77,23 +76,17 @@ public class StopPanel extends JPanel {
         TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Informazioni fermata");
         infoStop.setBorder(titledBorder);
         // label name
-        GridBagConstraints gbcLabelName = gbcBuilder.setPosition(0, 0).setFill(GridBagConstraints.HORIZONTAL)
-                .setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.EAST).build();
-        infoStop.add(labelName, gbcLabelName);
+        infoStop.add(labelName, new GbcCustom().setPosition(0, 0).setAnchor(GridBagConstraints.EAST)
+                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
         // text name
-        GridBagConstraints gbcTextName = gbcBuilder.setPosition(1, 0).setWeight(1.0, 1.0)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.WEST)
-                .build();
-        infoStop.add(textName, gbcTextName);
+        infoStop.add(textName, new GbcCustom().setPosition(1, 0).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.WEST)
+                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
         // label id
-        GridBagConstraints gbcLabelId = gbcBuilder.setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL)
-                .setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.EAST).build();
-        infoStop.add(labelId, gbcLabelId);
+        infoStop.add(labelId, new GbcCustom().setPosition(0, 1).setAnchor(GridBagConstraints.EAST)
+                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
         // text id
-        GridBagConstraints gbcTextID = gbcBuilder.setPosition(1, 1).setWeight(1.0, 1.0)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.WEST)
-                .build();
-        infoStop.add(textID, gbcTextID);
+        infoStop.add(textID, new GbcCustom().setPosition(1, 1).setWeight(1.0, 1.0)
+                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.WEST));
         return infoStop;
     }
 
@@ -107,47 +100,38 @@ public class StopPanel extends JPanel {
         TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Informazioni bus");
         infoBus.setBorder(titledBorder);
         // label bus
-        GridBagConstraints gbcLabelBus = gbcBuilder.setPosition(0, 0).setFill(GridBagConstraints.HORIZONTAL)
-                .setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.EAST).build();
-        infoBus.add(labelBus, gbcLabelBus);
+        infoBus.add(labelBus, new GbcCustom().setPosition(0, 0).setFill(GridBagConstraints.HORIZONTAL)
+                .setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.EAST));
         // text bus
-        GridBagConstraints gbcTextBus = gbcBuilder.setPosition(1, 0).setWeight(1.0, 1.0)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.WEST)
-                .build();
-        infoBus.add(textBus, gbcTextBus);
+        infoBus.add(textBus, new GbcCustom().setPosition(1, 0).setWeight(1.0, 1.0)
+                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.WEST));
         // label state
-        GridBagConstraints gbcLabelState = gbcBuilder.setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL)
-                .setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.EAST).build();
-        infoBus.add(labelState, gbcLabelState);
+        infoBus.add(labelState, new GbcCustom().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL)
+                .setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.EAST));
         // text state
-        GridBagConstraints gbcTextState = gbcBuilder.setPosition(1, 1).setWeight(1.0, 1.0)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.WEST)
-                .build();
-        infoBus.add(textState, gbcTextState);
+        infoBus.add(textState, new GbcCustom().setPosition(1, 1).setWeight(1.0, 1.0)
+                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.WEST));
         // label posti
-        GridBagConstraints gbcLabelPosti = gbcBuilder.setPosition(0, 2).setFill(GridBagConstraints.HORIZONTAL)
-                .setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.EAST).build();
-        infoBus.add(labelPosti, gbcLabelPosti);
+        infoBus.add(labelPosti, new GbcCustom().setPosition(0, 2).setFill(GridBagConstraints.HORIZONTAL)
+                .setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.EAST));
         // text posti
-        GridBagConstraints gbcTextPosti = gbcBuilder.setPosition(1, 2).setWeight(1.0, 1.0)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.WEST)
-                .build();
-        infoBus.add(textPosti, gbcTextPosti);
+        infoBus.add(textPosti, new GbcCustom().setPosition(1, 2).setWeight(1.0, 1.0)
+                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.WEST));
         return infoBus;
     }
 
     private JPanel newRouteInfoPanel() {
         String[] columnNames = { "Autobus", "Orario Arrivo", "Stato", "In ritardo" };
 
-        busTableModel = new DefaultTableModel(columnNames, 0) {
+        tableModelBus = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        busTable = new JTable(busTableModel);
+        tableBus = new JTable(tableModelBus);
 
-        JScrollPane scrollPane = new JScrollPane(busTable);
+        JScrollPane scrollPane = new JScrollPane(tableBus);
         scrollPane.setPreferredSize(new Dimension(400, 100));
 
         JPanel mainPanel = new JPanel(new BorderLayout());
@@ -159,19 +143,15 @@ public class StopPanel extends JPanel {
 
         mainPanel.add(northPanel, BorderLayout.NORTH);
         // label search bus
-        GridBagConstraints gbcLabelSearchBar = gbcBuilder.setPosition(0, 0)
-                .setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.WEST)
-                .build();
-        northPanel.add(labelSearchBus, gbcLabelSearchBar);
+        northPanel.add(labelSearchBus, new GbcCustom().setPosition(0, 0)
+                .setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.WEST));
         // text search bus
-        GridBagConstraints gbcTextSearchBar = gbcBuilder.setPosition(1, 0).setWeight(1.0, 1.0)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.WEST)
-                .build();
-        northPanel.add(textSearchBus, gbcTextSearchBar);
+        northPanel.add(textSearchBus, new GbcCustom().setPosition(1, 0).setWeight(1.0, 1.0)
+                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.WEST));
 
-        TableRowSorter sorter = new TableRowSorter(busTableModel);
+        TableRowSorter sorter = new TableRowSorter(tableModelBus);
         sorter.setSortable(1, false);
-        busTable.setRowSorter(sorter);
+        tableBus.setRowSorter(sorter);
 
         textSearchBus.addKeyListener(new KeyAdapter() {
             @Override
@@ -188,6 +168,18 @@ public class StopPanel extends JPanel {
         return mainPanel;
     }
 
+    private JPanel newPanelPrefer() {
+        JPanel panelPrefer = new JPanel(new GridBagLayout());
+        TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Preferiti");
+        panelPrefer.setBorder(titledBorder);
+        // button prefer
+        panelPrefer.add(buttonPreferStop, new GbcCustom().setPosition(0, 0).setWeight(1.0, 1.0)
+                .setFill(GridBagConstraints.BOTH).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.CENTER));
+        panelPrefer.add(buttonPreferRoute, new GbcCustom().setPosition(0, 1).setWeight(1.0, 1.0)
+                .setFill(GridBagConstraints.BOTH).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.CENTER));
+        return panelPrefer;
+    }
+
     // GETTERS AND SETTERS //
     public JTextField getTextID() {
         return textID;
@@ -198,7 +190,7 @@ public class StopPanel extends JPanel {
     }
 
     public void updateStopTimes(List<StopTimeModel> stopTimes) {
-        this.busTableModel.setRowCount(0); // Remove previous rows
+        this.tableModelBus.setRowCount(0); // Remove previous rows
         for (StopTimeModel stopTime : stopTimes) {
             LocalTime arrivalTime = LocalTime.ofInstant(stopTime.getArrivalTime().toInstant(), ZoneId.systemDefault());
             TripModel trip = stopTime.getTrip(); // Corsa
@@ -212,7 +204,7 @@ public class StopPanel extends JPanel {
                 continue;
             }
 
-            busTableModel.addRow(new Object[] {
+            tableModelBus.addRow(new Object[] {
                     route.getShortName(),
                     arrivalTime.toString(),
                     "In Orario", // DA AGGIORNARE CON DATI IN REALTIME
@@ -221,7 +213,7 @@ public class StopPanel extends JPanel {
         }
     }
 
-    private static class Builder {
+/*    private static class Builder {
         private int gridx = 0;
         private int gridy = 0;
         private int gridwidth = 1;
@@ -292,5 +284,5 @@ public class StopPanel extends JPanel {
             gbc.ipady = ipady;
             return gbc;
         }
-    }
+    }*/
 }

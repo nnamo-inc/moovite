@@ -7,6 +7,9 @@ import java.util.List;
 import javax.swing.*;
 
 import com.nnamo.models.StopTimeModel;
+import com.nnamo.view.components.MapPanel;
+import com.nnamo.view.components.SearchPanel;
+import com.nnamo.view.components.StopPanel;
 
 public class MapView extends JFrame {
     MapPanel mapPanel = new MapPanel();

@@ -1,4 +1,4 @@
-package com.nnamo.view;
+package com.nnamo.view.components;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +14,7 @@ public class SearchPanel extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         add(newLine(searchLabel, searchField));
         setVisible(true);
+        GridBagConstraints gbc = new GbcCustom().setPosition(0, 0).setFill(GridBagConstraints.HORIZONTAL).setWeight(1.0, 0.0).setInsets(10, 10, 10, 10);
     }
 
     // METHODS //

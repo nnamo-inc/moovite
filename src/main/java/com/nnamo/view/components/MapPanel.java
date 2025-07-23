@@ -1,7 +1,8 @@
-package com.nnamo.view;
+package com.nnamo.view.components;
 
 import com.nnamo.interfaces.WaypointListener;
 import com.nnamo.models.StopModel;
+import com.nnamo.view.StopPainter;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
 import org.jxmapviewer.input.PanMouseInputListener;
