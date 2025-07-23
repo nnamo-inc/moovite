@@ -62,6 +62,13 @@
       <version>3.45.2.0</version>
     </dependency>
 
+    <!-- Automatically detect user OS and data config -->
+    <dependency>
+      <groupId>net.harawata</groupId>
+      <artifactId>appdirs</artifactId>
+      <version>1.4.0</version>
+    </dependency>
+
     <dependency>
       <groupId>org.jxmapviewer</groupId>
       <artifactId>jxmapviewer2</artifactId>

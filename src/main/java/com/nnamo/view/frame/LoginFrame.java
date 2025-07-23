@@ -14,7 +14,7 @@ import java.sql.SQLException;
 
 public class LoginFrame extends JFrame {
 
-    private InfoBar username = new InfoBar("Username:", "Inserisci il tuo username");
+    // private JTextField username = new JTextField(20);
     private JTextField usernameField = new JTextField(20);
     private JPasswordField passwordField = new JPasswordField(20);
     private JButton login = new JButton("Login");
@@ -26,23 +26,27 @@ public class LoginFrame extends JFrame {
 
     public LoginFrame() {
         super();
-        setLayout(new BorderLayout());
+        setLayout(new GridBagLayout());
         setSize(800, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new GridBagLayout());
-        add(centerPanel, BorderLayout.CENTER);
+        // JPanel centerPanel = new JPanel();
+        // centerPanel.setLayout(new GridBagLayout());
+        // add(centerPanel, BorderLayout.CENTER);
 
-        username.getText().setEditable(true);
-        centerPanel.add(username, new GbcCustom().setPosition(0, 0).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.CENTER)
-                .setInsets(2, 5, 2, 5));
+        /*
+         * username.getText().setEditable(true);
+         * centerPanel.add(username, new GbcCustom().setPosition(0, 0).setWeight(1.0,
+         * 1.0).setAnchor(GridBagConstraints.CENTER)
+         * .setInsets(2, 5, 2, 5));
+         */
 
-
-
-        /*username.getText().setEditable(true);
-        add(username, new GbcCustom().setAnchor(GridBagConstraints.WEST).setPosition(0, 0).setWeight(0.5, 0).setWidth(1).setHeight(1));
+        // username.getText().setEditable(true);
+        usernameField.setEditable(true);
+        add(usernameField,
+                new GbcCustom().setAnchor(GridBagConstraints.WEST).setPosition(0, 0).setWeight(0.5, 0).setWidth(1)
+                        .setHeight(1));
 
         passwordField.setEditable(true);
         add(passwordField, new GbcCustom()
@@ -65,9 +69,16 @@ public class LoginFrame extends JFrame {
                 .setWeight(0, 0)
                 .setWidth(2)
                 .setHeight(1));
-*/
+
         handleButtonListeners();
+    }
+
+    public void open() {
         setVisible(true);
+    }
+
+    public void close() {
+        setVisible(false);
     }
 
     private void handleButtonListeners() {
