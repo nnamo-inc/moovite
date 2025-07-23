@@ -1,18 +1,19 @@
 package com.nnamo.services;
 
+import com.google.transit.realtime.GtfsRealtime;
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.google.transit.realtime.GtfsRealtime.FeedMessage;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public class RealtimeGtfsService {
@@ -20,7 +21,8 @@ public class RealtimeGtfsService {
     public static final Duration POLLING_INTERVAL = Duration.ofSeconds(35);
 
     private final URL feedUrl;
-    private final List<FeedUpdateListener> listeners = new ArrayList<>();
+    private final List<FeedUpdateListener> feedUpdateListeners = new ArrayList<>();
+    private final List<FeedStopLinesListener> feedStopLinesListeners = new ArrayList<>();
     private List<FeedEntity> entityList;
     private HashMap<String, FeedEntity> tripsMap;
     private HashMap<String, StopTimeUpdate> stopsMap;
@@ -30,28 +32,69 @@ public class RealtimeGtfsService {
     }
 
     public synchronized void addListener(FeedUpdateListener listener) {
-        listeners.add(listener);
+        feedUpdateListeners.add(listener);
     }
 
-    private void notifyListeners() {
-        for (FeedUpdateListener listener : listeners) {
+    public synchronized void removeListener(FeedUpdateListener listener) {
+        feedUpdateListeners.remove(listener);
+    }
+
+    public synchronized void addListener(FeedStopLinesListener listener) {
+        feedStopLinesListeners.add(listener);
+    }
+
+    public synchronized void removeListener(FeedStopLinesListener listener) {
+        feedStopLinesListeners.remove(listener);
+    }
+
+    private void notifyFeedUpdateListeners() {
+        for (FeedUpdateListener listener : feedUpdateListeners) {
             listener.onFeedUpdated(entityList);
         }
     }
 
+    private void notifyNewStopLineListeners(GtfsRealtime.FeedEntity entity) {
+        for (FeedStopLinesListener listener : feedStopLinesListeners) {
+            listener.onNewStopLine(entity);
+        }
+    }
+
+    private void notifyStopLineRemovedListeners(String tripLineId) {
+        for (FeedStopLinesListener listener : feedStopLinesListeners) {
+            listener.onStopLineRemoved(tripLineId);
+        }
+    }
+
+    private void notifyStopLineUpdatedListeners(GtfsRealtime.FeedEntity entity) {
+        for (FeedStopLinesListener listener : feedStopLinesListeners) {
+            listener.onStopLineUpdated(entity);
+        }
+    }
+
     public synchronized void updateFeed() throws IOException {
+        // all previous entities ids hashset
+        HashSet<String> previousEntityIds = new HashSet<>();
+        if (entityList != null) {
+            for (FeedEntity entity : entityList) {
+                previousEntityIds.add(entity.getId());
+            }
+        }
+
         try (InputStream stream = feedUrl.openStream()) {
             FeedMessage feed = FeedMessage.parseFrom(stream);
             this.entityList = feed.getEntityList();
             this.tripsMap = new HashMap<>();
 
             for (FeedEntity entity : entityList) {
-                tripsMap.put(entity.getTripUpdate().getTrip().getTripId(), entity);
+                String tripId = entity.getTripUpdate().getTrip().getTripId();
+                tripsMap.put(tripId, entity);
+
+                // TODO: logic to notify listeners about new or updated or removed stop lines
             }
             System.out.println(entityList.size() + " entities");
         }
 
-        notifyListeners();
+        notifyFeedUpdateListeners();
     }
 
     public void startBackgroundThread() throws IOException {
