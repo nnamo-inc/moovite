@@ -18,18 +18,15 @@ public class App {
             try {
                 DatabaseService db = new DatabaseService();
                 StaticGtfsService staticGtfs = new StaticGtfsService();
-                // RealtimeGtfsService realtimeGtfs = new RealtimeGtfsService();
+                RealtimeGtfsService realtimeGtfs = new RealtimeGtfsService();
                 db.preloadGtfsData(staticGtfs);
-
-                /* realtimeGtfs.load(); */
-                // add thread with periodic schedule realtimeGtfs.updateFeed() every 30 seconds
+                realtimeGtfs.startBackgroundThread();
 
                 try {
                     UIManager.setLookAndFeel( new FlatDarculaLaf() );
                 } catch( Exception ex ) {
                     System.err.println( "Failed to initialize LaF" );
                 }
-
 
                 MapController controller = new MapController(db);
                 controller.run();
@@ -41,11 +38,11 @@ public class App {
                 e.printStackTrace();
                 return;
             }
-            // } catch (URISyntaxException e) {
-            // System.err.println("Error loading realtime GTFS data");
-            // e.printStackTrace();
-            // return;
-            // }
+            catch (URISyntaxException e) {
+                System.err.println("Error loading realtime GTFS data");
+                e.printStackTrace();
+                return;
+            }
 
         });
         preloadThread.start();
