@@ -347,7 +347,11 @@ public class DatabaseService {
     }
 
     public UserModel getUserByName(String username) throws SQLException {
-        return getDao(UserModel.class).queryForEq("username", username).getFirst();
+        var users = getDao(UserModel.class).queryForEq("username", username);
+        if (users.size() >= 1) {
+            return users.getFirst();
+        }
+        return null;
     }
 
     // TODO: extract user and favorites logic in a separate UserService
