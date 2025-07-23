@@ -9,6 +9,9 @@ import javax.swing.table.TableRowSorter;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.TripModel;
+import com.nnamo.view.customcomponents.GbcCustom;
+import com.nnamo.view.customcomponents.InfoBar;
+import com.nnamo.view.customcomponents.SearchBar;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -19,22 +22,16 @@ import java.util.List;
 
 public class StopPanel extends JPanel {
     // Stop info components
-    private final JLabel labelName = new JLabel("Stop Name:");
-    private final JTextField textName = new JTextField(20);
-    private final JLabel labelId = new JLabel("Stop ID:");
-    private final JTextField textID = new JTextField(20);
+    private final InfoBar nomeFermata = new InfoBar("Nome fermata: ");
+    private final InfoBar idFermata = new InfoBar("ID fermata: ");
     // Bus info components
-    private final JLabel labelBus = new JLabel("Bus in arrivo:");
-    private final JTextField textBus = new JTextField(20);
-    private final JLabel labelState = new JLabel("Stato:");
-    private final JTextField textState = new JTextField(20);
-    private final JLabel labelPosti = new JLabel("Posti disponibili:");
-    private final JTextField textPosti = new JTextField(20);
+    private final InfoBar busInArrivo = new InfoBar("Autobus in arrivo: ");
+    private final InfoBar statoBusInArrivo = new InfoBar("Stato autobus in arrivo: ");
+    private final InfoBar numeroPosti = new InfoBar("Numero posti: ");
     // Route info components
     private JTable tableBus;
     private DefaultTableModel tableModelBus;
-    private final JLabel labelSearchBus = new JLabel("Search Bus:");
-    private JTextField textSearchBus = new JTextField(20);
+    private SearchBar searchBar;
     // Prefer components
     private JButton buttonPreferStop = new JButton("Stop");
     private JButton buttonPreferRoute = new JButton("Route");
@@ -68,55 +65,33 @@ public class StopPanel extends JPanel {
 
     // METHODS //
     private JPanel newStopInfoPanel() {
-        // set JTextFields not editable
-        textName.setEditable(false);
-        textID.setEditable(false);
         // Panel info stop with border
         JPanel infoStop = new JPanel(new GridBagLayout());
         TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Informazioni fermata");
         infoStop.setBorder(titledBorder);
         // label name
-        infoStop.add(labelName, new GbcCustom().setPosition(0, 0).setAnchor(GridBagConstraints.EAST)
+        infoStop.add(nomeFermata, new GbcCustom().setPosition(0, 0).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.EAST)
                 .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
         // text name
-        infoStop.add(textName, new GbcCustom().setPosition(1, 0).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.WEST)
+        infoStop.add(idFermata, new GbcCustom().setPosition(0, 1).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.WEST)
                 .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
-        // label id
-        infoStop.add(labelId, new GbcCustom().setPosition(0, 1).setAnchor(GridBagConstraints.EAST)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
-        // text id
-        infoStop.add(textID, new GbcCustom().setPosition(1, 1).setWeight(1.0, 1.0)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.WEST));
         return infoStop;
     }
 
     private JPanel newBusInfoPanel() {
-        // set JTextFields not editable
-        textBus.setEditable(false);
-        textState.setEditable(false);
-        textPosti.setEditable(false);
         // Info bus panel with border
         JPanel infoBus = new JPanel(new GridBagLayout());
         TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Informazioni bus");
         infoBus.setBorder(titledBorder);
         // label bus
-        infoBus.add(labelBus, new GbcCustom().setPosition(0, 0).setFill(GridBagConstraints.HORIZONTAL)
-                .setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.EAST));
+        infoBus.add(busInArrivo, new GbcCustom().setPosition(0, 0).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.EAST)
+                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
         // text bus
-        infoBus.add(textBus, new GbcCustom().setPosition(1, 0).setWeight(1.0, 1.0)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.WEST));
+        infoBus.add(statoBusInArrivo, new GbcCustom().setPosition(0, 1).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.EAST)
+                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
         // label state
-        infoBus.add(labelState, new GbcCustom().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL)
-                .setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.EAST));
-        // text state
-        infoBus.add(textState, new GbcCustom().setPosition(1, 1).setWeight(1.0, 1.0)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.WEST));
-        // label posti
-        infoBus.add(labelPosti, new GbcCustom().setPosition(0, 2).setFill(GridBagConstraints.HORIZONTAL)
-                .setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.EAST));
-        // text posti
-        infoBus.add(textPosti, new GbcCustom().setPosition(1, 2).setWeight(1.0, 1.0)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.WEST));
+        infoBus.add(numeroPosti, new GbcCustom().setPosition(0, 2).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.EAST)
+                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
         return infoBus;
     }
 
@@ -137,22 +112,15 @@ public class StopPanel extends JPanel {
         JPanel mainPanel = new JPanel(new BorderLayout());
         TitledBorder border = new TitledBorder(new LineBorder(Color.lightGray, 2), "Tabella autobus in arrivo");
         mainPanel.setBorder(border);
-        JPanel northPanel = new JPanel(new GridBagLayout());
-
         mainPanel.add(scrollPane, BorderLayout.CENTER);
-
-        mainPanel.add(northPanel, BorderLayout.NORTH);
-        // label search bus
-        northPanel.add(labelSearchBus, new GbcCustom().setPosition(0, 0)
-                .setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.WEST));
-        // text search bus
-        northPanel.add(textSearchBus, new GbcCustom().setPosition(1, 0).setWeight(1.0, 1.0)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.WEST));
+        // Search Bar
+        mainPanel.add(searchBar = new SearchBar(), BorderLayout.NORTH);
 
         TableRowSorter sorter = new TableRowSorter(tableModelBus);
         sorter.setSortable(1, false);
         tableBus.setRowSorter(sorter);
 
+        JTextField textSearchBus = searchBar.getSearchField();
         textSearchBus.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -182,11 +150,11 @@ public class StopPanel extends JPanel {
 
     // GETTERS AND SETTERS //
     public JTextField getTextID() {
-        return textID;
+        return idFermata.getText();
     }
 
     public JTextField getTextName() {
-        return textName;
+        return nomeFermata.getText();
     }
 
     public void updateStopTimes(List<StopTimeModel> stopTimes) {
@@ -212,77 +180,4 @@ public class StopPanel extends JPanel {
             });
         }
     }
-
-/*    private static class Builder {
-        private int gridx = 0;
-        private int gridy = 0;
-        private int gridwidth = 1;
-        private int gridheight = 1;
-        private double weightx = 0.0;
-        private double weighty = 0.0;
-        private int anchor = GridBagConstraints.CENTER;
-        private int fill = GridBagConstraints.NONE;
-        private Insets insets = new Insets(0, 0, 0, 0);
-        private int ipadx = 0;
-        private int ipady = 0;
-
-        public Builder setAnchor(int anchor) {
-            this.anchor = anchor;
-            return this;
-        }
-
-        public Builder setFill(int fill) {
-            this.fill = fill;
-            return this;
-        }
-
-        public Builder setHeight(int height) {
-            this.gridheight = height;
-            return this;
-        }
-
-        public Builder setWidth(int width) {
-            this.gridwidth = width;
-            return this;
-        }
-
-        public Builder setPosition(int x, int y) {
-            this.gridx = x;
-            this.gridy = y;
-            return this;
-        }
-
-        public Builder setInsets(int top, int left, int bottom, int right) {
-            this.insets = new Insets(top, left, bottom, right);
-            return this;
-        }
-
-        public Builder setIpad(int ipadx, int ipady) {
-            this.ipadx = ipadx;
-            this.ipady = ipady;
-            return this;
-        }
-
-        public Builder setWeight(double weightX, double weightY) {
-            this.weightx = weightX;
-            this.weighty = weightY;
-            return this;
-        }
-
-        public GridBagConstraints build() {
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.gridx = gridx;
-            gbc.gridy = gridy;
-            gbc.gridwidth = gridwidth;
-            gbc.gridheight = gridheight;
-            gbc.weightx = weightx;
-            gbc.weighty = weighty;
-            gbc.anchor = anchor;
-            gbc.fill = fill;
-            gbc.insets = insets;
-            gbc.ipadx = ipadx;
-            gbc.ipady = ipady;
-            return gbc;
-        }
-    }*/
 }

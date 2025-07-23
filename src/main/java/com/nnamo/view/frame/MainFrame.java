@@ -1,4 +1,4 @@
-package com.nnamo.view;
+package com.nnamo.view.frame;
 
 import java.awt.*;
 import java.io.IOException;

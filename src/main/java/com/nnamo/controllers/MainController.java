@@ -3,7 +3,7 @@ package com.nnamo.controllers;
 import com.nnamo.interfaces.WaypointListener;
 import com.nnamo.models.StopModel;
 import com.nnamo.models.StopTimeModel;
-import com.nnamo.view.MainFrame;
+import com.nnamo.view.frame.MainFrame;
 import com.nnamo.services.DatabaseService;
 import org.jxmapviewer.viewer.GeoPosition;
 

@@ -6,7 +6,7 @@ import com.nnamo.interfaces.LoginBehaviour;
 import com.nnamo.interfaces.RegisterBehaviour;
 import com.nnamo.models.UserModel;
 import com.nnamo.services.DatabaseService;
-import com.nnamo.view.LoginFrame;
+import com.nnamo.view.frame.LoginFrame;
 
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;

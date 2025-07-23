@@ -1,6 +1,5 @@
-package com.nnamo.view.components;
+package com.nnamo.view.customcomponents;
 
-import javax.swing.*;
 import java.awt.*;
 
 public class GbcCustom extends GridBagConstraints {
