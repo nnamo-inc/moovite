@@ -3,6 +3,7 @@ package com.nnamo.controllers;
 import com.nnamo.interfaces.WaypointListener;
 import com.nnamo.models.StopModel;
 import com.nnamo.models.StopTimeModel;
+import com.nnamo.models.UserModel;
 import com.nnamo.view.frame.MainFrame;
 import com.nnamo.services.DatabaseService;
 import org.jxmapviewer.viewer.GeoPosition;
@@ -14,21 +15,28 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 public class MainController {
 
     DatabaseService db;
     MainFrame mapView = new MainFrame();
     UserController userController;
+    UserModel sessionUser;
 
     public MainController(DatabaseService db) throws IOException {
         this.db = db;
         this.userController = new UserController(db);
     }
 
-    public void run() throws SQLException, IOException {
+    public void run() throws InterruptedException, SQLException, IOException {
         System.out.println("MapController started");
+
+        // Login and Session Fetching
         userController.run();
+        // TODO: add locking. It should wait until
+        userController.waitForLogin();
+        this.sessionUser = db.getUserById(userController.getCurrentUserId());
 
         mapView.getMapPanel().renderStops(db.getAllStops());
         mapView.getMapPanel().setWaypointListener(new WaypointListener() {

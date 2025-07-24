@@ -14,39 +14,32 @@ import javax.swing.*;
 
 public class App {
     public static void main(String[] args) throws InterruptedException {
-        Thread preloadThread = new Thread(() -> {
+        try {
+            DatabaseService db = new DatabaseService();
+            StaticGtfsService staticGtfs = new StaticGtfsService();
+            RealtimeGtfsService realtimeGtfs = new RealtimeGtfsService();
+            db.preloadGtfsData(staticGtfs);
+            realtimeGtfs.startBackgroundThread();
+
             try {
-                DatabaseService db = new DatabaseService();
-                StaticGtfsService staticGtfs = new StaticGtfsService();
-                RealtimeGtfsService realtimeGtfs = new RealtimeGtfsService();
-                db.preloadGtfsData(staticGtfs);
-                realtimeGtfs.startBackgroundThread();
-
-                try {
-                    UIManager.setLookAndFeel(new FlatDarculaLaf());
-                } catch (Exception ex) {
-                    System.err.println("Failed to initialize LaF");
-                }
-
-                MainController controller = new MainController(db);
-                controller.run();
-            } catch (SQLException e) {
-                e.printStackTrace();
-                return;
-            } catch (IOException e) {
-                System.err.println("Error loading GTFS data");
-                e.printStackTrace();
-                return;
-            } catch (URISyntaxException e) {
-                System.err.println("Error loading realtime GTFS data");
-                e.printStackTrace();
-                return;
+                UIManager.setLookAndFeel(new FlatDarculaLaf());
+            } catch (Exception ex) {
+                System.err.println("Failed to initialize LaF");
             }
 
-        });
-        preloadThread.start();
-
-        // Wait for the preload thread to finish before proceeding
-        preloadThread.join();
+            MainController controller = new MainController(db);
+            controller.run();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return;
+        } catch (IOException e) {
+            System.err.println("Error loading GTFS data");
+            e.printStackTrace();
+            return;
+        } catch (URISyntaxException e) {
+            System.err.println("Error loading realtime GTFS data");
+            e.printStackTrace();
+            return;
+        }
     }
 }

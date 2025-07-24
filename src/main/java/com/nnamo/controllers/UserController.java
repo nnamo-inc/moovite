@@ -26,23 +26,22 @@ public class UserController {
     private LoginFrame loginFrame;
     private AppDirs appDirs = AppDirsFactory.getInstance();
     private Argon2 hasher = Argon2Factory.create();
+    private CountDownLatch loginLatch = new CountDownLatch(1);
 
     private final String dataDir = appDirs.getUserDataDir("moovite", null, "nnamo");
     private final String sessionPath = dataDir + "/session.txt";
 
     public UserController(DatabaseService db) {
         this.db = db;
+        this.loginFrame = new LoginFrame();
     }
 
     public void run() {
-
         // Open frame only if there's no active session
         if (getCurrentUserId() != -1) {
-            loginFrame.close();
             return;
         }
 
-        this.loginFrame = new LoginFrame();
         loginFrame.setLoginBehaviour(new LoginBehaviour() {
             @Override
             public void login(String username, String password) throws SQLException {
@@ -50,9 +49,6 @@ public class UserController {
 
                 UserModel user = db.getUserByName(username);
                 if (user != null && hasher.verify(user.getPasswordHash(), password.getBytes())) {
-                    System.out.println("you logged in");
-
-                    // TODO CREATE SESSION
                     createSession(user);
                 }
             }
@@ -76,11 +72,19 @@ public class UserController {
             FileWriter writer = new FileWriter(file);
             writer.write(user.getId());
             writer.close();
+
             loginFrame.close();
+            if (loginLatch != null) {
+                loginLatch.countDown(); // Release lock
+            }
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
         }
+    }
+
+    public synchronized void waitForLogin() throws InterruptedException {
+        loginLatch.await();
     }
 
     public void deleteCurrentSession() {
