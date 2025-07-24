@@ -150,11 +150,11 @@ public class StopPanel extends JPanel {
 
     // GETTERS AND SETTERS //
     public JTextField getTextID() {
-        return idFermata.getText();
+        return idFermata.getJTextField();
     }
 
     public JTextField getTextName() {
-        return nomeFermata.getText();
+        return nomeFermata.getJTextField();
     }
 
     public void updateStopTimes(List<StopTimeModel> stopTimes) {

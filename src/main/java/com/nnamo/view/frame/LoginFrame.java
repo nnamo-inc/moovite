@@ -14,12 +14,11 @@ import java.sql.SQLException;
 
 public class LoginFrame extends JFrame {
 
-    // private JTextField username = new JTextField(20);
-    private JTextField usernameField = new JTextField(20);
-    private JPasswordField passwordField = new JPasswordField(20);
-    private JButton login = new JButton("Login");
-    private JButton register = new JButton("Registrati");
-    private JLabel errore;
+    private InfoBar fieldUsername = new InfoBar("Username:");
+    private PasswordBar fieldPassword = new PasswordBar();
+    private JButton buttonLogin = new JButton("Login");
+    private JButton buttonRegister = new JButton("Registrati");
+    private JLabel errore = new JLabel(" ");
 
     private LoginBehaviour loginBehavior;
     private RegisterBehaviour registerBehavior;
@@ -27,48 +26,24 @@ public class LoginFrame extends JFrame {
     public LoginFrame() {
         super();
         setLayout(new GridBagLayout());
-        setSize(800, 600);
+        setSize(400, 250);
+        setResizable(false);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // JPanel centerPanel = new JPanel();
-        // centerPanel.setLayout(new GridBagLayout());
-        // add(centerPanel, BorderLayout.CENTER);
-
-        /*
-         * username.getText().setEditable(true);
-         * centerPanel.add(username, new GbcCustom().setPosition(0, 0).setWeight(1.0,
-         * 1.0).setAnchor(GridBagConstraints.CENTER)
-         * .setInsets(2, 5, 2, 5));
-         */
-
-        // username.getText().setEditable(true);
-        usernameField.setEditable(true);
-        add(usernameField,
-                new GbcCustom().setAnchor(GridBagConstraints.WEST).setPosition(0, 0).setWeight(0.5, 0).setWidth(1)
-                        .setHeight(1));
-
-        passwordField.setEditable(true);
-        add(passwordField, new GbcCustom()
-                .setAnchor(GridBagConstraints.WEST)
-                .setPosition(0, 1)
-                .setWeight(0.5, 0)
-                .setWidth(1)
-                .setHeight(1));
-
-        add(login, new GbcCustom()
-                .setAnchor(GridBagConstraints.CENTER)
-                .setPosition(0, 2)
-                .setWeight(0, 0)
-                .setWidth(2)
-                .setHeight(1));
-
-        add(register, new GbcCustom()
-                .setAnchor(GridBagConstraints.CENTER)
-                .setPosition(1, 2)
-                .setWeight(0, 0)
-                .setWidth(2)
-                .setHeight(1));
+        fieldUsername.getJTextField().setEditable(true);
+        add(fieldUsername, new GbcCustom().setPosition(0, 0).setWeight(1.0, 0.0)
+                .setAnchor(GridBagConstraints.CENTER).setInsets(10, 10, 5, 10));
+        add(fieldPassword, new GbcCustom().setPosition(0, 1).setWeight(1.0, 0.0)
+                .setAnchor(GridBagConstraints.CENTER).setInsets(5, 10, 5, 10));
+        add(buttonLogin, new GbcCustom().setPosition(0, 2).setWeight(1.0, 0.0)
+                .setAnchor(GridBagConstraints.CENTER).setInsets(5, 10, 5, 10));
+        JPanel buttonPanel = new JPanel(); buttonPanel.setLayout(new FlowLayout());
+        buttonPanel.add(buttonLogin); buttonPanel.add(buttonRegister);
+        add(buttonPanel, new GbcCustom().setPosition(0, 3).setWeight(1.0, 0.0)
+                .setAnchor(GridBagConstraints.CENTER).setInsets(5, 10, 5, 10));
+        add(errore, new GbcCustom().setPosition(0, 4).setWeight(1.0, 0.0)
+                .setAnchor(GridBagConstraints.CENTER).setInsets(5, 10, 5, 10));
 
         handleButtonListeners();
     }
@@ -82,11 +57,11 @@ public class LoginFrame extends JFrame {
     }
 
     private void handleButtonListeners() {
-        this.login.addActionListener(new ActionListener() {
+        this.buttonLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String username = usernameField.getText();
-                String password = new String(passwordField.getPassword());
+                String username = fieldUsername.getJTextField().getText();
+                String password = new String(fieldPassword.getJPasswordField().getPassword());
                 if (loginBehavior != null) {
                     try {
                         loginBehavior.login(username, password);
@@ -98,11 +73,11 @@ public class LoginFrame extends JFrame {
             }
         });
 
-        this.register.addActionListener(new ActionListener() {
+        this.buttonRegister.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String username = usernameField.getText();
-                String password = new String(passwordField.getPassword());
+                String username = fieldUsername.getJTextField().getText();
+                String password = new String(fieldPassword.getJPasswordField().getPassword());
                 if (registerBehavior != null) {
                     try {
                         registerBehavior.register(username, password);
@@ -124,12 +99,37 @@ public class LoginFrame extends JFrame {
     }
 
     public void resetFields() {
-        usernameField.setText("");
-        passwordField.setText("");
+        fieldUsername.getJTextField().setText("");
+        fieldPassword.getJPasswordField().setText("");
     }
 
     public void setError(String error) {
         errore.setText(error);
+    }
+
+    private class PasswordBar extends JPanel {
+        private JLabel label;
+        private JPasswordField password;
+
+        // CONSTRUCTOR //
+        public PasswordBar() {
+            super();
+            label = new JLabel("Password:");
+            label.setHorizontalAlignment(SwingConstants.RIGHT);
+            password = new JPasswordField(20);
+            password.setHorizontalAlignment(JTextField.LEFT);
+            password.setEditable(true);
+            setLayout(new GridBagLayout());
+            add(label, new GbcCustom().setPosition(0, 0).setWeight(0.0, 0.0)
+                    .setInsets(2, 5, 2, 5).setAnchor(GridBagConstraints.EAST));
+            add(password, new GbcCustom().setPosition(1, 0).setWeight(1.0, 1.0)
+                    .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 0, 2, 10).setAnchor(GridBagConstraints.WEST));
+        }
+
+        // GETTERS AND SETTERS //
+        public JPasswordField getJPasswordField() {
+            return password;
+        }
     }
 
 }
