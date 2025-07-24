@@ -354,6 +354,10 @@ public class DatabaseService {
         return null;
     }
 
+    public UserModel getUserById(int id) throws SQLException {
+        return getDao(UserModel.class).queryForId(id);
+    }
+
     // TODO: extract user and favorites logic in a separate UserService
     public void addFavoriteStop(int userId, String stopId) throws SQLException {
         Dao<FavoriteStopModel, String> favoriteStopDao = getDao(FavoriteStopModel.class);
