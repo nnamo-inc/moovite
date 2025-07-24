@@ -1,6 +1,7 @@
 package com.nnamo.view.frame;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
@@ -20,7 +21,6 @@ public class MainFrame extends JFrame {
 
     // COSTRUCTOR //
     public MainFrame() throws IOException {
-        // Set the JFrame properties
         super("Moovite Map View");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -48,6 +48,22 @@ public class MainFrame extends JFrame {
 
     public StopPanel getStopPanel() {
         return stopPanel;
+    }
+
+    public BufferedImage getCurrentStopIcon() {
+        return this.getMapPanel().getStopPainter().getCurrentIcon();
+    }
+
+    public void setStopId(String id) {
+        if (id != null) {
+            this.getStopPanel().getTextID().setText(id);
+        }
+    }
+
+    public void setStopName(String name) {
+        if (name != null) {
+            this.getStopPanel().getTextName().setText(name);
+        }
     }
 
     public void updateStopTimes(List<StopTimeModel> stopTimes) {

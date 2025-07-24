@@ -15,12 +15,11 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 public class MainController {
 
     DatabaseService db;
-    MainFrame mapView = new MainFrame();
+    MainFrame mainFrame = new MainFrame();
     UserController userController;
     UserModel sessionUser;
 
@@ -30,22 +29,26 @@ public class MainController {
     }
 
     public void run() throws InterruptedException, SQLException, IOException {
-        System.out.println("MapController started");
+        System.out.println("MainController started");
 
         // Login and Session Fetching
+        // TODO: add locking. MainFrame should wait until a session is created
         userController.run();
-        // TODO: add locking. It should wait until
         userController.waitForLogin();
         this.sessionUser = db.getUserById(userController.getCurrentUserId());
 
-        mapView.getMapPanel().renderStops(db.getAllStops());
-        mapView.getMapPanel().setWaypointListener(new WaypointListener() {
+        mainFrame.getMapPanel().renderStops(db.getAllStops());
+        handleStopClick();
+    }
+
+    private void handleStopClick() {
+        mainFrame.getMapPanel().setWaypointListener(new WaypointListener() {
             @Override
             public void waypointClicked(GeoPosition geo) throws SQLException, IOException {
                 // Convert the GeoPosition of the click to pixel coordinates
                 // then get the current icon from the StopPainter
-                Point2D clickPixel = mapView.getMapPanel().getMap().convertGeoPositionToPoint(geo);
-                BufferedImage currentIcon = mapView.getMapPanel().getStopPainter().getCurrentIcon();
+                Point2D clickPixel = mainFrame.getMapPanel().getMap().convertGeoPositionToPoint(geo);
+                BufferedImage currentIcon = mainFrame.getCurrentStopIcon();
                 if (currentIcon == null) {
                     return;
                 }
@@ -54,7 +57,7 @@ public class MainController {
                 // then check if the click position is inside the icon bounds
                 for (StopModel stop : db.getAllStops()) {
                     GeoPosition stopGeo = new GeoPosition(stop.getLatitude(), stop.getLongitude());
-                    Point2D stopPixel = mapView.getMapPanel().getMap().convertGeoPositionToPoint(stopGeo);
+                    Point2D stopPixel = mainFrame.getMapPanel().getMap().convertGeoPositionToPoint(stopGeo);
                     // Get icon width and height
                     int iconWidth = currentIcon.getWidth();
                     int iconImgHeight = currentIcon.getHeight();
@@ -72,28 +75,23 @@ public class MainController {
                         int alpha = new Color(argb, true).getAlpha();
                         // Check alpha
                         if (alpha > 0) {
-                            System.out.println("Click su fermata!");
-
                             var stopTimes = db.getNextStopTimes(stop.getId(), LocalTime.now());
                             updateStopPanel(stop, stopTimes);
-                            mapView.getStopPanel().revalidate();
-                            mapView.getStopPanel().setVisible(true);
+                            mainFrame.getStopPanel().revalidate();
+                            mainFrame.getStopPanel().setVisible(true);
                             return;
                         }
                     }
                 }
-                mapView.getStopPanel().setVisible((false));
-                mapView.getMapPanel().repaint();
+                mainFrame.getStopPanel().setVisible((false));
+                mainFrame.getMapPanel().repaint();
             }
         });
     }
 
     private void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes) throws SQLException, IOException {
-        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
-        // HERE WE'LL GET ALL THE INFO FROM THE DATABASE AND SET IT TO THE STOP PANEL
-        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
-        mapView.getStopPanel().getTextID().setText(stop.getId()); // Get and modify the stop ID
-        mapView.getStopPanel().getTextName().setText(stop.getName()); // Get and modify the stop name
-        mapView.updateStopTimes(stopTimes);
+        mainFrame.setStopId(stop.getId());
+        mainFrame.setStopName(stop.getName());
+        mainFrame.updateStopTimes(stopTimes);
     }
 }
