@@ -38,8 +38,7 @@ public class MainController {
         handleStopClick();
 
         // Login and Session Fetching
-        userController.run();
-        userController.addSessionListener(new SessionListener() {
+        userController.addSessionListener(new SessionListener() { // [!] Listener must be implemented before run()
             @Override
             public void onSessionCreated(int userId) {
                 try {
@@ -49,6 +48,7 @@ public class MainController {
                 }
             }
         });
+        userController.run();
     }
 
     private void handleStopClick() {
