@@ -1,5 +1,6 @@
 package com.nnamo.controllers;
 
+import com.nnamo.interfaces.SessionListener;
 import com.nnamo.interfaces.WaypointListener;
 import com.nnamo.models.StopModel;
 import com.nnamo.models.StopTimeModel;
@@ -19,7 +20,7 @@ import java.util.List;
 public class MainController {
 
     DatabaseService db;
-    MainFrame mainFrame = new MainFrame();
+    MainFrame mainFrame;
     UserController userController;
     UserModel sessionUser;
 
@@ -31,14 +32,23 @@ public class MainController {
     public void run() throws InterruptedException, SQLException, IOException {
         System.out.println("MainController started");
 
-        // Login and Session Fetching
-        // TODO: add locking. MainFrame should wait until a session is created
-        userController.run();
-        userController.waitForLogin();
-        this.sessionUser = db.getUserById(userController.getCurrentUserId());
-
+        // Initialize main frame
+        mainFrame = new MainFrame();
         mainFrame.getMapPanel().renderStops(db.getAllStops());
         handleStopClick();
+
+        // Login and Session Fetching
+        userController.run();
+        userController.addSessionListener(new SessionListener() {
+            @Override
+            public void onSessionCreated(int userId) {
+                try {
+                    sessionUser = db.getUserById(userId);
+                    mainFrame.open();
+                } catch (SQLException e) {
+                }
+            }
+        });
     }
 
     private void handleStopClick() {

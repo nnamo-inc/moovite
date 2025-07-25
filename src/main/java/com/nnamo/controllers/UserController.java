@@ -12,6 +12,7 @@ import java.util.concurrent.CountDownLatch;
 
 import com.nnamo.interfaces.LoginBehaviour;
 import com.nnamo.interfaces.RegisterBehaviour;
+import com.nnamo.interfaces.SessionListener;
 import com.nnamo.models.UserModel;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.view.frame.LoginFrame;
@@ -26,10 +27,11 @@ public class UserController {
     private LoginFrame loginFrame;
     private AppDirs appDirs = AppDirsFactory.getInstance();
     private Argon2 hasher = Argon2Factory.create();
-    private CountDownLatch loginLatch = new CountDownLatch(1);
 
     private final String dataDir = appDirs.getUserDataDir("moovite", null, "nnamo");
     private final String sessionPath = dataDir + "/session.txt";
+
+    private SessionListener sessionListener;
 
     public UserController(DatabaseService db) {
         this.db = db;
@@ -38,7 +40,11 @@ public class UserController {
 
     public void run() {
         // Open frame only if there's no active session
-        if (getCurrentUserId() != -1) {
+        int userId = getCurrentUserId();
+        if (sessionExists()) {
+            if (sessionListener != null) {
+                sessionListener.onSessionCreated(userId);
+            }
             return;
         }
 
@@ -63,28 +69,30 @@ public class UserController {
         loginFrame.open();
     }
 
+    public void addSessionListener(SessionListener listener) {
+        if (listener != null) {
+            this.sessionListener = listener;
+        }
+    }
+
     private void createSession(UserModel user) {
         File file = new File(sessionPath);
+        int userId = user.getId();
         try {
             Files.createDirectories(Path.of(dataDir));
             file.createNewFile();
 
             FileWriter writer = new FileWriter(file);
-            writer.write(user.getId());
+            writer.write(userId);
             writer.close();
-
-            loginFrame.close();
-            if (loginLatch != null) {
-                loginLatch.countDown(); // Release lock
+            if (sessionListener != null) {
+                sessionListener.onSessionCreated(userId);
             }
+            loginFrame.close();
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
         }
-    }
-
-    public synchronized void waitForLogin() throws InterruptedException {
-        loginLatch.await();
     }
 
     public void deleteCurrentSession() {
@@ -94,6 +102,10 @@ public class UserController {
             e.printStackTrace();
             System.exit(1);
         }
+    }
+
+    public boolean sessionExists() {
+        return getCurrentUserId() != -1;
     }
 
     public int getCurrentUserId() {

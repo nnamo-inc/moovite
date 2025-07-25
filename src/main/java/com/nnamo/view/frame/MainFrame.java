@@ -25,14 +25,22 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
-        // Initialize the center panel with the map and stop panels then add it to the JFrame
+        // Initialize the center panel with the map and stop panels then add it to the
+        // JFrame
         centerPanel.setLayout(new BorderLayout());
         centerPanel.add(mapPanel, BorderLayout.CENTER);
         centerPanel.add(stopPanel, BorderLayout.SOUTH);
         add(centerPanel, BorderLayout.CENTER);
         // Add the search panel to the JFrame
         add(searchPanel, BorderLayout.WEST);
+    }
+
+    public void open() {
         setVisible(true);
+    }
+
+    public void close() {
+        setVisible(false);
     }
 
     // METHODS //
