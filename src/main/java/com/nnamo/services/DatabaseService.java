@@ -2,6 +2,7 @@ package com.nnamo.services;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
+import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.misc.TransactionManager;
 import com.j256.ormlite.stmt.SelectArg;
@@ -299,8 +300,8 @@ public class DatabaseService {
                 .where()
                 .raw(
                         "FUZZY_SCORE(name, ?) > ?",
-                        new SelectArg(stopName),
-                        new SelectArg(scoreThreshold))
+                        new SelectArg(SqlType.STRING, stopName),
+                        new SelectArg(SqlType.DOUBLE, scoreThreshold))
                 .query();
     }
 
@@ -376,6 +377,9 @@ public class DatabaseService {
 
     public void addFavoriteStop(UserModel user, StopModel stop) throws SQLException {
         Dao<FavoriteStopModel, String> favoriteStopDao = getDao(FavoriteStopModel.class);
+        if (user == null || stop == null) {
+            return;
+        }
         favoriteStopDao.create(new FavoriteStopModel(user, stop));
     }
 

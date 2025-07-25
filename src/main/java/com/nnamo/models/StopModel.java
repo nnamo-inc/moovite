@@ -50,4 +50,14 @@ public class StopModel {
     public String getLocationType() {
         return location_type;
     }
+
+    public String toString() {
+        return "StopModel{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", location_type='" + location_type + '\'' +
+                '}';
+    }
 }

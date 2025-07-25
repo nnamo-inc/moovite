@@ -7,6 +7,8 @@ import java.util.List;
 
 import javax.swing.*;
 
+import com.nnamo.interfaces.FavoriteLineBehaviour;
+import com.nnamo.interfaces.FavoriteStopBehaviour;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.view.components.MapPanel;
 import com.nnamo.view.components.SearchPanel;
@@ -75,5 +77,13 @@ public class MainFrame extends JFrame {
 
     public void updateStopTimes(List<StopTimeModel> stopTimes) {
         this.stopPanel.updateStopTimes(stopTimes);
+    }
+
+    public void setFavStopBehaviour(FavoriteStopBehaviour behaviour) {
+        this.stopPanel.setFavStopBehaviour(behaviour);
+    }
+
+    public void setFavLineBehaviour(FavoriteLineBehaviour behaviour) {
+        this.stopPanel.setFavLineBehaviour(behaviour);
     }
 }

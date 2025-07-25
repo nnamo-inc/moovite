@@ -1,5 +1,6 @@
 package com.nnamo.controllers;
 
+import com.nnamo.interfaces.FavoriteStopBehaviour;
 import com.nnamo.interfaces.SessionListener;
 import com.nnamo.interfaces.WaypointListener;
 import com.nnamo.models.StopModel;
@@ -36,6 +37,7 @@ public class MainController {
         mainFrame = new MainFrame();
         mainFrame.getMapPanel().renderStops(db.getAllStops());
         handleStopClick();
+        handleFavouriteClicks();
 
         // Login and Session Fetching
         userController.addSessionListener(new SessionListener() { // [!] Listener must be implemented before run()
@@ -45,10 +47,26 @@ public class MainController {
                     sessionUser = db.getUserById(userId);
                     mainFrame.open();
                 } catch (SQLException e) {
+                    e.printStackTrace();
+                    System.exit(1);
                 }
             }
         });
         userController.run();
+    }
+
+    private void handleFavouriteClicks() {
+        mainFrame.setFavStopBehaviour(new FavoriteStopBehaviour() {
+            @Override
+            public void addFavoriteStop(String stopId) {
+                try {
+                    db.addFavoriteStop(sessionUser.getId(), stopId);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    System.exit(1);
+                }
+            }
+        });
     }
 
     private void handleStopClick() {

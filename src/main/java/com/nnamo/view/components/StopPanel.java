@@ -6,6 +6,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
+import com.nnamo.interfaces.FavoriteLineBehaviour;
+import com.nnamo.interfaces.FavoriteStopBehaviour;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.TripModel;
@@ -14,6 +16,8 @@ import com.nnamo.view.customcomponents.InfoBar;
 import com.nnamo.view.customcomponents.SearchBar;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.time.LocalTime;
@@ -35,6 +39,11 @@ public class StopPanel extends JPanel {
     // Prefer components
     private JButton buttonPreferStop = new JButton("Stop");
     private JButton buttonPreferRoute = new JButton("Route");
+
+    private String favoriteStopId;
+
+    private FavoriteStopBehaviour favStopBehaviour;
+    private FavoriteLineBehaviour favLineBehaviour;
 
     // CONSTRUCTOR //
     public StopPanel() {
@@ -59,7 +68,29 @@ public class StopPanel extends JPanel {
         JPanel PanelPrefer = newPanelPrefer();
         add(PanelPrefer, new GbcCustom().setPosition(2, 0).setWeight(1.0, 1.0).setHeight(2)
                 .setFill(GridBagConstraints.BOTH).setInsets(10, 10, 5, 5));
-        // set initial visibility to false
+
+        buttonPreferStop.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (favStopBehaviour != null) {
+                    favStopBehaviour.addFavoriteStop(idFermata.getTextValue());
+                    System.out.println("Stop " + idFermata.getTextValue() + " successfuly added to favorites");
+                    return;
+                }
+                System.out.println("Fav Stop behaviour not implemented");
+            }
+        });
+
+        buttonPreferRoute.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO Implement
+                if (favStopBehaviour != null) {
+                    return;
+                }
+                System.out.println("Fav Route behaviour not implemented");
+            }
+        });
         setVisible(false);
     }
 
@@ -70,8 +101,9 @@ public class StopPanel extends JPanel {
         TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Informazioni fermata");
         infoStop.setBorder(titledBorder);
         // label name
-        infoStop.add(nomeFermata, new GbcCustom().setPosition(0, 0).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.EAST)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
+        infoStop.add(nomeFermata,
+                new GbcCustom().setPosition(0, 0).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.EAST)
+                        .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
         // text name
         infoStop.add(idFermata, new GbcCustom().setPosition(0, 1).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.WEST)
                 .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
@@ -84,14 +116,17 @@ public class StopPanel extends JPanel {
         TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Informazioni bus");
         infoBus.setBorder(titledBorder);
         // label bus
-        infoBus.add(busInArrivo, new GbcCustom().setPosition(0, 0).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.EAST)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
+        infoBus.add(busInArrivo,
+                new GbcCustom().setPosition(0, 0).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.EAST)
+                        .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
         // text bus
-        infoBus.add(statoBusInArrivo, new GbcCustom().setPosition(0, 1).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.EAST)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
+        infoBus.add(statoBusInArrivo,
+                new GbcCustom().setPosition(0, 1).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.EAST)
+                        .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
         // label state
-        infoBus.add(numeroPosti, new GbcCustom().setPosition(0, 2).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.EAST)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
+        infoBus.add(numeroPosti,
+                new GbcCustom().setPosition(0, 2).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.EAST)
+                        .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
         return infoBus;
     }
 
@@ -175,9 +210,21 @@ public class StopPanel extends JPanel {
             tableModelBus.addRow(new Object[] {
                     route.getShortName(),
                     arrivalTime.toString(),
-                    "In Orario", // DA AGGIORNARE CON DATI IN REALTIME
+                    "In Orario", // TODO: DA AGGIORNARE CON DATI IN REALTIME
                     null
             });
+        }
+    }
+
+    public void setFavStopBehaviour(FavoriteStopBehaviour behaviour) {
+        if (behaviour != null) {
+            this.favStopBehaviour = behaviour;
+        }
+    }
+
+    public void setFavLineBehaviour(FavoriteLineBehaviour behaviour) {
+        if (behaviour != null) {
+            this.favLineBehaviour = behaviour;
         }
     }
 }

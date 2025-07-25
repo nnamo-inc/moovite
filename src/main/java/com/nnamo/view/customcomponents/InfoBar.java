@@ -28,6 +28,10 @@ public class InfoBar extends JPanel {
         return label;
     }
 
+    public String getTextValue() {
+        return this.text.getText();
+    }
+
     public void setJLabel(JLabel label) {
         this.label = label;
     }
