@@ -2,6 +2,8 @@ package com.nnamo.view.customcomponents;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class SearchBar extends JPanel {
 
@@ -18,9 +20,22 @@ public class SearchBar extends JPanel {
         add(searchButton, new GbcCustom().setPosition(2, 0).setAnchor(GridBagConstraints.EAST).setWeight(0, 0.0).setInsets(5, 5, 5, 5));
     }
 
+    // METHODS //
+    public void changeButtonAction(ActionListener actionListener) {
+        searchButton.removeActionListener(searchButton.getActionListeners()[0]); // Remove the previous action listener
+        searchButton.addActionListener(actionListener); // Add the new action listener
+    }
     // GETTERS AND SETTERS //
     public JTextField getSearchField() {
         return searchField;
+    }
+
+    public String getText() {
+        return searchField.getText();
+    }
+
+    public void setText(String text) {
+        searchField.setText(text);
     }
 
     public void setSearchField(JTextField searchField) {

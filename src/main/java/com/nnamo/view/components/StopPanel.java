@@ -14,6 +14,7 @@ import com.nnamo.models.TripModel;
 import com.nnamo.view.customcomponents.GbcCustom;
 import com.nnamo.view.customcomponents.InfoBar;
 import com.nnamo.view.customcomponents.SearchBar;
+import com.nnamo.view.customcomponents.CustomTable;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -33,8 +34,9 @@ public class StopPanel extends JPanel {
     private final InfoBar statoBusInArrivo = new InfoBar("Stato autobus in arrivo: ");
     private final InfoBar numeroPosti = new InfoBar("Numero posti: ");
     // Route info components
-    private JTable tableBus;
-    private DefaultTableModel tableModelBus;
+    private CustomTable table;
+        private DefaultTableModel model;
+        private TableRowSorter sorter;
     private SearchBar searchBar;
     // Prefer components
     private JButton buttonPreferStop = new JButton("Stop");
@@ -61,8 +63,10 @@ public class StopPanel extends JPanel {
         add(PanelbusInfo, new GbcCustom().setPosition(0, 1).setWeight(1.0, 1.0)
                 .setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 5, 5));
         // Route info panel
-        JPanel TableRouteInfo = newRouteInfoPanel();
-        add(TableRouteInfo, new GbcCustom().setPosition(1, 0).setWeight(1.0, 1.0).setHeight(2)
+        JPanel tableRouteInfo = newRouteInfoPanel();
+        TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Tabella corse");
+        tableRouteInfo.setBorder(titledBorder);
+        add(tableRouteInfo, new GbcCustom().setPosition(1, 0).setWeight(1.0, 1.0).setHeight(2)
                 .setFill(GridBagConstraints.BOTH).setInsets(10, 10, 5, 5));
         // Buttons prefer
         JPanel PanelPrefer = newPanelPrefer();
@@ -131,35 +135,22 @@ public class StopPanel extends JPanel {
     }
 
     private JPanel newRouteInfoPanel() {
-        String[] columnNames = { "Autobus", "Orario Arrivo", "Stato", "In ritardo" };
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        mainPanel.setPreferredSize(new Dimension(100, 400));
+        this.table = new CustomTable(new String[]{ "Autobus", "Orario Arrivo", "Stato", "In ritardo" });
+        mainPanel.add(searchBar = new SearchBar(),
+                new GbcCustom().setPosition(0, 0).setWeight(1.0, 0).setAnchor(GridBagConstraints.CENTER)
+                        .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 5, 2, 5));
+        mainPanel.add(table, new GbcCustom().setPosition(0, 1).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.CENTER)
+                .setFill(GridBagConstraints.BOTH).setInsets(10, 10, 10, 10));
 
-        tableModelBus = new DefaultTableModel(columnNames, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        tableBus = new JTable(tableModelBus);
-
-        JScrollPane scrollPane = new JScrollPane(tableBus);
-        scrollPane.setPreferredSize(new Dimension(400, 100));
-
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        TitledBorder border = new TitledBorder(new LineBorder(Color.lightGray, 2), "Tabella autobus in arrivo");
-        mainPanel.setBorder(border);
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
-        // Search Bar
-        mainPanel.add(searchBar = new SearchBar(), BorderLayout.NORTH);
-
-        TableRowSorter sorter = new TableRowSorter(tableModelBus);
+        TableRowSorter sorter = table.getRowSorter();
         sorter.setSortable(1, false);
-        tableBus.setRowSorter(sorter);
 
-        JTextField textSearchBus = searchBar.getSearchField();
-        textSearchBus.addKeyListener(new KeyAdapter() {
+        searchBar.getSearchField().addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                String searchText = textSearchBus.getText().trim();
+                String searchText = searchBar.getText().trim();
                 if (searchText.isEmpty()) {
                     sorter.setRowFilter(null);
                 } else {
@@ -168,6 +159,13 @@ public class StopPanel extends JPanel {
             }
         });
 
+        searchBar.getSearchButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                searchBar.setText("");
+                sorter.setRowFilter(null);
+            }
+        });
         return mainPanel;
     }
 
@@ -193,7 +191,8 @@ public class StopPanel extends JPanel {
     }
 
     public void updateStopTimes(List<StopTimeModel> stopTimes) {
-        this.tableModelBus.setRowCount(0); // Remove previous rows
+        DefaultTableModel model = table.getModel();
+        model.setRowCount(0); // Remove previous rows
         for (StopTimeModel stopTime : stopTimes) {
             LocalTime arrivalTime = LocalTime.ofInstant(stopTime.getArrivalTime().toInstant(), ZoneId.systemDefault());
             TripModel trip = stopTime.getTrip(); // Corsa
@@ -207,7 +206,7 @@ public class StopPanel extends JPanel {
                 continue;
             }
 
-            tableModelBus.addRow(new Object[] {
+            model.addRow(new Object[] {
                     route.getShortName(),
                     arrivalTime.toString(),
                     "In Orario", // TODO: DA AGGIORNARE CON DATI IN REALTIME
