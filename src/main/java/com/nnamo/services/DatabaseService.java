@@ -411,4 +411,30 @@ public class DatabaseService {
     public boolean hasFavoriteStop(UserModel user) throws SQLException {
         return hasFavoriteStop(user.getId());
     }
+
+    public boolean isFavoriteStop(int userId, String stopId) throws SQLException {
+        Dao<FavoriteStopModel, String> favoriteStopDao = getDao(FavoriteStopModel.class);
+        var favorites = favoriteStopDao
+                .queryBuilder()
+                .where()
+                .eq("user_id", userId)
+                .and()
+                .eq("stop_id", stopId)
+                .query();
+
+        return !favorites.isEmpty();
+    }
+
+    public boolean isFavouriteRoute(int userId, String routeId) throws SQLException {
+        Dao<FavoriteLineModel, String> favoriteLineDao = getDao(FavoriteLineModel.class);
+        var favorites = favoriteLineDao
+                .queryBuilder()
+                .where()
+                .eq("user_id", userId)
+                .and()
+                .eq("route_id", routeId)
+                .query();
+
+        return !favorites.isEmpty();
+    }
 }

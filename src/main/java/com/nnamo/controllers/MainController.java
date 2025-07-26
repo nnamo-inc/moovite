@@ -1,8 +1,7 @@
 package com.nnamo.controllers;
 
-import com.nnamo.interfaces.FavoriteStopBehaviour;
-import com.nnamo.interfaces.SessionListener;
-import com.nnamo.interfaces.WaypointListener;
+import com.nnamo.interfaces.*;
+import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.UserModel;
@@ -61,12 +60,26 @@ public class MainController {
             public void addFavoriteStop(String stopId) {
                 try {
                     db.addFavoriteStop(sessionUser.getId(), stopId);
+                    mainFrame.updateStopPanelPreferStopButton("Remove Stop from favourite");
                 } catch (SQLException e) {
                     e.printStackTrace();
                     System.exit(1);
                 }
             }
         });
+
+        /*mainFrame.setFavLineBehaviour(new FavoriteLineBehaviour() {
+            @Override
+            public void addFavoriteLine(String lineId) {
+                try {
+                    db.addFavoriteRoute();
+                    mainFrame.updateStopPanelPreferRouteButton("Add route to favourite");
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    System.exit(1);
+                }
+            }
+        });*/
     }
 
     private void handleStopClick() {
@@ -104,9 +117,7 @@ public class MainController {
                         // Check alpha
                         if (alpha > 0) {
                             var stopTimes = db.getNextStopTimes(stop.getId(), LocalTime.now());
-                            updateStopPanel(stop, stopTimes);
-                            mainFrame.getStopPanel().revalidate();
-                            mainFrame.getStopPanel().setVisible(true);
+                            openAndUpdateStopPanel(stop, stopTimes);
                             return;
                         }
                     }
@@ -117,9 +128,30 @@ public class MainController {
         });
     }
 
-    private void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes) throws SQLException, IOException {
-        mainFrame.setStopId(stop.getId());
-        mainFrame.setStopName(stop.getName());
-        mainFrame.updateStopTimes(stopTimes);
+
+    private void openAndUpdateStopPanel(StopModel stop, List<StopTimeModel> stopTimes) throws SQLException, IOException {
+        mainFrame.updateStopPanelInfo(stop.getId(), stop.getName());
+        mainFrame.updateStopPanelTimes(stopTimes);
+        updateStopPanelPreferStopButton(stop);
+        /*updateStopPanelPreferRouteButton();*/
+
+        mainFrame.getStopPanel().revalidate();
+        mainFrame.getStopPanel().setVisible(true);}
+
+    private void updateStopPanelPreferStopButton(StopModel stop) throws SQLException {
+        if (db.isFavoriteStop(sessionUser.getId(), stop.getId())) {
+            mainFrame.updateStopPanelPreferStopButton("Rimuovi fermata dai preferiti");
+        } else {
+            mainFrame.updateStopPanelPreferStopButton("Aggiungi fermata ai preferiti");
+        }
     }
+
+    // TODO implements update prefer route button text
+    /*private void updateStopPanelPreferRouteButton() throws SQLException {
+        if (mainFrame.isRouteButtonEnabled() && db.isFavouriteRoute(sessionUser.getId(), route.getId())) {
+            mainFrame.updateStopPanelPreferRouteButton("Rimuovi percorso dai preferiti");
+        } else {
+            mainFrame.updateStopPanelPreferRouteButton("Aggiungi percorso ai preferiti");
+        }
+    }*/
 }

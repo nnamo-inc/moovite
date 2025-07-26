@@ -25,7 +25,8 @@ public class MainFrame extends JFrame {
     public MainFrame() throws IOException {
         super("Moovite Map View");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        /*setExtendedState(JFrame.MAXIMIZED_BOTH);*/
+        setSize(new Dimension(1000, 800));
         setLayout(new BorderLayout());
         // Initialize the center panel with the map and stop panels then add it to the
         // JFrame
@@ -48,6 +49,27 @@ public class MainFrame extends JFrame {
     // METHODS //
     private Dimension getScreenSize() {
         return Toolkit.getDefaultToolkit().getScreenSize();
+    }
+
+    public void updateStopPanelInfo(String id, String nome) {
+        this.stopPanel.getTextID().setText(id);
+        this.stopPanel.getTextName().setText(nome);
+    }
+
+    public void updateStopPanelTimes(List<StopTimeModel> stopTimes) {
+        this.stopPanel.updateStopTimes(stopTimes);
+    }
+
+    public void updateStopPanelPreferStopButton(String string) {
+        this.stopPanel.updateStopPanelPreferStopButton(string);
+    }
+
+    public void updateStopPanelPreferRouteButton(String string) {
+        this.stopPanel.updateStopPanelPreferRouteButton(string);
+    }
+
+    public boolean isRouteButtonEnabled() {
+        return this.stopPanel.isRouteButtonEnabled();
     }
 
     // GETTERS AND SETTERS //
@@ -73,10 +95,6 @@ public class MainFrame extends JFrame {
         if (name != null) {
             this.getStopPanel().getTextName().setText(name);
         }
-    }
-
-    public void updateStopTimes(List<StopTimeModel> stopTimes) {
-        this.stopPanel.updateStopTimes(stopTimes);
     }
 
     public void setFavStopBehaviour(FavoriteStopBehaviour behaviour) {
