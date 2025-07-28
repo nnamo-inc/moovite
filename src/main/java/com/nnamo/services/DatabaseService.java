@@ -52,7 +52,7 @@ public class DatabaseService {
         this.daos.put(ServiceModel.class, DaoManager.createDao(connection, ServiceModel.class));
         this.daos.put(StopTimeModel.class, DaoManager.createDao(connection, StopTimeModel.class));
         this.daos.put(UserModel.class, DaoManager.createDao(connection, UserModel.class));
-        this.daos.put(FavoriteLineModel.class, DaoManager.createDao(connection, FavoriteLineModel.class));
+        this.daos.put(FavoriteRouteModel.class, DaoManager.createDao(connection, FavoriteRouteModel.class));
         this.daos.put(FavoriteStopModel.class, DaoManager.createDao(connection, FavoriteStopModel.class));
     }
 
@@ -65,7 +65,7 @@ public class DatabaseService {
         TableUtils.createTableIfNotExists(connection, UserModel.class);
         TableUtils.createTableIfNotExists(connection, StopTimeModel.class);
         TableUtils.createTableIfNotExists(connection, FavoriteStopModel.class);
-        TableUtils.createTableIfNotExists(connection, FavoriteLineModel.class);
+        TableUtils.createTableIfNotExists(connection, FavoriteRouteModel.class);
     }
 
     public boolean needsCaching() throws SQLException {
@@ -383,6 +383,18 @@ public class DatabaseService {
         favoriteStopDao.create(new FavoriteStopModel(user, stop));
     }
 
+    public void removeFavoriteStop(int userId, String stopId) throws SQLException {
+        Dao<FavoriteStopModel, String> favoriteStopDao = getDao(FavoriteStopModel.class);
+
+        var deleteBuilder = favoriteStopDao.deleteBuilder();
+        deleteBuilder
+                .where()
+                .eq("user_id", userId)
+                .and()
+                .eq("stop_id", stopId);
+        deleteBuilder.delete();
+    }
+
     // TODO: possibile optimization with raw query and join to fix N+1 problem
     public List<StopModel> getFavoriteStops(int userId) throws SQLException {
         Dao<FavoriteStopModel, String> favoriteStopDao = getDao(FavoriteStopModel.class);
@@ -425,8 +437,51 @@ public class DatabaseService {
         return !favorites.isEmpty();
     }
 
+    public void addFavoriteRoute(int userId, String routeId) throws SQLException {
+        Dao<FavoriteRouteModel, String> favoriteRouteDao = getDao(FavoriteRouteModel.class);
+        Dao<UserModel, Integer> userDao = getDao(UserModel.class);
+        Dao<RouteModel, String> routeDao = getDao(RouteModel.class);
+
+        UserModel user = userDao.queryForId(userId);
+        RouteModel route = routeDao.queryForId(routeId);
+
+        if (user == null || route == null) {
+            return;
+        }
+
+        favoriteRouteDao.create(new FavoriteRouteModel(user, route));
+    }
+
+    public void removeFavoriteRoute(int userId, String routeId) throws SQLException {
+        Dao<FavoriteRouteModel, String> favoriteRouteDao = getDao(FavoriteRouteModel.class);
+
+        var deleteBuilder = favoriteRouteDao.deleteBuilder();
+        deleteBuilder
+                .where()
+                .eq("user_id", userId)
+                .and()
+                .eq("route_id", routeId);
+        deleteBuilder.delete();
+    }
+
+    public List<RouteModel> getFavoriteRoutes(int userId) throws SQLException {
+        Dao<FavoriteRouteModel, String> favoriteRouteDao = getDao(FavoriteRouteModel.class);
+
+        var favorites = favoriteRouteDao
+                .queryBuilder()
+                .where()
+                .eq("user_id", userId)
+                .query();
+
+        List<RouteModel> routes = new ArrayList<>();
+        for (FavoriteRouteModel favorite : favorites) {
+            routes.add(favorite.getRoute());
+        }
+        return routes;
+    }
+
     public boolean isFavouriteRoute(int userId, String routeId) throws SQLException {
-        Dao<FavoriteLineModel, String> favoriteLineDao = getDao(FavoriteLineModel.class);
+        Dao<FavoriteRouteModel, String> favoriteLineDao = getDao(FavoriteRouteModel.class);
         var favorites = favoriteLineDao
                 .queryBuilder()
                 .where()
