@@ -25,7 +25,7 @@ public class MainFrame extends JFrame {
     public MainFrame() throws IOException {
         super("Moovite Map View");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        /*setExtendedState(JFrame.MAXIMIZED_BOTH);*/
+        /* setExtendedState(JFrame.MAXIMIZED_BOTH); */
         setSize(new Dimension(1000, 800));
         setLayout(new BorderLayout());
         // Initialize the center panel with the map and stop panels then add it to the
@@ -61,11 +61,11 @@ public class MainFrame extends JFrame {
     }
 
     public void updateStopPanelPreferStopButton(String string) {
-        this.stopPanel.updateStopPanelPreferStopButton(string);
+        this.stopPanel.updateFavoriteStopMessage(string);
     }
 
     public void updateStopPanelPreferRouteButton(String string) {
-        this.stopPanel.updateStopPanelPreferRouteButton(string);
+        this.stopPanel.updateFavoriteRouteMessage(string);
     }
 
     public boolean isRouteButtonEnabled() {
@@ -104,4 +104,9 @@ public class MainFrame extends JFrame {
     public void setFavLineBehaviour(FavoriteLineBehaviour behaviour) {
         this.stopPanel.setFavLineBehaviour(behaviour);
     }
+
+    public void setFavoriteStopFlag(boolean favorite) {
+        this.stopPanel.setFavoriteStopFlag(favorite);
+    }
+
 }

@@ -20,7 +20,7 @@ import java.util.List;
 public class MainController {
 
     DatabaseService db;
-    MainFrame mainFrame;
+    MainFrame mainFrame = new MainFrame();
     UserController userController;
     UserModel sessionUser;
 
@@ -33,7 +33,6 @@ public class MainController {
         System.out.println("MainController started");
 
         // Initialize main frame
-        mainFrame = new MainFrame();
         mainFrame.getMapPanel().renderStops(db.getAllStops());
         handleStopClick();
         handleFavouriteClicks();
@@ -68,18 +67,21 @@ public class MainController {
             }
         });
 
-        /*mainFrame.setFavLineBehaviour(new FavoriteLineBehaviour() {
-            @Override
-            public void addFavoriteLine(String lineId) {
-                try {
-                    db.addFavoriteRoute();
-                    mainFrame.updateStopPanelPreferRouteButton("Add route to favourite");
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    System.exit(1);
-                }
-            }
-        });*/
+        /*
+         * mainFrame.setFavLineBehaviour(new FavoriteLineBehaviour() {
+         * 
+         * @Override
+         * public void addFavoriteLine(String lineId) {
+         * try {
+         * db.addFavoriteRoute();
+         * mainFrame.updateStopPanelPreferRouteButton("Add route to favourite");
+         * } catch (SQLException e) {
+         * e.printStackTrace();
+         * System.exit(1);
+         * }
+         * }
+         * });
+         */
     }
 
     private void handleStopClick() {
@@ -116,7 +118,7 @@ public class MainController {
                         int alpha = new Color(argb, true).getAlpha();
                         // Check alpha
                         if (alpha > 0) {
-                            var stopTimes = db.getNextStopTimes(stop.getId(), LocalTime.now());
+                            List<StopTimeModel> stopTimes = db.getNextStopTimes(stop.getId(), LocalTime.now());
                             openAndUpdateStopPanel(stop, stopTimes);
                             return;
                         }
@@ -128,30 +130,25 @@ public class MainController {
         });
     }
 
-
-    private void openAndUpdateStopPanel(StopModel stop, List<StopTimeModel> stopTimes) throws SQLException, IOException {
+    private void openAndUpdateStopPanel(StopModel stop, List<StopTimeModel> stopTimes)
+            throws SQLException, IOException {
         mainFrame.updateStopPanelInfo(stop.getId(), stop.getName());
         mainFrame.updateStopPanelTimes(stopTimes);
-        updateStopPanelPreferStopButton(stop);
-        /*updateStopPanelPreferRouteButton();*/
+        mainFrame.setFavoriteStopFlag(db.isFavoriteStop(sessionUser.getId(), stop.getId()));
 
         mainFrame.getStopPanel().revalidate();
-        mainFrame.getStopPanel().setVisible(true);}
-
-    private void updateStopPanelPreferStopButton(StopModel stop) throws SQLException {
-        if (db.isFavoriteStop(sessionUser.getId(), stop.getId())) {
-            mainFrame.updateStopPanelPreferStopButton("Rimuovi fermata dai preferiti");
-        } else {
-            mainFrame.updateStopPanelPreferStopButton("Aggiungi fermata ai preferiti");
-        }
+        mainFrame.getStopPanel().setVisible(true);
     }
 
     // TODO implements update prefer route button text
-    /*private void updateStopPanelPreferRouteButton() throws SQLException {
-        if (mainFrame.isRouteButtonEnabled() && db.isFavouriteRoute(sessionUser.getId(), route.getId())) {
-            mainFrame.updateStopPanelPreferRouteButton("Rimuovi percorso dai preferiti");
-        } else {
-            mainFrame.updateStopPanelPreferRouteButton("Aggiungi percorso ai preferiti");
-        }
-    }*/
+    /*
+     * private void updateStopPanelPreferRouteButton() throws SQLException {
+     * if (mainFrame.isRouteButtonEnabled() &&
+     * db.isFavouriteRoute(sessionUser.getId(), route.getId())) {
+     * mainFrame.updateStopPanelPreferRouteButton("Rimuovi percorso dai preferiti");
+     * } else {
+     * mainFrame.updateStopPanelPreferRouteButton("Aggiungi percorso ai preferiti");
+     * }
+     * }
+     */
 }
