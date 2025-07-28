@@ -4,22 +4,22 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 // Rappresenta una corsa di una linea (ad esempio, corsa delle 8:00 della linea 163)
-@DatabaseTable(tableName = "favorite_lines")
-public class FavoriteLineModel {
+@DatabaseTable(tableName = "favorite_routes")
+public class FavoriteRouteModel {
 
     @DatabaseField(generatedId = true) // AUTO INCREMENT ID
     private int id;
 
-    @DatabaseField(foreign = true)
+    @DatabaseField(foreign = true, uniqueCombo = true)
     private UserModel user;
 
-    @DatabaseField(foreign = true)
-    private TripModel route;
+    @DatabaseField(foreign = true, uniqueCombo = true)
+    private RouteModel route;
 
-    public FavoriteLineModel() { // Empty constructor required by OrmLite
+    public FavoriteRouteModel() { // Empty constructor required by OrmLite
     }
 
-    public FavoriteLineModel(UserModel user, TripModel route) { // Empty constructor required by OrmLite
+    public FavoriteRouteModel(UserModel user, RouteModel route) { // Empty constructor required by OrmLite
         this.user = user;
         this.route = route;
     }
@@ -32,7 +32,7 @@ public class FavoriteLineModel {
         return user;
     }
 
-    public TripModel getRoute() {
+    public RouteModel getRoute() {
         return route;
     }
 }

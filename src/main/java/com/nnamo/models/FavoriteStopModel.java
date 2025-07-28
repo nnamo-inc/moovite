@@ -10,10 +10,10 @@ public class FavoriteStopModel {
     @DatabaseField(generatedId = true) // AUTO INCREMENT ID
     private int id;
 
-    @DatabaseField(foreign = true)
+    @DatabaseField(foreign = true, uniqueCombo = true)
     private UserModel user;
 
-    @DatabaseField(foreign = true)
+    @DatabaseField(foreign = true, uniqueCombo = true)
     private StopModel stop;
 
     public FavoriteStopModel() { // Empty constructor required by OrmLite
