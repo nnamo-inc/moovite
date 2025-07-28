@@ -8,6 +8,7 @@ import java.util.List;
 import javax.swing.*;
 
 import com.nnamo.interfaces.FavoriteBehaviour;
+import com.nnamo.interfaces.TableClickListener;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.view.components.MapPanel;
 import com.nnamo.view.components.SearchPanel;
@@ -18,6 +19,7 @@ public class MainFrame extends JFrame {
     StopPanel stopPanel = new StopPanel();
     SearchPanel searchPanel = new SearchPanel();
 
+    // Center panel contains map, stop, search
     JPanel centerPanel = new JPanel();
 
     // COSTRUCTOR //
@@ -27,12 +29,13 @@ public class MainFrame extends JFrame {
         /* setExtendedState(JFrame.MAXIMIZED_BOTH); */
         setSize(new Dimension(1000, 800));
         setLayout(new BorderLayout());
-        // Initialize the center panel with the map and stop panels then add it to the
-        // JFrame
+
+        // Initialize the center panel with the map and stop panels then add it to the JFrame
         centerPanel.setLayout(new BorderLayout());
         centerPanel.add(mapPanel, BorderLayout.CENTER);
         centerPanel.add(stopPanel, BorderLayout.SOUTH);
         add(centerPanel, BorderLayout.CENTER);
+
         // Add the search panel to the JFrame
         add(searchPanel, BorderLayout.WEST);
     }
@@ -58,14 +61,9 @@ public class MainFrame extends JFrame {
         this.stopPanel.updateStopTimes(stopTimes);
     }
 
-    public void updateStopPanelPreferRouteButton(String string) {
-        this.stopPanel.updateFavoriteRouteMessage(string);
+    public void updatePreferRouteButton(Boolean isFavorite, String routeNumber) {
+        this.stopPanel.updatePreferRouteButton(isFavorite, routeNumber);
     }
-
-    public boolean isRouteButtonEnabled() {
-        return this.stopPanel.isRouteButtonEnabled();
-    }
-
     // GETTERS AND SETTERS //
     public MapPanel getMapPanel() {
         return mapPanel;
@@ -97,6 +95,10 @@ public class MainFrame extends JFrame {
 
     public void setFavLineBehaviour(FavoriteBehaviour behaviour) {
         this.stopPanel.setFavRouteBehaviour(behaviour);
+    }
+
+    public void setTableClickListener(TableClickListener listener) {
+        this.stopPanel.setTableClickListener(listener);
     }
 
     public void updateStopPanelPreferButtons(boolean favorite, String stop) {

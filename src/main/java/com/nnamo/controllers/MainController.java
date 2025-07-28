@@ -1,6 +1,7 @@
 package com.nnamo.controllers;
 
 import com.nnamo.interfaces.*;
+import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.UserModel;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Vector;
 
 public class MainController {
 
@@ -67,19 +69,41 @@ public class MainController {
 
             @Override
             public void removeFavorite(String stopId) {
-                // Remove the favorite stop from the database
+                try {
+                    db.removeFavoriteStop(sessionUser.getId(), stopId);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+
+        mainFrame.setTableClickListener(new TableClickListener() {
+            @Override
+            public void onRowClick(Object rowData) throws SQLException {
+                String routeNumber = (String) ((List<Object>) rowData).get(0);
+                boolean isFavorite = db.isFavouriteRoute(sessionUser.getId(), routeNumber);
+                mainFrame.updatePreferRouteButton(isFavorite, routeNumber);
             }
         });
 
         mainFrame.setFavLineBehaviour(new FavoriteBehaviour() {
             @Override
             public void addFavorite(String string) {
-
+                try {
+                    db.addFavoriteRoute(sessionUser.getId(), string);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    System.exit(1);
+                }
             }
 
             @Override
             public void removeFavorite(String string) {
-
+                try {
+                    db.removeFavoriteRoute(sessionUser.getId(), string);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
 
@@ -152,6 +176,7 @@ public class MainController {
         mainFrame.updateStopPanelTimes(stopTimes);
         mainFrame.updateStopPanelPreferButtons(db.isFavoriteStop(sessionUser.getId(), stop.getId()), stop.getId());
         mainFrame.getStopPanel().revalidate();
+        mainFrame.getStopPanel().setVisible(true);
         mainFrame.getStopPanel().setVisible(true);
     }
 

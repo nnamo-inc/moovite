@@ -1,6 +1,6 @@
 package com.nnamo.view.customcomponents;
 
-import com.nnamo.interfaces.TableRowClickListener;
+import com.nnamo.interfaces.TableClickListener;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -8,6 +8,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
+import java.sql.SQLException;
 import java.util.Vector;
 
 public class CustomTable extends JPanel {
@@ -18,7 +19,7 @@ public class CustomTable extends JPanel {
     JTable table;
     JScrollPane scrollPane;
     Vector<Object> rowData;
-    TableRowClickListener tableRowClickListener;
+    TableClickListener tableClickListener;
 
     public CustomTable(String[] tableColumns) {
         super(new BorderLayout());
@@ -44,12 +45,17 @@ public class CustomTable extends JPanel {
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting() && tableRowClickListener != null) {
+                if (!e.getValueIsAdjusting() && tableClickListener != null) {
+                    System.out.println("Row selection changed");
                     int selectedRow = table.getSelectedRow();
                     if (selectedRow != -1) {
                         int modelRow = table.convertRowIndexToModel(selectedRow);
                         rowData = (Vector<Object>) model.getDataVector().get(modelRow);
-                        tableRowClickListener.onRowClick(rowData);
+                        try {
+                            tableClickListener.onRowClick(rowData);
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     }
                 }
             }
@@ -65,8 +71,8 @@ public class CustomTable extends JPanel {
         return sorter;
     }
 
-    public void setTableRowClickListener(TableRowClickListener tableRowClickListener) {
-        this.tableRowClickListener = tableRowClickListener;
+    public void setTableClickListener(TableClickListener tableClickListener) {
+        this.tableClickListener = tableClickListener;
     }
 
     public Vector<Object> getRowData() {

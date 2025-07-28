@@ -6,7 +6,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
 import com.nnamo.interfaces.FavoriteBehaviour;
-import com.nnamo.interfaces.TableRowClickListener;
+import com.nnamo.interfaces.TableClickListener;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.TripModel;
@@ -39,8 +39,6 @@ public class StopPanel extends JPanel {
     // Prefer components
     private CustomPreferButton favoriteStopButton = new CustomPreferButton("Fermata");
     private CustomPreferButton favoriteRouteButton = new CustomPreferButton("Linea");
-
-    private TableRowClickListener tableRowClickListener;
 
     // CONSTRUCTOR //
     public StopPanel() {
@@ -156,10 +154,10 @@ public class StopPanel extends JPanel {
     private void initListener() {
 
         // Table row click listener to enable the button and change the text
-        table.setTableRowClickListener(new TableRowClickListener() {
+        table.setTableClickListener(new TableClickListener() {
             @Override
             public void onRowClick(Object rowData) {
-                System.out.println("Row clicked: " + rowData);
+                System.out.println("Row clicked:fdgfdgfdgfd " + rowData);
                 favoriteRouteButton.setEnabled(true);
 
                 // TODO implement the logic written below
@@ -245,7 +243,13 @@ public class StopPanel extends JPanel {
     public void updatePreferButtons(boolean favorite) {
         favoriteStopButton.setFavorite(favorite);
         favoriteStopButton.setItemId(idFermata.getTextField());
+        updateFavoriteRouteMessage("Clicca una linea sulla tabella degli orari");
+    }
 
+    public void updatePreferRouteButton(boolean isFavorite, String routeId) {
+        favoriteRouteButton.setFavorite(isFavorite);
+        favoriteRouteButton.setItemId(routeId);
+        favoriteRouteButton.setEnabled(true);
     }
 
     public void setFavStopBehaviour(FavoriteBehaviour behaviour) {
@@ -257,6 +261,12 @@ public class StopPanel extends JPanel {
     public void setFavRouteBehaviour(FavoriteBehaviour behaviour) {
         if (behaviour != null) {
             this.favoriteRouteButton.setFavBehaviour(behaviour);
+        }
+    }
+
+    public void setTableClickListener(TableClickListener tableClickListener) {
+        if (tableClickListener != null) {
+            this.table.setTableClickListener(tableClickListener);
         }
     }
 

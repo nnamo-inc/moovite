@@ -20,13 +20,11 @@ public class CustomPreferButton extends JButton {
             public void actionPerformed(java.awt.event.ActionEvent e) {
                 favorite = !favorite;
                 if (favorite) {
-                    favoriteBehaviour.removeFavorite(itemId);
-                    setText("Rimuovi " + itemName + " ai preferiti");
-                    System.out.println("Rimuovo " + itemName + " dai preferiti");
-                } else {
                     favoriteBehaviour.addFavorite(itemId);
+                    setText("Rimuovi " + itemName + " dai preferiti");
+                } else {
+                    favoriteBehaviour.removeFavorite(itemId);
                     setText("Aggiungi " + itemName + " ai preferiti");
-                    System.out.println("Aggiungo " + itemName + " ai preferiti");
                 }
             }
         });
@@ -46,7 +44,7 @@ public class CustomPreferButton extends JButton {
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
         if (favorite) {
-            setText("Rimuovi " + itemName + " ai preferiti");
+            setText("Rimuovi " + itemName + " dai preferiti");
         }
         else {
             setText("Aggiungi " + itemName + " ai preferiti");
