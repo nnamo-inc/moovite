@@ -5,9 +5,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
-import com.nnamo.enumeration.PreferButtonState;
-import com.nnamo.interfaces.FavoriteLineBehaviour;
-import com.nnamo.interfaces.FavoriteStopBehaviour;
+import com.nnamo.interfaces.FavoriteBehaviour;
 import com.nnamo.interfaces.TableRowClickListener;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopTimeModel;
@@ -16,6 +14,7 @@ import com.nnamo.view.customcomponents.GbcCustom;
 import com.nnamo.view.customcomponents.InfoBar;
 import com.nnamo.view.customcomponents.SearchBar;
 import com.nnamo.view.customcomponents.CustomTable;
+import com.nnamo.view.customcomponents.custompreferbutton.CustomPreferButton;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -38,15 +37,9 @@ public class StopPanel extends JPanel {
     private CustomTable table;
     private SearchBar searchBar;
     // Prefer components
-    private JButton buttonPreferStop = new JButton("Stop");
-    private PreferButtonState buttonPreferStopState = PreferButtonState.ADDMODE;
-    private JButton buttonPreferRoute = new JButton("- -");
-    private PreferButtonState buttonPreferRouteState = PreferButtonState.ADDMODE;
+    private CustomPreferButton favoriteStopButton = new CustomPreferButton("Fermata");
+    private CustomPreferButton favoriteRouteButton = new CustomPreferButton("Linea");
 
-    private boolean favorite;
-
-    private FavoriteStopBehaviour favStopBehaviour;
-    private FavoriteLineBehaviour favLineBehaviour;
     private TableRowClickListener tableRowClickListener;
 
     // CONSTRUCTOR //
@@ -151,56 +144,23 @@ public class StopPanel extends JPanel {
         TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Preferiti");
         panelPrefer.setBorder(titledBorder);
         // button prefer
-        panelPrefer.add(buttonPreferStop, new GbcCustom().setPosition(0, 0).setWeight(1.0, 1.0)
+        panelPrefer.add(favoriteStopButton, new GbcCustom().setPosition(0, 0).setWeight(1.0, 1.0)
                 .setFill(GridBagConstraints.BOTH).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.CENTER));
 
-        buttonPreferRoute.setEnabled(false);
-        panelPrefer.add(buttonPreferRoute, new GbcCustom().setPosition(0, 1).setWeight(1.0, 1.0)
+        favoriteRouteButton.setEnabled(false);
+        panelPrefer.add(favoriteRouteButton, new GbcCustom().setPosition(0, 1).setWeight(1.0, 1.0)
                 .setFill(GridBagConstraints.BOTH).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.CENTER));
         return panelPrefer;
     }
 
     private void initListener() {
 
-        // Button prefer stop listener to change the state of the button and make the
-        // call to add/remove the stop from favorites
-        buttonPreferStop.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (favStopBehaviour != null) {
-                    if (favorite) {
-                        // favStopBehaviour.removeFavoriteStop(idFermata.getTextValue());
-                    } else {
-                        favStopBehaviour.addFavoriteStop(idFermata.getTextValue());
-                        System.out.println("Stop " + idFermata.getTextValue() + " successfuly added to favorites");
-                    }
-                    setFavoriteStopFlag(!favorite);
-                    return;
-                }
-                System.out.println("Fav Stop behaviour not implemented");
-            }
-        });
-
-        // Button prefer route listener to change the state of the button and make the
-        // call to add/remove the route from favorites
-        // TODO need to separate the logic for adding and removing routes from favorites
-        buttonPreferRoute.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (favStopBehaviour != null && buttonPreferRoute.isEnabled()) {
-                    return;
-                }
-                System.out.println("Fav Route behaviour not implemented");
-            }
-        });
-
         // Table row click listener to enable the button and change the text
         table.setTableRowClickListener(new TableRowClickListener() {
             @Override
             public void onRowClick(Object rowData) {
                 System.out.println("Row clicked: " + rowData);
-                buttonPreferRoute.setEnabled(true);
+                favoriteRouteButton.setEnabled(true);
 
                 // TODO implement the logic written below
 
@@ -237,7 +197,6 @@ public class StopPanel extends JPanel {
                 table.getRowSorter().setRowFilter(null);
             }
         });
-
     }
 
     public void updateStopTimes(List<StopTimeModel> stopTimes) {
@@ -265,12 +224,13 @@ public class StopPanel extends JPanel {
         }
     }
 
-    public void updateFavoriteStopMessage(String string) {
-        buttonPreferStop.setText(string);
+    public void updateStopPanelInfo(String id, String nome) {
+        this.nomeFermata.setTextField(nome);
+        this.idFermata.setTextField(id);
     }
 
     public void updateFavoriteRouteMessage(String string) {
-        buttonPreferRoute.setText(string);
+        favoriteRouteButton.setText(string);
     }
     // GETTERS AND SETTERS //
 
@@ -282,37 +242,25 @@ public class StopPanel extends JPanel {
         return nomeFermata.getJTextField();
     }
 
-    public void setFavoriteStopFlag(boolean favorite) {
-        this.favorite = favorite;
+    public void updatePreferButtons(boolean favorite) {
+        favoriteStopButton.setFavorite(favorite);
+        favoriteStopButton.setItemId(idFermata.getTextField());
 
-        if (favorite) {
-            // TODO Implement remove route from favorites
-            System.out.println("Route" + " successfuly added to favorites");
-            updateFavoriteStopMessage("Rimuovi fermata dai preferiti");
-        } else {
-            // TODO Implement remove route from favorites
-            System.out.println("Route" + " successfuly removed to favorites");
-            updateFavoriteStopMessage("Aggiungi fermata dai preferiti");
+    }
+
+    public void setFavStopBehaviour(FavoriteBehaviour behaviour) {
+        if (behaviour != null) {
+            this.favoriteStopButton.setFavBehaviour(behaviour);
         }
     }
 
-    public void toggleFavoriteStop() {
-        this.favorite = !this.favorite;
-    }
-
-    public void setFavStopBehaviour(FavoriteStopBehaviour behaviour) {
+    public void setFavRouteBehaviour(FavoriteBehaviour behaviour) {
         if (behaviour != null) {
-            this.favStopBehaviour = behaviour;
-        }
-    }
-
-    public void setFavLineBehaviour(FavoriteLineBehaviour behaviour) {
-        if (behaviour != null) {
-            this.favLineBehaviour = behaviour;
+            this.favoriteRouteButton.setFavBehaviour(behaviour);
         }
     }
 
     public boolean isRouteButtonEnabled() {
-        return buttonPreferRoute.isEnabled();
+        return favoriteRouteButton.isEnabled();
     }
 }

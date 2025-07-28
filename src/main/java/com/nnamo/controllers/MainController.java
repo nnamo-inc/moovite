@@ -1,7 +1,6 @@
 package com.nnamo.controllers;
 
 import com.nnamo.interfaces.*;
-import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.UserModel;
@@ -54,16 +53,33 @@ public class MainController {
     }
 
     private void handleFavouriteClicks() {
-        mainFrame.setFavStopBehaviour(new FavoriteStopBehaviour() {
+        mainFrame.setFavStopBehaviour(new FavoriteBehaviour() {
+
             @Override
-            public void addFavoriteStop(String stopId) {
+            public void addFavorite(String stopId) {
                 try {
                     db.addFavoriteStop(sessionUser.getId(), stopId);
-                    mainFrame.updateStopPanelPreferStopButton("Remove Stop from favourite");
                 } catch (SQLException e) {
                     e.printStackTrace();
                     System.exit(1);
                 }
+            }
+
+            @Override
+            public void removeFavorite(String stopId) {
+                // Remove the favorite stop from the database
+            }
+        });
+
+        mainFrame.setFavLineBehaviour(new FavoriteBehaviour() {
+            @Override
+            public void addFavorite(String string) {
+
+            }
+
+            @Override
+            public void removeFavorite(String string) {
+
             }
         });
 
@@ -134,8 +150,7 @@ public class MainController {
             throws SQLException, IOException {
         mainFrame.updateStopPanelInfo(stop.getId(), stop.getName());
         mainFrame.updateStopPanelTimes(stopTimes);
-        mainFrame.setFavoriteStopFlag(db.isFavoriteStop(sessionUser.getId(), stop.getId()));
-
+        mainFrame.updateStopPanelPreferButtons(db.isFavoriteStop(sessionUser.getId(), stop.getId()), stop.getId());
         mainFrame.getStopPanel().revalidate();
         mainFrame.getStopPanel().setVisible(true);
     }

@@ -7,8 +7,7 @@ import java.util.List;
 
 import javax.swing.*;
 
-import com.nnamo.interfaces.FavoriteLineBehaviour;
-import com.nnamo.interfaces.FavoriteStopBehaviour;
+import com.nnamo.interfaces.FavoriteBehaviour;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.view.components.MapPanel;
 import com.nnamo.view.components.SearchPanel;
@@ -52,16 +51,11 @@ public class MainFrame extends JFrame {
     }
 
     public void updateStopPanelInfo(String id, String nome) {
-        this.stopPanel.getTextID().setText(id);
-        this.stopPanel.getTextName().setText(nome);
+        this.stopPanel.updateStopPanelInfo(id, nome);
     }
 
     public void updateStopPanelTimes(List<StopTimeModel> stopTimes) {
         this.stopPanel.updateStopTimes(stopTimes);
-    }
-
-    public void updateStopPanelPreferStopButton(String string) {
-        this.stopPanel.updateFavoriteStopMessage(string);
     }
 
     public void updateStopPanelPreferRouteButton(String string) {
@@ -97,16 +91,16 @@ public class MainFrame extends JFrame {
         }
     }
 
-    public void setFavStopBehaviour(FavoriteStopBehaviour behaviour) {
+    public void setFavStopBehaviour(FavoriteBehaviour behaviour) {
         this.stopPanel.setFavStopBehaviour(behaviour);
     }
 
-    public void setFavLineBehaviour(FavoriteLineBehaviour behaviour) {
-        this.stopPanel.setFavLineBehaviour(behaviour);
+    public void setFavLineBehaviour(FavoriteBehaviour behaviour) {
+        this.stopPanel.setFavRouteBehaviour(behaviour);
     }
 
-    public void setFavoriteStopFlag(boolean favorite) {
-        this.stopPanel.setFavoriteStopFlag(favorite);
+    public void updateStopPanelPreferButtons(boolean favorite, String stop) {
+        this.stopPanel.updatePreferButtons(favorite);
     }
 
 }
