@@ -1,6 +1,6 @@
 package com.nnamo.view.customcomponents;
 
-import com.nnamo.interfaces.TableClickListener;
+import com.nnamo.interfaces.TableRowClickListener;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -24,7 +24,7 @@ public class CustomTable extends JPanel {
     TableRowSorter sorter;
     Vector<Object> rowData;
 
-    TableClickListener tableClickListener;
+    TableRowClickListener tableRowClickListener;
 
     JButton resetSortingButton = new JButton("Reset Sorting");
     SearchBar searchBar = new SearchBar();
@@ -69,14 +69,14 @@ public class CustomTable extends JPanel {
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting() && tableClickListener != null) {
+                if (!e.getValueIsAdjusting() && tableRowClickListener != null) {
                     System.out.println("Row selection changed");
                     int selectedRow = table.getSelectedRow();
                     if (selectedRow != -1) {
                         int modelRow = table.convertRowIndexToModel(selectedRow);
                         rowData = (Vector<Object>) model.getDataVector().get(modelRow);
                         try {
-                            tableClickListener.onRowClick(rowData);
+                            tableRowClickListener.onRowClick(rowData);
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -117,8 +117,8 @@ public class CustomTable extends JPanel {
         }
     }
 
-    public void setTableClickListener(TableClickListener tableClickListener) {
-        this.tableClickListener = tableClickListener;
+    public void setTableRowClickListener(TableRowClickListener tableRowClickListener) {
+        this.tableRowClickListener = tableRowClickListener;
     }
 
     public DefaultTableModel getModel() {

@@ -8,12 +8,12 @@ import java.util.List;
 import javax.swing.*;
 
 import com.nnamo.interfaces.FavoriteBehaviour;
-import com.nnamo.interfaces.SearchBarListener;
-import com.nnamo.interfaces.TableClickListener;
+import com.nnamo.interfaces.TableRowClickListener;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.view.components.MapPanel;
 import com.nnamo.view.components.SearchPanel;
 import com.nnamo.view.components.StopPanel;
+import org.jxmapviewer.viewer.GeoPosition;
 
 public class MainFrame extends JFrame {
     MapPanel mapPanel = new MapPanel();
@@ -94,6 +94,8 @@ public class MainFrame extends JFrame {
         }
     }
 
+    // SETTERS FOR BEHAVIOURS //
+
     public void setFavStopBehaviour(FavoriteBehaviour behaviour) {
         this.stopPanel.setFavStopBehaviour(behaviour);
     }
@@ -102,11 +104,23 @@ public class MainFrame extends JFrame {
         this.stopPanel.setFavRouteBehaviour(behaviour);
     }
 
-    public void setTableClickListener(TableClickListener listener) {
+    public void setStopTimeTableClickListener(TableRowClickListener listener) {
         this.stopPanel.setTableClickListener(listener);
+    }
+
+    public void setSearchStopTableClickListener(TableRowClickListener listener) {
+        this.searchPanel.setSearchStopTableClickListener(listener);
+    }
+
+    public void setSearchRouteTableClickListener(TableRowClickListener listener) {
+        this.searchPanel.setSearchRouteTableClickListener(listener);
     }
 
     public void updateStopPanelPreferButtons(boolean favorite, String stop) {
         this.stopPanel.updatePreferButtons(favorite);
+    }
+
+    public void setMapPanelMapPosition(GeoPosition geoPosition, int zoomLevel) {
+        this.mapPanel.setMapPanelMapPosition(geoPosition, zoomLevel);
     }
 }

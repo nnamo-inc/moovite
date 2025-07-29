@@ -36,8 +36,8 @@ public class MainController {
         // Initialize main frame
         mainFrame.getMapPanel().renderStops(db.getAllStops());
         handleStopClick();
-        handleFavouriteClicks();
-
+        handleFavouriteButtonClicks();
+        handleSearchPanelTableRowClick();
         mainFrame.getSearchPanel().addSearchListener(this::searchQueryListener);
 
         // Login and Session Fetching
@@ -56,7 +56,7 @@ public class MainController {
         userController.run();
     }
 
-    private void handleFavouriteClicks() {
+    private void handleFavouriteButtonClicks() {
         mainFrame.setFavStopBehaviour(new FavoriteBehaviour() {
 
             @Override
@@ -81,7 +81,7 @@ public class MainController {
             }
         });
 
-        mainFrame.setTableClickListener(new TableClickListener() {
+        mainFrame.setStopTimeTableClickListener(new TableRowClickListener() {
             @Override
             public void onRowClick(Object rowData) throws SQLException {
                 String routeNumber = (String) ((List<Object>) rowData).get(0);
@@ -117,7 +117,7 @@ public class MainController {
     private void handleStopClick() {
         mainFrame.getMapPanel().setWaypointListener(new WaypointListener() {
             @Override
-            public void waypointClicked(GeoPosition geo) throws SQLException, IOException {
+            public void onWaypointClick(GeoPosition geo) throws SQLException, IOException {
                 // Convert the GeoPosition of the click to pixel coordinates
                 // then get the current icon from the StopPainter
                 Point2D clickPixel = mainFrame.getMapPanel().getMap().convertGeoPositionToPoint(geo);
@@ -160,6 +160,28 @@ public class MainController {
                 mainFrame.getMapPanel().repaint();
             }
         });
+    }
+
+    private void handleSearchPanelTableRowClick() {
+        mainFrame.setSearchStopTableClickListener(new TableRowClickListener() {
+             @Override
+             public void onRowClick(Object rowData) throws SQLException {
+                 String stopId = (String) ((List<Object>) rowData).get(1);
+                 GeoPosition geoPosition = new GeoPosition(db.getStopById(stopId).getLatitude(), db.getStopById(stopId).getLongitude());
+                 mainFrame.setMapPanelMapPosition(geoPosition, 4); // 4 == zoom level
+             }
+         }
+        );
+
+        mainFrame.setSearchRouteTableClickListener(new TableRowClickListener() {
+            @Override
+            public void onRowClick(Object rowData) throws SQLException {
+                // TODO: update position on the map
+            }
+        });
+
+
+
     }
 
     private void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes)

@@ -2,7 +2,7 @@ package com.nnamo.interfaces;
 
 import java.sql.SQLException;
 
-public interface TableClickListener {
+public interface TableRowClickListener {
 
     public void onRowClick(Object rowData) throws SQLException;
 }

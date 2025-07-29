@@ -15,6 +15,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -92,7 +93,7 @@ public class MapPanel extends JPanel {
                 if (waypointListener != null && map.getZoom() <= stopPainter.getZoomLimit()) {
                     try {
                         GeoPosition geo = map.convertPointToGeoPosition(new Point(e.getX(), e.getY()));
-                        waypointListener.waypointClicked(geo);
+                        waypointListener.onWaypointClick(geo);
                     } catch (SQLException | IOException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -101,8 +102,16 @@ public class MapPanel extends JPanel {
         });
     }
 
+    // METHODS //
     public void zoomOnWaypoint() {
         this.map.addMouseWheelListener(stopPainter.getZoomLevelListener()); }
+
+
+    public void setMapPanelMapPosition(GeoPosition geoPosition, int zoomLevel) {
+        this.map.setAddressLocation(geoPosition);
+        this.map.setZoom(zoomLevel);
+        // TODO: icon does not change when zooming in and out!
+    }
 
     // GETTERS AND SETTERS //
     public JXMapViewer getMap() {

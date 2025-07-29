@@ -1,6 +1,7 @@
 package com.nnamo.view.components;
 
 import com.nnamo.interfaces.SearchBarListener;
+import com.nnamo.interfaces.TableRowClickListener;
 import com.nnamo.models.StopModel;
 import com.nnamo.view.customcomponents.CustomTable;
 import com.nnamo.view.customcomponents.GbcCustom;
@@ -43,5 +44,13 @@ public class SearchPanel extends JPanel {
             tableStop.addRow(new Object[] {stop.getName(), stop.getId(), "stop.getDescription()"});
         }
         tableRoute.addRow(new Object[] {"aaa Route 1", "Info 2", "More Info 2"});
+    }
+
+    public void setSearchStopTableClickListener(TableRowClickListener listener) {
+        tableStop.setTableRowClickListener(listener);
+    }
+
+    public void setSearchRouteTableClickListener(TableRowClickListener listener) {
+        tableRoute.setTableRowClickListener(listener);
     }
 }
