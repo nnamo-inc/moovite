@@ -1,15 +1,19 @@
 package com.nnamo.view.customcomponents;
 
+import com.nnamo.interfaces.SearchBarListener;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class SearchBar extends JPanel {
 
     private JTextField searchField = new JTextField(20);
     private final JLabel searchLabel = new JLabel("Search:");
     private JButton searchButton = new JButton("X");
+    private ArrayList<SearchBarListener> listeners = new ArrayList<>();
 
     // CONSTRUCTOR //
     public SearchBar() {
@@ -21,12 +25,14 @@ public class SearchBar extends JPanel {
     }
 
     // METHODS //
-    public void changeButtonAction(ActionListener actionListener) {
-        for (ActionListener listener : searchButton.getActionListeners()) {
-            searchButton.removeActionListener(listener); // Remove existing action listeners
-        }
-        searchButton.addActionListener(actionListener); // Add the new action listener
+    public void addSearchListener(SearchBarListener listener) {
+        listeners.add(listener);
     }
+
+    public void removeSearchListener(SearchBarListener listener) {
+        listeners.remove(listener);
+    }
+
     // GETTERS AND SETTERS //
     public JTextField getSearchField() {
         return searchField;
