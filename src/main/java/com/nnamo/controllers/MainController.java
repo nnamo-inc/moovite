@@ -61,6 +61,7 @@ public class MainController {
             public void addFavorite(String stopId) {
                 try {
                     db.addFavoriteStop(sessionUser.getId(), stopId);
+                    System.out.println(db.getFavoriteStops(sessionUser.getId()).stream().count());
                 } catch (SQLException e) {
                     e.printStackTrace();
                     System.exit(1);
@@ -71,6 +72,7 @@ public class MainController {
             public void removeFavorite(String stopId) {
                 try {
                     db.removeFavoriteStop(sessionUser.getId(), stopId);
+                    System.out.println(db.getFavoriteStops(sessionUser.getId()).stream().count());
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
@@ -91,6 +93,7 @@ public class MainController {
             public void addFavorite(String string) {
                 try {
                     db.addFavoriteRoute(sessionUser.getId(), string);
+                    System.out.println(db.getFavoriteRoutes(sessionUser.getId()).stream().count());
                 } catch (SQLException e) {
                     e.printStackTrace();
                     System.exit(1);
@@ -101,6 +104,7 @@ public class MainController {
             public void removeFavorite(String string) {
                 try {
                     db.removeFavoriteRoute(sessionUser.getId(), string);
+                    System.out.println(db.getFavoriteRoutes(sessionUser.getId()).stream().count());
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }

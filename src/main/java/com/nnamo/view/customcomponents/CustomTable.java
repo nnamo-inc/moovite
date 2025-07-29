@@ -8,6 +8,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.Vector;
 
@@ -20,6 +21,7 @@ public class CustomTable extends JPanel {
     JScrollPane scrollPane;
     Vector<Object> rowData;
     TableClickListener tableClickListener;
+    JButton resetSortingButton = new JButton("Reset Sorting");
 
     public CustomTable(String[] tableColumns) {
         super(new BorderLayout());
@@ -60,6 +62,14 @@ public class CustomTable extends JPanel {
                 }
             }
         });
+        resetSortingButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                sorter.setSortKeys(null);
+                table.clearSelection();
+            }
+        });
+        add(resetSortingButton, BorderLayout.SOUTH);
     }
 
     // GETTERS AND SETTERS //
