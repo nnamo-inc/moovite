@@ -370,8 +370,11 @@ public class DatabaseService {
 
         // Conversion from LocalTime to Date, since the time is stored in the db at the
         // EPOCH Date (1970-01-01)
+        long hoursToMillisec = 21600000; // 6 hours
         Instant epochDateTime = time.atDate(LocalDate.EPOCH).atZone(ZoneId.systemDefault()).toInstant();
-        Date timedate = Date.from(epochDateTime);
+        Date midnightDateTime = new Date(0L);
+        Date currentDateTime = Date.from(epochDateTime);
+        Date nextHoursDate = new Date(currentDateTime.getTime() + hoursToMillisec);
 
         boolean ascending = true;
         return stopTimeDao
@@ -380,7 +383,7 @@ public class DatabaseService {
                 .where()
                 .eq("stop_id", stopId)
                 .and()
-                .gt("arrival_time", timedate)
+                .between("arrival_time", currentDateTime, nextHoursDate)
                 .query();
     }
 
