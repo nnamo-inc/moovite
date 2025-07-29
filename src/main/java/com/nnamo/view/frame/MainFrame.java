@@ -8,6 +8,7 @@ import java.util.List;
 import javax.swing.*;
 
 import com.nnamo.interfaces.FavoriteBehaviour;
+import com.nnamo.interfaces.SearchBarListener;
 import com.nnamo.interfaces.TableClickListener;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.view.components.MapPanel;
@@ -100,6 +101,7 @@ public class MainFrame extends JFrame {
     public void setTableClickListener(TableClickListener listener) {
         this.stopPanel.setTableClickListener(listener);
     }
+
 
     public void updateStopPanelPreferButtons(boolean favorite, String stop) {
         this.stopPanel.updatePreferButtons(favorite);

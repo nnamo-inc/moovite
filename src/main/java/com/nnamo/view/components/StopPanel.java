@@ -35,7 +35,6 @@ public class StopPanel extends JPanel {
     private final InfoBar numeroPosti = new InfoBar("Numero posti: ");
     // Route info components
     private CustomTable table;
-    private SearchBar searchBar;
     // Prefer components
     private CustomPreferButton favoriteStopButton = new CustomPreferButton("Fermata");
     private CustomPreferButton favoriteRouteButton = new CustomPreferButton("Linea");
@@ -71,7 +70,6 @@ public class StopPanel extends JPanel {
                 .setFill(GridBagConstraints.BOTH).setInsets(10, 10, 5, 5));
 
         // inizialize the listeners
-        initListener();
         setVisible(false);
     }
 
@@ -121,12 +119,7 @@ public class StopPanel extends JPanel {
     private JPanel newRouteInfoPanel() {
         JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setPreferredSize(new Dimension(100, 400));
-        this.table = new CustomTable(new String[] { "Autobus", "Orario Arrivo", "Stato", "In ritardo" });
-
-        // Search bar
-        mainPanel.add(searchBar = new SearchBar(),
-                new GbcCustom().setPosition(0, 0).setWeight(1.0, 0).setAnchor(GridBagConstraints.CENTER)
-                        .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 5, 2, 5));
+        this.table = new CustomTable(new String[] { "Autobus", "Orario Arrivo", "Stato", "In ritardo" }, true);
 
         // Table
         mainPanel.add(table, new GbcCustom().setPosition(0, 1).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.CENTER)
@@ -149,52 +142,6 @@ public class StopPanel extends JPanel {
         panelPrefer.add(favoriteRouteButton, new GbcCustom().setPosition(0, 1).setWeight(1.0, 1.0)
                 .setFill(GridBagConstraints.BOTH).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.CENTER));
         return panelPrefer;
-    }
-
-    private void initListener() {
-
-        // Table row click listener to enable the button and change the text
-        table.setTableClickListener(new TableClickListener() {
-            @Override
-            public void onRowClick(Object rowData) {
-                System.out.println("Row clicked:fdgfdgfdgfd " + rowData);
-                favoriteRouteButton.setEnabled(true);
-
-                // TODO implement the logic written below
-
-                /*
-                 * if (vediSeAutobusStaTraIPreferiti(rowData)) {
-                 * updateStopPanelPreferRouteButton("Rimuovi linea dai preferiti");
-                 * }
-                 * else {
-                 * updateStopPanelPreferRouteButton("Aggiungi linea ai preferiti");
-                 * }
-                 */
-
-            }
-        });
-
-        // Search bar listener for filtering the table
-        searchBar.getSearchField().addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                String searchText = searchBar.getText().trim();
-                if (searchText.isEmpty()) {
-                    table.getRowSorter().setRowFilter(null);
-                } else {
-                    table.getRowSorter().setRowFilter(RowFilter.regexFilter("^" + searchText, 0));
-                }
-            }
-        });
-
-        // Search bar button listener to clear the search field and reset the filter
-        searchBar.getSearchButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                searchBar.setText("");
-                table.getRowSorter().setRowFilter(null);
-            }
-        });
     }
 
     public void updateStopTimes(List<StopTimeModel> stopTimes) {

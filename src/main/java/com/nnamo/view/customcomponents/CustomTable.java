@@ -8,23 +8,37 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import java.util.Vector;
 
 public class CustomTable extends JPanel {
 
+    JScrollPane scrollPane;
+    JTable table;
     String[] tableColumns;
     DefaultTableModel model;
     TableRowSorter sorter;
-    JTable table;
-    JScrollPane scrollPane;
     Vector<Object> rowData;
-    TableClickListener tableClickListener;
-    JButton resetSortingButton = new JButton("Reset Sorting");
 
-    public CustomTable(String[] tableColumns) {
+    TableClickListener tableClickListener;
+
+    JButton resetSortingButton = new JButton("Reset Sorting");
+    SearchBar searchBar = new SearchBar();
+    boolean isSearchable;
+
+    public CustomTable(String[] tableColumns, boolean isSearchable) {
         super(new BorderLayout());
+        this.isSearchable = isSearchable;
+
+        if (isSearchable) {
+            add(searchBar, BorderLayout.NORTH);
+        } else {
+            searchBar.setVisible(false);
+        }
 
         this.tableColumns = tableColumns;
         this.model = new DefaultTableModel(tableColumns, 0) {
@@ -44,6 +58,14 @@ public class CustomTable extends JPanel {
         ListSelectionModel selectionModel = table.getSelectionModel();
         selectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
+
+        add(resetSortingButton, BorderLayout.SOUTH);
+        initListeners();
+    }
+
+    // GETTERS AND SETTERS //
+    public void initListeners() {
+
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -62,6 +84,7 @@ public class CustomTable extends JPanel {
                 }
             }
         });
+
         resetSortingButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -69,24 +92,41 @@ public class CustomTable extends JPanel {
                 table.clearSelection();
             }
         });
-        add(resetSortingButton, BorderLayout.SOUTH);
-    }
 
-    // GETTERS AND SETTERS //
-    public DefaultTableModel getModel() {
-        return model;
-    }
+        if (isSearchable) {
 
-    public TableRowSorter getRowSorter() {
-        return sorter;
+            searchBar.getSearchField().addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyReleased(KeyEvent e) {
+                    String searchText = searchBar.getText().trim();
+                    if (searchText.isEmpty()) {
+                        sorter.setRowFilter(null);
+                    } else {
+                        sorter.setRowFilter(RowFilter.regexFilter("^" + searchText, 0));
+                    }
+                }
+            });
+
+            searchBar.getSearchButton().addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    searchBar.setText("");
+                    sorter.setRowFilter(null);
+                }
+            });
+        }
     }
 
     public void setTableClickListener(TableClickListener tableClickListener) {
         this.tableClickListener = tableClickListener;
     }
 
-    public Vector<Object> getRowData() {
-        return rowData;
+    public DefaultTableModel getModel() {
+        return model;
+    }
+
+    public TableRowSorter getRowSorter() {
+        return sorter;
     }
 
     public JTable getTable() {
