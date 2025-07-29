@@ -74,6 +74,10 @@ public class MainFrame extends JFrame {
         return stopPanel;
     }
 
+    public SearchPanel getSearchPanel() {
+        return searchPanel;
+    }
+
     public BufferedImage getCurrentStopIcon() {
         return this.getMapPanel().getStopPainter().getCurrentIcon();
     }
@@ -102,9 +106,7 @@ public class MainFrame extends JFrame {
         this.stopPanel.setTableClickListener(listener);
     }
 
-
     public void updateStopPanelPreferButtons(boolean favorite, String stop) {
         this.stopPanel.updatePreferButtons(favorite);
     }
-
 }

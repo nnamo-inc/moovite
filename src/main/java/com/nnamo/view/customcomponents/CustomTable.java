@@ -132,4 +132,12 @@ public class CustomTable extends JPanel {
     public JTable getTable() {
         return table;
     }
+
+    public void clear() {
+        model.setRowCount(0);
+    }
+
+    public void addRow(Object[] rowData) {
+        model.addRow(rowData);
+    }
 }

@@ -36,6 +36,8 @@ public class MainController {
         handleStopClick();
         handleFavouriteClicks();
 
+        mainFrame.getSearchPanel().addSearchListener(this::searchQueryListener);
+
         // Login and Session Fetching
         userController.addSessionListener(new SessionListener() { // [!] Listener must be implemented before run()
             @Override
@@ -164,5 +166,16 @@ public class MainController {
         mainFrame.getStopPanel().revalidate();
         mainFrame.getStopPanel().setVisible(true);
         mainFrame.getStopPanel().setVisible(true);
+    }
+
+    public void searchQueryListener(String searchText) {
+        var searchPanel = mainFrame.getSearchPanel();
+        try {
+            var stops = db.getStopsByName(searchText);
+            searchPanel.updateView(stops);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return; // Exit if there's an error fetching stops
+        }
     }
 }

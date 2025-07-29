@@ -293,7 +293,7 @@ public class DatabaseService {
 
     public List<StopModel> getStopsByName(String stopName) throws SQLException {
         Dao<StopModel, String> stopDao = getDao(StopModel.class);
-        double scoreThreshold = 0.6;
+        double scoreThreshold = 0.9;
 
         return stopDao
                 .queryBuilder()

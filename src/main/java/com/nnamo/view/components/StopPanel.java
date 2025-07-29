@@ -3,7 +3,6 @@ package com.nnamo.view.components;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.table.DefaultTableModel;
 
 import com.nnamo.interfaces.FavoriteBehaviour;
 import com.nnamo.interfaces.TableClickListener;
@@ -12,15 +11,10 @@ import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.TripModel;
 import com.nnamo.view.customcomponents.GbcCustom;
 import com.nnamo.view.customcomponents.InfoBar;
-import com.nnamo.view.customcomponents.SearchBar;
 import com.nnamo.view.customcomponents.CustomTable;
 import com.nnamo.view.customcomponents.custompreferbutton.CustomPreferButton;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
@@ -145,8 +139,8 @@ public class StopPanel extends JPanel {
     }
 
     public void updateStopTimes(List<StopTimeModel> stopTimes) {
-        DefaultTableModel model = table.getModel();
-        model.setRowCount(0); // Remove previous rows
+        table.clear();
+
         for (StopTimeModel stopTime : stopTimes) {
             LocalTime arrivalTime = LocalTime.ofInstant(stopTime.getArrivalTime().toInstant(), ZoneId.systemDefault());
             TripModel trip = stopTime.getTrip(); // Corsa
@@ -160,7 +154,7 @@ public class StopPanel extends JPanel {
                 continue;
             }
 
-            model.addRow(new Object[] {
+            table.addRow(new Object[] {
                     route.getShortName(),
                     arrivalTime.toString(),
                     "In Orario", // TODO: DA AGGIORNARE CON DATI IN REALTIME
