@@ -9,9 +9,12 @@ import com.j256.ormlite.stmt.SelectArg;
 import com.j256.ormlite.table.TableUtils;
 import com.nnamo.models.*;
 import com.nnamo.utils.FuzzyMatch;
+
+import org.apache.commons.lang3.time.DateUtils;
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.Route;
+import org.onebusaway.gtfs.model.ServiceCalendarDate;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.StopTime;
 import org.onebusaway.gtfs.model.Trip;
@@ -68,6 +71,22 @@ public class DatabaseService {
         TableUtils.createTableIfNotExists(connection, FavoriteRouteModel.class);
     }
 
+    public void preloadGtfsData(StaticGtfsService gtfs) throws SQLException, IOException {
+        if (needsCaching()) {
+            System.out.println("Starting GTFS data import...");
+            gtfs.load();
+
+            importServicesFromGtfs(gtfs);
+            importStopsFromGtfs(gtfs);
+            importTripsFromGtfs(gtfs);
+            importStopTimesFromGtfs(gtfs);
+
+            System.out.println("GTFS import completed successfully.");
+        } else {
+            System.out.println("GTFS data already cached.");
+        }
+    }
+
     public boolean needsCaching() throws SQLException {
         return daos.get(StopModel.class).countOf() == 0 ||
                 daos.get(TripModel.class).countOf() == 0 ||
@@ -116,6 +135,7 @@ public class DatabaseService {
         Dao<TripModel, String> tripDao = getDao(TripModel.class);
         Dao<AgencyModel, String> agencyDao = getDao(AgencyModel.class);
         Dao<RouteModel, String> routeDao = getDao(RouteModel.class);
+        Dao<ServiceModel, String> serviceDao = getDao(ServiceModel.class);
         GtfsRelationalDaoImpl store = gtfs.getStore();
 
         if (tripDao.countOf() != 0)
@@ -126,6 +146,7 @@ public class DatabaseService {
         TransactionManager.callInTransaction(connection, (Callable<Void>) () -> {
             HashMap<String, AgencyModel> agencyMap = new HashMap<>();
             HashMap<String, RouteModel> routeMap = new HashMap<>();
+            HashMap<String, ServiceModel> serviceMap = new HashMap<>();
             ArrayList<AgencyModel> agencies = new ArrayList<>();
             ArrayList<RouteModel> routes = new ArrayList<>();
             ArrayList<TripModel> trips = new ArrayList<>(20000);
@@ -169,6 +190,7 @@ public class DatabaseService {
                 trips.add(new TripModel(
                         trip.getId().getId(),
                         routeMap.get(trip.getRoute().getId().getId()),
+                        trip.getServiceId().getId(),
                         trip.getTripHeadsign(),
                         trip.getDirectionId()));
 
@@ -261,19 +283,43 @@ public class DatabaseService {
         });
     }
 
-    public void preloadGtfsData(StaticGtfsService gtfs) throws SQLException, IOException {
-        if (needsCaching()) {
-            System.out.println("Starting GTFS data import...");
-            gtfs.load();
+    private void importServicesFromGtfs(StaticGtfsService gtfs) throws SQLException {
+        Dao<ServiceModel, String> serviceDao = getDao(ServiceModel.class);
+        GtfsRelationalDaoImpl store = gtfs.getStore();
 
-            importStopsFromGtfs(gtfs);
-            importTripsFromGtfs(gtfs);
-            importStopTimesFromGtfs(gtfs);
+        if (serviceDao.countOf() != 0)
+            return;
 
-            System.out.println("GTFS import completed successfully.");
-        } else {
-            System.out.println("GTFS data already cached.");
-        }
+        System.out.println("Starting services import...");
+
+        TransactionManager.callInTransaction(connection, (Callable<Void>) () -> {
+            ArrayList<ServiceModel> services = new ArrayList<>(1000);
+            int totalProcessed = 0;
+
+            for (ServiceCalendarDate service : store.getAllCalendarDates()) {
+                ServiceModel serviceModel = new ServiceModel(
+                        service.getServiceId().getId(),
+                        service.getDate().getAsDate(),
+                        service.getExceptionType());
+                System.out.println(serviceModel.getServiceId() + " - " + serviceModel.getDate());
+                services.add(serviceModel);
+
+                if (services.size() >= 1000) {
+                    serviceDao.create(services);
+                    totalProcessed += services.size();
+                    services.clear();
+                    System.out.println("Processed " + totalProcessed + " services...");
+                }
+            }
+
+            if (!services.isEmpty()) {
+                serviceDao.create(services);
+                totalProcessed += services.size();
+            }
+
+            System.out.println("Services imported. Total: " + totalProcessed + " records");
+            return null;
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -338,6 +384,46 @@ public class DatabaseService {
                 .query();
     }
 
+    public List<StopTimeModel> getNextStopTimes(String stopId, LocalTime time, Date date) throws SQLException {
+        var stopTimes = getNextStopTimes(stopId, time);
+        ArrayList<StopTimeModel> filteredStopTimes = new ArrayList<>();
+
+        for (StopTimeModel stopTime : stopTimes) {
+            for (ServiceModel service : getTripServices(stopTime.getTrip())) {
+                boolean isServiceToday = (service.getExceptionType() == ServiceModel.ExceptionType.ADDED
+                        && DateUtils.isSameDay(service.getDate(), date));
+
+                if (isServiceToday) {
+                    filteredStopTimes.add(stopTime);
+                    break;
+                }
+            }
+        }
+        return filteredStopTimes;
+    }
+
+    public List<ServiceModel> getServicesById(String serviceId) throws SQLException {
+        Dao<ServiceModel, String> serviceDao = getDao(ServiceModel.class);
+        return serviceDao
+                .queryBuilder()
+                .where()
+                .eq("service_id", serviceId)
+                .query();
+    }
+
+    public List<ServiceModel> getTripServices(TripModel trip) throws SQLException {
+        if (trip == null) {
+            return new ArrayList<>();
+        }
+        return getServicesById(trip.getServiceId());
+    }
+
+    public List<ServiceModel> getTripServices(String tripId) throws SQLException {
+        Dao<TripModel, String> tripDao = getDao(TripModel.class);
+        TripModel trip = tripDao.queryForId(tripId);
+        return getTripServices(trip);
+    }
+
     public void addUser(UserModel user) throws SQLException {
         getDao(UserModel.class).createIfNotExists(user);
     }
@@ -359,7 +445,6 @@ public class DatabaseService {
         return getDao(UserModel.class).queryForId(id);
     }
 
-    // TODO: extract user and favorites logic in a separate UserService
     public void addFavoriteStop(int userId, String stopId) throws SQLException {
         Dao<FavoriteStopModel, String> favoriteStopDao = getDao(FavoriteStopModel.class);
         Dao<UserModel, Integer> userDao = getDao(UserModel.class);
