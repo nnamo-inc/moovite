@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 public class SearchBar extends JPanel {
 
     private JTextField searchField = new JTextField(20);
-    private JLabel searchLabel = new JLabel("Search:");
+    private final JLabel searchLabel = new JLabel("Search:");
     private JButton searchButton = new JButton("X");
 
     // CONSTRUCTOR //
@@ -40,23 +40,7 @@ public class SearchBar extends JPanel {
         searchField.setText(text);
     }
 
-    public void setSearchField(JTextField searchField) {
-        this.searchField = searchField;
-    }
-
-    public JLabel getSearchLabel() {
-        return searchLabel;
-    }
-
-    public void setSearchLabel(JLabel searchLabel) {
-        this.searchLabel = searchLabel;
-    }
-
     public JButton getSearchButton() {
         return searchButton;
-    }
-
-    public void setSearchButton(JButton searchButton) {
-        this.searchButton = searchButton;
     }
 }
