@@ -1,6 +1,5 @@
 package com.nnamo.controllers;
 
-import java.awt.Dialog.ModalExclusionType;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -8,7 +7,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
-import java.util.concurrent.CountDownLatch;
 
 import com.nnamo.interfaces.LoginBehaviour;
 import com.nnamo.interfaces.RegisterBehaviour;

@@ -14,6 +14,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalTime;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -147,7 +148,9 @@ public class MainController {
                         int alpha = new Color(argb, true).getAlpha();
                         // Check alpha
                         if (alpha > 0) {
-                            List<StopTimeModel> stopTimes = db.getNextStopTimes(stop.getId(), LocalTime.now());
+                            Date currentDate = new Date();
+                            LocalTime currentTime = LocalTime.now();
+                            List<StopTimeModel> stopTimes = db.getNextStopTimes(stop.getId(), currentTime, currentDate);
                             updateStopPanel(stop, stopTimes);
                             return;
                         }

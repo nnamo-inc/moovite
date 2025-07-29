@@ -1,5 +1,7 @@
 package com.nnamo.models;
 
+import java.util.Date;
+
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -10,13 +12,11 @@ public class TripModel {
     @DatabaseField(id = true)
     private String id;
 
-    /*
-     * @DatabaseField(foreign = true)
-     * private ServiceModel service_id; //
-     */
-
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private RouteModel route;
+
+    @DatabaseField(columnName = "service_id")
+    private String serviceId;
 
     @DatabaseField(canBeNull = true)
     private String headsign; // Stringa che segnala la direzione della corsa
@@ -27,9 +27,9 @@ public class TripModel {
     public TripModel() { // Empty constructor required by OrmLite
     }
 
-    public TripModel(String id, RouteModel route, String headsign, String direction) {
+    public TripModel(String id, RouteModel route, String serviceId, String headsign, String direction) {
         this.id = id;
-        // this.service_id = service_id;
+        this.serviceId = serviceId;
         this.route = route;
         this.headsign = headsign;
         this.direction = direction;
@@ -49,5 +49,9 @@ public class TripModel {
 
     public String getDirection() {
         return direction;
+    }
+
+    public String getServiceId() {
+        return serviceId;
     }
 }
