@@ -5,7 +5,9 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.misc.TransactionManager;
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.SelectArg;
+import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.table.TableUtils;
 import com.nnamo.models.*;
 import com.nnamo.utils.FuzzyMatch;
@@ -291,18 +293,34 @@ public class DatabaseService {
         return stopDao.queryForId(id);
     }
 
-    public List<StopModel> getStopsByName(String stopName) throws SQLException {
+    public List<StopModel> getStopsByName(String searchTerm) throws SQLException {
         Dao<StopModel, String> stopDao = getDao(StopModel.class);
-        double scoreThreshold = 0.9;
+        double scoreThresholdPercentage = 60;
 
-        return stopDao
-                .queryBuilder()
-                .where()
-                .raw(
+        QueryBuilder<StopModel, String> queryBuilder = stopDao.queryBuilder();
+        Where<StopModel, String> where = queryBuilder.where();
+
+        where.or(
+                // 1. Exact match on the stop's ID
+                where.eq("id", new SelectArg(SqlType.STRING, searchTerm)),
+
+                // 2. Standard SQL LIKE match (e.g., name contains the search term)
+                where.like("name", new SelectArg(SqlType.STRING, "%" + searchTerm + "%")),
+
+                // 3. Fuzzy match score on the name is above the threshold
+                where.raw(
                         "FUZZY_SCORE(name, ?) > ?",
-                        new SelectArg(SqlType.STRING, stopName),
-                        new SelectArg(SqlType.DOUBLE, scoreThreshold))
-                .query();
+                        new SelectArg(SqlType.STRING, searchTerm),
+                        new SelectArg(SqlType.DOUBLE, scoreThresholdPercentage)
+                )
+        );
+
+        queryBuilder.orderByRaw(
+                "FUZZY_SCORE(name, ?) DESC",
+                new SelectArg(SqlType.STRING, searchTerm)
+        );
+
+        return queryBuilder.query();
     }
 
     public List<StopTimeModel> getStopTimes(String stopId) throws SQLException {

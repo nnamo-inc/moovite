@@ -14,6 +14,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainController {
@@ -169,6 +170,11 @@ public class MainController {
     }
 
     public void searchQueryListener(String searchText) {
+        if (searchText == null || searchText.isEmpty()) {
+            mainFrame.getSearchPanel().updateView(new ArrayList<>());
+            return; // Exit if the search text is empty
+        }
+
         var searchPanel = mainFrame.getSearchPanel();
         try {
             var stops = db.getStopsByName(searchText);

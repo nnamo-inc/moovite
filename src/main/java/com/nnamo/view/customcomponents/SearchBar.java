@@ -29,6 +29,14 @@ public class SearchBar extends JPanel {
                 notifyListeners(searchField.getText());
             }
         });
+
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                searchField.setText("");
+                notifyListeners("");
+            }
+        });
     }
 
     private void notifyListeners(String searchText) {

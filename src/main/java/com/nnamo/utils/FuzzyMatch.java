@@ -5,6 +5,7 @@ import org.sqlite.Function;
 import java.sql.SQLException;
 
 public class FuzzyMatch extends Function {
+    private static final LevenshteinDistance LEVENSHTEIN = LevenshteinDistance.getDefaultInstance();
 
     @Override
     protected void xFunc() throws SQLException {
@@ -22,8 +23,7 @@ public class FuzzyMatch extends Function {
         }
 
         // Calculate Levenshtein distance
-        LevenshteinDistance levenshtein = LevenshteinDistance.getDefaultInstance();
-        int distance = levenshtein.apply(textToSearch.toLowerCase(), searchTerm.toLowerCase());
+        int distance = LEVENSHTEIN.apply(textToSearch.toLowerCase(), searchTerm.toLowerCase());
 
         // Convert distance to a similarity score (0.0 to 1.0)
         int longerLength = Math.max(textToSearch.length(), searchTerm.length());
