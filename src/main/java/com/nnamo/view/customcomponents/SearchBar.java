@@ -22,7 +22,9 @@ public class SearchBar extends JPanel {
 
     // METHODS //
     public void changeButtonAction(ActionListener actionListener) {
-        searchButton.removeActionListener(searchButton.getActionListeners()[0]); // Remove the previous action listener
+        for (ActionListener listener : searchButton.getActionListeners()) {
+            searchButton.removeActionListener(listener); // Remove existing action listeners
+        }
         searchButton.addActionListener(actionListener); // Add the new action listener
     }
     // GETTERS AND SETTERS //
