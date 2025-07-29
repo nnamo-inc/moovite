@@ -178,6 +178,9 @@ public class MainController {
             return; // Exit if the search text is empty
         }
 
+        // TODO: update the updateView method to handle both stops and routes
+        // For now, we will only search for stops
+
         var searchPanel = mainFrame.getSearchPanel();
         try {
             var stops = db.getStopsByName(searchText);
