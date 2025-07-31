@@ -27,7 +27,7 @@ public class App {
                 System.err.println("Failed to initialize LaF");
             }
 
-            MainController controller = new MainController(db);
+            MainController controller = new MainController(db, realtimeGtfs);
             controller.run();
         } catch (SQLException e) {
             e.printStackTrace();

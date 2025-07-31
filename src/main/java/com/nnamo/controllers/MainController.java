@@ -6,6 +6,9 @@ import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.UserModel;
 import com.nnamo.view.frame.MainFrame;
 import com.nnamo.services.DatabaseService;
+import com.nnamo.services.RealtimeGtfsService;
+import com.nnamo.services.RealtimeStopUpdate;
+
 import org.jxmapviewer.viewer.GeoPosition;
 
 import java.awt.*;
@@ -21,13 +24,15 @@ import java.util.List;
 public class MainController {
 
     DatabaseService db;
+    RealtimeGtfsService realtimeService;
     MainFrame mainFrame = new MainFrame();
     UserController userController;
     UserModel sessionUser;
 
-    public MainController(DatabaseService db) throws IOException {
+    public MainController(DatabaseService db, RealtimeGtfsService realtimeService) throws IOException {
         this.db = db;
         this.userController = new UserController(db);
+        this.realtimeService = realtimeService;
     }
 
     public void run() throws InterruptedException, SQLException, IOException {
@@ -151,7 +156,8 @@ public class MainController {
                             Date currentDate = new Date();
                             LocalTime currentTime = LocalTime.now();
                             List<StopTimeModel> stopTimes = db.getNextStopTimes(stop.getId(), currentTime, currentDate);
-                            updateStopPanel(stop, stopTimes);
+                            List<RealtimeStopUpdate> realtimeUpdates = realtimeService.getStopUpdatesById(stop.getId());
+                            updateStopPanel(stop, stopTimes, realtimeUpdates);
                             return;
                         }
                     }
@@ -184,10 +190,11 @@ public class MainController {
 
     }
 
-    private void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes)
+    private void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes,
+            List<RealtimeStopUpdate> realtimeUpdates)
             throws SQLException, IOException {
         mainFrame.updateStopPanelInfo(stop.getId(), stop.getName());
-        mainFrame.updateStopPanelTimes(stopTimes);
+        mainFrame.updateStopPanelTimes(stopTimes, realtimeUpdates);
         mainFrame.updateStopPanelPreferButtons(db.isFavoriteStop(sessionUser.getId(), stop.getId()), stop.getId());
         mainFrame.getStopPanel().revalidate();
         mainFrame.getStopPanel().setVisible(true);

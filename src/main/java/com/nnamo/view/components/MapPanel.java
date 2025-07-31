@@ -2,6 +2,7 @@ package com.nnamo.view.components;
 
 import com.nnamo.interfaces.WaypointListener;
 import com.nnamo.interfaces.ZoomBehaviour;
+import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
 import com.nnamo.view.StopPainter;
 
@@ -33,7 +34,7 @@ public class MapPanel extends JPanel {
 
     // Waypoint painter and Map Painter
     WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
-    CompoundPainter<JXMapViewer> mapPainter = new CompoundPainter<JXMapViewer>();
+    CompoundPainter<JXMapViewer> mapPainter;
     StopPainter stopPainter;
     ZoomBehaviour zoomBehaviour;
 
@@ -42,24 +43,25 @@ public class MapPanel extends JPanel {
 
     // CONSTRUCTOR //
     public MapPanel() throws IOException {
-        // Create TileFactoryInfo(OpenStreetMap) to get tiles, then assign it to the
-        // DefaultTileFactory and finally set it to the map
         TileFactoryInfo info = new OSMTileFactoryInfo();
         tileFactory = new DefaultTileFactory(info);
         map.setTileFactory(tileFactory);
+
         // Use 8 threads in parallel to load the tiles
         tileFactory.setThreadPoolSize(8);
-        // Set map zoom and center position
+
         map.setZoom(5);
         map.setAddressLocation(this.romePosition);
-        // Create a list of painters, add the waypointPainter to it, assign it to the
-        // mapPainter
+
         List<Painter<JXMapViewer>> painters = new ArrayList<Painter<JXMapViewer>>();
         painters.add(this.waypointPainter);
+
+        this.mapPainter = new CompoundPainter<JXMapViewer>();
         this.mapPainter.setPainters(painters);
+
         // Create a StopPainter instance to handle the stops on the map
         this.stopPainter = new StopPainter(this.map, this.mapPainter, this.waypointPainter);
-        // Set the layout to show the map on the panel
+
         setLayout(new BorderLayout());
         add(map, BorderLayout.CENTER);
 
@@ -87,15 +89,19 @@ public class MapPanel extends JPanel {
         this.waypointPainter.setWaypoints(waypoints);
     }
 
+    public void renderRoute(RouteModel route) {
+        // TODO Implement route render
+    }
+
     // Set the map to be draggable and zoomable with mouse and wheel listeners
     private void handleMouseListeners() throws IOException {
         PanMouseInputListener mouseClick = new PanMouseInputListener(map);
         this.map.addMouseListener(mouseClick);
         this.map.addMouseMotionListener(mouseClick);
-        this.map.addMouseWheelListener(new ZoomMouseWheelListenerCursor(map));
-        this.map.addMouseWheelListener(new MouseWheelListener() {
+        this.map.addMouseWheelListener(new ZoomMouseWheelListenerCursor(map) {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
+                super.mouseWheelMoved(e);
                 stopPainter.repaint();
             }
         });

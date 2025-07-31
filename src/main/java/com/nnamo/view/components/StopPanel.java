@@ -4,11 +4,13 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate;
 import com.nnamo.interfaces.FavoriteBehaviour;
 import com.nnamo.interfaces.TableRowClickListener;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.TripModel;
+import com.nnamo.services.RealtimeStopUpdate;
 import com.nnamo.view.customcomponents.GbcCustom;
 import com.nnamo.view.customcomponents.InfoBar;
 import com.nnamo.view.customcomponents.CustomTable;
@@ -17,6 +19,8 @@ import com.nnamo.view.customcomponents.custompreferbutton.CustomPreferButton;
 import java.awt.*;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class StopPanel extends JPanel {
@@ -138,22 +142,33 @@ public class StopPanel extends JPanel {
         return panelPrefer;
     }
 
-    public void updateStopTimes(List<StopTimeModel> stopTimes) {
+    public void updateStopTimes(List<StopTimeModel> stopTimes, List<RealtimeStopUpdate> realtimeUpdates) {
         table.clear();
+
+        HashMap<String, RealtimeStopUpdate> realtimeTrips = new HashMap<>();
+        for (RealtimeStopUpdate update : realtimeUpdates) {
+            System.out.println("Adding realtime update for trip ID: " + update.getTripId());
+            realtimeTrips.put(update.getTripId(), update);
+        }
 
         for (StopTimeModel stopTime : stopTimes) {
             LocalTime arrivalTime = LocalTime.ofInstant(stopTime.getArrivalTime().toInstant(), ZoneId.systemDefault());
             TripModel trip = stopTime.getTrip(); // Corsa
-
-            if (trip == null) {
+            if (trip == null)
                 continue;
-            }
+            System.out.println("Processing stop time of trip... " + trip.getId());
 
             RouteModel route = trip.getRoute(); // Linea
             if (route == null || route.getShortName() == null) {
                 continue;
             }
 
+            RealtimeStopUpdate timeUpdate = realtimeTrips.get(trip.getId());
+            if (timeUpdate != null) {
+                System.out.println(
+                        "Realtime update for trip ID: " + trip.getId() + " - Arrival Time: "
+                                + new Date(timeUpdate.getUpdateTime()).toString());
+            }
             table.addRow(new Object[] {
                     route.getShortName(),
                     arrivalTime.toString(),

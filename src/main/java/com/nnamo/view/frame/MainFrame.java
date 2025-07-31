@@ -10,6 +10,7 @@ import javax.swing.*;
 import com.nnamo.interfaces.FavoriteBehaviour;
 import com.nnamo.interfaces.TableRowClickListener;
 import com.nnamo.models.StopTimeModel;
+import com.nnamo.services.RealtimeStopUpdate;
 import com.nnamo.view.components.MapPanel;
 import com.nnamo.view.components.SearchPanel;
 import com.nnamo.view.components.StopPanel;
@@ -31,7 +32,8 @@ public class MainFrame extends JFrame {
         setSize(new Dimension(1000, 800));
         setLayout(new BorderLayout());
 
-        // Initialize the center panel with the map and stop panels then add it to the JFrame
+        // Initialize the center panel with the map and stop panels then add it to the
+        // JFrame
         centerPanel.setLayout(new BorderLayout());
         centerPanel.add(mapPanel, BorderLayout.CENTER);
         centerPanel.add(stopPanel, BorderLayout.SOUTH);
@@ -58,13 +60,14 @@ public class MainFrame extends JFrame {
         this.stopPanel.updateStopPanelInfo(id, nome);
     }
 
-    public void updateStopPanelTimes(List<StopTimeModel> stopTimes) {
-        this.stopPanel.updateStopTimes(stopTimes);
+    public void updateStopPanelTimes(List<StopTimeModel> stopTimes, List<RealtimeStopUpdate> realtimeUpdates) {
+        this.stopPanel.updateStopTimes(stopTimes, realtimeUpdates);
     }
 
     public void updatePreferRouteButton(Boolean isFavorite, String routeNumber) {
         this.stopPanel.updatePreferRouteButton(isFavorite, routeNumber);
     }
+
     // GETTERS AND SETTERS //
     public MapPanel getMapPanel() {
         return mapPanel;
