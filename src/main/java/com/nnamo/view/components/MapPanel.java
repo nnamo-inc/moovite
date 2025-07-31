@@ -1,8 +1,11 @@
 package com.nnamo.view.components;
 
 import com.nnamo.interfaces.WaypointListener;
+import com.nnamo.interfaces.ZoomBehaviour;
 import com.nnamo.models.StopModel;
 import com.nnamo.view.StopPainter;
+import com.nnamo.view.Zoom;
+
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
 import org.jxmapviewer.input.PanMouseInputListener;
@@ -16,6 +19,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -24,7 +28,6 @@ import java.util.List;
 import java.util.Set;
 
 public class MapPanel extends JPanel {
-    // Map components
     JXMapViewer map = new JXMapViewer();
     GeoPosition romePosition = new GeoPosition(41.902782, 12.496366);
     DefaultTileFactory tileFactory;
@@ -33,13 +36,15 @@ public class MapPanel extends JPanel {
     WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
     CompoundPainter<JXMapViewer> mapPainter = new CompoundPainter<JXMapViewer>();
     StopPainter stopPainter;
+    ZoomBehaviour zoomBehaviour;
 
     // Listener for waypoint clicks (Anonymous inner class in MapController)
     WaypointListener waypointListener;
 
     // CONSTRUCTOR //
     public MapPanel() throws IOException {
-        // Create TileFactoryInfo(OpenStreetMap) to get tiles, then assign it to the DefaultTileFactory and finally set it to the map
+        // Create TileFactoryInfo(OpenStreetMap) to get tiles, then assign it to the
+        // DefaultTileFactory and finally set it to the map
         TileFactoryInfo info = new OSMTileFactoryInfo();
         tileFactory = new DefaultTileFactory(info);
         map.setTileFactory(tileFactory);
@@ -48,7 +53,8 @@ public class MapPanel extends JPanel {
         // Set map zoom and center position
         map.setZoom(5);
         map.setAddressLocation(this.romePosition);
-        // Create a list of painters, add the waypointPainter to it, assign it to the mapPainter
+        // Create a list of painters, add the waypointPainter to it, assign it to the
+        // mapPainter
         List<Painter<JXMapViewer>> painters = new ArrayList<Painter<JXMapViewer>>();
         painters.add(this.waypointPainter);
         this.mapPainter.setPainters(painters);
@@ -57,17 +63,24 @@ public class MapPanel extends JPanel {
         // Set the layout to show the map on the panel
         setLayout(new BorderLayout());
         add(map, BorderLayout.CENTER);
-        // Initialize the map input listeners for panning and zooming
-        mapInputInit();
-        // Initialize the behavior for clicking on waypoints
+
+        // General Zoom Behaviour
+        zoomBehaviour = (new ZoomBehaviour() {
+            @Override
+            public void onZoomChange(int zoomLevel) {
+                map.setZoom(zoomLevel);
+                stopPainter.repaint();
+            }
+        });
+
+        handleMouseListeners();
         clickOnWaypoint();
-        // Initialize the zoom behavior on waypoints
-        zoomOnWaypoint();
     }
 
     // METHODS //
     public void renderStops(List<StopModel> stops) {
-        // Create a set of waypoints from the list of stops, then set it to the waypointPainter
+        // Create a set of waypoints from the list of stops, then set it to the
+        // waypointPainter
         Set<Waypoint> waypoints = new HashSet<Waypoint>();
         for (StopModel stop : stops) {
             waypoints.add(new DefaultWaypoint(stop.getLatitude(), stop.getLongitude()));
@@ -75,13 +88,18 @@ public class MapPanel extends JPanel {
         this.waypointPainter.setWaypoints(waypoints);
     }
 
-    private void mapInputInit() throws IOException {
-        // Set the map to be draggable and zoomable with mouse and wheel listeners
+    // Set the map to be draggable and zoomable with mouse and wheel listeners
+    private void handleMouseListeners() throws IOException {
         PanMouseInputListener mouseClick = new PanMouseInputListener(map);
-        ZoomMouseWheelListenerCursor mouseWheel = new ZoomMouseWheelListenerCursor(map);
         this.map.addMouseListener(mouseClick);
         this.map.addMouseMotionListener(mouseClick);
-        this.map.addMouseWheelListener(mouseWheel);
+        this.map.addMouseWheelListener(new ZoomMouseWheelListenerCursor(map));
+        this.map.addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                stopPainter.repaint();
+            }
+        });
     }
 
     private void clickOnWaypoint() {
@@ -102,15 +120,11 @@ public class MapPanel extends JPanel {
         });
     }
 
-    // METHODS //
-    public void zoomOnWaypoint() {
-        this.map.addMouseWheelListener(stopPainter.getZoomLevelListener()); }
-
-
     public void setMapPanelMapPosition(GeoPosition geoPosition, int zoomLevel) {
         this.map.setAddressLocation(geoPosition);
-        this.map.setZoom(zoomLevel);
-        // TODO: icon does not change when zooming in and out!
+        if (zoomBehaviour != null) {
+            zoomBehaviour.onZoomChange(zoomLevel);
+        }
     }
 
     // GETTERS AND SETTERS //

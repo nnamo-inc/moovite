@@ -164,14 +164,16 @@ public class MainController {
 
     private void handleSearchPanelTableRowClick() {
         mainFrame.setSearchStopTableClickListener(new TableRowClickListener() {
-             @Override
-             public void onRowClick(Object rowData) throws SQLException {
-                 String stopId = (String) ((List<Object>) rowData).get(1);
-                 GeoPosition geoPosition = new GeoPosition(db.getStopById(stopId).getLatitude(), db.getStopById(stopId).getLongitude());
-                 mainFrame.setMapPanelMapPosition(geoPosition, 4); // 4 == zoom level
-             }
-         }
-        );
+            @Override
+            public void onRowClick(Object rowData) throws SQLException {
+                final int zoomLevel = 0;
+                String stopId = (String) ((List<Object>) rowData).get(1);
+                StopModel stop = db.getStopById(stopId);
+                GeoPosition geoPosition = new GeoPosition(stop.getLatitude(), stop.getLongitude());
+
+                mainFrame.setMapPanelMapPosition(geoPosition, zoomLevel);
+            }
+        });
 
         mainFrame.setSearchRouteTableClickListener(new TableRowClickListener() {
             @Override
@@ -179,8 +181,6 @@ public class MainController {
                 // TODO: update position on the map
             }
         });
-
-
 
     }
 
