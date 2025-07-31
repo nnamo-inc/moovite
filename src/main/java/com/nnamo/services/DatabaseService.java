@@ -258,11 +258,12 @@ public class DatabaseService {
                     continue;
                 }
 
+                stopTime.getArrivalTime();
                 stopTimes.add(new StopTimeModel(
                         tripModel,
                         stopModel,
-                        new Date(stopTime.getArrivalTime() * 1000L),
-                        new Date(stopTime.getDepartureTime() * 1000L)));
+                        stopTime.getArrivalTime(),
+                        stopTime.getDepartureTime()));
 
                 if (stopTimes.size() >= 100000) {
                     stopTimeDao.create(stopTimes);
@@ -357,14 +358,11 @@ public class DatabaseService {
                 where.raw(
                         "FUZZY_SCORE(name, ?) > ?",
                         new SelectArg(SqlType.STRING, searchTerm),
-                        new SelectArg(SqlType.DOUBLE, scoreThresholdPercentage)
-                )
-        );
+                        new SelectArg(SqlType.DOUBLE, scoreThresholdPercentage)));
 
         queryBuilder.orderByRaw(
                 "FUZZY_SCORE(name, ?) DESC",
-                new SelectArg(SqlType.STRING, searchTerm)
-        );
+                new SelectArg(SqlType.STRING, searchTerm));
 
         return queryBuilder.query();
     }
@@ -388,11 +386,9 @@ public class DatabaseService {
 
         // Conversion from LocalTime to Date, since the time is stored in the db at the
         // EPOCH Date (1970-01-01)
-        long hoursToMillisec = 21600000; // 6 hours
-        Instant epochDateTime = time.atDate(LocalDate.EPOCH).atZone(ZoneId.systemDefault()).toInstant();
-        Date midnightDateTime = new Date(0L);
-        Date currentDateTime = Date.from(epochDateTime);
-        Date nextHoursDate = new Date(currentDateTime.getTime() + hoursToMillisec);
+        int hoursToMillisec = 6 * 3600; // 6 hours
+        int currentDateTime = LocalTime.now().toSecondOfDay();
+        int nextHoursDate = currentDateTime + hoursToMillisec;
 
         boolean ascending = true;
         return stopTimeDao

@@ -58,13 +58,15 @@ public class StopPanel extends JPanel {
         JPanel tableRouteInfo = newRouteInfoPanel();
         TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Tabella corse");
         tableRouteInfo.setBorder(titledBorder);
-        add(tableRouteInfo, new GbcCustom().setPosition(1, 0).setWeight(1.0, 1.0).setHeight(2).setAnchor(GridBagConstraints.CENTER)
-                .setFill(GridBagConstraints.BOTH).setInsets(2, 5, 2, 5));
+        add(tableRouteInfo,
+                new GbcCustom().setPosition(1, 0).setWeight(1.0, 1.0).setHeight(2).setAnchor(GridBagConstraints.CENTER)
+                        .setFill(GridBagConstraints.BOTH).setInsets(2, 5, 2, 5));
 
         // Buttons prefer
         JPanel PanelPrefer = newPanelPrefer();
-        add(PanelPrefer, new GbcCustom().setPosition(2, 0).setWeight(0.1, 0.1).setHeight(2).setAnchor(GridBagConstraints.EAST)
-                .setFill(GridBagConstraints.BOTH).setInsets(2, 5, 2, 5));
+        add(PanelPrefer,
+                new GbcCustom().setPosition(2, 0).setWeight(0.1, 0.1).setHeight(2).setAnchor(GridBagConstraints.EAST)
+                        .setFill(GridBagConstraints.BOTH).setInsets(2, 5, 2, 5));
 
         // inizialize the listeners
         setVisible(false);
@@ -151,11 +153,9 @@ public class StopPanel extends JPanel {
         }
 
         for (StopTimeModel stopTime : stopTimes) {
-            LocalTime arrivalTime = LocalTime.ofInstant(stopTime.getArrivalTime().toInstant(), ZoneId.systemDefault());
             TripModel trip = stopTime.getTrip(); // Corsa
             if (trip == null)
                 continue;
-            System.out.println("Processing stop time of trip... " + trip.getId());
 
             RouteModel route = trip.getRoute(); // Linea
             if (route == null || route.getShortName() == null) {
@@ -163,20 +163,24 @@ public class StopPanel extends JPanel {
             }
 
             RealtimeStopUpdate timeUpdate = realtimeTrips.get(trip.getId());
-            String stato = "Programmato";
+            String state = "Programmato";
+            int remainingMinutes = -1;
             if (timeUpdate != null) {
-                System.out.println(
-                        "Realtime update for trip ID: " + trip.getId() + " - Arrival Time: "
-                                + new Date(timeUpdate.getUpdateTime()).toString());
-                stato = "In Arrivo";
+                System.out.println("Found realtime update for trip ID: " + timeUpdate.getTripId());
+                state = "In Arrivo";
             }
+
             table.addRow(new Object[] {
                     route.getShortName(),
-                    arrivalTime.toString(),
-                    stato,
-                    null
+                    stopTime.getArrivalTimeAsStr(),
+                    state,
+                    remainingMinutes >= 0 ? remainingMinutes + " min" : "N/A"
             });
         }
+    }
+
+    private int calculateMinutesDifference(int time1, int time2) {
+        return (time1 - time2) / 60;
     }
 
     public void updateStopPanelInfo(String id, String nome) {
