@@ -4,7 +4,6 @@ import com.nnamo.interfaces.WaypointListener;
 import com.nnamo.interfaces.ZoomBehaviour;
 import com.nnamo.models.StopModel;
 import com.nnamo.view.StopPainter;
-import com.nnamo.view.Zoom;
 
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
@@ -122,9 +121,7 @@ public class MapPanel extends JPanel {
 
     public void setMapPanelMapPosition(GeoPosition geoPosition, int zoomLevel) {
         this.map.setAddressLocation(geoPosition);
-        if (zoomBehaviour != null) {
-            zoomBehaviour.onZoomChange(zoomLevel);
-        }
+        this.setZoom(zoomLevel);
     }
 
     // GETTERS AND SETTERS //
@@ -142,6 +139,21 @@ public class MapPanel extends JPanel {
 
     public void setWaypointListener(WaypointListener waypointListener) {
         this.waypointListener = waypointListener;
+    }
+
+    public void setZoom(int zoomLevel) {
+        map.setZoom(zoomLevel);
+        if (zoomBehaviour != null) {
+            zoomBehaviour.onZoomChange(zoomLevel);
+        }
+    }
+
+    public void increaseZoom(int offset) {
+        this.setZoom(map.getZoom() + offset);
+    }
+
+    public void decreaseZoom(int offset) {
+        this.setZoom(map.getZoom() - offset);
     }
 
 }
