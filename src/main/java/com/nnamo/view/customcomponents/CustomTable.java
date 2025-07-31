@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Vector;
 
@@ -77,7 +78,7 @@ public class CustomTable extends JPanel {
                         rowData = (Vector<Object>) model.getDataVector().get(modelRow);
                         try {
                             tableRowClickListener.onRowClick(rowData);
-                        } catch (SQLException ex) {
+                        } catch (SQLException | IOException ex) {
                             throw new RuntimeException(ex);
                         }
                     }
@@ -89,7 +90,6 @@ public class CustomTable extends JPanel {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
                 sorter.setSortKeys(null);
-                table.clearSelection();
             }
         });
 

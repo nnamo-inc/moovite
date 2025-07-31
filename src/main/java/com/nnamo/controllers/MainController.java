@@ -12,6 +12,7 @@ import com.nnamo.services.RealtimeStopUpdate;
 import org.jxmapviewer.viewer.GeoPosition;
 
 import java.awt.*;
+import java.awt.font.LayoutPath;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -153,9 +154,7 @@ public class MainController {
                         int alpha = new Color(argb, true).getAlpha();
                         // Check alpha
                         if (alpha > 0) {
-                            Date currentDate = new Date();
-                            LocalTime currentTime = LocalTime.now();
-                            List<StopTimeModel> stopTimes = db.getNextStopTimes(stop.getId(), currentTime, currentDate);
+                            List<StopTimeModel> stopTimes = db.getNextStopTimes(stop.getId(), getCurrentTime(), getCurrentDate());
                             List<RealtimeStopUpdate> realtimeUpdates = realtimeService.getStopUpdatesById(stop.getId());
                             updateStopPanel(stop, stopTimes, realtimeUpdates);
                             return;
@@ -176,8 +175,13 @@ public class MainController {
                 String stopId = (String) ((List<Object>) rowData).get(1);
                 StopModel stop = db.getStopById(stopId);
                 GeoPosition geoPosition = new GeoPosition(stop.getLatitude(), stop.getLongitude());
-
                 mainFrame.setMapPanelMapPosition(geoPosition, zoomLevel);
+                List<RealtimeStopUpdate> realtimeUpdates = realtimeService.getStopUpdatesById(stop.getId());
+                try {
+                    updateStopPanel(stop, db.getNextStopTimes(stopId, getCurrentTime(), getCurrentDate()), realtimeUpdates);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
 
@@ -218,5 +222,13 @@ public class MainController {
             e.printStackTrace();
             return; // Exit if there's an error fetching stops
         }
+    }
+
+    public Date getCurrentDate() {
+        return new Date();
+    }
+
+    public LocalTime getCurrentTime() {
+        return LocalTime.now();
     }
 }

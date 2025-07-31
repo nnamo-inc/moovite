@@ -28,7 +28,7 @@ public class MainFrame extends JFrame {
     public MainFrame() throws IOException {
         super("Moovite Map View");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        /* setExtendedState(JFrame.MAXIMIZED_BOTH); */
+         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setSize(new Dimension(1000, 800));
         setLayout(new BorderLayout());
 

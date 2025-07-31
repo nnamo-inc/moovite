@@ -13,12 +13,12 @@ public class InfoBar extends JPanel {
         super();
         label = new JLabel(labelName);
         label.setHorizontalAlignment(SwingConstants.RIGHT);
-        textField = new JTextField(20);
+        textField = new JTextField(15);
         textField.setHorizontalAlignment(JTextField.LEFT);
         textField.setEditable(false);
         setLayout(new GridBagLayout());
-        add(label, new GbcCustom().setPosition(0, 0).setWeight(0.0, 0.0)
-                .setInsets(2, 5, 2, 5).setAnchor(GridBagConstraints.EAST));
+        add(label, new GbcCustom().setPosition(0, 0).setWeight(1.0, 1.0)
+                .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 5, 2, 5).setAnchor(GridBagConstraints.WEST));
         add(textField, new GbcCustom().setPosition(1, 0).setWeight(1.0, 1.0)
                 .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 0, 2, 10).setAnchor(GridBagConstraints.WEST));
     }
