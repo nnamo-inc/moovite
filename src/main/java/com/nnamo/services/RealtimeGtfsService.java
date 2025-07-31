@@ -18,7 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public class RealtimeGtfsService {
-    public static final String FEED_URL = "https://dati.comune.roma.it/catalog/dataset/a7dadb4a-66ae-4eff-8ded-a102064702ba/resource/bf7577b5-ed26-4f50-a590-38b8ed4d2827/download/rome_trip_updates.pb";
+    public static final String FEED_URL = "https://romamobilita.it/sites/default/files/rome_rtgtfs_trip_updates_feed.pb";
     public static final Duration POLLING_INTERVAL = Duration.ofSeconds(30);
 
     private final URL feedUrl;
@@ -92,10 +92,10 @@ public class RealtimeGtfsService {
             String tripId = tripUpdate.getTrip().getTripId();
             tripsMap.put(tripId, entity);
 
-            // System.out.println("Processing trip update for trip ID: " + tripId);
             for (StopTimeUpdate stopTime : tripUpdate.getStopTimeUpdateList()) {
                 String stopId = stopTime.getStopId();
                 String routeId = tripUpdate.getTrip().getRouteId();
+                System.out.println("Adding stop time for stop " + stopId + ": trip " + tripId);
                 RealtimeStopUpdate stopUpdate = new RealtimeStopUpdate(tripId, stopTime);
 
                 // Creates ArrayList if it does not exist for the stopId, and adds the stop
@@ -118,10 +118,11 @@ public class RealtimeGtfsService {
                         System.out.println("Updating feed from " + feedUrl);
                         updateFeed();
                         System.out.println("Feed updated successfully. Waiting 30s for the next update...");
-                        Thread.sleep(POLLING_INTERVAL);
                     } catch (IOException e) {
                         System.err.println("Error updating feed: " + e.getMessage());
                         e.printStackTrace();
+                    } finally {
+                        Thread.sleep(POLLING_INTERVAL);
                     }
                 }
             } catch (InterruptedException e) {

@@ -4,7 +4,6 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate;
 import com.nnamo.interfaces.FavoriteBehaviour;
 import com.nnamo.interfaces.TableRowClickListener;
 import com.nnamo.models.RouteModel;
@@ -164,15 +163,17 @@ public class StopPanel extends JPanel {
             }
 
             RealtimeStopUpdate timeUpdate = realtimeTrips.get(trip.getId());
+            String stato = "Programmato";
             if (timeUpdate != null) {
                 System.out.println(
                         "Realtime update for trip ID: " + trip.getId() + " - Arrival Time: "
                                 + new Date(timeUpdate.getUpdateTime()).toString());
+                stato = "In Arrivo";
             }
             table.addRow(new Object[] {
                     route.getShortName(),
                     arrivalTime.toString(),
-                    "In Orario", // TODO: DA AGGIORNARE CON DATI IN REALTIME
+                    stato,
                     null
             });
         }

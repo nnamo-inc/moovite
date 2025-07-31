@@ -9,7 +9,7 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "trips")
 public class TripModel {
 
-    @DatabaseField(id = true)
+    @DatabaseField(id = true, index = true)
     private String id;
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
