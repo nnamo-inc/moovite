@@ -161,7 +161,8 @@ public class MainController {
                         }
                     }
                 }
-                mainFrame.getStopPanel().setVisible((false));
+
+                mainFrame.updateStopPanelVisibility(false);
                 mainFrame.getMapPanel().repaint();
             }
         });
@@ -200,9 +201,7 @@ public class MainController {
         mainFrame.updateStopPanelInfo(stop.getId(), stop.getName());
         mainFrame.updateStopPanelTimes(stopTimes, realtimeUpdates);
         mainFrame.updateStopPanelPreferButtons(db.isFavoriteStop(sessionUser.getId(), stop.getId()), stop.getId());
-        mainFrame.getStopPanel().revalidate();
-        mainFrame.getStopPanel().setVisible(true);
-        mainFrame.getStopPanel().setVisible(true);
+        mainFrame.updateStopPanelVisibility(true);
     }
 
     public void searchQueryListener(String searchText) {

@@ -21,26 +21,25 @@ public class MainFrame extends JFrame {
     StopPanel stopPanel = new StopPanel();
     SearchPanel searchPanel = new SearchPanel();
 
-    // Center panel contains map, stop, search
-    JPanel centerPanel = new JPanel();
+    JSplitPane splitMapStop;
+    JSplitPane splitSearchCenter;
 
-    // COSTRUCTOR //
     public MainFrame() throws IOException {
         super("Moovite Map View");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-         setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setSize(new Dimension(1000, 800));
         setLayout(new BorderLayout());
 
-        // Initialize the center panel with the map and stop panels then add it to the
-        // JFrame
-        centerPanel.setLayout(new BorderLayout());
-        centerPanel.add(mapPanel, BorderLayout.CENTER);
-        centerPanel.add(stopPanel, BorderLayout.SOUTH);
-        add(centerPanel, BorderLayout.CENTER);
+        // Split verticale tra mappa e stop panel
+        splitMapStop = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mapPanel, stopPanel);
+        splitMapStop.setResizeWeight(1.0);
 
-        // Add the search panel to the JFrame
-        add(searchPanel, BorderLayout.WEST);
+        // Split orizzontale tra search panel e centro (mappa+stop)
+        splitSearchCenter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, searchPanel, splitMapStop);
+        splitSearchCenter.setResizeWeight(0.2);
+
+        add(splitSearchCenter, BorderLayout.CENTER);
     }
 
     public void open() {
@@ -68,6 +67,22 @@ public class MainFrame extends JFrame {
         this.stopPanel.updatePreferRouteButton(isFavorite, routeNumber);
     }
 
+    public void updateStopPanelVisibility(boolean visible) {
+        JSplitPane jsp = splitMapStop;
+        if (visible) {
+            this.stopPanel.setVisible(visible);
+            jsp.setDividerSize(10);
+            jsp.setDividerLocation(0.6);
+            getStopPanel().revalidate();
+        }
+        else {
+            this.stopPanel.setVisible(visible);
+            jsp.setDividerSize(0);
+            jsp.setDividerLocation(1.0);
+            getStopPanel().revalidate();
+        }
+
+    }
     // GETTERS AND SETTERS //
     public MapPanel getMapPanel() {
         return mapPanel;
@@ -96,6 +111,7 @@ public class MainFrame extends JFrame {
             this.getStopPanel().getTextName().setText(name);
         }
     }
+
 
     // SETTERS FOR BEHAVIOURS //
 

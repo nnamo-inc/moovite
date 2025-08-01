@@ -46,27 +46,31 @@ public class StopPanel extends JPanel {
 
         // Stop info panel
         JPanel PanelStopInfo = newStopInfoPanel();
-        add(PanelStopInfo, new GbcCustom().setPosition(0, 0).setWeight(0.1, 0.1).setAnchor(GridBagConstraints.WEST)
-                .setFill(GridBagConstraints.BOTH).setInsets(2, 5, 2, 5));
+        add(PanelStopInfo, new GbcCustom().setPosition(0, 0).setAnchor(GridBagConstraints.WEST)
+                .setFill(GridBagConstraints.BOTH).setWeight(0.9, 0.9)
+                .setInsets(2, 5, 2, 5));
 
         // Bus info panel
         JPanel PanelbusInfo = newBusInfoPanel();
-        add(PanelbusInfo, new GbcCustom().setPosition(0, 1).setWeight(0.1, 0.1).setAnchor(GridBagConstraints.WEST)
-                .setFill(GridBagConstraints.BOTH).setInsets(2, 5, 2, 5));
+        add(PanelbusInfo, new GbcCustom().setPosition(0, 1).setAnchor(GridBagConstraints.WEST)
+                .setFill(GridBagConstraints.BOTH).setWeight(0.9, 0.9)
+                .setInsets(2, 5, 2, 5));
 
         // Route info panel
         JPanel tableRouteInfo = newRouteInfoPanel();
         TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Tabella corse");
         tableRouteInfo.setBorder(titledBorder);
         add(tableRouteInfo,
-                new GbcCustom().setPosition(1, 0).setWeight(1.0, 1.0).setHeight(2).setAnchor(GridBagConstraints.CENTER)
-                        .setFill(GridBagConstraints.BOTH).setInsets(2, 5, 2, 5));
+                new GbcCustom().setPosition(1, 0).setHeight(2).setAnchor(GridBagConstraints.CENTER)
+                        .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
+                        .setInsets(2, 5, 2, 5));
 
         // Buttons prefer
         JPanel PanelPrefer = newPanelPrefer();
         add(PanelPrefer,
-                new GbcCustom().setPosition(2, 0).setWeight(0.1, 0.1).setHeight(2).setAnchor(GridBagConstraints.EAST)
-                        .setFill(GridBagConstraints.BOTH).setInsets(2, 5, 2, 5));
+                new GbcCustom().setPosition(2, 0).setHeight(2).setAnchor(GridBagConstraints.EAST)
+                        .setFill(GridBagConstraints.BOTH).setWeight(0.1, 0.1)
+                        .setInsets(2, 5, 2, 5));
 
         // inizialize the listeners
         setVisible(false);
@@ -81,12 +85,14 @@ public class StopPanel extends JPanel {
 
         // label name
         infoStop.add(nomeFermata,
-                new GbcCustom().setPosition(0, 0).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.WEST)
-                        .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 5, 2, 5));
+                new GbcCustom().setPosition(0, 0).setAnchor(GridBagConstraints.WEST)
+                        .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
+                        .setInsets(2, 5, 2, 5));
 
         // text name
-        infoStop.add(idFermata, new GbcCustom().setPosition(0, 1).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.WEST)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 5, 2, 5));
+        infoStop.add(idFermata, new GbcCustom().setPosition(0, 1).setAnchor(GridBagConstraints.WEST)
+                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
+                .setInsets(2, 5, 2, 5));
 
         return infoStop;
     }
@@ -99,30 +105,31 @@ public class StopPanel extends JPanel {
 
         // label bus
         infoBus.add(busInArrivo,
-                new GbcCustom().setPosition(0, 0).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.WEST)
-                        .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 5, 2, 5));
-
+                new GbcCustom().setPosition(0, 0).setAnchor(GridBagConstraints.WEST)
+                        .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
+                        .setInsets(2, 5, 2, 5));
         // text bus
         infoBus.add(statoBusInArrivo,
-                new GbcCustom().setPosition(0, 1).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.WEST)
-                        .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 5, 2, 5));
-
+                new GbcCustom().setPosition(0, 1).setAnchor(GridBagConstraints.WEST)
+                        .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
+                        .setInsets(2, 5, 2, 5));
         // label state
         infoBus.add(numeroPosti,
-                new GbcCustom().setPosition(0, 2).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.WEST)
-                        .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 5, 2, 5));
+                new GbcCustom().setPosition(0, 2).setAnchor(GridBagConstraints.WEST)
+                        .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
+                        .setInsets(2, 5, 2, 5));
 
         return infoBus;
     }
 
     private JPanel newRouteInfoPanel() {
         JPanel mainPanel = new JPanel(new GridBagLayout());
-        mainPanel.setPreferredSize(new Dimension(100, 400));
         this.table = new CustomTable(new String[] { "Autobus", "Orario Arrivo", "Stato", "In ritardo" }, true);
 
         // Table
-        mainPanel.add(table, new GbcCustom().setPosition(0, 1).setWeight(1.0, 1.0).setAnchor(GridBagConstraints.CENTER)
-                .setFill(GridBagConstraints.BOTH).setInsets(10, 10, 10, 10));
+        mainPanel.add(table, new GbcCustom().setPosition(0, 1).setAnchor(GridBagConstraints.CENTER)
+                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0).
+                setInsets(2, 5, 2, 5));
 
         table.getRowSorter().setSortable(1, false);
 
@@ -130,16 +137,23 @@ public class StopPanel extends JPanel {
     }
 
     private JPanel newPanelPrefer() {
+
         JPanel panelPrefer = new JPanel(new GridBagLayout());
         TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Preferiti");
         panelPrefer.setBorder(titledBorder);
+
+        Dimension minButtonSize = new Dimension(100, Integer.MAX_VALUE);
+        favoriteStopButton.setMinimumSize(minButtonSize);
+        favoriteRouteButton.setMinimumSize(minButtonSize);
         // button prefer
-        panelPrefer.add(favoriteStopButton, new GbcCustom().setPosition(0, 0).setWeight(1.0, 1.0)
-                .setFill(GridBagConstraints.BOTH).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.CENTER));
+        panelPrefer.add(favoriteStopButton, new GbcCustom().setPosition(0, 0)
+                .setInsets(2, 5, 2, 5).setAnchor(GridBagConstraints.CENTER)
+                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0));
 
         favoriteRouteButton.setEnabled(false);
-        panelPrefer.add(favoriteRouteButton, new GbcCustom().setPosition(0, 1).setWeight(1.0, 1.0)
-                .setFill(GridBagConstraints.BOTH).setInsets(10, 10, 10, 10).setAnchor(GridBagConstraints.CENTER));
+        panelPrefer.add(favoriteRouteButton, new GbcCustom().setPosition(0, 1)
+                .setInsets(2, 5, 2, 5).setAnchor(GridBagConstraints.CENTER)
+                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0));
         return panelPrefer;
     }
 

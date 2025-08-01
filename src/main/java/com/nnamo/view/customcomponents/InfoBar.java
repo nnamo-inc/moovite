@@ -17,10 +17,12 @@ public class InfoBar extends JPanel {
         textField.setHorizontalAlignment(JTextField.LEFT);
         textField.setEditable(false);
         setLayout(new GridBagLayout());
-        add(label, new GbcCustom().setPosition(0, 0).setWeight(1.0, 1.0)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 5, 2, 5).setAnchor(GridBagConstraints.WEST));
-        add(textField, new GbcCustom().setPosition(1, 0).setWeight(1.0, 1.0)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 0, 2, 10).setAnchor(GridBagConstraints.WEST));
+
+        add(label, new GbcCustom().setPosition(0, 0).setInsets(2, 5, 2, 5).setAnchor(GridBagConstraints.WEST)
+                .setFill(GridBagConstraints.HORIZONTAL).setWeight(0.1, 0.1));
+
+        add(textField, new GbcCustom().setPosition(1, 0).setInsets(2, 5, 2, 5).setAnchor(GridBagConstraints.WEST)
+                .setFill(GridBagConstraints.HORIZONTAL).setWeight(1.0, 1.0));
     }
 
     // GETTERS AND SETTERS //

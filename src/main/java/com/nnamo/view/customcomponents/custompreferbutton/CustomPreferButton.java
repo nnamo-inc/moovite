@@ -3,6 +3,7 @@ package com.nnamo.view.customcomponents.custompreferbutton;
 import com.nnamo.interfaces.FavoriteBehaviour;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
 
 public class CustomPreferButton extends JButton {
@@ -15,17 +16,16 @@ public class CustomPreferButton extends JButton {
     public CustomPreferButton(String itemName) {
         super();
         this.itemName = itemName;
+
         addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
                 favorite = !favorite;
                 if (favorite) {
                     favoriteBehaviour.addFavorite(itemId);
-                    setText("Rimuovi " + itemName + " dai preferiti");
-                } else {
+                    setText("<html><p>Rimuovi</p><p>" + itemName + "</p><p>dai Preferiti</p></html>");                } else {
                     favoriteBehaviour.removeFavorite(itemId);
-                    setText("Aggiungi " + itemName + " ai preferiti");
-                }
+                    setText("<html><p>Aggiungi</p><p>" + itemName + "</p><p>ai Preferiti</p></html>");                }
             }
         });
 
