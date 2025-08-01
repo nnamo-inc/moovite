@@ -8,6 +8,8 @@ import com.nnamo.view.customcomponents.GbcCustom;
 import com.nnamo.view.customcomponents.SearchBar;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.util.List;
 
@@ -22,8 +24,19 @@ public class SearchPanel extends JPanel {
         super();
         setLayout(new GridBagLayout());
         add(searchBar, new GbcCustom().setPosition(0, 0).setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
-        add(tableStop, new GbcCustom().setPosition(0, 1).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5).setInsets(10, 10, 10, 10));
-        add(tableRoute, new GbcCustom().setPosition(0, 2).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5).setInsets(10, 10, 10, 10));
+        // Add the tables to the panel
+        TitledBorder tableStopBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Fermate");
+        tableStop.setBorder(BorderFactory.createCompoundBorder(
+                tableStopBorder,
+                BorderFactory.createEmptyBorder(2, 5, 2, 5)
+        ));
+        add(tableStop, new GbcCustom().setPosition(0, 1).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5).setInsets(2, 5, 2, 5));
+        TitledBorder tableRouteBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Linee");
+        tableRoute.setBorder(BorderFactory.createCompoundBorder(
+                tableRouteBorder,
+                BorderFactory.createEmptyBorder(2, 5, 2, 5)
+        ));
+        add(tableRoute, new GbcCustom().setPosition(0, 2).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5).setInsets(2, 5, 2, 5));
     }
 
     public void addSearchListener(SearchBarListener listener) {

@@ -219,7 +219,7 @@ public class StopPanel extends JPanel {
     public void updatePreferButtons(boolean favorite) {
         favoriteStopButton.setFavorite(favorite);
         favoriteStopButton.setItemId(idFermata.getTextField());
-        updateFavoriteRouteMessage("Clicca una linea sulla tabella degli orari");
+        updateFavoriteRouteMessage("<html></p><p>Clicca su una riga</p><p>della tabella per</p><p>attivare il bottone</p></html>");
     }
 
     public void updatePreferRouteButton(boolean isFavorite, String routeId) {

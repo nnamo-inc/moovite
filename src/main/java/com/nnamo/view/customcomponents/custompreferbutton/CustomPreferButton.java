@@ -44,10 +44,10 @@ public class CustomPreferButton extends JButton {
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
         if (favorite) {
-            setText("Rimuovi " + itemName + " dai preferiti");
+            setText("<html><p>Rimuovi</p><p>" + itemName + "</p><p>dai Preferiti</p></html>");
         }
         else {
-            setText("Aggiungi " + itemName + " ai preferiti");
+            setText("<html><p>Aggiungi</p><p>" + itemName + "</p><p>dai Preferiti</p></html>");
         }
     }
 }
