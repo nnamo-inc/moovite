@@ -22,12 +22,12 @@ import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
 
 public class UserController {
-    private DatabaseService db;
-    private LoginFrame loginFrame;
-    private Argon2 hasher = Argon2Factory.create();
+    private final DatabaseService db;
+    private final LoginFrame loginFrame;
+    private final Argon2 hasher = Argon2Factory.create();
 
     private final String sessionPath = UserDataUtils.getSessionPath();
-    private String dataDir = UserDataUtils.getDataDir();
+    private final String dataDir = UserDataUtils.getDataDir();
 
     private SessionListener sessionListener;
 
@@ -49,7 +49,7 @@ public class UserController {
         loginFrame.setLoginBehaviour(new LoginBehaviour() {
             @Override
             public void login(String username, String password) throws SQLException {
-                System.out.println(String.format("Login: %s %s", username, password));
+                System.out.printf("Login: %s %s%n", username, password);
 
                 UserModel user = db.getUserByName(username);
                 if (user != null && hasher.verify(user.getPasswordHash(), password.getBytes())) {

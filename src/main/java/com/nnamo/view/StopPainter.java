@@ -17,13 +17,13 @@ import org.jxmapviewer.viewer.WaypointPainter;
 import org.jxmapviewer.viewer.WaypointRenderer;
 
 public class StopPainter {
-    private JXMapViewer map;
-    private Painter mapPainter;
-    private WaypointPainter waypointPainter;
-    private HashMap<Sizes, BufferedImage> icons = new HashMap<Sizes, BufferedImage>();
+    private final JXMapViewer map;
+    private final Painter mapPainter;
+    private final WaypointPainter waypointPainter;
+    private final HashMap<Sizes, BufferedImage> icons = new HashMap<Sizes, BufferedImage>();
     private BufferedImage currentIcon;
 
-    private int zoomLimit = 4;
+    private final int zoomLimit = 4;
 
     // Inner enum to define the sizes of the stop icons
     public enum Sizes {
@@ -48,7 +48,7 @@ public class StopPainter {
                 .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/stop_large.png"))));
     }
 
-    // GETTERS AND SETTERS OUTHER CLASS //
+    // GETTERS AND SETTERS OUTER CLASS //
     public BufferedImage getIcon(Sizes size) {
         return icons.get(size);
     }

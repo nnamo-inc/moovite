@@ -8,10 +8,10 @@ import java.time.ZoneOffset;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate;
 
 public class RealtimeStopUpdate {
-    private String tripId;
+    private final String tripId;
     private String routeId;
-    private String stopId;
-    private StopTimeUpdate timeUpdate;
+    private final String stopId;
+    private final StopTimeUpdate timeUpdate;
 
     public RealtimeStopUpdate(String tripId, StopTimeUpdate timeUpdate) {
         this.tripId = tripId;

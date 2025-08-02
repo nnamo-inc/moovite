@@ -31,8 +31,8 @@ public class StopPanel extends JPanel {
     // Route info components
     private CustomTable table;
     // Prefer components
-    private CustomPreferButton favoriteStopButton = new CustomPreferButton("Fermata");
-    private CustomPreferButton favoriteRouteButton = new CustomPreferButton("Linea");
+    private final CustomPreferButton favoriteStopButton = new CustomPreferButton("Fermata");
+    private final CustomPreferButton favoriteRouteButton = new CustomPreferButton("Linea");
 
     // CONSTRUCTOR //
     public StopPanel() {

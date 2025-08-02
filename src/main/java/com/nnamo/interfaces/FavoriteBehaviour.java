@@ -1,6 +1,6 @@
 package com.nnamo.interfaces;
 
 public interface FavoriteBehaviour {
-    public void addFavorite(String string);
-    public void removeFavorite(String string);
+    void addFavorite(String string);
+    void removeFavorite(String string);
 }

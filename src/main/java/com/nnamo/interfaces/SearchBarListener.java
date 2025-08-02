@@ -1,5 +1,5 @@
 package com.nnamo.interfaces;
 
 public interface SearchBarListener {
-    public void onSearch(String searchText);
+    void onSearch(String searchText);
 }

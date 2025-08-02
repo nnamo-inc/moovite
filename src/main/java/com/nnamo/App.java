@@ -40,15 +40,12 @@ public class App {
             controller.run();
         } catch (SQLException e) {
             e.printStackTrace();
-            return;
         } catch (IOException e) {
             System.err.println("Error loading GTFS data");
             e.printStackTrace();
-            return;
         } catch (URISyntaxException e) {
             System.err.println("Error loading realtime GTFS data");
             e.printStackTrace();
-            return;
         }
     }
 }

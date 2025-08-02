@@ -1,5 +1,5 @@
 package com.nnamo.interfaces;
 
 public interface SessionListener {
-    public void onSessionCreated(int userId);
+    void onSessionCreated(int userId);
 }

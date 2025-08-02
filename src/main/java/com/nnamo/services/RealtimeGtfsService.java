@@ -22,7 +22,7 @@ public class RealtimeGtfsService {
     public static final String FEED_URL = "https://romamobilita.it/sites/default/files/rome_rtgtfs_trip_updates_feed.pb";
     public static final Duration POLLING_INTERVAL = Duration.ofSeconds(30);
 
-    private Thread backgroundThread;
+    private final Thread backgroundThread;
     private boolean online = false;
 
     private final URL feedUrl;
@@ -30,7 +30,7 @@ public class RealtimeGtfsService {
     private final List<FeedStopLinesListener> feedStopLinesListeners = new ArrayList<>();
     private List<FeedEntity> entityList;
     private HashMap<String, FeedEntity> tripsMap = new HashMap<>();
-    private HashMap<String, List<FeedEntity>> routesMap = new HashMap<>();
+    private final HashMap<String, List<FeedEntity>> routesMap = new HashMap<>();
     private HashMap<String, List<RealtimeStopUpdate>> stopsMap = new HashMap<>();
 
     public RealtimeGtfsService() throws URISyntaxException, IOException {

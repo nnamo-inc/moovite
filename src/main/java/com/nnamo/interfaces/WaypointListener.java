@@ -7,6 +7,6 @@ import java.sql.SQLException;
 
 public interface WaypointListener {
 
-    public void onWaypointClick(GeoPosition geo) throws SQLException, IOException;
+    void onWaypointClick(GeoPosition geo) throws SQLException, IOException;
 
 }

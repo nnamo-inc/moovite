@@ -5,5 +5,5 @@ import java.sql.SQLException;
 
 public interface TableRowClickListener {
 
-    public void onRowClick(Object rowData) throws SQLException, IOException;
+    void onRowClick(Object rowData) throws SQLException, IOException;
 }

@@ -12,8 +12,8 @@ import java.util.ArrayList;
 public class SwitchBar extends JPanel {
 
     private final JLabel switchLabel;
-    private JButton switchButton = new JButton("Toggle");
-    private ArrayList<SwitchBarListener> listeners = new ArrayList<>();
+    private final JButton switchButton = new JButton("Toggle");
+    private final ArrayList<SwitchBarListener> listeners = new ArrayList<>();
 
     private RealtimeStatus status;
 

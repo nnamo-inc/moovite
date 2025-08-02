@@ -1,5 +1,5 @@
 package com.nnamo.interfaces;
 
 public interface ZoomBehaviour {
-    public void onZoomChange(int zoomLevel);
+    void onZoomChange(int zoomLevel);
 }

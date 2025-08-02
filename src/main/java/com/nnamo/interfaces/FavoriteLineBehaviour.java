@@ -1,5 +1,5 @@
 package com.nnamo.interfaces;
 
 public interface FavoriteLineBehaviour {
-    public void addFavoriteLine(String lineId);
+    void addFavoriteLine(String lineId);
 }

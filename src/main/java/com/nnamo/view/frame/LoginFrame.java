@@ -14,11 +14,11 @@ import java.sql.SQLException;
 
 public class LoginFrame extends JFrame {
 
-    private InfoBar fieldUsername = new InfoBar("Username:");
-    private PasswordBar fieldPassword = new PasswordBar();
-    private JButton buttonLogin = new JButton("Login");
-    private JButton buttonRegister = new JButton("Registrati");
-    private JLabel errore = new JLabel(" ");
+    private final InfoBar fieldUsername = new InfoBar("Username:");
+    private final PasswordBar fieldPassword = new PasswordBar();
+    private final JButton buttonLogin = new JButton("Login");
+    private final JButton buttonRegister = new JButton("Registrati");
+    private final JLabel errore = new JLabel(" ");
 
     private LoginBehaviour loginBehavior;
     private RegisterBehaviour registerBehavior;
@@ -108,8 +108,8 @@ public class LoginFrame extends JFrame {
     }
 
     private class PasswordBar extends JPanel {
-        private JLabel label;
-        private JPasswordField password;
+        private final JLabel label;
+        private final JPasswordField password;
 
         // CONSTRUCTOR //
         public PasswordBar() {

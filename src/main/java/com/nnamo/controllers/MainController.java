@@ -224,7 +224,6 @@ public class MainController {
             searchPanel.updateView(stops, routes);
         } catch (SQLException e) {
             e.printStackTrace();
-            return;
         }
     }
 

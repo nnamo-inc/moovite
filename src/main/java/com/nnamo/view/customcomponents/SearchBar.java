@@ -10,10 +10,10 @@ import java.util.ArrayList;
 
 public class SearchBar extends JPanel {
 
-    private JTextField searchField = new JTextField(20);
+    private final JTextField searchField = new JTextField(20);
     private final JLabel searchLabel = new JLabel("Search:");
-    private JButton searchButton = new JButton("X");
-    private ArrayList<SearchBarListener> listeners = new ArrayList<>();
+    private final JButton searchButton = new JButton("X");
+    private final ArrayList<SearchBarListener> listeners = new ArrayList<>();
 
     // CONSTRUCTOR //
     public SearchBar() {
