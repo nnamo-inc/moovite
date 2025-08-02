@@ -165,8 +165,7 @@ public class MapPanel extends JPanel {
     }
 
     public void setLocalMapCache(File cacheDir) {
-        boolean checkForUpdates = true;
-        tileFactory.setLocalCache(new FileBasedLocalCache(cacheDir, true));
+        boolean checkForUpdates = false;
+        tileFactory.setLocalCache(new FileBasedLocalCache(cacheDir, checkForUpdates));
     }
-
 }
