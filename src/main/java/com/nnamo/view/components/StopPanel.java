@@ -124,12 +124,11 @@ public class StopPanel extends JPanel {
 
     private JPanel newRouteInfoPanel() {
         JPanel mainPanel = new JPanel(new GridBagLayout());
-        this.table = new CustomTable(new String[] { "Autobus", "Orario Arrivo", "Stato", "In ritardo" }, true);
+        this.table = new CustomTable(new String[] { "Linea", "Orario", "Stato", "Minuti rimanenti" }, true);
 
         // Table
         mainPanel.add(table, new GbcCustom().setPosition(0, 1).setAnchor(GridBagConstraints.CENTER)
-                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0).
-                setInsets(2, 5, 2, 5));
+                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
 
         table.getRowSorter().setSortable(1, false);
 
@@ -219,7 +218,8 @@ public class StopPanel extends JPanel {
     public void updatePreferButtons(boolean favorite) {
         favoriteStopButton.setFavorite(favorite);
         favoriteStopButton.setItemId(idFermata.getTextField());
-        updateFavoriteRouteMessage("<html></p><p>Clicca su una riga</p><p>della tabella per</p><p>attivare il bottone</p></html>");
+        updateFavoriteRouteMessage(
+                "<html></p><p>Clicca su una riga</p><p>della tabella per</p><p>attivare il bottone</p></html>");
     }
 
     public void updatePreferRouteButton(boolean isFavorite, String routeId) {
