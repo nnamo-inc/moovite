@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import javax.swing.*;
 
@@ -33,6 +34,14 @@ public class MainFrame extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setSize(new Dimension(1000, 800));
         setLayout(new BorderLayout());
+
+        // set resources/icons/application-bar-icon.png as the app icon
+        try {
+            setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/application-bar-icon.png")));
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            System.err.println("Icon not found, using default icon.");
+        }
 
         // Split verticale tra mappa e stop panel
         splitMapStop = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mapPanel, stopPanel);
