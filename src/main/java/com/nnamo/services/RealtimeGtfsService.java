@@ -4,6 +4,7 @@ import com.google.transit.realtime.GtfsRealtime;
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.google.transit.realtime.GtfsRealtime.FeedMessage;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate;
+import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate;
 
 import java.io.IOException;
@@ -21,15 +22,41 @@ public class RealtimeGtfsService {
     public static final String FEED_URL = "https://romamobilita.it/sites/default/files/rome_rtgtfs_trip_updates_feed.pb";
     public static final Duration POLLING_INTERVAL = Duration.ofSeconds(30);
 
+    private Thread backgroundThread;
+    private boolean online = false;
+
     private final URL feedUrl;
     private final List<FeedUpdateListener> feedUpdateListeners = new ArrayList<>();
     private final List<FeedStopLinesListener> feedStopLinesListeners = new ArrayList<>();
     private List<FeedEntity> entityList;
     private HashMap<String, FeedEntity> tripsMap = new HashMap<>();
+    private HashMap<String, List<FeedEntity>> routesMap = new HashMap<>();
     private HashMap<String, List<RealtimeStopUpdate>> stopsMap = new HashMap<>();
 
     public RealtimeGtfsService() throws URISyntaxException, IOException {
         this.feedUrl = new URI(FEED_URL).toURL();
+
+        backgroundThread.setName("RealtimeGtfsService-BackgroundThread");
+        backgroundThread.setDaemon(true); // Set as a daemon thread to not block JVM exit
+        Thread backgroundThread = new Thread(() -> {
+            try {
+                while (true) {
+                    try {
+                        System.out.println("Updating feed from " + feedUrl);
+                        updateFeed();
+                        System.out.println("Feed updated successfully. Waiting 30s for the next update...");
+                    } catch (IOException e) {
+                        System.err.println("Error updating feed: " + e.getMessage());
+                        e.printStackTrace();
+                    } finally {
+                        Thread.sleep(POLLING_INTERVAL);
+                    }
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                Thread.currentThread().interrupt(); // Restore interrupted status
+            }
+        });
     }
 
     public synchronized void addListener(FeedUpdateListener listener) {
@@ -86,15 +113,17 @@ public class RealtimeGtfsService {
         this.entityList = feed.getEntityList();
         this.tripsMap = new HashMap<>();
         this.stopsMap = new HashMap<>();
+        this.tripsMap = new HashMap<>();
 
         for (FeedEntity entity : entityList) {
             TripUpdate tripUpdate = entity.getTripUpdate();
             String tripId = tripUpdate.getTrip().getTripId();
+            String routeId = tripUpdate.getTrip().getRouteId();
             tripsMap.put(tripId, entity);
+            routesMap.computeIfAbsent(routeId, x -> new ArrayList<>()).add(entity);
 
             for (StopTimeUpdate stopTime : tripUpdate.getStopTimeUpdateList()) {
                 String stopId = stopTime.getStopId();
-                String routeId = tripUpdate.getTrip().getRouteId();
                 RealtimeStopUpdate stopUpdate = new RealtimeStopUpdate(tripId, stopTime);
 
                 // Creates ArrayList if it does not exist for the stopId, and adds the stop
@@ -110,29 +139,33 @@ public class RealtimeGtfsService {
     }
 
     public void startBackgroundThread() {
-        Thread backgroundThread = new Thread(() -> {
-            try {
-                while (true) {
-                    try {
-                        System.out.println("Updating feed from " + feedUrl);
-                        updateFeed();
-                        System.out.println("Feed updated successfully. Waiting 30s for the next update...");
-                    } catch (IOException e) {
-                        System.err.println("Error updating feed: " + e.getMessage());
-                        e.printStackTrace();
-                    } finally {
-                        Thread.sleep(POLLING_INTERVAL);
-                    }
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                Thread.currentThread().interrupt(); // Restore interrupted status
-            }
-        });
-        backgroundThread.setName("RealtimeGtfsService-BackgroundThread");
-        backgroundThread.setDaemon(true); // Set as a daemon thread to not block JVM exit
+        this.online = true;
         System.out.println("Starting background thread for RealtimeGtfsService");
         backgroundThread.start();
+    }
+
+    public void stopBackgroundThread() {
+        backgroundThread.stop();
+        this.online = false;
+        this.tripsMap.clear();
+        this.stopsMap.clear();
+        this.routesMap.clear();
+    }
+
+    public boolean isOnline() {
+        return this.online;
+    }
+
+    public synchronized VehiclePosition getTripVehiclePosition(String tripId) {
+        return this.tripsMap.get(tripId).getVehicle();
+    }
+
+    public synchronized List<VehiclePosition> getAllVehiclePositions() {
+        ArrayList<VehiclePosition> positions = new ArrayList<>();
+        for (FeedEntity entity : entityList) {
+            positions.add(entity.getVehicle());
+        }
+        return positions;
     }
 
     public synchronized FeedEntity getEntityByTripId(String tripId) {

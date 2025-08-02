@@ -37,10 +37,9 @@ public class MainController {
     }
 
     public void run() throws InterruptedException, SQLException, IOException {
-        System.out.println("MainController started");
 
         // Initialize main frame
-        mainFrame.getMapPanel().renderStops(db.getAllStops());
+        mainFrame.renderStops(db.getAllStops());
         handleStopClick();
         handleFavouriteButtonClicks();
         handleSearchPanelTableRowClick();

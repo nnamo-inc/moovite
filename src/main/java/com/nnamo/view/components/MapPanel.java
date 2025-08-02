@@ -1,5 +1,6 @@
 package com.nnamo.view.components;
 
+import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.nnamo.interfaces.WaypointListener;
 import com.nnamo.interfaces.ZoomBehaviour;
 import com.nnamo.models.RouteModel;
@@ -89,6 +90,10 @@ public class MapPanel extends JPanel {
             waypoints.add(new DefaultWaypoint(stop.getLatitude(), stop.getLongitude()));
         }
         this.waypointPainter.setWaypoints(waypoints);
+    }
+
+    public void renderVehiclePositions(List<VehiclePosition> positions) {
+        // TODO: implement positions rendering without overriding stops
     }
 
     public void renderRoute(RouteModel route) {

@@ -2,5 +2,6 @@ target/
 data.db
 dependency-reduced-pom.xml
 assets/gtfs/*.txt
+assets/gtfs/rome_static_gtfs/
 .settings/
 .idea/

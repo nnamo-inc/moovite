@@ -8,8 +8,10 @@ import java.util.List;
 
 import javax.swing.*;
 
+import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.nnamo.interfaces.FavoriteBehaviour;
 import com.nnamo.interfaces.TableRowClickListener;
+import com.nnamo.models.StopModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.services.RealtimeStopUpdate;
 import com.nnamo.view.components.MapPanel;
@@ -49,6 +51,14 @@ public class MainFrame extends JFrame {
 
     public void close() {
         setVisible(false);
+    }
+
+    public void renderStops(List<StopModel> stops) {
+        mapPanel.renderStops(stops);
+    }
+
+    public void renderVehiclePositions(List<VehiclePosition> positions) {
+        mapPanel.renderVehiclePositions(positions);
     }
 
     // METHODS //
