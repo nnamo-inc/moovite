@@ -629,4 +629,33 @@ public class DatabaseService {
 
         return !favorites.isEmpty();
     }
+
+    public RouteModel getRouteById(String id) throws SQLException {
+        Dao<RouteModel, String> routeDao = getDao(RouteModel.class);
+        return routeDao.queryForId(id);
+    }
+
+    public List<StopModel> getOrderedStopsForRoute(String routeId) throws SQLException {
+        // TODO: maybe update this method to work based on the current date and time
+
+        Dao<TripModel, String> tripDao = getDao(TripModel.class);
+        Dao<StopModel, String> stopDao = getDao(StopModel.class);
+
+        List<TripModel> trips = tripDao.queryBuilder()
+            .where().eq("route_id", routeId)
+            .query();
+        
+        if (trips.isEmpty()) {
+            return new ArrayList<>();
+        }
+        
+        String tripId = trips.get(0).getId();
+
+        String rawQuery = "SELECT s.* FROM stops s " +
+                         "JOIN stop_times st ON s.id = st.stop_id " +
+                         "WHERE st.trip_id = ? " +
+                         "ORDER BY st.id";
+        
+        return stopDao.queryRaw(rawQuery, stopDao.getRawRowMapper(), tripId).getResults();
+    }
 }

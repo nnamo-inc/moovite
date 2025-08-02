@@ -1,7 +1,6 @@
 package com.nnamo.controllers;
 
 import com.nnamo.interfaces.*;
-import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.UserModel;
@@ -20,7 +19,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.Date;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainController {
@@ -195,8 +193,41 @@ public class MainController {
         mainFrame.setSearchRouteTableClickListener(new TableRowClickListener() {
             @Override
             public void onRowClick(Object rowData) throws SQLException {
-                String routeId = (String) ((List<Object>) rowData).get(2);
+                String routeId = (String) ((List<Object>) rowData).get(1);
                 System.out.println("Route clicked: " + routeId);
+
+                // get model from the db
+                List<StopModel> stopModels = db.getOrderedStopsForRoute(routeId);
+                if (stopModels.isEmpty()) {
+                    System.out.println("No stops found for route: " + routeId);
+                    return;
+                }
+
+                // get the first stop to center the map
+                StopModel firstStop = stopModels.get(0);
+
+                // debug the positions
+                for (StopModel stop : stopModels) {
+                    System.out.println("Stop: " + stop.getName() + " - Position: "
+                            + stop.getLatitude() + ", " + stop.getLongitude());
+                }
+
+                GeoPosition geoPosition = new GeoPosition(firstStop.getLatitude(), firstStop.getLongitude());
+                int zoomLevel = 0; // default zoom level
+                mainFrame.setMapPanelMapPosition(geoPosition, zoomLevel);
+
+                // render stops and route lines on the map
+                mainFrame.getMapPanel().renderStopsRoute(stopModels);
+                mainFrame.getMapPanel().repaint();
+                // update the stop panel with the first stop's information
+                try {
+                    List<StopTimeModel> stopTimes = db.getNextStopTimes(firstStop.getId(), getCurrentTime(),
+                            getCurrentDate());
+                    List<RealtimeStopUpdate> realtimeUpdates = realtimeService.getStopUpdatesById(firstStop.getId());
+                    updateStopPanel(firstStop, stopTimes, realtimeUpdates);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
 

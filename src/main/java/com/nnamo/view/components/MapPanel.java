@@ -5,6 +5,7 @@ import com.nnamo.interfaces.WaypointListener;
 import com.nnamo.interfaces.ZoomBehaviour;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
+import com.nnamo.view.RoutePainter;
 import com.nnamo.view.StopPainter;
 
 import org.jxmapviewer.JXMapViewer;
@@ -21,7 +22,6 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -40,6 +40,9 @@ public class MapPanel extends JPanel {
     CompoundPainter<JXMapViewer> mapPainter;
     StopPainter stopPainter;
     ZoomBehaviour zoomBehaviour;
+    
+    // Route line painter
+    RoutePainter routePainter;
 
     // Listener for waypoint clicks (Anonymous inner class in MapController)
     WaypointListener waypointListener;
@@ -90,6 +93,28 @@ public class MapPanel extends JPanel {
             waypoints.add(new DefaultWaypoint(stop.getLatitude(), stop.getLongitude()));
         }
         this.waypointPainter.setWaypoints(waypoints);
+    }
+
+    public void renderStopsRoute(List<StopModel> stops) {
+        System.out.println("MapPanel.renderStopsRoute() called with " + stops.size() + " stops");
+        
+        Set<Waypoint> waypoints = new HashSet<Waypoint>();
+        for (StopModel stop : stops) {
+            waypoints.add(new DefaultWaypoint(stop.getLatitude(), stop.getLongitude()));
+        }
+        this.waypointPainter.setWaypoints(waypoints);
+        
+        this.routePainter = new RoutePainter(stops, Color.RED, 5);
+        System.out.println("Created RoutePainter with " + stops.size() + " stops");
+        
+        List<Painter<JXMapViewer>> painters = new ArrayList<Painter<JXMapViewer>>();
+        painters.add(this.routePainter);  // Add route painter first (behind waypoints)
+        painters.add(this.waypointPainter);  // Add waypoint painter on top
+        
+        this.mapPainter.setPainters(painters);
+        map.setOverlayPainter(this.mapPainter);
+        
+        System.out.println("Updated map painters");
     }
 
     public void renderVehiclePositions(List<VehiclePosition> positions) {
