@@ -16,27 +16,28 @@ import java.util.List;
 public class SearchPanel extends JPanel {
 
     SearchBar searchBar = new SearchBar();
-    CustomTable tableStop = new CustomTable(new String[] {"Colonna 1", "Colonna 2", "Colonna 3"}, false);
-    CustomTable tableRoute = new CustomTable(new String[] {"Colonna 1", "Colonna 2", "Colonna 3"}, false);
+    CustomTable tableStop = new CustomTable(new String[] { "Nome", "Codice" }, false);
+    CustomTable tableRoute = new CustomTable(new String[] { "Colonna 1", "Colonna 2", "Colonna 3" }, false);
 
     // CONSTRUCTOR //
     public SearchPanel() {
         super();
         setLayout(new GridBagLayout());
-        add(searchBar, new GbcCustom().setPosition(0, 0).setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
+        add(searchBar,
+                new GbcCustom().setPosition(0, 0).setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
         // Add the tables to the panel
         TitledBorder tableStopBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Fermate");
         tableStop.setBorder(BorderFactory.createCompoundBorder(
                 tableStopBorder,
-                BorderFactory.createEmptyBorder(2, 5, 2, 5)
-        ));
-        add(tableStop, new GbcCustom().setPosition(0, 1).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5).setInsets(2, 5, 2, 5));
+                BorderFactory.createEmptyBorder(2, 5, 2, 5)));
+        add(tableStop, new GbcCustom().setPosition(0, 1).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
+                .setInsets(2, 5, 2, 5));
         TitledBorder tableRouteBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Linee");
         tableRoute.setBorder(BorderFactory.createCompoundBorder(
                 tableRouteBorder,
-                BorderFactory.createEmptyBorder(2, 5, 2, 5)
-        ));
-        add(tableRoute, new GbcCustom().setPosition(0, 2).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5).setInsets(2, 5, 2, 5));
+                BorderFactory.createEmptyBorder(2, 5, 2, 5)));
+        add(tableRoute, new GbcCustom().setPosition(0, 2).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
+                .setInsets(2, 5, 2, 5));
     }
 
     public void addSearchListener(SearchBarListener listener) {
@@ -54,9 +55,9 @@ public class SearchPanel extends JPanel {
 
         // Populate tableStop with search results
         for (StopModel stop : stopModels) {
-            tableStop.addRow(new Object[] {stop.getName(), stop.getId(), "stop.getDescription()"});
+            tableStop.addRow(new Object[] { stop.getName(), stop.getId() });
         }
-        tableRoute.addRow(new Object[] {"aaa Route 1", "Info 2", "More Info 2"});
+        tableRoute.addRow(new Object[] { "aaa Route 1", "Info 2", "More Info 2" });
     }
 
     public void setSearchStopTableClickListener(TableRowClickListener listener) {
