@@ -40,7 +40,7 @@ public class DatabaseService {
     private final HashMap<Class<?>, Dao<?, ?>> daos = new HashMap<>();
 
     public DatabaseService() throws SQLException {
-        this.connection = new JdbcConnectionSource("jdbc:sqlite:" + UserDataUtils.getDatabasePath());
+        this.connection = new JdbcConnectionSource("jdbc:sqlite:data.db");
 
         initDaos();
         initTables();
