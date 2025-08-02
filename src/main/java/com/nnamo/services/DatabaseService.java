@@ -365,6 +365,43 @@ public class DatabaseService {
         return queryBuilder.query();
     }
 
+    public List<RouteModel> getRoutesByName(String searchTerm) throws SQLException {
+        Dao<RouteModel, String> routeDao = getDao(RouteModel.class);
+        double scoreThresholdPercentage = 60;
+
+        QueryBuilder<RouteModel, String> queryBuilder = routeDao.queryBuilder();
+        Where<RouteModel, String> where = queryBuilder.where();
+
+        where.eq("id", new SelectArg(SqlType.STRING, searchTerm))
+                .or()
+                .like("id", new SelectArg(SqlType.STRING, "%" + searchTerm + "%"))
+                .or()
+                .like("longname", new SelectArg(SqlType.STRING, "%" + searchTerm + "%"))
+                .or()
+                .like("shortname", new SelectArg(SqlType.STRING, "%" + searchTerm + "%"))
+                .or()
+                .raw(
+                        "FUZZY_SCORE(longname, ?) > ?",
+                        new SelectArg(SqlType.STRING, searchTerm),
+                        new SelectArg(SqlType.DOUBLE, scoreThresholdPercentage))
+                .or()
+                .raw(
+                        "FUZZY_SCORE(shortname, ?) > ?",
+                        new SelectArg(SqlType.STRING, searchTerm),
+                        new SelectArg(SqlType.DOUBLE, scoreThresholdPercentage));
+
+        queryBuilder.orderByRaw(
+                "CASE " +
+                "WHEN FUZZY_SCORE(shortname, ?) > FUZZY_SCORE(longname, ?) THEN FUZZY_SCORE(shortname, ?) " +
+                "ELSE FUZZY_SCORE(longname, ?) END DESC",
+                new SelectArg(SqlType.STRING, searchTerm),
+                new SelectArg(SqlType.STRING, searchTerm),
+                new SelectArg(SqlType.STRING, searchTerm),
+                new SelectArg(SqlType.STRING, searchTerm));
+
+        return queryBuilder.query();
+    }
+
     public List<StopTimeModel> getStopTimes(String stopId) throws SQLException {
         Dao<StopTimeModel, String> stopTimeDao = getDao(StopTimeModel.class);
         Dao<StopModel, String> stopDao = getDao(StopModel.class);

@@ -1,6 +1,7 @@
 package com.nnamo.controllers;
 
 import com.nnamo.interfaces.*;
+import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.UserModel;
@@ -194,7 +195,8 @@ public class MainController {
         mainFrame.setSearchRouteTableClickListener(new TableRowClickListener() {
             @Override
             public void onRowClick(Object rowData) throws SQLException {
-                // TODO: update position on the map
+                String routeId = (String) ((List<Object>) rowData).get(2);
+                System.out.println("Route clicked: " + routeId);
             }
         });
 
@@ -215,16 +217,14 @@ public class MainController {
         //     return; // Exit if the search text is empty
         // }
 
-        // TODO: update the updateView method to handle both stops and routes
-        // For now, we will only search for stops
-
         var searchPanel = mainFrame.getSearchPanel();
         try {
             var stops = db.getStopsByName(searchText);
-            searchPanel.updateView(stops);
+            var routes = db.getRoutesByName(searchText);
+            searchPanel.updateView(stops, routes);
         } catch (SQLException e) {
             e.printStackTrace();
-            return; // Exit if there's an error fetching stops
+            return;
         }
     }
 

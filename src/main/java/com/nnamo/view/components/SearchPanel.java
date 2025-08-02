@@ -2,6 +2,7 @@ package com.nnamo.view.components;
 
 import com.nnamo.interfaces.SearchBarListener;
 import com.nnamo.interfaces.TableRowClickListener;
+import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
 import com.nnamo.view.customcomponents.CustomTable;
 import com.nnamo.view.customcomponents.GbcCustom;
@@ -19,7 +20,7 @@ public class SearchPanel extends JPanel {
     SearchBar searchBar = new SearchBar();
     SwitchBar switchBar = new SwitchBar();
     CustomTable tableStop = new CustomTable(new String[] { "Nome", "Codice" }, false);
-    CustomTable tableRoute = new CustomTable(new String[] { "Colonna 1", "Colonna 2", "Colonna 3" }, false);
+    CustomTable tableRoute = new CustomTable(new String[] { "Linea", "Codice" }, false);
 
     // CONSTRUCTOR //
     public SearchPanel() {
@@ -52,16 +53,19 @@ public class SearchPanel extends JPanel {
         searchBar.removeSearchListener(listener);
     }
 
-    public void updateView(List<StopModel> stopModels) {
-        // Clear previous results
+    public void updateView(List<StopModel> stopModels, List<RouteModel> routeModels) {
         tableStop.clear();
         tableRoute.clear();
 
-        // Populate tableStop with search results
         for (StopModel stop : stopModels) {
             tableStop.addRow(new Object[] { stop.getName(), stop.getId() });
         }
-        tableRoute.addRow(new Object[] { "aaa Route 1", "Info 2", "More Info 2" });
+        
+        for (RouteModel route : routeModels) {
+            String shortName = route.getShortName() != null ? route.getShortName() : "";
+            String longName = route.getLongName() != null ? route.getLongName() : "";
+            tableRoute.addRow(new Object[] { longName, shortName });
+        }
     }
 
     public void setSearchStopTableClickListener(TableRowClickListener listener) {
