@@ -59,6 +59,10 @@ public class MainController {
             }
         });
         userController.run();
+
+        // Questo triggera il listener della barra di ricerca per mostrare tutte le fermate
+        // allo startup del programma.
+        this.searchQueryListener("");
     }
 
     private void handleFavouriteButtonClicks() {
@@ -206,10 +210,10 @@ public class MainController {
     }
 
     public void searchQueryListener(String searchText) {
-        if (searchText == null || searchText.isEmpty()) {
-            mainFrame.getSearchPanel().updateView(new ArrayList<>());
-            return; // Exit if the search text is empty
-        }
+        // if (searchText == null || searchText.isEmpty()) {
+        //     mainFrame.getSearchPanel().updateView(new ArrayList<>());
+        //     return; // Exit if the search text is empty
+        // }
 
         // TODO: update the updateView method to handle both stops and routes
         // For now, we will only search for stops
