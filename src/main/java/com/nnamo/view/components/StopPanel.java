@@ -17,8 +17,6 @@ import com.nnamo.view.customcomponents.custompreferbutton.CustomPreferButton;
 
 import java.awt.*;
 import java.time.LocalTime;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -175,19 +173,24 @@ public class StopPanel extends JPanel {
                 continue;
             }
 
+            int currentTime = LocalTime.now().toSecondOfDay();
+            int staticArrivalTime = stopTime.getArrivalTime();
+            int remainingMinutes = (staticArrivalTime - currentTime) / 60;
+
             RealtimeStopUpdate timeUpdate = realtimeTrips.get(trip.getId());
             String state = "Programmato";
-            int remainingMinutes = -1;
             if (timeUpdate != null) {
                 System.out.println("Found realtime update for trip ID: " + timeUpdate.getTripId());
                 state = "In Arrivo";
+                int arrivalTime = timeUpdate.getArrivalTime();
+                remainingMinutes = (arrivalTime - currentTime) / 60;
             }
 
             table.addRow(new Object[] {
                     route.getShortName(),
                     stopTime.getArrivalTimeAsStr(),
                     state,
-                    remainingMinutes >= 0 ? remainingMinutes + " min" : "N/A"
+                    remainingMinutes >= 0 ? remainingMinutes : "N/A"
             });
         }
     }

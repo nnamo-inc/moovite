@@ -95,7 +95,6 @@ public class RealtimeGtfsService {
             for (StopTimeUpdate stopTime : tripUpdate.getStopTimeUpdateList()) {
                 String stopId = stopTime.getStopId();
                 String routeId = tripUpdate.getTrip().getRouteId();
-                System.out.println("Adding stop time for stop " + stopId + ": trip " + tripId);
                 RealtimeStopUpdate stopUpdate = new RealtimeStopUpdate(tripId, stopTime);
 
                 // Creates ArrayList if it does not exist for the stopId, and adds the stop

@@ -1,5 +1,10 @@
 package com.nnamo.services;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+
 import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate;
 
 public class RealtimeStopUpdate {
@@ -26,8 +31,13 @@ public class RealtimeStopUpdate {
         return timeUpdate;
     }
 
-    public long getUpdateTime() {
-        return timeUpdate.getArrival().getTime();
+    public int getArrivalTime() {
+        long posixTime = timeUpdate.getArrival().getTime();
+        LocalDateTime dateTime = Instant
+                .ofEpochSecond(posixTime, 0)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+        return dateTime.toLocalTime().toSecondOfDay();
     }
 
     public long getUpdateDelay() {
