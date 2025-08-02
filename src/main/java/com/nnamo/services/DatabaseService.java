@@ -347,18 +347,16 @@ public class DatabaseService {
         QueryBuilder<StopModel, String> queryBuilder = stopDao.queryBuilder();
         Where<StopModel, String> where = queryBuilder.where();
 
-        where.or(
-                // 1. Exact match on the stop's ID
-                where.eq("id", new SelectArg(SqlType.STRING, searchTerm)),
-
-                // 2. Standard SQL LIKE match (e.g., name contains the search term)
-                where.like("name", new SelectArg(SqlType.STRING, "%" + searchTerm + "%")),
-
-                // 3. Fuzzy match score on the name is above the threshold
-                where.raw(
+        where.eq("id", new SelectArg(SqlType.STRING, searchTerm))
+                .or()
+                .like("id", new SelectArg(SqlType.STRING, "%" + searchTerm + "%"))
+                .or()
+                .like("name", new SelectArg(SqlType.STRING, "%" + searchTerm + "%"))
+                .or()
+                .raw(
                         "FUZZY_SCORE(name, ?) > ?",
                         new SelectArg(SqlType.STRING, searchTerm),
-                        new SelectArg(SqlType.DOUBLE, scoreThresholdPercentage)));
+                        new SelectArg(SqlType.DOUBLE, scoreThresholdPercentage));
 
         queryBuilder.orderByRaw(
                 "FUZZY_SCORE(name, ?) DESC",
