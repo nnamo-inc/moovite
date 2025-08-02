@@ -36,9 +36,7 @@ public class RealtimeGtfsService {
     public RealtimeGtfsService() throws URISyntaxException, IOException {
         this.feedUrl = new URI(FEED_URL).toURL();
 
-        backgroundThread.setName("RealtimeGtfsService-BackgroundThread");
-        backgroundThread.setDaemon(true); // Set as a daemon thread to not block JVM exit
-        Thread backgroundThread = new Thread(() -> {
+        this.backgroundThread = new Thread(() -> {
             try {
                 while (true) {
                     try {
@@ -57,6 +55,30 @@ public class RealtimeGtfsService {
                 Thread.currentThread().interrupt(); // Restore interrupted status
             }
         });
+    }
+
+    public void startBackgroundThread() {
+        if (backgroundThread == null) {
+            System.out.println("Couldn't start Realtime Thread");
+            return;
+        }
+        backgroundThread.setName("RealtimeGtfsService-BackgroundThread");
+        backgroundThread.setDaemon(true); // Set as a daemon thread to not block JVM exit
+        backgroundThread.start();
+        this.online = true;
+        System.out.println("Starting background thread for RealtimeGtfsService");
+    }
+
+    public void stopBackgroundThread() {
+        backgroundThread.stop();
+        this.online = false;
+        this.tripsMap.clear();
+        this.stopsMap.clear();
+        this.routesMap.clear();
+    }
+
+    public boolean isOnline() {
+        return this.online;
     }
 
     public synchronized void addListener(FeedUpdateListener listener) {
@@ -136,24 +158,6 @@ public class RealtimeGtfsService {
         System.out.println(entityList.size() + " entities");
 
         notifyFeedUpdateListeners();
-    }
-
-    public void startBackgroundThread() {
-        this.online = true;
-        System.out.println("Starting background thread for RealtimeGtfsService");
-        backgroundThread.start();
-    }
-
-    public void stopBackgroundThread() {
-        backgroundThread.stop();
-        this.online = false;
-        this.tripsMap.clear();
-        this.stopsMap.clear();
-        this.routesMap.clear();
-    }
-
-    public boolean isOnline() {
-        return this.online;
     }
 
     public synchronized VehiclePosition getTripVehiclePosition(String tripId) {

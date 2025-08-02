@@ -14,9 +14,6 @@ import com.nnamo.services.RealtimeGtfsService;
 import com.nnamo.services.StaticGtfsService;
 import com.nnamo.utils.UserDataUtils;
 
-import net.harawata.appdirs.AppDirs;
-import net.harawata.appdirs.AppDirsFactory;
-
 import javax.swing.*;
 
 public class App {
