@@ -11,6 +11,9 @@ import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.table.TableUtils;
 import com.nnamo.models.*;
 import com.nnamo.utils.FuzzyMatch;
+import com.nnamo.utils.UserDataUtils;
+
+import net.harawata.appdirs.AppDirs;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
@@ -24,10 +27,7 @@ import org.sqlite.Function;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,7 +40,7 @@ public class DatabaseService {
     private final HashMap<Class<?>, Dao<?, ?>> daos = new HashMap<>();
 
     public DatabaseService() throws SQLException {
-        this.connection = new JdbcConnectionSource("jdbc:sqlite:data.db");
+        this.connection = new JdbcConnectionSource("jdbc:sqlite:" + UserDataUtils.getDatabasePath());
 
         initDaos();
         initTables();
