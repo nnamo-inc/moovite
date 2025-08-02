@@ -2,6 +2,7 @@ package com.nnamo.view.frame;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -74,8 +75,7 @@ public class MainFrame extends JFrame {
             jsp.setDividerSize(10);
             jsp.setDividerLocation(0.6);
             getStopPanel().revalidate();
-        }
-        else {
+        } else {
             this.stopPanel.setVisible(visible);
             jsp.setDividerSize(0);
             jsp.setDividerLocation(1.0);
@@ -83,6 +83,7 @@ public class MainFrame extends JFrame {
         }
 
     }
+
     // GETTERS AND SETTERS //
     public MapPanel getMapPanel() {
         return mapPanel;
@@ -112,7 +113,6 @@ public class MainFrame extends JFrame {
         }
     }
 
-
     // SETTERS FOR BEHAVIOURS //
 
     public void setFavStopBehaviour(FavoriteBehaviour behaviour) {
@@ -141,5 +141,9 @@ public class MainFrame extends JFrame {
 
     public void setMapPanelMapPosition(GeoPosition geoPosition, int zoomLevel) {
         this.mapPanel.setMapPanelMapPosition(geoPosition, zoomLevel);
+    }
+
+    public void setLocalMapCache(File cacheDir) {
+        mapPanel.setLocalMapCache(cacheDir);
     }
 }

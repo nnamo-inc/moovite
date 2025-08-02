@@ -8,6 +8,7 @@ import com.nnamo.view.StopPainter;
 
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
+import org.jxmapviewer.cache.FileBasedLocalCache;
 import org.jxmapviewer.input.PanMouseInputListener;
 import org.jxmapviewer.input.ZoomMouseWheelListenerCursor;
 import org.jxmapviewer.painter.CompoundPainter;
@@ -20,6 +21,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -160,6 +162,11 @@ public class MapPanel extends JPanel {
 
     public void decreaseZoom(int offset) {
         this.setZoom(map.getZoom() - offset);
+    }
+
+    public void setLocalMapCache(File cacheDir) {
+        boolean checkForUpdates = true;
+        tileFactory.setLocalCache(new FileBasedLocalCache(cacheDir, true));
     }
 
 }

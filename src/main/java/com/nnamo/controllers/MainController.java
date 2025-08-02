@@ -12,9 +12,9 @@ import com.nnamo.services.RealtimeStopUpdate;
 import org.jxmapviewer.viewer.GeoPosition;
 
 import java.awt.*;
-import java.awt.font.LayoutPath;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalTime;
@@ -154,7 +154,8 @@ public class MainController {
                         int alpha = new Color(argb, true).getAlpha();
                         // Check alpha
                         if (alpha > 0) {
-                            List<StopTimeModel> stopTimes = db.getNextStopTimes(stop.getId(), getCurrentTime(), getCurrentDate());
+                            List<StopTimeModel> stopTimes = db.getNextStopTimes(stop.getId(), getCurrentTime(),
+                                    getCurrentDate());
                             List<RealtimeStopUpdate> realtimeUpdates = realtimeService.getStopUpdatesById(stop.getId());
                             updateStopPanel(stop, stopTimes, realtimeUpdates);
                             return;
@@ -179,7 +180,8 @@ public class MainController {
                 mainFrame.setMapPanelMapPosition(geoPosition, zoomLevel);
                 List<RealtimeStopUpdate> realtimeUpdates = realtimeService.getStopUpdatesById(stop.getId());
                 try {
-                    updateStopPanel(stop, db.getNextStopTimes(stopId, getCurrentTime(), getCurrentDate()), realtimeUpdates);
+                    updateStopPanel(stop, db.getNextStopTimes(stopId, getCurrentTime(), getCurrentDate()),
+                            realtimeUpdates);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -229,5 +231,9 @@ public class MainController {
 
     public LocalTime getCurrentTime() {
         return LocalTime.now();
+    }
+
+    public void setLocalMapCache(File cacheDir) {
+        mainFrame.setLocalMapCache(cacheDir);
     }
 }

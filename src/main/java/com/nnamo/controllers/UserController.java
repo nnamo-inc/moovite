@@ -13,6 +13,7 @@ import com.nnamo.interfaces.RegisterBehaviour;
 import com.nnamo.interfaces.SessionListener;
 import com.nnamo.models.UserModel;
 import com.nnamo.services.DatabaseService;
+import com.nnamo.utils.UserDataUtils;
 import com.nnamo.view.frame.LoginFrame;
 
 import de.mkammerer.argon2.Argon2;
@@ -23,11 +24,10 @@ import net.harawata.appdirs.AppDirsFactory;
 public class UserController {
     private DatabaseService db;
     private LoginFrame loginFrame;
-    private AppDirs appDirs = AppDirsFactory.getInstance();
     private Argon2 hasher = Argon2Factory.create();
 
-    private final String dataDir = appDirs.getUserDataDir("moovite", null, "nnamo");
-    private final String sessionPath = dataDir + "/session.txt";
+    private final String sessionPath = UserDataUtils.getSessionPath();
+    private String dataDir = UserDataUtils.getDataDir();
 
     private SessionListener sessionListener;
 
