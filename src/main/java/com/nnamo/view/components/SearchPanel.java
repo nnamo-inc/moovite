@@ -6,6 +6,7 @@ import com.nnamo.models.StopModel;
 import com.nnamo.view.customcomponents.CustomTable;
 import com.nnamo.view.customcomponents.GbcCustom;
 import com.nnamo.view.customcomponents.SearchBar;
+import com.nnamo.view.customcomponents.SwitchBar;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -16,6 +17,7 @@ import java.util.List;
 public class SearchPanel extends JPanel {
 
     SearchBar searchBar = new SearchBar();
+    SwitchBar switchBar = new SwitchBar();
     CustomTable tableStop = new CustomTable(new String[] { "Nome", "Codice" }, false);
     CustomTable tableRoute = new CustomTable(new String[] { "Colonna 1", "Colonna 2", "Colonna 3" }, false);
 
@@ -38,6 +40,8 @@ public class SearchPanel extends JPanel {
                 BorderFactory.createEmptyBorder(2, 5, 2, 5)));
         add(tableRoute, new GbcCustom().setPosition(0, 2).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
                 .setInsets(2, 5, 2, 5));
+        add(switchBar,
+                new GbcCustom().setPosition(0, 3).setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
     }
 
     public void addSearchListener(SearchBarListener listener) {
