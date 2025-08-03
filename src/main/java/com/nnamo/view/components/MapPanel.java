@@ -107,10 +107,8 @@ public class MapPanel extends JPanel {
         for (StopModel stop : stops) {
             waypoints.add(new DefaultWaypoint(stop.getLatitude(), stop.getLongitude()));
         }
-        List<Painter<JXMapViewer>> painters = new ArrayList<Painter<JXMapViewer>>();
         this.waypointPainter.setWaypoints(waypoints);
-        painters.add(this.waypointPainter); // Add waypoint painter on top
-        this.mapPainter.setPainters(painters);
+        this.mapPainter.setPainters(createPaintersList(waypointPainter));
 
         this.stops = stops; // Save stops in order to reset painting after route painting
         this.resetRouteButton.setVisible(false);
@@ -128,15 +126,22 @@ public class MapPanel extends JPanel {
         this.routePainter = new RoutePainter(stops, Color.RED, 5);
         System.out.println("Created RoutePainter with " + stops.size() + " stops");
 
-        List<Painter<JXMapViewer>> painters = new ArrayList<Painter<JXMapViewer>>();
-        painters.add(this.routePainter); // Add route painter first (behind waypoints)
-        painters.add(this.waypointPainter); // Add waypoint painter on top
-
-        this.mapPainter.setPainters(painters);
+        List<Painter<JXMapViewer>> painters = createPaintersList(routePainter, waypointPainter);
+        this.mapPainter.setPainters(createPaintersList(waypointPainter, routePainter));
         map.setOverlayPainter(this.mapPainter);
 
         System.out.println("Updated map painters");
         this.resetRouteButton.setVisible(true);
+    }
+
+    // Easily create painters list
+    @SafeVarargs
+    private List<Painter<JXMapViewer>> createPaintersList(Painter<JXMapViewer>... painters) {
+        List<Painter<JXMapViewer>> paintersList = new ArrayList<Painter<JXMapViewer>>();
+        for (Painter<JXMapViewer> painter : painters) {
+            paintersList.add(painter);
+        }
+        return paintersList;
     }
 
     public void renderVehiclePositions(List<VehiclePosition> positions) {
