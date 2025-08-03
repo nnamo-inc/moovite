@@ -10,7 +10,7 @@ public class UserModel {
     @DatabaseField(generatedId = true) // AUTO INCREMENT ID
     private int id;
 
-    @DatabaseField
+    @DatabaseField(unique = true)
     private String username;
 
     @DatabaseField
