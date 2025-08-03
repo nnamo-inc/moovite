@@ -2,6 +2,8 @@ package com.nnamo.interfaces;
 
 import java.sql.SQLException;
 
+import com.nnamo.enums.AuthResult;
+
 public interface LoginBehaviour {
-    void login(String username, String password) throws SQLException;
+    AuthResult login(String username, String password) throws SQLException;
 }

@@ -2,6 +2,7 @@ package com.nnamo.view.frame;
 
 import javax.swing.*;
 
+import com.nnamo.enums.AuthResult;
 import com.nnamo.interfaces.LoginBehaviour;
 import com.nnamo.interfaces.RegisterBehaviour;
 import com.nnamo.view.customcomponents.GbcCustom;
@@ -18,7 +19,7 @@ public class LoginFrame extends JFrame {
     private final PasswordBar fieldPassword = new PasswordBar();
     private final JButton buttonLogin = new JButton("Login");
     private final JButton buttonRegister = new JButton("Registrati");
-    private final JLabel errore = new JLabel(" ");
+    private final JLabel infoLabel = new JLabel("");
 
     private LoginBehaviour loginBehavior;
     private RegisterBehaviour registerBehavior;
@@ -38,11 +39,13 @@ public class LoginFrame extends JFrame {
                 .setAnchor(GridBagConstraints.CENTER).setInsets(5, 10, 5, 10));
         add(buttonLogin, new GbcCustom().setPosition(0, 2).setWeight(1.0, 0.0)
                 .setAnchor(GridBagConstraints.CENTER).setInsets(5, 10, 5, 10));
-        JPanel buttonPanel = new JPanel(); buttonPanel.setLayout(new FlowLayout());
-        buttonPanel.add(buttonLogin); buttonPanel.add(buttonRegister);
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout());
+        buttonPanel.add(buttonLogin);
+        buttonPanel.add(buttonRegister);
         add(buttonPanel, new GbcCustom().setPosition(0, 3).setWeight(1.0, 0.0)
                 .setAnchor(GridBagConstraints.CENTER).setInsets(5, 10, 5, 10));
-        add(errore, new GbcCustom().setPosition(0, 4).setWeight(1.0, 0.0)
+        add(infoLabel, new GbcCustom().setPosition(0, 4).setWeight(1.0, 0.0)
                 .setAnchor(GridBagConstraints.CENTER).setInsets(5, 10, 5, 10));
 
         handleButtonListeners();
@@ -64,7 +67,10 @@ public class LoginFrame extends JFrame {
                 String password = new String(fieldPassword.getJPasswordField().getPassword());
                 if (loginBehavior != null) {
                     try {
-                        loginBehavior.login(username, password);
+                        AuthResult loginResult = loginBehavior.login(username, password);
+                        if (loginResult == AuthResult.WRONG_CREDENTIALS) {
+                            infoLabel.setText("Wrong username or password. Try again!");
+                        }
                     } catch (SQLException exception) {
                         exception.printStackTrace();
                         System.exit(1);
@@ -81,6 +87,7 @@ public class LoginFrame extends JFrame {
                 if (registerBehavior != null) {
                     try {
                         registerBehavior.register(username, password);
+                        infoLabel.setText("User " + username + " created");
                     } catch (SQLException exception) {
                         exception.printStackTrace();
                         System.exit(1);
@@ -103,8 +110,8 @@ public class LoginFrame extends JFrame {
         fieldPassword.getJPasswordField().setText("");
     }
 
-    public void setError(String error) {
-        errore.setText(error);
+    public void setInfoText(String infoText) {
+        infoLabel.setText(infoText);
     }
 
     private class PasswordBar extends JPanel {
