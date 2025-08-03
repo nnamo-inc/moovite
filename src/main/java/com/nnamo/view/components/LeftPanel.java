@@ -42,5 +42,6 @@ public class LeftPanel extends JPanel {
 
     public void setRealtimeStatus(RealtimeStatus status) {
         this.onlineSwitchButton.setStatus(status);
+        System.out.println(this.onlineSwitchButton);
     }
 }

@@ -7,6 +7,7 @@ import com.google.transit.realtime.GtfsRealtime.TripUpdate;
 import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate;
 import com.nnamo.enums.RealtimeStatus;
+import com.nnamo.interfaces.RealtimeStatusChangeListener;
 import com.nnamo.models.RealtimeStopUpdate;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +28,8 @@ public class RealtimeGtfsService {
 
     private final Thread backgroundThread;
     private RealtimeStatus realtimeStatus = RealtimeStatus.ONLINE;
+    private RealtimeStatusChangeListener statusChangeListener; // Listener for when status changes automatically (and
+                                                               // not by pressing button in mainframe)
 
     private final URL feedUrl;
     private final List<FeedUpdateListener> feedUpdateListeners = new ArrayList<>();
@@ -48,8 +52,12 @@ public class RealtimeGtfsService {
                             System.out.println("Feed updated successfully. Waiting 30s for the next update...");
                         }
                     } catch (IOException e) {
-                        System.err.println("Error updating feed: " + e.getMessage());
-                        e.printStackTrace();
+                        System.err.println("Error updating feed: " + e.getMessage() + ". Switching to offline");
+                        this.setRealtimeStatus(RealtimeStatus.OFFLINE); // If Realtime is unavailable, switch to offline
+
+                        if (statusChangeListener != null) {
+                            this.statusChangeListener.onChange(RealtimeStatus.OFFLINE);
+                        }
                     } finally {
                         Thread.sleep(POLLING_INTERVAL);
                     }
@@ -192,5 +200,9 @@ public class RealtimeGtfsService {
 
     public synchronized List<RealtimeStopUpdate> getStopUpdatesById(String stopId) {
         return stopsMap.getOrDefault(stopId, new ArrayList<>());
+    }
+
+    public void setRealtimeChangeListener(RealtimeStatusChangeListener listener) {
+        this.statusChangeListener = listener;
     }
 }

@@ -39,13 +39,14 @@ public class MainController {
 
     public void run() throws InterruptedException, SQLException, IOException {
 
-        // Initialize main frame
         mainFrame.renderStops(db.getAllStops());
         handleStopClick();
         handleFavouriteButtonClicks();
         handleSearchPanelTableRowClick();
-        handleRealtimeSwitchListener();
         mainFrame.getSearchPanel().addSearchListener(this::searchQueryListener);
+
+        handleRealtimeListeners();
+        realtimeService.startBackgroundThread();
 
         // Sets default realtime status
         mainFrame.setRealtimeStatus(RealtimeStatus.ONLINE);
@@ -71,7 +72,17 @@ public class MainController {
         this.searchQueryListener("");
     }
 
-    private void handleRealtimeSwitchListener() {
+    private void handleRealtimeListeners() {
+        // Listener for when Realtime Service changes status
+        realtimeService.setRealtimeChangeListener(new RealtimeStatusChangeListener() {
+            @Override
+            public void onChange(RealtimeStatus newStatus) {
+                mainFrame.setRealtimeStatus(newStatus);
+                // TODO: notification for status change if going offline
+            }
+        });
+
+        // Listener for switch button in MainFrame
         mainFrame.setRealtimeSwitchListener(new SwitchBarListener() {
             @Override
             public void onSwitch(RealtimeStatus newStatus) {

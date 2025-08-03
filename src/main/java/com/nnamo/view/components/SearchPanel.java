@@ -7,8 +7,6 @@ import com.nnamo.models.StopModel;
 import com.nnamo.view.customcomponents.CustomTable;
 import com.nnamo.view.customcomponents.GbcCustom;
 import com.nnamo.view.customcomponents.SearchBar;
-import com.nnamo.view.customcomponents.SwitchBar;
-
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;

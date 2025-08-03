@@ -23,7 +23,6 @@ public class App {
             StaticGtfsService staticGtfs = new StaticGtfsService();
             RealtimeGtfsService realtimeGtfs = new RealtimeGtfsService();
             db.preloadGtfsData(staticGtfs);
-            realtimeGtfs.startBackgroundThread();
 
             try {
                 UIManager.setLookAndFeel(new FlatDarculaLaf());
