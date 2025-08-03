@@ -59,7 +59,8 @@ public class MainController {
         });
         userController.run();
 
-        // Questo triggera il listener della barra di ricerca per mostrare tutte le fermate
+        // Questo triggera il listener della barra di ricerca per mostrare tutte le
+        // fermate
         // allo startup del programma.
         this.searchQueryListener("");
     }
@@ -219,15 +220,6 @@ public class MainController {
                 // render stops and route lines on the map
                 mainFrame.getMapPanel().renderStopsRoute(stopModels);
                 mainFrame.getMapPanel().repaint();
-                // update the stop panel with the first stop's information
-                try {
-                    List<StopTimeModel> stopTimes = db.getNextStopTimes(firstStop.getId(), getCurrentTime(),
-                            getCurrentDate());
-                    List<RealtimeStopUpdate> realtimeUpdates = realtimeService.getStopUpdatesById(firstStop.getId());
-                    updateStopPanel(firstStop, stopTimes, realtimeUpdates);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
             }
         });
 
@@ -244,8 +236,8 @@ public class MainController {
 
     public void searchQueryListener(String searchText) {
         // if (searchText == null || searchText.isEmpty()) {
-        //     mainFrame.getSearchPanel().updateView(new ArrayList<>());
-        //     return; // Exit if the search text is empty
+        // mainFrame.getSearchPanel().updateView(new ArrayList<>());
+        // return; // Exit if the search text is empty
         // }
 
         var searchPanel = mainFrame.getSearchPanel();
