@@ -10,7 +10,9 @@ import java.util.Objects;
 import javax.swing.*;
 
 import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
+import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.interfaces.FavoriteBehaviour;
+import com.nnamo.interfaces.SwitchBarListener;
 import com.nnamo.interfaces.TableRowClickListener;
 import com.nnamo.models.StopModel;
 import com.nnamo.models.StopTimeModel;
@@ -166,5 +168,13 @@ public class MainFrame extends JFrame {
 
     public void setLocalMapCache(File cacheDir) {
         mapPanel.setLocalMapCache(cacheDir);
+    }
+
+    public void setRealtimeSwitchListener(SwitchBarListener listener) {
+        this.leftPanel.setRealtimeSwitchListener(listener);
+    }
+
+    public void setRealtimeStatus(RealtimeStatus status) {
+        this.leftPanel.setRealtimeStatus(status);
     }
 }

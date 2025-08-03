@@ -60,11 +60,9 @@ public class SwitchBar extends JPanel {
         String initialText = "Status: ";
         switch (status) {
             case OFFLINE:
-                System.out.println("prova1");
                 this.switchLabel.setText(initialText + "offline");
                 break;
             case ONLINE:
-                System.out.println("prova2");
                 this.switchLabel.setText(initialText + "online");
                 break;
         }
@@ -78,11 +76,11 @@ public class SwitchBar extends JPanel {
     }
 
     // METHODS //
-    public void addSearchListener(SwitchBarListener listener) {
+    public void addSwitchListener(SwitchBarListener listener) {
         listeners.add(listener);
     }
 
-    public void removeSearchListener(SwitchBarListener listener) {
+    public void removeSwitchListener(SwitchBarListener listener) {
         listeners.remove(listener);
     }
 }

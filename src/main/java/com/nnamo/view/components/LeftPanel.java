@@ -4,6 +4,8 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
+import com.nnamo.enums.RealtimeStatus;
+import com.nnamo.interfaces.SwitchBarListener;
 import com.nnamo.interfaces.TableRowClickListener;
 import com.nnamo.view.customcomponents.SwitchBar;
 
@@ -32,5 +34,13 @@ public class LeftPanel extends JPanel {
 
     public void setSearchRouteTableClickListener(TableRowClickListener listener) {
         this.searchPanel.setSearchRouteTableClickListener(listener);
+    }
+
+    public void setRealtimeSwitchListener(SwitchBarListener listener) {
+        this.onlineSwitchButton.addSwitchListener(listener);
+    }
+
+    public void setRealtimeStatus(RealtimeStatus status) {
+        this.onlineSwitchButton.setStatus(status);
     }
 }

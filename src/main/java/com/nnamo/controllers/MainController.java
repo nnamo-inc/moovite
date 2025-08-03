@@ -1,5 +1,6 @@
 package com.nnamo.controllers;
 
+import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.interfaces.*;
 import com.nnamo.models.StopModel;
 import com.nnamo.models.StopTimeModel;
@@ -43,8 +44,11 @@ public class MainController {
         handleStopClick();
         handleFavouriteButtonClicks();
         handleSearchPanelTableRowClick();
+        handleRealtimeSwitchListener();
         mainFrame.getSearchPanel().addSearchListener(this::searchQueryListener);
-        ;
+
+        // Sets default realtime status
+        mainFrame.setRealtimeStatus(RealtimeStatus.ONLINE);
 
         // Login and Session Fetching
         userController.addSessionListener(new SessionListener() { // [!] Listener must be implemented before run()
@@ -65,6 +69,15 @@ public class MainController {
         // fermate
         // allo startup del programma.
         this.searchQueryListener("");
+    }
+
+    private void handleRealtimeSwitchListener() {
+        mainFrame.setRealtimeSwitchListener(new SwitchBarListener() {
+            @Override
+            public void onSwitch(RealtimeStatus newStatus) {
+                realtimeService.setRealtimeStatus(newStatus);
+            }
+        });
     }
 
     private void handleFavouriteButtonClicks() {

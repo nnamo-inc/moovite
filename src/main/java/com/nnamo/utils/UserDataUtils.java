@@ -1,6 +1,5 @@
 package com.nnamo.utils;
 
-import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
 
 // Linux: .local/share/moovite/

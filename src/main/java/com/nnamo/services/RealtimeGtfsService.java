@@ -6,6 +6,7 @@ import com.google.transit.realtime.GtfsRealtime.FeedMessage;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate;
 import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate;
+import com.nnamo.enums.RealtimeStatus;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +24,7 @@ public class RealtimeGtfsService {
     public static final Duration POLLING_INTERVAL = Duration.ofSeconds(30);
 
     private final Thread backgroundThread;
-    private boolean online = false;
+    private RealtimeStatus realtimeStatus = RealtimeStatus.ONLINE;
 
     private final URL feedUrl;
     private final List<FeedUpdateListener> feedUpdateListeners = new ArrayList<>();
@@ -40,9 +41,11 @@ public class RealtimeGtfsService {
             try {
                 while (true) {
                     try {
-                        System.out.println("Updating feed from " + feedUrl);
-                        updateFeed();
-                        System.out.println("Feed updated successfully. Waiting 30s for the next update...");
+                        if (realtimeStatus == RealtimeStatus.ONLINE) {
+                            System.out.println("Updating feed from " + feedUrl);
+                            updateFeed();
+                            System.out.println("Feed updated successfully. Waiting 30s for the next update...");
+                        }
                     } catch (IOException e) {
                         System.err.println("Error updating feed: " + e.getMessage());
                         e.printStackTrace();
@@ -65,20 +68,30 @@ public class RealtimeGtfsService {
         backgroundThread.setName("RealtimeGtfsService-BackgroundThread");
         backgroundThread.setDaemon(true); // Set as a daemon thread to not block JVM exit
         backgroundThread.start();
-        this.online = true;
+        this.realtimeStatus = RealtimeStatus.ONLINE;
         System.out.println("Starting background thread for RealtimeGtfsService");
     }
 
-    public void stopBackgroundThread() {
-        backgroundThread.stop();
-        this.online = false;
-        this.tripsMap.clear();
-        this.stopsMap.clear();
-        this.routesMap.clear();
+    public synchronized void setRealtimeStatus(RealtimeStatus newStatus) {
+        this.realtimeStatus = newStatus;
+        switch (newStatus) {
+            case ONLINE:
+                System.out.println("Realtime status switched to ONLINE");
+                break;
+            case OFFLINE:
+                System.out.println("Realtime status switched to OFFLINE");
+                if (this.entityList != null) {
+                    this.entityList = new ArrayList<>();
+                    this.tripsMap.clear();
+                    this.stopsMap.clear();
+                    this.routesMap.clear();
+                }
+                break;
+        }
     }
 
-    public boolean isOnline() {
-        return this.online;
+    public RealtimeStatus getRealtimeStatus() {
+        return this.realtimeStatus;
     }
 
     public synchronized void addListener(FeedUpdateListener listener) {
