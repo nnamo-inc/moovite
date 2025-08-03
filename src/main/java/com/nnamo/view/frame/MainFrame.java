@@ -15,6 +15,7 @@ import com.nnamo.interfaces.TableRowClickListener;
 import com.nnamo.models.StopModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.services.RealtimeStopUpdate;
+import com.nnamo.view.components.LeftPanel;
 import com.nnamo.view.components.MapPanel;
 import com.nnamo.view.components.SearchPanel;
 import com.nnamo.view.components.StopPanel;
@@ -23,7 +24,7 @@ import org.jxmapviewer.viewer.GeoPosition;
 public class MainFrame extends JFrame {
     MapPanel mapPanel = new MapPanel();
     StopPanel stopPanel = new StopPanel();
-    SearchPanel searchPanel = new SearchPanel();
+    LeftPanel leftPanel = new LeftPanel();
 
     JSplitPane splitMapStop;
     JSplitPane splitSearchCenter;
@@ -37,7 +38,8 @@ public class MainFrame extends JFrame {
 
         // set resources/icons/application-bar-icon.png as the app icon
         try {
-            setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/application-bar-icon.png")));
+            setIconImage(
+                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/application-bar-icon.png")));
         } catch (NullPointerException e) {
             e.printStackTrace();
             System.err.println("Icon not found, using default icon.");
@@ -48,7 +50,7 @@ public class MainFrame extends JFrame {
         splitMapStop.setResizeWeight(1.0);
 
         // Split orizzontale tra search panel e centro (mappa+stop)
-        splitSearchCenter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, searchPanel, splitMapStop);
+        splitSearchCenter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, splitMapStop);
         splitSearchCenter.setResizeWeight(0.2);
 
         add(splitSearchCenter, BorderLayout.CENTER);
@@ -113,7 +115,7 @@ public class MainFrame extends JFrame {
     }
 
     public SearchPanel getSearchPanel() {
-        return searchPanel;
+        return leftPanel.getSearchPanel();
     }
 
     public BufferedImage getCurrentStopIcon() {
@@ -147,11 +149,11 @@ public class MainFrame extends JFrame {
     }
 
     public void setSearchStopTableClickListener(TableRowClickListener listener) {
-        this.searchPanel.setSearchStopTableClickListener(listener);
+        leftPanel.setSearchStopTableClickListener(listener);
     }
 
     public void setSearchRouteTableClickListener(TableRowClickListener listener) {
-        this.searchPanel.setSearchRouteTableClickListener(listener);
+        leftPanel.setSearchRouteTableClickListener(listener);
     }
 
     public void updateStopPanelPreferButtons(boolean favorite, String stop) {

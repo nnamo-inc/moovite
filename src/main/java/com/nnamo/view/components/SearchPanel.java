@@ -18,7 +18,6 @@ import java.util.List;
 public class SearchPanel extends JPanel {
 
     SearchBar searchBar = new SearchBar();
-    SwitchBar switchBar = new SwitchBar();
     CustomTable tableStop = new CustomTable(new String[] { "Nome", "Codice" }, false);
     CustomTable tableRoute = new CustomTable(new String[] { "Linea", "Codice" }, false);
 
@@ -26,8 +25,10 @@ public class SearchPanel extends JPanel {
     public SearchPanel() {
         super();
         setLayout(new GridBagLayout());
+        setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
         add(searchBar,
-                new GbcCustom().setPosition(0, 0).setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
+                new GbcCustom().setPosition(0, 0).setFill(GridBagConstraints.HORIZONTAL).setInsets(5, 5, 5, 5));
         // Add the tables to the panel
         TitledBorder tableStopBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Fermate");
         tableStop.setBorder(BorderFactory.createCompoundBorder(
@@ -41,8 +42,6 @@ public class SearchPanel extends JPanel {
                 BorderFactory.createEmptyBorder(2, 5, 2, 5)));
         add(tableRoute, new GbcCustom().setPosition(0, 2).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
                 .setInsets(2, 5, 2, 5));
-        add(switchBar,
-                new GbcCustom().setPosition(0, 3).setFill(GridBagConstraints.HORIZONTAL).setInsets(10, 10, 10, 10));
     }
 
     public void addSearchListener(SearchBarListener listener) {
@@ -60,7 +59,7 @@ public class SearchPanel extends JPanel {
         for (StopModel stop : stopModels) {
             tableStop.addRow(new Object[] { stop.getName(), stop.getId() });
         }
-        
+
         for (RouteModel route : routeModels) {
             String shortName = route.getShortName() != null ? route.getShortName() : "";
             String longName = route.getLongName() != null ? route.getLongName() : "";

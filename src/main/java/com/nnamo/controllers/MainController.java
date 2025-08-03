@@ -25,7 +25,7 @@ public class MainController {
 
     DatabaseService db;
     RealtimeGtfsService realtimeService;
-    MainFrame mainFrame = new MainFrame();
+    MainFrame mainFrame;
     UserController userController;
     UserModel sessionUser;
 
@@ -33,6 +33,7 @@ public class MainController {
         this.db = db;
         this.userController = new UserController(db);
         this.realtimeService = realtimeService;
+        this.mainFrame = new MainFrame();
     }
 
     public void run() throws InterruptedException, SQLException, IOException {
@@ -43,6 +44,7 @@ public class MainController {
         handleFavouriteButtonClicks();
         handleSearchPanelTableRowClick();
         mainFrame.getSearchPanel().addSearchListener(this::searchQueryListener);
+        ;
 
         // Login and Session Fetching
         userController.addSessionListener(new SessionListener() { // [!] Listener must be implemented before run()
