@@ -19,8 +19,6 @@ import com.nnamo.view.frame.LoginFrame;
 
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
-import net.harawata.appdirs.AppDirs;
-import net.harawata.appdirs.AppDirsFactory;
 
 public class UserController {
     private final DatabaseService db;
@@ -37,14 +35,27 @@ public class UserController {
         this.loginFrame = new LoginFrame();
     }
 
-    public void run() {
+    public void run() throws SQLException {
         // Open frame only if there's no active session
         int userId = getCurrentUserId();
         if (sessionExists()) {
-            if (sessionListener != null) {
-                sessionListener.onSessionCreated(userId);
+            UserModel user = db.getUserById(userId);
+
+            // Session id is stored but the user is not in the database: session.txt gets
+            // deleted
+            if (user == null) {
+                deleteCurrentSession();
             }
-            return;
+
+            if (sessionListener == null) {
+                System.out.println("[!] Session listener is not implemented");
+                return;
+            }
+
+            if (sessionListener != null && user != null) {
+                sessionListener.onSessionCreated(userId);
+                return;
+            }
         }
 
         loginFrame.setLoginBehaviour(new LoginBehaviour() {
