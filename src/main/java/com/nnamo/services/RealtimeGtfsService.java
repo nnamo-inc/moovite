@@ -7,6 +7,7 @@ import com.google.transit.realtime.GtfsRealtime.TripUpdate;
 import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate;
 import com.nnamo.enums.RealtimeStatus;
+import com.nnamo.models.RealtimeStopUpdate;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -159,7 +160,7 @@ public class RealtimeGtfsService {
 
             for (StopTimeUpdate stopTime : tripUpdate.getStopTimeUpdateList()) {
                 String stopId = stopTime.getStopId();
-                RealtimeStopUpdate stopUpdate = new RealtimeStopUpdate(tripId, stopTime);
+                RealtimeStopUpdate stopUpdate = new RealtimeStopUpdate(tripId, stopTime, entity.getVehicle());
 
                 // Creates ArrayList if it does not exist for the stopId, and adds the stop
                 // update

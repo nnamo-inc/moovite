@@ -9,7 +9,7 @@ import com.nnamo.interfaces.TableRowClickListener;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.TripModel;
-import com.nnamo.services.RealtimeStopUpdate;
+import com.nnamo.models.RealtimeStopUpdate;
 import com.nnamo.view.customcomponents.GbcCustom;
 import com.nnamo.view.customcomponents.InfoBar;
 import com.nnamo.view.customcomponents.CustomTable;
@@ -122,7 +122,9 @@ public class StopPanel extends JPanel {
 
     private JPanel newRouteInfoPanel() {
         JPanel mainPanel = new JPanel(new GridBagLayout());
-        this.table = new CustomTable(new String[] { "Linea", "Orario", "Stato", "Minuti rimanenti" }, true);
+        this.table = new CustomTable(
+                new String[] { "Linea", "Direzione", "Orario", "Stato", "Minuti rimanenti", "Posti disponibili" },
+                true);
 
         // Table
         mainPanel.add(table, new GbcCustom().setPosition(0, 1).setAnchor(GridBagConstraints.CENTER)
@@ -179,18 +181,23 @@ public class StopPanel extends JPanel {
 
             RealtimeStopUpdate timeUpdate = realtimeTrips.get(trip.getId());
             String state = "Programmato";
+            String occupancyStatus = "N/A";
             if (timeUpdate != null) {
-                System.out.println("Found realtime update for trip ID: " + timeUpdate.getTripId());
+                System.out.println("Found realtime update for trip ID: " + timeUpdate.getTripId() + " for stop "
+                        + timeUpdate.getStopId());
+
                 state = "In Arrivo";
-                int arrivalTime = timeUpdate.getArrivalTime();
-                remainingMinutes = (arrivalTime - currentTime) / 60;
+                remainingMinutes = (timeUpdate.getArrivalTime() - currentTime) / 60;
+                occupancyStatus = timeUpdate.getVehiclePosition().getOccupancyStatus().name();
             }
 
             table.addRow(new Object[] {
                     route.getShortName(),
+                    trip.getHeadsign(),
                     stopTime.getArrivalTimeAsStr(),
                     state,
-                    remainingMinutes >= 0 ? remainingMinutes : "N/A"
+                    remainingMinutes >= 0 ? remainingMinutes : "N/A",
+                    occupancyStatus
             });
         }
     }

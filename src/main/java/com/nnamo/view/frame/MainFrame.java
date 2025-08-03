@@ -16,7 +16,7 @@ import com.nnamo.interfaces.SwitchBarListener;
 import com.nnamo.interfaces.TableRowClickListener;
 import com.nnamo.models.StopModel;
 import com.nnamo.models.StopTimeModel;
-import com.nnamo.services.RealtimeStopUpdate;
+import com.nnamo.models.RealtimeStopUpdate;
 import com.nnamo.view.components.LeftPanel;
 import com.nnamo.view.components.MapPanel;
 import com.nnamo.view.components.SearchPanel;

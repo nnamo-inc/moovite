@@ -8,7 +8,7 @@ import com.nnamo.models.UserModel;
 import com.nnamo.view.frame.MainFrame;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
-import com.nnamo.services.RealtimeStopUpdate;
+import com.nnamo.models.RealtimeStopUpdate;
 
 import org.jxmapviewer.viewer.GeoPosition;
 

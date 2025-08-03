@@ -1,10 +1,11 @@
-package com.nnamo.services;
+package com.nnamo.models;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 
+import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate;
 
 public class RealtimeStopUpdate {
@@ -12,10 +13,12 @@ public class RealtimeStopUpdate {
     private String routeId;
     private final String stopId;
     private final StopTimeUpdate timeUpdate;
+    private final VehiclePosition vehiclePosition;
 
-    public RealtimeStopUpdate(String tripId, StopTimeUpdate timeUpdate) {
+    public RealtimeStopUpdate(String tripId, StopTimeUpdate timeUpdate, VehiclePosition vehiclePosition) {
         this.tripId = tripId;
         this.stopId = timeUpdate.getStopId();
+        this.vehiclePosition = vehiclePosition;
         this.timeUpdate = timeUpdate;
     }
 
@@ -29,6 +32,10 @@ public class RealtimeStopUpdate {
 
     public StopTimeUpdate getTimeUpdate() {
         return timeUpdate;
+    }
+
+    public VehiclePosition getVehiclePosition() {
+        return vehiclePosition;
     }
 
     public int getArrivalTime() {
