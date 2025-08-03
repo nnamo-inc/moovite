@@ -19,6 +19,8 @@ import org.jxmapviewer.viewer.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -40,7 +42,10 @@ public class MapPanel extends JPanel {
     CompoundPainter<JXMapViewer> mapPainter;
     StopPainter stopPainter;
     ZoomBehaviour zoomBehaviour;
-    
+
+    JButton resetRouteButton = new JButton("Reset");
+    List<StopModel> stops;
+
     // Route line painter
     RoutePainter routePainter;
 
@@ -80,6 +85,16 @@ public class MapPanel extends JPanel {
             }
         });
 
+        this.resetRouteButton.setVisible(false); // Hidden by default
+        this.resetRouteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (stops != null)
+                    renderStops(stops);
+            }
+        });
+        add(resetRouteButton, BorderLayout.SOUTH);
+
         handleMouseListeners();
         clickOnWaypoint();
     }
@@ -92,37 +107,40 @@ public class MapPanel extends JPanel {
         for (StopModel stop : stops) {
             waypoints.add(new DefaultWaypoint(stop.getLatitude(), stop.getLongitude()));
         }
+        List<Painter<JXMapViewer>> painters = new ArrayList<Painter<JXMapViewer>>();
         this.waypointPainter.setWaypoints(waypoints);
+        painters.add(this.waypointPainter); // Add waypoint painter on top
+        this.mapPainter.setPainters(painters);
+
+        this.stops = stops; // Save stops in order to reset painting after route painting
+        this.resetRouteButton.setVisible(false);
     }
 
     public void renderStopsRoute(List<StopModel> stops) {
         System.out.println("MapPanel.renderStopsRoute() called with " + stops.size() + " stops");
-        
+
         Set<Waypoint> waypoints = new HashSet<Waypoint>();
         for (StopModel stop : stops) {
             waypoints.add(new DefaultWaypoint(stop.getLatitude(), stop.getLongitude()));
         }
         this.waypointPainter.setWaypoints(waypoints);
-        
+
         this.routePainter = new RoutePainter(stops, Color.RED, 5);
         System.out.println("Created RoutePainter with " + stops.size() + " stops");
-        
+
         List<Painter<JXMapViewer>> painters = new ArrayList<Painter<JXMapViewer>>();
-        painters.add(this.routePainter);  // Add route painter first (behind waypoints)
-        painters.add(this.waypointPainter);  // Add waypoint painter on top
-        
+        painters.add(this.routePainter); // Add route painter first (behind waypoints)
+        painters.add(this.waypointPainter); // Add waypoint painter on top
+
         this.mapPainter.setPainters(painters);
         map.setOverlayPainter(this.mapPainter);
-        
+
         System.out.println("Updated map painters");
+        this.resetRouteButton.setVisible(true);
     }
 
     public void renderVehiclePositions(List<VehiclePosition> positions) {
         // TODO: implement positions rendering without overriding stops
-    }
-
-    public void renderRoute(RouteModel route) {
-        // TODO Implement route render
     }
 
     // Set the map to be draggable and zoomable with mouse and wheel listeners
