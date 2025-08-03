@@ -392,8 +392,8 @@ public class DatabaseService {
 
         queryBuilder.orderByRaw(
                 "CASE " +
-                "WHEN FUZZY_SCORE(shortname, ?) > FUZZY_SCORE(longname, ?) THEN FUZZY_SCORE(shortname, ?) " +
-                "ELSE FUZZY_SCORE(longname, ?) END DESC",
+                        "WHEN FUZZY_SCORE(shortname, ?) > FUZZY_SCORE(longname, ?) THEN FUZZY_SCORE(shortname, ?) " +
+                        "ELSE FUZZY_SCORE(longname, ?) END DESC",
                 new SelectArg(SqlType.STRING, searchTerm),
                 new SelectArg(SqlType.STRING, searchTerm),
                 new SelectArg(SqlType.STRING, searchTerm),
@@ -642,20 +642,20 @@ public class DatabaseService {
         Dao<StopModel, String> stopDao = getDao(StopModel.class);
 
         List<TripModel> trips = tripDao.queryBuilder()
-            .where().eq("route_id", routeId)
-            .query();
-        
+                .where().eq("route_id", routeId)
+                .query();
+
         if (trips.isEmpty()) {
             return new ArrayList<>();
         }
-        
+
         String tripId = trips.get(0).getId();
 
         String rawQuery = "SELECT s.* FROM stops s " +
-                         "JOIN stop_times st ON s.id = st.stop_id " +
-                         "WHERE st.trip_id = ? " +
-                         "ORDER BY st.id";
-        
+                "JOIN stop_times st ON s.id = st.stop_id " +
+                "WHERE st.trip_id = ? " +
+                "ORDER BY st.arrival_time";
+
         return stopDao.queryRaw(rawQuery, stopDao.getRawRowMapper(), tripId).getResults();
     }
 }
