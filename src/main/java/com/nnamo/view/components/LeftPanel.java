@@ -1,22 +1,26 @@
 package com.nnamo.view.components;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
 
 import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.interfaces.SwitchBarListener;
 import com.nnamo.interfaces.TableRowClickListener;
+import com.nnamo.view.StopPainter;
 import com.nnamo.view.customcomponents.SwitchBar;
 
 public class LeftPanel extends JPanel {
     JPanel modularPanel = new JPanel(new BorderLayout());
     SearchPanel searchPanel = new SearchPanel();
     SwitchBar onlineSwitchButton = new SwitchBar();
-    ButtonPanel buttonPanel = new ButtonPanel(new ArrayList<>() {
+    ButtonPanel buttonPanel = new ButtonPanel(new HashMap<>() {
         {
-            add(searchPanel);
-            add(onlineSwitchButton);
+            put(searchPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/stop_medium.png"))));
         }
     });
 
@@ -34,7 +38,9 @@ public class LeftPanel extends JPanel {
             modularPanel.add(panel, BorderLayout.CENTER);
             panel.setVisible(true);
         }
-        else { panel.setVisible(false); }
+        else {
+            panel.setVisible(false);
+        }
         modularPanel.revalidate();
         modularPanel.repaint();
     }

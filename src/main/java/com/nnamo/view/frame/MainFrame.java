@@ -53,7 +53,7 @@ public class MainFrame extends JFrame {
 
         // Split orizzontale tra search panel e centro (mappa+stop)
         splitLeftMap = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, splitMapStop);
-        splitLeftMap.setResizeWeight(0.1);
+        splitLeftMap.setResizeWeight(0.0);
         splitLeftMap.setDividerSize(0);
 
 
@@ -113,8 +113,9 @@ public class MainFrame extends JFrame {
             jsp.setDividerSize(10);
             jsp.setDividerLocation(0.3);
         } else {
+            int buttonPanelWidth = leftPanel.getButtonPanel().getPreferredSize().width;
             jsp.setDividerSize(0);
-            jsp.setDividerLocation(0.1);
+            jsp.setDividerLocation(buttonPanelWidth);
         }
         leftPanel.revalidate();
     }

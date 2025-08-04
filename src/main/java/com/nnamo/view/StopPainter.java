@@ -15,6 +15,7 @@ import org.jxmapviewer.painter.Painter;
 import org.jxmapviewer.viewer.Waypoint;
 import org.jxmapviewer.viewer.WaypointPainter;
 import org.jxmapviewer.viewer.WaypointRenderer;
+import org.onebusaway.gtfs.model.Icon;
 
 public class StopPainter {
     private final JXMapViewer map;
@@ -47,7 +48,6 @@ public class StopPainter {
         icons.put(Sizes.LARGE, ImageIO
                 .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/stop_large.png"))));
     }
-
     // GETTERS AND SETTERS OUTER CLASS //
     public BufferedImage getIcon(Sizes size) {
         return icons.get(size);

@@ -15,9 +15,7 @@ public class PanelModeButton extends JButton {
 
     public PanelModeButton(String nome, JPanel panel) {
         super(nome);
-        setMinimumSize(new Dimension(50, 50));
         this.panel = panel;
-        setMinimumSize(new Dimension(50, 50));
         addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
