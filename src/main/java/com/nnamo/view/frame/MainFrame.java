@@ -5,7 +5,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 import javax.swing.*;
 
@@ -29,12 +28,12 @@ public class MainFrame extends JFrame {
     LeftPanel leftPanel = new LeftPanel();
 
     JSplitPane splitMapStop;
-    JSplitPane splitSearchCenter;
+    JSplitPane splitLeftMap;
 
     public MainFrame() throws IOException {
         super("Moovite Map View");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        /*setExtendedState(JFrame.MAXIMIZED_BOTH);*/
         setSize(new Dimension(1000, 800));
         setLayout(new BorderLayout());
 
@@ -50,12 +49,15 @@ public class MainFrame extends JFrame {
         // Split verticale tra mappa e stop panel
         splitMapStop = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mapPanel, stopPanel);
         splitMapStop.setResizeWeight(1.0);
+        splitMapStop.setDividerSize(0);
 
         // Split orizzontale tra search panel e centro (mappa+stop)
-        splitSearchCenter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, splitMapStop);
-        splitSearchCenter.setResizeWeight(0.2);
+        splitLeftMap = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, splitMapStop);
+        splitLeftMap.setResizeWeight(0.1);
+        splitLeftMap.setDividerSize(0);
 
-        add(splitSearchCenter, BorderLayout.CENTER);
+
+        add(splitLeftMap, BorderLayout.CENTER);
     }
 
     public void open() {
@@ -94,17 +96,31 @@ public class MainFrame extends JFrame {
     public void updateStopPanelVisibility(boolean visible) {
         JSplitPane jsp = splitMapStop;
         if (visible) {
-            this.stopPanel.setVisible(visible);
+            stopPanel.open();
             jsp.setDividerSize(10);
             jsp.setDividerLocation(0.6);
-            getStopPanel().revalidate();
         } else {
-            this.stopPanel.setVisible(visible);
+            stopPanel.close();
             jsp.setDividerSize(0);
             jsp.setDividerLocation(1.0);
-            getStopPanel().revalidate();
         }
+        stopPanel.revalidate();
+    }
 
+    public void updateLeftPanelVisibility(boolean visible) {
+        JSplitPane jsp = splitLeftMap;
+        if (visible) {
+            jsp.setDividerSize(10);
+            jsp.setDividerLocation(0.3);
+        } else {
+            jsp.setDividerSize(0);
+            jsp.setDividerLocation(0.1);
+        }
+        leftPanel.revalidate();
+    }
+
+    public void updateLeftPanelModularPanel(JPanel panel, boolean isVisible) {
+        leftPanel.updateModularPanel(panel, isVisible);
     }
 
     // GETTERS AND SETTERS //
@@ -118,6 +134,10 @@ public class MainFrame extends JFrame {
 
     public SearchPanel getSearchPanel() {
         return leftPanel.getSearchPanel();
+    }
+
+    public LeftPanel getLeftPanel() {
+        return leftPanel;
     }
 
     public BufferedImage getCurrentStopIcon() {

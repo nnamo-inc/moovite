@@ -33,10 +33,12 @@ public class SwitchBar extends JPanel {
 
     private void handleLayout() {
         setLayout(new GridBagLayout());
-        add(switchLabel, new GbcCustom().setPosition(0, 0).setAnchor(GridBagConstraints.WEST).setWeight(0, 1.0)
-                .setInsets(5, 5, 5, 5));
-        add(switchButton, new GbcCustom().setPosition(1, 0).setFill(GridBagConstraints.HORIZONTAL).setWeight(1.0, 0.0)
-                .setWeight(1.0, 1.0).setInsets(5, 5, 5, 5));
+        add(switchLabel, new GbcCustom().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER).setWeight(1.0, 1.0)
+                .setInsets(2, 5, 2, 5));
+        switchButton.setMinimumSize(new Dimension(50, Integer.MAX_VALUE));
+        add(switchButton, new GbcCustom().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL).setWeight(1.0, 1.0)
+                .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
+        setVisible(false);
     }
 
     private void handleActionListeners() {

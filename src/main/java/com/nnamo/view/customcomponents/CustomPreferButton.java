@@ -1,9 +1,8 @@
-package com.nnamo.view.customcomponents.custompreferbutton;
+package com.nnamo.view.customcomponents;
 
 import com.nnamo.interfaces.FavoriteBehaviour;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionListener;
 
 public class CustomPreferButton extends JButton {

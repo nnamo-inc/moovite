@@ -1,8 +1,8 @@
 package com.nnamo.view.components;
 
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
 
 import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.interfaces.SwitchBarListener;
@@ -10,22 +10,41 @@ import com.nnamo.interfaces.TableRowClickListener;
 import com.nnamo.view.customcomponents.SwitchBar;
 
 public class LeftPanel extends JPanel {
+    JPanel modularPanel = new JPanel(new BorderLayout());
     SearchPanel searchPanel = new SearchPanel();
     SwitchBar onlineSwitchButton = new SwitchBar();
+    ButtonPanel buttonPanel = new ButtonPanel(new ArrayList<>() {
+        {
+            add(searchPanel);
+            add(onlineSwitchButton);
+        }
+    });
 
     public LeftPanel() {
         setLayout(new BorderLayout());
 
-        // Set fixed sizes
-        searchPanel.setPreferredSize(new Dimension(200, 350));
-        onlineSwitchButton.setPreferredSize(new Dimension(200, 50));
+        add(modularPanel, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.WEST);
 
-        add(searchPanel, BorderLayout.CENTER);
-        add(onlineSwitchButton, BorderLayout.SOUTH);
+    }
+
+    public void updateModularPanel(JPanel panel, boolean isVisible) {
+        modularPanel.removeAll();
+        if (isVisible) {
+            modularPanel.add(panel, BorderLayout.CENTER);
+            panel.setVisible(true);
+        }
+        else { panel.setVisible(false); }
+        modularPanel.revalidate();
+        modularPanel.repaint();
     }
 
     public SearchPanel getSearchPanel() {
         return this.searchPanel;
+    }
+
+    public ButtonPanel getButtonPanel() {
+        return this.buttonPanel;
     }
 
     public void setSearchStopTableClickListener(TableRowClickListener listener) {

@@ -12,6 +12,7 @@ import com.nnamo.models.RealtimeStopUpdate;
 
 import org.jxmapviewer.viewer.GeoPosition;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
@@ -43,6 +44,7 @@ public class MainController {
         handleStopClick();
         handleFavouriteButtonClicks();
         handleSearchPanelTableRowClick();
+        handlePanelModeButtonClick();
         mainFrame.getSearchPanel().addSearchListener(this::searchQueryListener);
 
         handleRealtimeListeners();
@@ -249,6 +251,27 @@ public class MainController {
             }
         });
 
+    }
+
+    private void handlePanelModeButtonClick() {
+        mainFrame.getLeftPanel().getButtonPanel().setPanelModeButtonClickListener(new PanelModeButtonClickListener() {
+            @Override
+            public void onPanelModeButtonClick(JPanel panel) {
+                System.out.println("Search button clicked, panel: " + panel.getClass().getSimpleName());
+                if (panel.isVisible()) {
+                    System.out.println("Panel is already visible, hiding it.");
+                    mainFrame.updateLeftPanelVisibility(false);
+                    mainFrame.updateLeftPanelModularPanel(panel, false);
+                } else {
+                    System.out.println("Panel is not already visible, showing it.");
+                    mainFrame.updateLeftPanelVisibility(true);
+                    mainFrame.updateLeftPanelModularPanel(panel, true);
+                }
+            }
+
+            ;
+
+        });
     }
 
     private void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes,

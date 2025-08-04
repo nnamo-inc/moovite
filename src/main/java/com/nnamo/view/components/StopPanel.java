@@ -13,7 +13,7 @@ import com.nnamo.models.RealtimeStopUpdate;
 import com.nnamo.view.customcomponents.GbcCustom;
 import com.nnamo.view.customcomponents.InfoBar;
 import com.nnamo.view.customcomponents.CustomTable;
-import com.nnamo.view.customcomponents.custompreferbutton.CustomPreferButton;
+import com.nnamo.view.customcomponents.CustomPreferButton;
 
 import java.awt.*;
 import java.time.LocalTime;
@@ -223,6 +223,14 @@ public class StopPanel extends JPanel {
 
     public JTextField getTextName() {
         return nomeFermata.getJTextField();
+    }
+
+    public void open() {
+        setVisible(true);
+    }
+
+    public void close() {
+        setVisible(false);
     }
 
     public void updatePreferButtons(boolean favorite) {

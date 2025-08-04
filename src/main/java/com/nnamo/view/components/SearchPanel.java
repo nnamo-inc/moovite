@@ -15,6 +15,7 @@ import java.util.List;
 
 public class SearchPanel extends JPanel {
 
+    boolean isOpen = false;
     SearchBar searchBar = new SearchBar();
     CustomTable tableStop = new CustomTable(new String[] { "Nome", "Codice" }, false);
     CustomTable tableRoute = new CustomTable(new String[] { "Linea", "Codice" }, false);
@@ -40,6 +41,8 @@ public class SearchPanel extends JPanel {
                 BorderFactory.createEmptyBorder(2, 5, 2, 5)));
         add(tableRoute, new GbcCustom().setPosition(0, 2).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
                 .setInsets(2, 5, 2, 5));
+        setPreferredSize(new Dimension(300, 600)); // Scegli la dimensione che preferisci
+        setVisible(false);
     }
 
     public void addSearchListener(SearchBarListener listener) {
