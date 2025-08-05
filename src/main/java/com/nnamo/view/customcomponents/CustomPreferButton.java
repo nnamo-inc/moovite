@@ -1,8 +1,10 @@
 package com.nnamo.view.customcomponents;
 
 import com.nnamo.interfaces.FavoriteBehaviour;
+import com.nnamo.utils.CustomColor;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
 
 public class CustomPreferButton extends JButton {
@@ -22,13 +24,16 @@ public class CustomPreferButton extends JButton {
                 favorite = !favorite;
                 if (favorite) {
                     favoriteBehaviour.addFavorite(itemId);
-                    setText("<html><p>Rimuovi</p><p>" + itemName + "</p><p>dai Preferiti</p></html>");                } else {
+                    setText("<html><p>Rimuovi</p><p>" + itemName + "</p><p>dai Preferiti</p></html>");
+                    setBackground(CustomColor.RED);
+                } else {
                     favoriteBehaviour.removeFavorite(itemId);
-                    setText("<html><p>Aggiungi</p><p>" + itemName + "</p><p>ai Preferiti</p></html>");                }
+                    setText("<html><p>Aggiungi</p><p>" + itemName + "</p><p>ai Preferiti</p></html>");
+                    setBackground(CustomColor.GREEN);
+                }
             }
         });
-
-        }
+    }
 
     public void setItemId(String itemId) {
         this.itemId = itemId;
@@ -44,9 +49,11 @@ public class CustomPreferButton extends JButton {
         this.favorite = favorite;
         if (favorite) {
             setText("<html><p>Rimuovi</p><p>" + itemName + "</p><p>dai Preferiti</p></html>");
+            setBackground(CustomColor.RED);
         }
         else {
             setText("<html><p>Aggiungi</p><p>" + itemName + "</p><p>dai Preferiti</p></html>");
+            setBackground(CustomColor.GREEN);
         }
     }
 }

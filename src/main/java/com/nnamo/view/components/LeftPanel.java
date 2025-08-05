@@ -17,10 +17,13 @@ import com.nnamo.view.customcomponents.SwitchBar;
 public class LeftPanel extends JPanel {
     JPanel modularPanel = new JPanel(new BorderLayout());
     SearchPanel searchPanel = new SearchPanel();
+    PreferPanel preferPanel = new PreferPanel();
     SwitchBar onlineSwitchButton = new SwitchBar();
     ButtonPanel buttonPanel = new ButtonPanel(new HashMap<>() {
         {
             put(searchPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/stop_medium.png"))));
+            put(preferPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/stop_medium.png"))));
+            put(onlineSwitchButton, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/stop_medium.png"))));
         }
     });
 
@@ -33,6 +36,7 @@ public class LeftPanel extends JPanel {
     }
 
     public void updateModularPanel(JPanel panel, boolean isVisible) {
+        for (Component comp : modularPanel.getComponents()) { comp.setVisible(false); }
         modularPanel.removeAll();
         if (isVisible) {
             modularPanel.add(panel, BorderLayout.CENTER);

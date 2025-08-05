@@ -1,6 +1,7 @@
 package com.nnamo.view.customcomponents;
 
 import com.nnamo.interfaces.TableRowClickListener;
+import com.nnamo.utils.CustomColor;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -59,7 +60,7 @@ public class CustomTable extends JPanel {
         ListSelectionModel selectionModel = table.getSelectionModel();
         selectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-
+        resetSortingButton.setBackground(CustomColor.RED);
         add(resetSortingButton, BorderLayout.SOUTH);
         initListeners();
     }
