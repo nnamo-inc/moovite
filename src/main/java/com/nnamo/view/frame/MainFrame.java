@@ -10,9 +10,8 @@ import javax.swing.*;
 
 import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.nnamo.enums.RealtimeStatus;
-import com.nnamo.interfaces.FavoriteBehaviour;
-import com.nnamo.interfaces.SwitchBarListener;
-import com.nnamo.interfaces.TableRowClickListener;
+import com.nnamo.interfaces.*;
+import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.RealtimeStopUpdate;
@@ -123,6 +122,26 @@ public class MainFrame extends JFrame {
     public void updateLeftPanelModularPanel(JPanel panel, boolean isVisible) {
         leftPanel.updateModularPanel(panel, isVisible);
     }
+    
+    public void initLeftPanelPreferPanelPreferTable(List<StopModel> stops, List<RouteModel> routes) {
+        leftPanel.initPreferPanelPreferTable(stops, routes);
+    }
+
+    public void addLeftPanelPreferPanelStopTable(StopModel stop) {
+        leftPanel.addPreferPanelStopTable(stop);
+    }
+
+    public void removeLeftPanelPreferPanelStopTable(StopModel route) {
+        leftPanel.removePreferPanelStopTable(route);
+    }
+
+    public void addLeftPanelPreferPanelRouteTable(RouteModel route) {
+        leftPanel.addPreferPanelRouteTable(route);
+    }
+
+    public void removeLeftPanelPreferPanelRouteTable(RouteModel route) {
+        leftPanel.removePreferPanelRouteTable(route);
+    }
 
     // GETTERS AND SETTERS //
     public MapPanel getMapPanel() {
@@ -158,6 +177,13 @@ public class MainFrame extends JFrame {
     }
 
     // SETTERS FOR BEHAVIOURS //
+    public void setLeftPanelButtonPanelGenericButtonBehaviour(LeftPanelGenericButtonBehaviour listener) {
+        this.leftPanel.setButtonPanelGenericButtonBehaviour(listener);
+    }
+
+    public void setLeftPanelButtonPanelPreferButtonBehaviour(LeftPanelPreferButtonBehaviour listener) {
+        this.leftPanel.setButtonPanelPreferButtonBehaviour(listener);
+    }
 
     public void setFavStopBehaviour(FavoriteBehaviour behaviour) {
         this.stopPanel.setFavStopBehaviour(behaviour);

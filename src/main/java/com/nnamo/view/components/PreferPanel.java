@@ -1,5 +1,7 @@
 package com.nnamo.view.components;
 
+import com.nnamo.models.RouteModel;
+import com.nnamo.models.StopModel;
 import com.nnamo.view.customcomponents.CustomPreferButton;
 import com.nnamo.view.customcomponents.CustomTable;
 import com.nnamo.view.customcomponents.GbcCustom;
@@ -8,6 +10,7 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.util.List;
 
 public class PreferPanel extends JPanel {
 
@@ -53,5 +56,30 @@ public class PreferPanel extends JPanel {
         panel.add(favoriteStopButton, new GbcCustom().setPosition(1, 0).setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
                 .setInsets(2, 5, 2, 5));
         return panel;
+    }
+
+    public void initPreferTable(List<StopModel> stops, List<RouteModel> routes) {
+        for (StopModel stop : stops) {
+            tableStop.addRow(new Object[] { stop.getName(), stop.getId() });
+        }
+        for (RouteModel route : routes) {
+            tableRoute.addRow(new Object[] { route.getShortName(), route.getId() });
+        }
+    }
+
+    public void addStop(StopModel stop) {
+        tableStop.addRow(new Object[] { stop.getName(), stop.getId() });
+    }
+
+    public void removeStop(StopModel stop) {
+        tableStop.removeRow(stop.getId());
+    }
+
+    public void addRoute(RouteModel route) {
+        tableRoute.addRow(new Object[] { route.getLongName(), route.getId() });
+    }
+
+    public void removeRoute(RouteModel route) {
+        tableRoute.removeRow(route.getId());
     }
 }

@@ -1,17 +1,18 @@
 package com.nnamo.view.components;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 import com.nnamo.enums.RealtimeStatus;
+import com.nnamo.interfaces.LeftPanelGenericButtonBehaviour;
+import com.nnamo.interfaces.LeftPanelPreferButtonBehaviour;
 import com.nnamo.interfaces.SwitchBarListener;
 import com.nnamo.interfaces.TableRowClickListener;
-import com.nnamo.view.StopPainter;
+import com.nnamo.models.RouteModel;
+import com.nnamo.models.StopModel;
 import com.nnamo.view.customcomponents.SwitchBar;
 
 public class LeftPanel extends JPanel {
@@ -49,12 +50,42 @@ public class LeftPanel extends JPanel {
         modularPanel.repaint();
     }
 
+    public void initPreferPanelPreferTable(List<StopModel> stops, List<RouteModel> routes) {
+        preferPanel.initPreferTable(stops, routes);
+    }
+
+    public void addPreferPanelStopTable(StopModel stop) {
+        preferPanel.addStop(stop);
+    }
+
+    public void removePreferPanelStopTable(StopModel route) {
+        preferPanel.removeStop(route);
+    }
+
+    public void addPreferPanelRouteTable(RouteModel route) {
+        preferPanel.addRoute(route);
+    }
+
+    public void removePreferPanelRouteTable(RouteModel route) {
+        preferPanel.removeRoute(route);
+    }
+
+
+
     public SearchPanel getSearchPanel() {
         return this.searchPanel;
     }
 
     public ButtonPanel getButtonPanel() {
         return this.buttonPanel;
+    }
+
+    public void setButtonPanelGenericButtonBehaviour(LeftPanelGenericButtonBehaviour listener) {
+        this.buttonPanel.setGenericButtonBehaviour(listener);
+    }
+
+    public void setButtonPanelPreferButtonBehaviour(LeftPanelPreferButtonBehaviour listener) {
+        this.buttonPanel.setPreferButtonBehaviour(listener);
     }
 
     public void setSearchStopTableClickListener(TableRowClickListener listener) {
@@ -72,5 +103,9 @@ public class LeftPanel extends JPanel {
     public void setRealtimeStatus(RealtimeStatus status) {
         this.onlineSwitchButton.setStatus(status);
         System.out.println(this.onlineSwitchButton);
+    }
+
+    public PreferPanel getPreferPanel() {
+        return preferPanel;
     }
 }

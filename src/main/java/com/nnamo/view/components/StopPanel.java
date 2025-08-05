@@ -215,8 +215,8 @@ public class StopPanel extends JPanel {
         favoriteRouteButton.setText(string);
         favoriteRouteButton.setEnabled(false);
     }
-    // GETTERS AND SETTERS //
 
+    // GETTERS AND SETTERS //
     public JTextField getTextID() {
         return idFermata.getJTextField();
     }
@@ -262,9 +262,5 @@ public class StopPanel extends JPanel {
         if (tableRowClickListener != null) {
             this.table.setTableRowClickListener(tableRowClickListener);
         }
-    }
-
-    public boolean isRouteButtonEnabled() {
-        return favoriteRouteButton.isEnabled();
     }
 }

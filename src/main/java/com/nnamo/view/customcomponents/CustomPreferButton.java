@@ -18,6 +18,10 @@ public class CustomPreferButton extends JButton {
         super();
         this.itemName = itemName;
 
+        // Inizializza il testo e il colore di default
+        setText("<html><p>Aggiungi</p><p>" + itemName + "</p><p>ai Preferiti</p></html>");
+        setBackground(CustomColor.GREEN);
+
         addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -25,16 +29,15 @@ public class CustomPreferButton extends JButton {
                 if (favorite) {
                     favoriteBehaviour.addFavorite(itemId);
                     setText("<html><p>Rimuovi</p><p>" + itemName + "</p><p>dai Preferiti</p></html>");
-                    setBackground(CustomColor.RED);
+                    setBackground(CustomColor.RED); // Aggiungi il cambio colore qui
                 } else {
                     favoriteBehaviour.removeFavorite(itemId);
                     setText("<html><p>Aggiungi</p><p>" + itemName + "</p><p>ai Preferiti</p></html>");
-                    setBackground(CustomColor.GREEN);
+                    setBackground(CustomColor.GREEN); // Aggiungi il cambio colore qui
                 }
             }
         });
     }
-
     public void setItemId(String itemId) {
         this.itemId = itemId;
     }

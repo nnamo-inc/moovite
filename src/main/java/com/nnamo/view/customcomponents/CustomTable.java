@@ -15,6 +15,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.Vector;
 
 public class CustomTable extends JPanel {
@@ -141,4 +142,13 @@ public class CustomTable extends JPanel {
     public void addRow(Object[] rowData) {
         model.addRow(rowData);
     }
-}
+
+    public void removeRow(String string) {
+        for (int i = 0; i < model.getRowCount(); i++) {
+            if (model.getValueAt(i, 1).equals(string)) {
+                model.removeRow(i);
+                break;
+            }
+        }
+    }
+    }

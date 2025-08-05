@@ -2,13 +2,10 @@ package com.nnamo.controllers;
 
 import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.interfaces.*;
-import com.nnamo.models.StopModel;
-import com.nnamo.models.StopTimeModel;
-import com.nnamo.models.UserModel;
+import com.nnamo.models.*;
 import com.nnamo.view.frame.MainFrame;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
-import com.nnamo.models.RealtimeStopUpdate;
 
 import org.jxmapviewer.viewer.GeoPosition;
 
@@ -43,8 +40,8 @@ public class MainController {
         mainFrame.renderStops(db.getAllStops());
         handleStopClick();
         handleFavouriteButtonClicks();
-        handleSearchPanelTableRowClick();
-        handlePanelModeButtonClick();
+        handleTableRowClick();
+        handleLeftPanelButtonClick();
         mainFrame.getSearchPanel().addSearchListener(this::searchQueryListener);
 
         handleRealtimeListeners();
@@ -100,6 +97,7 @@ public class MainController {
             public void addFavorite(String stopId) {
                 try {
                     db.addFavoriteStop(sessionUser.getId(), stopId);
+                    mainFrame.addLeftPanelPreferPanelStopTable(db.getStopById(stopId));
                     System.out.println(db.getFavoriteStops(sessionUser.getId()).stream().count());
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -111,6 +109,7 @@ public class MainController {
             public void removeFavorite(String stopId) {
                 try {
                     db.removeFavoriteStop(sessionUser.getId(), stopId);
+                    mainFrame.removeLeftPanelPreferPanelStopTable(db.getStopById(stopId));
                     System.out.println(db.getFavoriteStops(sessionUser.getId()).stream().count());
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
@@ -118,20 +117,13 @@ public class MainController {
             }
         });
 
-        mainFrame.setStopTimeTableClickListener(new TableRowClickListener() {
-            @Override
-            public void onRowClick(Object rowData) throws SQLException {
-                String routeNumber = (String) ((List<Object>) rowData).get(0);
-                boolean isFavorite = db.isFavouriteRoute(sessionUser.getId(), routeNumber);
-                mainFrame.updatePreferRouteButton(isFavorite, routeNumber);
-            }
-        });
 
         mainFrame.setFavLineBehaviour(new FavoriteBehaviour() {
             @Override
             public void addFavorite(String string) {
                 try {
                     db.addFavoriteRoute(sessionUser.getId(), string);
+                    mainFrame.addLeftPanelPreferPanelRouteTable(db.getRouteById(string));
                     System.out.println(db.getFavoriteRoutes(sessionUser.getId()).stream().count());
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -143,6 +135,7 @@ public class MainController {
             public void removeFavorite(String string) {
                 try {
                     db.removeFavoriteRoute(sessionUser.getId(), string);
+                    mainFrame.removeLeftPanelPreferPanelRouteTable(db.getRouteById(string));
                     System.out.println(db.getFavoriteRoutes(sessionUser.getId()).stream().count());
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
@@ -200,7 +193,7 @@ public class MainController {
         });
     }
 
-    private void handleSearchPanelTableRowClick() {
+    private void handleTableRowClick() {
         mainFrame.setSearchStopTableClickListener(new TableRowClickListener() {
             @Override
             public void onRowClick(Object rowData) throws SQLException {
@@ -251,26 +244,46 @@ public class MainController {
             }
         });
 
+        mainFrame.setStopTimeTableClickListener(new TableRowClickListener() {
+            @Override
+            public void onRowClick(Object rowData) throws SQLException {
+                String routeNumber = (String) ((List<Object>) rowData).get(0);
+                boolean isFavorite = db.isFavouriteRoute(sessionUser.getId(), routeNumber);
+                mainFrame.updatePreferRouteButton(isFavorite, routeNumber);
+            }
+        });
     }
 
-    private void handlePanelModeButtonClick() {
-        mainFrame.getLeftPanel().getButtonPanel().setPanelModeButtonClickListener(new PanelModeButtonClickListener() {
+    private void handleLeftPanelButtonClick() {
+        mainFrame.setLeftPanelButtonPanelGenericButtonBehaviour(new LeftPanelGenericButtonBehaviour() {
             @Override
             public void onPanelModeButtonClick(JPanel panel) {
-                System.out.println("Search button clicked, panel: " + panel.getClass().getSimpleName());
+                System.out.println("Generic button clicked, panel: " + panel.getClass().getSimpleName());
                 if (panel.isVisible()) {
-                    System.out.println("Panel is already visible, hiding it.");
+                    System.out.println("Generic panel is already visible, hiding it.");
                     mainFrame.updateLeftPanelVisibility(false);
                     mainFrame.updateLeftPanelModularPanel(panel, false);
                 } else {
-                    System.out.println("Panel is not already visible, showing it.");
+                    System.out.println("Generic panel is not already visible, showing it.");
                     mainFrame.updateLeftPanelVisibility(true);
                     mainFrame.updateLeftPanelModularPanel(panel, true);
                 }
             }
+        });
 
-            ;
-
+        mainFrame.setLeftPanelButtonPanelPreferButtonBehaviour(new LeftPanelPreferButtonBehaviour() {
+            private boolean loaded = false;
+            @Override
+            public void onPanelModeButtonClick(JPanel panel) {
+                try {
+                    if (!loaded) {
+                        mainFrame.initLeftPanelPreferPanelPreferTable(db.getFavoriteStops(sessionUser.getId()), db.getFavoriteRoutes(sessionUser.getId()));
+                        loaded = !loaded;
+                    }
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         });
     }
 
