@@ -40,7 +40,6 @@ public class MapPanel extends JPanel {
 
     // Waypoint painter and Map Painter
     private List<Painter<JXMapViewer>> paintersList;
-    private WaypointPainter<Waypoint> positionWaypoints = new WaypointPainter<Waypoint>();
 
     private CompoundPainter<JXMapViewer> mapPainter;
     private RoutePainter routePainter;
@@ -56,7 +55,6 @@ public class MapPanel extends JPanel {
     // Listener for waypoint clicks (Anonymous inner class in MapController)
     private WaypointListener waypointListener;
 
-    // CONSTRUCTOR //
     public MapPanel() throws IOException {
         TileFactoryInfo info = new OSMTileFactoryInfo();
         tileFactory = new DefaultTileFactory(info);
@@ -116,6 +114,13 @@ public class MapPanel extends JPanel {
         this.mapPainter.setPainters(this.paintersList);
     }
 
+    public void resetRoutePainting() {
+        if (this.routePainter != null) {
+            this.paintersList.remove(this.routePainter);
+        }
+        this.positionPainter.setWaypoints(new HashSet<Waypoint>());
+    }
+
     public void renderStops(List<StopModel> stops) {
         // Create a set of waypoints from the list of stops, then set it to the
         // waypointPainter
@@ -127,6 +132,7 @@ public class MapPanel extends JPanel {
         this.stops = stops; // Save stops in order to reset painting after route painting
 
         this.resetRouteButton.setVisible(false);
+        resetRoutePainting();
         repaintView();
     }
 
@@ -139,8 +145,13 @@ public class MapPanel extends JPanel {
         }
         this.stopPainter.setWaypoints(waypoints);
 
+        // Delete older route painter in Painters List (if it exists)
+        if (this.routePainter != null) {
+            this.paintersList.remove(this.routePainter);
+        }
+
         this.routePainter = new RoutePainter(stops, Color.RED, 5);
-        this.paintersList.add(routePainter);
+        this.paintersList.add(routePainter); // Adds updated route painter to the list
         System.out.println("Created RoutePainter with " + stops.size() + " stops");
 
         System.out.println("Updated map painters");
@@ -156,7 +167,9 @@ public class MapPanel extends JPanel {
             System.out.println(
                     "Adding realtime vehicle position at " + position.getLatitude() + " " + position.getLongitude());
         }
-        this.positionWaypoints.setWaypoints(waypoints);
+        Position position = positions.getFirst().getPosition();
+        setMapPanelMapPosition(new GeoPosition(position.getLatitude(), position.getLongitude()), 1);
+        this.positionPainter.setWaypoints(waypoints);
         repaintView();
     }
 

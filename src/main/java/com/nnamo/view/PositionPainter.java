@@ -32,13 +32,13 @@ public class PositionPainter extends WaypointPainter<Waypoint> {
         this.map = map;
 
         icons.put(Sizes.EXTRA_SMALL, ImageIO
-                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/position_extra_small.png"))));
+                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/vehicle_extra_small.png"))));
         icons.put(Sizes.SMALL, ImageIO
-                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/position_small.png"))));
+                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/vehicle_small.png"))));
         icons.put(Sizes.MEDIUM, ImageIO
-                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/position_medium.png"))));
-        icons.put(Sizes.LARGE, ImageIO
-                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/position_large.png"))));
+                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/vehicle_medium.png"))));
+        // icons.put(Sizes.LARGE, ImageIO
+        // .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/vehicle_medium.png"))));
     }
 
     // GETTERS AND SETTERS OUTER CLASS //
@@ -53,7 +53,7 @@ public class PositionPainter extends WaypointPainter<Waypoint> {
     public void repaint() {
         int zoom = map.getZoom();
         currentIcon = icons.get(Sizes.MEDIUM);
-        final BufferedImage icon = (zoom <= 1) ? icons.get(Sizes.MEDIUM) : icons.get(Sizes.SMALL);
+        final BufferedImage icon = (zoom < 1) ? icons.get(Sizes.MEDIUM) : icons.get(Sizes.SMALL);
         this.currentIcon = icon;
 
         // Update the waypoint painter with the new icon with an anonymous class
