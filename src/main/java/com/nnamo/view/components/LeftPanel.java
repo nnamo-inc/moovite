@@ -21,12 +21,17 @@ public class LeftPanel extends JPanel {
     SearchPanel searchPanel = new SearchPanel();
     PreferPanel preferPanel = new PreferPanel();
     SwitchBar onlineSwitchButton = new SwitchBar();
+
+    // TODO: change to FavoritePanel
+    SwitchBar favoritePanel = new SwitchBar();
+
     ButtonPanel buttonPanel = new ButtonPanel(new LinkedHashMap<>() {
         {
-            put(searchPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/search_large.png"))));
-            put(preferPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/stop_medium.png"))));
+            put(searchPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/search_small.png"))));
+            put(preferPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/sidebar_stop_small.png"))));
             put(onlineSwitchButton,
-                    new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/stop_medium.png"))));
+                    new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/online_settings_small.png"))));
+            put(favoritePanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/favorite_small.png"))));
         }
     });
 
