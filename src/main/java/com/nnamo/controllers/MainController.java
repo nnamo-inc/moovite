@@ -147,48 +147,53 @@ public class MainController {
     private void handleStopClick() {
         mainFrame.getMapPanel().setWaypointListener(new WaypointListener() {
             @Override
-            public void onWaypointClick(GeoPosition geo) throws SQLException, IOException {
+            public void onWaypointClick(GeoPosition geo, boolean b) throws SQLException, IOException {
                 // Convert the GeoPosition of the click to pixel coordinates
                 // then get the current icon from the StopPainter
-                Point2D clickPixel = mainFrame.getMapPanel().getMap().convertGeoPositionToPoint(geo);
-                BufferedImage currentIcon = mainFrame.getCurrentStopIcon();
-                if (currentIcon == null) {
-                    return;
-                }
-                // For each stop in the database, create and then convert the GeoPosition to
-                // pixel coordinates
-                // then check if the click position is inside the icon bounds
-                for (StopModel stop : db.getAllStops()) {
-                    GeoPosition stopGeo = new GeoPosition(stop.getLatitude(), stop.getLongitude());
-                    Point2D stopPixel = mainFrame.getMapPanel().getMap().convertGeoPositionToPoint(stopGeo);
-                    // Get icon width and height
-                    int iconWidth = currentIcon.getWidth();
-                    int iconImgHeight = currentIcon.getHeight();
-                    // Get icon pixel pointer position
-                    int iconPointerWidth = iconWidth / 2;
-                    int iconPointerHeight = iconImgHeight;
-                    // Calculate the click position relative to the icon
-                    int clickXIcon = (int) (clickPixel.getX() - (stopPixel.getX() - iconPointerWidth));
-                    int clickYIcon = (int) (clickPixel.getY() - (stopPixel.getY() - iconImgHeight));
-                    // Check if the click is inside the icon bounds and find witch stop was clicked
-                    if (clickXIcon >= 0 && clickXIcon < iconWidth && clickYIcon >= 0 && clickYIcon < iconImgHeight) {
-                        // Get the pixel color at the click position
-                        int argb = currentIcon.getRGB(clickXIcon, clickYIcon);
-                        // Create a Color object to check the alpha(transparency) value
-                        int alpha = new Color(argb, true).getAlpha();
-                        // Check alpha
-                        if (alpha > 0) {
-                            List<StopTimeModel> stopTimes = db.getNextStopTimes(stop.getId(), getCurrentTime(),
-                                    getCurrentDate());
-                            List<RealtimeStopUpdate> realtimeUpdates = realtimeService.getStopUpdatesById(stop.getId());
-                            updateStopPanel(stop, stopTimes, realtimeUpdates);
-                            return;
+                if (geo != null)
+                {
+                    Point2D clickPixel = mainFrame.getMapPanel().getMap().convertGeoPositionToPoint(geo);
+                    BufferedImage currentIcon = mainFrame.getCurrentStopIcon();
+                    if (currentIcon == null) {
+                        return;
+                    }
+                    // For each stop in the database, create and then convert the GeoPosition to
+                    // pixel coordinates
+                    // then check if the click position is inside the icon bounds
+                    for (StopModel stop : db.getAllStops()) {
+                        GeoPosition stopGeo = new GeoPosition(stop.getLatitude(), stop.getLongitude());
+                        Point2D stopPixel = mainFrame.getMapPanel().getMap().convertGeoPositionToPoint(stopGeo);
+                        // Get icon width and height
+                        int iconWidth = currentIcon.getWidth();
+                        int iconImgHeight = currentIcon.getHeight();
+                        // Get icon pixel pointer position
+                        int iconPointerWidth = iconWidth / 2;
+                        int iconPointerHeight = iconImgHeight;
+                        // Calculate the click position relative to the icon
+                        int clickXIcon = (int) (clickPixel.getX() - (stopPixel.getX() - iconPointerWidth));
+                        int clickYIcon = (int) (clickPixel.getY() - (stopPixel.getY() - iconImgHeight));
+                        // Check if the click is inside the icon bounds and find witch stop was clicked
+                        if (clickXIcon >= 0 && clickXIcon < iconWidth && clickYIcon >= 0 && clickYIcon < iconImgHeight) {
+                            // Get the pixel color at the click position
+                            int argb = currentIcon.getRGB(clickXIcon, clickYIcon);
+                            // Create a Color object to check the alpha(transparency) value
+                            int alpha = new Color(argb, true).getAlpha();
+                            // Check alpha
+                            if (alpha > 0) {
+                                List<StopTimeModel> stopTimes = db.getNextStopTimes(stop.getId(), getCurrentTime(),
+                                        getCurrentDate());
+                                List<RealtimeStopUpdate> realtimeUpdates = realtimeService.getStopUpdatesById(stop.getId());
+                                updateStopPanel(stop, stopTimes, realtimeUpdates);
+                                return;
+                            }
                         }
                     }
-                }
 
-                mainFrame.updateStopPanelVisibility(false);
-                mainFrame.getMapPanel().repaintView();
+                    mainFrame.updateStopPanelVisibility(false);
+                    mainFrame.getMapPanel().repaintView();
+                }
+                else {
+                    mainFrame.updateStopPanelVisibility(false);                }
             }
         });
     }

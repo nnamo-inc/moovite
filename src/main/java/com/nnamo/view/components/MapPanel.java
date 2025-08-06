@@ -52,6 +52,7 @@ public class MapPanel extends JPanel {
     private StopPainter routeStopPainter;
     private ZoomBehaviour zoomBehaviour;
 
+    private int currentZoomLimit; // Default zoom level
     private final int stopsZoomLimit = 4;
     private final int routeZoomLimit = 8;
 
@@ -93,6 +94,7 @@ public class MapPanel extends JPanel {
         zoomBehaviour = (new ZoomBehaviour() {
             @Override
             public void onZoomChange(int zoomLevel) {
+                currentZoomLimit = (currentPainter == stopsCompoundPainter) ? stopsZoomLimit : routeZoomLimit;
                 updateOverlayPainter();
                 repaintView();
             }
@@ -115,11 +117,10 @@ public class MapPanel extends JPanel {
 
     // METHODS //
     private void updateOverlayPainter() {
-        int zoomLimit = (currentPainter == stopsCompoundPainter) ? stopsZoomLimit : routeZoomLimit;
         int zoomLevel = map.getZoom();
-        if (zoomLevel <= zoomLimit) {
+        if (zoomLevel <= currentZoomLimit) {
             map.setOverlayPainter(currentPainter);
-        } else if (zoomLevel > zoomLimit) {
+        } else {
             map.setOverlayPainter(null);
         }
     }
@@ -223,10 +224,17 @@ public class MapPanel extends JPanel {
         this.map.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (waypointListener != null && map.getZoom() <= stopsZoomLimit) {
+                if (waypointListener != null && map.getZoom() <= currentZoomLimit) {
                     try {
                         GeoPosition geo = map.convertPointToGeoPosition(new Point(e.getX(), e.getY()));
-                        waypointListener.onWaypointClick(geo);
+                        waypointListener.onWaypointClick(geo, true);
+                    } catch (SQLException | IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+                else {
+                    try {
+                        waypointListener.onWaypointClick(null, true);
                     } catch (SQLException | IOException ex) {
                         throw new RuntimeException(ex);
                     }
