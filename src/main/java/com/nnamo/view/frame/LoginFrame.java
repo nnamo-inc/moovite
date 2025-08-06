@@ -66,6 +66,16 @@ public class LoginFrame extends JFrame {
                 String username = fieldUsername.getJTextField().getText();
                 String password = new String(fieldPassword.getJPasswordField().getPassword());
                 if (loginBehavior != null) {
+                    if (username == null || username.isEmpty()) {
+                        infoLabel.setText("Username field is empty");
+                        return;
+                    }
+
+                    if (password == null || password.isEmpty()) {
+                        infoLabel.setText("Password field is empty");
+                        return;
+                    }
+
                     try {
                         AuthResult loginResult = loginBehavior.login(username, password);
                         if (loginResult == AuthResult.WRONG_CREDENTIALS) {
@@ -86,6 +96,15 @@ public class LoginFrame extends JFrame {
                 String password = new String(fieldPassword.getJPasswordField().getPassword());
                 if (registerBehavior != null) {
                     try {
+                        if (username == null || username.isEmpty()) {
+                            infoLabel.setText("Username field is empty");
+                            return;
+                        }
+
+                        if (password == null || password.isEmpty()) {
+                            infoLabel.setText("Password field is empty");
+                            return;
+                        }
                         registerBehavior.register(username, password);
                         infoLabel.setText("User " + username + " created");
                     } catch (SQLException exception) {
