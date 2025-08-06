@@ -147,6 +147,18 @@ public class MainFrame extends JFrame {
         return mapPanel;
     }
 
+    public String getCurrentStopId() {
+        return stopPanel.getStopId();
+    }
+
+    public String getCurrentRouteId() {
+        return mapPanel.getCurrentRouteId();
+    }
+
+    public void setCurrentRouteId(String routeId) {
+        mapPanel.setCurrentRouteId(routeId);
+    }
+
     public StopPanel getStopPanel() {
         return stopPanel;
     }

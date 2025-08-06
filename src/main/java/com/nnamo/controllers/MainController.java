@@ -1,11 +1,13 @@
 package com.nnamo.controllers;
 
+import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.interfaces.*;
 import com.nnamo.models.*;
 import com.nnamo.view.frame.MainFrame;
 import com.nnamo.services.DatabaseService;
+import com.nnamo.services.FeedUpdateListener;
 import com.nnamo.services.RealtimeGtfsService;
 
 import org.jxmapviewer.viewer.GeoPosition;
@@ -45,9 +47,6 @@ public class MainController {
         handleLeftPanelButtonClick();
         mainFrame.getSearchPanel().addSearchListener(this::searchQueryListener);
 
-        // Sets default realtime status
-        mainFrame.setRealtimeStatus(RealtimeStatus.ONLINE);
-
         // Login and Session Fetching
         userController.addSessionListener(new SessionListener() { // [!] Listener must be implemented before run()
             @Override
@@ -65,10 +64,10 @@ public class MainController {
 
         handleRealtimeListeners();
         realtimeService.startBackgroundThread();
+        mainFrame.setRealtimeStatus(RealtimeStatus.ONLINE); // Changing realtime status notifies the observer method,
+                                                            // thus interacting with RealtimeService
 
-        // Questo triggera il listener della barra di ricerca per mostrare tutte le
-        // fermate
-        // allo startup del programma.
+        // Mostra tutte le fermate allo startup del programma.
         this.searchQueryListener("");
     }
 
@@ -79,6 +78,33 @@ public class MainController {
             public void onChange(RealtimeStatus newStatus) {
                 mainFrame.setRealtimeStatus(newStatus);
                 // TODO: notification for status change if going offline
+            }
+        });
+
+        realtimeService.addListener(new FeedUpdateListener() {
+            @Override
+            public void onFeedUpdated(List<FeedEntity> entities) {
+                try {
+
+                    // Updates stop panel details
+                    String stopId = mainFrame.getCurrentStopId();
+                    if (stopId != null && !stopId.isEmpty()) {
+                        List<StopTimeModel> stopTimes = db.getNextStopTimes(stopId, getCurrentTime(), getCurrentDate());
+                        List<RealtimeStopUpdate> realtimeUpdates = realtimeService.getStopUpdatesById(stopId);
+                        mainFrame.updateStopPanelTimes(stopTimes, realtimeUpdates);
+                        System.out.println("Updated realtime details on feed update on stop " + stopId);
+                    }
+
+                    // Updates route vehicle positions
+                    String routeId = mainFrame.getCurrentRouteId();
+                    if (routeId != null && !routeId.isEmpty()) {
+                        var positions = realtimeService.getRoutesVehiclePositions(routeId);
+                        mainFrame.renderVehiclePositions(positions); // Update vehicle positions
+                        System.out.println("Updated realtime vehicle positions on feed update on route " + routeId);
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -150,8 +176,7 @@ public class MainController {
             public void onWaypointClick(GeoPosition geo, boolean b) throws SQLException, IOException {
                 // Convert the GeoPosition of the click to pixel coordinates
                 // then get the current icon from the StopPainter
-                if (geo != null)
-                {
+                if (geo != null) {
                     Point2D clickPixel = mainFrame.getMapPanel().getMap().convertGeoPositionToPoint(geo);
                     BufferedImage currentIcon = mainFrame.getCurrentStopIcon();
                     if (currentIcon == null) {
@@ -173,7 +198,8 @@ public class MainController {
                         int clickXIcon = (int) (clickPixel.getX() - (stopPixel.getX() - iconPointerWidth));
                         int clickYIcon = (int) (clickPixel.getY() - (stopPixel.getY() - iconImgHeight));
                         // Check if the click is inside the icon bounds and find witch stop was clicked
-                        if (clickXIcon >= 0 && clickXIcon < iconWidth && clickYIcon >= 0 && clickYIcon < iconImgHeight) {
+                        if (clickXIcon >= 0 && clickXIcon < iconWidth && clickYIcon >= 0
+                                && clickYIcon < iconImgHeight) {
                             // Get the pixel color at the click position
                             int argb = currentIcon.getRGB(clickXIcon, clickYIcon);
                             // Create a Color object to check the alpha(transparency) value
@@ -182,7 +208,8 @@ public class MainController {
                             if (alpha > 0) {
                                 List<StopTimeModel> stopTimes = db.getNextStopTimes(stop.getId(), getCurrentTime(),
                                         getCurrentDate());
-                                List<RealtimeStopUpdate> realtimeUpdates = realtimeService.getStopUpdatesById(stop.getId());
+                                List<RealtimeStopUpdate> realtimeUpdates = realtimeService
+                                        .getStopUpdatesById(stop.getId());
                                 updateStopPanel(stop, stopTimes, realtimeUpdates);
                                 return;
                             }
@@ -191,9 +218,9 @@ public class MainController {
 
                     mainFrame.updateStopPanelVisibility(false);
                     mainFrame.getMapPanel().repaintView();
+                } else {
+                    mainFrame.updateStopPanelVisibility(false);
                 }
-                else {
-                    mainFrame.updateStopPanelVisibility(false);                }
             }
         });
     }
@@ -254,6 +281,7 @@ public class MainController {
                 mainFrame.getMapPanel().renderStopsRoute(stopModels);
                 mainFrame.getMapPanel().renderVehiclePositions(routePositions);
                 mainFrame.getMapPanel().repaintView();
+                mainFrame.setCurrentRouteId(routeId);
                 mainFrame.setMapPanelMapPosition(geoPosition, zoomLevel);
             }
         };

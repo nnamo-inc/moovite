@@ -15,7 +15,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -182,7 +181,6 @@ public class RealtimeGtfsService {
                 // update
                 stopsMap.computeIfAbsent(stopId, k -> new ArrayList<>()).add(stopUpdate);
             }
-            // TODO: logic to notify listeners about new or updated or removed stop lines
         }
         System.out.println(tripEntityList.size() + " trip entities");
 

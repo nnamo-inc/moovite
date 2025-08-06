@@ -46,6 +46,8 @@ public class MapPanel extends JPanel {
     private CompoundPainter<JXMapViewer> stopsCompoundPainter;
     private CompoundPainter<JXMapViewer> routeCompoundPainter;
 
+    private String currentRouteId;
+
     private RoutePainter routePainter;
     private PositionPainter positionPainter;
     private StopPainter stopPainter;
@@ -140,6 +142,7 @@ public class MapPanel extends JPanel {
         this.positionPainter.setWaypoints(new HashSet<Waypoint>());
         this.routeStopPainter.setWaypoints(new HashSet<Waypoint>());
         this.currentPainter = this.stopsCompoundPainter;
+        this.currentRouteId = null;
         updateOverlayPainter();
     }
 
@@ -180,6 +183,15 @@ public class MapPanel extends JPanel {
 
         this.resetRouteButton.setVisible(true);
         repaintView();
+    }
+
+    public String getCurrentRouteId() {
+        return this.currentRouteId;
+    }
+
+    public void setCurrentRouteId(String routeId) {
+        System.out.println("Updated current route id to " + routeId);
+        this.currentRouteId = routeId;
     }
 
     public void renderVehiclePositions(List<VehiclePosition> positions) {
@@ -231,8 +243,7 @@ public class MapPanel extends JPanel {
                     } catch (SQLException | IOException ex) {
                         throw new RuntimeException(ex);
                     }
-                }
-                else {
+                } else {
                     try {
                         waypointListener.onWaypointClick(null, true);
                     } catch (SQLException | IOException ex) {

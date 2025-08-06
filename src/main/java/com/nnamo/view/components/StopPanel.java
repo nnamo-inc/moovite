@@ -202,10 +202,6 @@ public class StopPanel extends JPanel {
         }
     }
 
-    private int calculateMinutesDifference(int time1, int time2) {
-        return (time1 - time2) / 60;
-    }
-
     public void updateStopPanelInfo(String id, String nome) {
         this.nomeFermata.setTextField(nome);
         this.idFermata.setTextField(id);
@@ -223,6 +219,10 @@ public class StopPanel extends JPanel {
 
     public JTextField getTextName() {
         return nomeFermata.getJTextField();
+    }
+
+    public String getStopId() {
+        return idFermata.getTextField();
     }
 
     public void open() {
