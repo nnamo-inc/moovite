@@ -1,10 +1,11 @@
 package com.nnamo.view.components;
 
+import com.google.transit.realtime.GtfsRealtime.Position;
 import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.nnamo.interfaces.WaypointListener;
 import com.nnamo.interfaces.ZoomBehaviour;
-import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
+import com.nnamo.view.PositionPainter;
 import com.nnamo.view.RoutePainter;
 import com.nnamo.view.StopPainter;
 
@@ -33,24 +34,27 @@ import java.util.List;
 import java.util.Set;
 
 public class MapPanel extends JPanel {
-    JXMapViewer map = new JXMapViewer();
-    GeoPosition romePosition = new GeoPosition(41.902782, 12.496366);
-    DefaultTileFactory tileFactory;
+    private JXMapViewer map = new JXMapViewer();
+    private GeoPosition romePosition = new GeoPosition(41.902782, 12.496366);
+    private DefaultTileFactory tileFactory;
 
     // Waypoint painter and Map Painter
-    WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
-    CompoundPainter<JXMapViewer> mapPainter;
-    StopPainter stopPainter;
-    ZoomBehaviour zoomBehaviour;
+    private List<Painter<JXMapViewer>> paintersList;
+    private WaypointPainter<Waypoint> positionWaypoints = new WaypointPainter<Waypoint>();
 
-    JButton resetRouteButton = new JButton("Reset");
-    List<StopModel> stops;
+    private CompoundPainter<JXMapViewer> mapPainter;
+    private RoutePainter routePainter;
+    private PositionPainter positionPainter;
+    private StopPainter stopPainter;
+    private ZoomBehaviour zoomBehaviour;
 
-    // Route line painter
-    RoutePainter routePainter;
+    private final int zoomLimit = 4;
+
+    private JButton resetRouteButton = new JButton("Reset");
+    private List<StopModel> stops;
 
     // Listener for waypoint clicks (Anonymous inner class in MapController)
-    WaypointListener waypointListener;
+    private WaypointListener waypointListener;
 
     // CONSTRUCTOR //
     public MapPanel() throws IOException {
@@ -64,14 +68,13 @@ public class MapPanel extends JPanel {
         map.setZoom(5);
         map.setAddressLocation(this.romePosition);
 
-        List<Painter<JXMapViewer>> painters = new ArrayList<Painter<JXMapViewer>>();
-        painters.add(this.waypointPainter);
+        // Rendering of stops and vehicle positions icons on the map
+        this.stopPainter = new StopPainter(this.map);
+        this.positionPainter = new PositionPainter(this.map);
 
+        this.paintersList = createPaintersList(stopPainter, positionPainter);
         this.mapPainter = new CompoundPainter<JXMapViewer>();
-        this.mapPainter.setPainters(painters);
-
-        // Create a StopPainter instance to handle the stops on the map
-        this.stopPainter = new StopPainter(this.map, this.mapPainter, this.waypointPainter);
+        this.mapPainter.setPainters(paintersList);
 
         setLayout(new BorderLayout());
         add(map, BorderLayout.CENTER);
@@ -82,6 +85,13 @@ public class MapPanel extends JPanel {
             public void onZoomChange(int zoomLevel) {
                 map.setZoom(zoomLevel);
                 stopPainter.repaint();
+                positionPainter.repaint();
+
+                if (zoomLevel <= zoomLimit) {
+                    map.setOverlayPainter(mapPainter);
+                } else if (zoomLevel > zoomLimit) {
+                    map.setOverlayPainter(null);
+                }
             }
         });
 
@@ -100,6 +110,12 @@ public class MapPanel extends JPanel {
     }
 
     // METHODS //
+    private void repaintView() {
+        stopPainter.repaint();
+        positionPainter.repaint();
+        this.mapPainter.setPainters(this.paintersList);
+    }
+
     public void renderStops(List<StopModel> stops) {
         // Create a set of waypoints from the list of stops, then set it to the
         // waypointPainter
@@ -107,11 +123,11 @@ public class MapPanel extends JPanel {
         for (StopModel stop : stops) {
             waypoints.add(new DefaultWaypoint(stop.getLatitude(), stop.getLongitude()));
         }
-        this.waypointPainter.setWaypoints(waypoints);
-        this.mapPainter.setPainters(createPaintersList(waypointPainter));
-
+        this.stopPainter.setWaypoints(waypoints);
         this.stops = stops; // Save stops in order to reset painting after route painting
+
         this.resetRouteButton.setVisible(false);
+        repaintView();
     }
 
     public void renderStopsRoute(List<StopModel> stops) {
@@ -121,17 +137,27 @@ public class MapPanel extends JPanel {
         for (StopModel stop : stops) {
             waypoints.add(new DefaultWaypoint(stop.getLatitude(), stop.getLongitude()));
         }
-        this.waypointPainter.setWaypoints(waypoints);
+        this.stopPainter.setWaypoints(waypoints);
 
         this.routePainter = new RoutePainter(stops, Color.RED, 5);
+        this.paintersList.add(routePainter);
         System.out.println("Created RoutePainter with " + stops.size() + " stops");
-
-        List<Painter<JXMapViewer>> painters = createPaintersList(routePainter, waypointPainter);
-        this.mapPainter.setPainters(createPaintersList(waypointPainter, routePainter));
-        map.setOverlayPainter(this.mapPainter);
 
         System.out.println("Updated map painters");
         this.resetRouteButton.setVisible(true);
+        repaintView();
+    }
+
+    public void renderVehiclePositions(List<VehiclePosition> positions) {
+        Set<Waypoint> waypoints = new HashSet<Waypoint>();
+        for (VehiclePosition vehiclePosition : positions) {
+            Position position = vehiclePosition.getPosition();
+            waypoints.add(new DefaultWaypoint(position.getLatitude(), position.getLongitude()));
+            System.out.println(
+                    "Adding realtime vehicle position at " + position.getLatitude() + " " + position.getLongitude());
+        }
+        this.positionWaypoints.setWaypoints(waypoints);
+        repaintView();
     }
 
     // Easily create painters list
@@ -144,10 +170,6 @@ public class MapPanel extends JPanel {
         return paintersList;
     }
 
-    public void renderVehiclePositions(List<VehiclePosition> positions) {
-        // TODO: implement positions rendering without overriding stops
-    }
-
     // Set the map to be draggable and zoomable with mouse and wheel listeners
     private void handleMouseListeners() throws IOException {
         PanMouseInputListener mouseClick = new PanMouseInputListener(map);
@@ -157,7 +179,7 @@ public class MapPanel extends JPanel {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
                 super.mouseWheelMoved(e);
-                stopPainter.repaint();
+                zoomBehaviour.onZoomChange(map.getZoom());
             }
         });
     }
@@ -168,7 +190,7 @@ public class MapPanel extends JPanel {
         this.map.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (waypointListener != null && map.getZoom() <= stopPainter.getZoomLimit()) {
+                if (waypointListener != null && map.getZoom() <= zoomLimit) {
                     try {
                         GeoPosition geo = map.convertPointToGeoPosition(new Point(e.getX(), e.getY()));
                         waypointListener.onWaypointClick(geo);

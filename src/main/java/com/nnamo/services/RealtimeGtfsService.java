@@ -186,6 +186,22 @@ public class RealtimeGtfsService {
         return this.tripsMap.get(tripId).getVehicle();
     }
 
+    public synchronized List<VehiclePosition> getRoutesVehiclePositions(String routeId) {
+        List<VehiclePosition> routePositions = new ArrayList<>();
+        List<FeedEntity> routesFeed = this.routesMap.get(routeId);
+        if (routesFeed == null) {
+            System.out.println("No feed found for route " + routeId);
+            return routePositions;
+        }
+
+        for (FeedEntity entity : routesFeed) {
+            System.out.println("Found vehicle position for route " + routeId);
+            VehiclePosition position = entity.getVehicle();
+            routePositions.add(position);
+        }
+        return routePositions;
+    }
+
     public synchronized List<VehiclePosition> getAllVehiclePositions() {
         ArrayList<VehiclePosition> positions = new ArrayList<>();
         for (FeedEntity entity : entityList) {

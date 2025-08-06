@@ -1,5 +1,6 @@
 package com.nnamo.controllers;
 
+import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.interfaces.*;
 import com.nnamo.models.*;
@@ -44,9 +45,6 @@ public class MainController {
         handleLeftPanelButtonClick();
         mainFrame.getSearchPanel().addSearchListener(this::searchQueryListener);
 
-        handleRealtimeListeners();
-        realtimeService.startBackgroundThread();
-
         // Sets default realtime status
         mainFrame.setRealtimeStatus(RealtimeStatus.ONLINE);
 
@@ -64,6 +62,9 @@ public class MainController {
             }
         });
         userController.run();
+
+        handleRealtimeListeners();
+        realtimeService.startBackgroundThread();
 
         // Questo triggera il listener della barra di ricerca per mostrare tutte le
         // fermate
@@ -116,7 +117,6 @@ public class MainController {
                 }
             }
         });
-
 
         mainFrame.setFavLineBehaviour(new FavoriteBehaviour() {
             @Override
@@ -238,8 +238,11 @@ public class MainController {
                 int zoomLevel = 0; // default zoom level
                 mainFrame.setMapPanelMapPosition(geoPosition, zoomLevel);
 
+                List<VehiclePosition> routePositions = realtimeService.getRoutesVehiclePositions(routeId);
+
                 // render stops and route lines on the map
                 mainFrame.getMapPanel().renderStopsRoute(stopModels);
+                mainFrame.getMapPanel().renderVehiclePositions(routePositions);
                 mainFrame.getMapPanel().repaint();
             }
         });
@@ -273,11 +276,13 @@ public class MainController {
 
         mainFrame.setLeftPanelButtonPanelPreferButtonBehaviour(new LeftPanelPreferButtonBehaviour() {
             private boolean loaded = false;
+
             @Override
             public void onPanelModeButtonClick(JPanel panel) {
                 try {
                     if (!loaded) {
-                        mainFrame.initLeftPanelPreferPanelPreferTable(db.getFavoriteStops(sessionUser.getId()), db.getFavoriteRoutes(sessionUser.getId()));
+                        mainFrame.initLeftPanelPreferPanelPreferTable(db.getFavoriteStops(sessionUser.getId()),
+                                db.getFavoriteRoutes(sessionUser.getId()));
                         loaded = !loaded;
                     }
                 } catch (SQLException e) {
