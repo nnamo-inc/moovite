@@ -41,7 +41,7 @@ public class MainController {
         mainFrame.renderStops(db.getAllStops());
         handleStopClick();
         handleFavouriteButtonClicks();
-        handleTableRowClick();
+        handleTableBehaviour();
         handleLeftPanelButtonClick();
         mainFrame.getSearchPanel().addSearchListener(this::searchQueryListener);
 
@@ -193,8 +193,12 @@ public class MainController {
         });
     }
 
-    private void handleTableRowClick() {
-        mainFrame.setSearchStopTableClickListener(new TableRowClickListener() {
+/*
+    private void handleTableSearch(new )
+*/
+
+    private void handleTableBehaviour() {
+        mainFrame.setSearchStopTableClickListener(new TableRowClickBehaviour() {
             @Override
             public void onRowClick(Object rowData) throws SQLException {
                 final int zoomLevel = 0;
@@ -212,7 +216,7 @@ public class MainController {
             }
         });
 
-        mainFrame.setSearchRouteTableClickListener(new TableRowClickListener() {
+        mainFrame.setSearchRouteTableClickListener(new TableRowClickBehaviour() {
             @Override
             public void onRowClick(Object rowData) throws SQLException {
                 String routeId = (String) ((List<Object>) rowData).get(1);
@@ -247,7 +251,7 @@ public class MainController {
             }
         });
 
-        mainFrame.setStopTimeTableClickListener(new TableRowClickListener() {
+        mainFrame.setStopTimeTableClickListener(new TableRowClickBehaviour() {
             @Override
             public void onRowClick(Object rowData) throws SQLException {
                 String routeNumber = (String) ((List<Object>) rowData).get(0);

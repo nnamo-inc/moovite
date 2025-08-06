@@ -13,7 +13,7 @@ public class FavoriteStopModel {
     @DatabaseField(foreign = true, uniqueCombo = true)
     private UserModel user;
 
-    @DatabaseField(foreign = true, uniqueCombo = true)
+    @DatabaseField(foreign = true, uniqueCombo = true, foreignAutoRefresh = true)
     private StopModel stop;
 
     public FavoriteStopModel() { // Empty constructor required by OrmLite

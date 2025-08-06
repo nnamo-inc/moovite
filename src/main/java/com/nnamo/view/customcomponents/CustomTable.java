@@ -1,6 +1,7 @@
 package com.nnamo.view.customcomponents;
 
-import com.nnamo.interfaces.TableRowClickListener;
+import com.nnamo.interfaces.TableRowClickBehaviour;
+import com.nnamo.interfaces.TableSearchBehaviour;
 import com.nnamo.utils.CustomColor;
 
 import javax.swing.*;
@@ -14,8 +15,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.sql.Array;
 import java.sql.SQLException;
-import java.util.Objects;
+import java.util.ArrayList;
 import java.util.Vector;
 
 public class CustomTable extends JPanel {
@@ -23,11 +25,13 @@ public class CustomTable extends JPanel {
     JScrollPane scrollPane;
     JTable table;
     String[] tableColumns;
+    ArrayList<Integer> searchColumns = new ArrayList<>();
     DefaultTableModel model;
     TableRowSorter sorter;
     Vector<Object> rowData;
 
-    TableRowClickListener tableRowClickListener;
+    TableRowClickBehaviour tableRowClickBehaviour;
+    TableSearchBehaviour tableSearchBehaviour;
 
     JButton resetSortingButton = new JButton("Reset Sorting");
     SearchBar searchBar = new SearchBar();
@@ -66,20 +70,22 @@ public class CustomTable extends JPanel {
         initListeners();
     }
 
+
+
     // GETTERS AND SETTERS //
     public void initListeners() {
 
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting() && tableRowClickListener != null) {
+                if (!e.getValueIsAdjusting() && tableRowClickBehaviour != null) {
                     System.out.println("Row selection changed");
                     int selectedRow = table.getSelectedRow();
                     if (selectedRow != -1) {
                         int modelRow = table.convertRowIndexToModel(selectedRow);
                         rowData = (Vector<Object>) model.getDataVector().get(modelRow);
                         try {
-                            tableRowClickListener.onRowClick(rowData);
+                            tableRowClickBehaviour.onRowClick(rowData);
                         } catch (SQLException | IOException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -101,11 +107,16 @@ public class CustomTable extends JPanel {
                 @Override
                 public void keyReleased(KeyEvent e) {
                     String searchText = searchBar.getText().trim();
-                    if (searchText.isEmpty()) {
-                        sorter.setRowFilter(null);
-                    } else {
-                        sorter.setRowFilter(RowFilter.regexFilter("^" + searchText, 0));
-                    }
+                        if (searchText.isEmpty()) {
+                            sorter.setRowFilter(null);
+                        } else {
+                            ArrayList<RowFilter<DefaultTableModel, Object>> filters = new ArrayList<>();
+                            for (int column : searchColumns) {
+                                filters.add(RowFilter.regexFilter("(?i)" + searchText, column));
+                            }
+                            RowFilter<DefaultTableModel, Object> combinedFilter = RowFilter.orFilter(filters);
+                            sorter.setRowFilter(combinedFilter);
+                        }
                 }
             });
 
@@ -119,8 +130,18 @@ public class CustomTable extends JPanel {
         }
     }
 
-    public void setTableRowClickListener(TableRowClickListener tableRowClickListener) {
-        this.tableRowClickListener = tableRowClickListener;
+    public void setTableRowClickListener(TableRowClickBehaviour tableRowClickBehaviour) {
+        this.tableRowClickBehaviour = tableRowClickBehaviour;
+    }
+
+    public void setSearchColumns(int... columns) {
+        for (int column : columns) {
+            if (column >= 0 && column < tableColumns.length) {
+                searchColumns.add(column);
+            } else {
+                throw new IllegalArgumentException("Column index out of bounds: " + column);
+            }
+        }
     }
 
     public DefaultTableModel getModel() {

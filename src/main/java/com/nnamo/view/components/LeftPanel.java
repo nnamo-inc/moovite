@@ -3,6 +3,7 @@ package com.nnamo.view.components;
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -10,7 +11,7 @@ import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.interfaces.LeftPanelGenericButtonBehaviour;
 import com.nnamo.interfaces.LeftPanelPreferButtonBehaviour;
 import com.nnamo.interfaces.SwitchBarListener;
-import com.nnamo.interfaces.TableRowClickListener;
+import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
 import com.nnamo.view.customcomponents.SwitchBar;
@@ -20,7 +21,7 @@ public class LeftPanel extends JPanel {
     SearchPanel searchPanel = new SearchPanel();
     PreferPanel preferPanel = new PreferPanel();
     SwitchBar onlineSwitchButton = new SwitchBar();
-    ButtonPanel buttonPanel = new ButtonPanel(new HashMap<>() {
+    ButtonPanel buttonPanel = new ButtonPanel(new LinkedHashMap<>() {
         {
             put(searchPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/stop_medium.png"))));
             put(preferPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/stop_medium.png"))));
@@ -88,11 +89,11 @@ public class LeftPanel extends JPanel {
         this.buttonPanel.setPreferButtonBehaviour(listener);
     }
 
-    public void setSearchStopTableClickListener(TableRowClickListener listener) {
+    public void setSearchStopTableClickListener(TableRowClickBehaviour listener) {
         this.searchPanel.setSearchStopTableClickListener(listener);
     }
 
-    public void setSearchRouteTableClickListener(TableRowClickListener listener) {
+    public void setSearchRouteTableClickListener(TableRowClickBehaviour listener) {
         this.searchPanel.setSearchRouteTableClickListener(listener);
     }
 

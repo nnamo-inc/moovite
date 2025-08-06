@@ -13,7 +13,7 @@ public class FavoriteRouteModel {
     @DatabaseField(foreign = true, uniqueCombo = true)
     private UserModel user;
 
-    @DatabaseField(foreign = true, uniqueCombo = true)
+    @DatabaseField(foreign = true, uniqueCombo = true, foreignAutoRefresh = true)
     private RouteModel route;
 
     public FavoriteRouteModel() { // Empty constructor required by OrmLite

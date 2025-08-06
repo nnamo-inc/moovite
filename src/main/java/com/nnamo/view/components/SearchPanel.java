@@ -1,7 +1,7 @@
 package com.nnamo.view.components;
 
 import com.nnamo.interfaces.SearchBarListener;
-import com.nnamo.interfaces.TableRowClickListener;
+import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
 import com.nnamo.view.customcomponents.CustomTable;
@@ -15,7 +15,6 @@ import java.util.List;
 
 public class SearchPanel extends JPanel {
 
-    boolean isOpen = false;
     SearchBar searchBar = new SearchBar();
     CustomTable tableStop = new CustomTable(new String[] { "Nome", "Codice" }, false);
     CustomTable tableRoute = new CustomTable(new String[] { "Linea", "Codice" }, false);
@@ -49,10 +48,6 @@ public class SearchPanel extends JPanel {
         searchBar.addSearchListener(listener);
     }
 
-    public void removeSearchListener(SearchBarListener listener) {
-        searchBar.removeSearchListener(listener);
-    }
-
     public void updateView(List<StopModel> stopModels, List<RouteModel> routeModels) {
         tableStop.clear();
         tableRoute.clear();
@@ -68,11 +63,11 @@ public class SearchPanel extends JPanel {
         }
     }
 
-    public void setSearchStopTableClickListener(TableRowClickListener listener) {
+    public void setSearchStopTableClickListener(TableRowClickBehaviour listener) {
         tableStop.setTableRowClickListener(listener);
     }
 
-    public void setSearchRouteTableClickListener(TableRowClickListener listener) {
+    public void setSearchRouteTableClickListener(TableRowClickBehaviour listener) {
         tableRoute.setTableRowClickListener(listener);
     }
 }

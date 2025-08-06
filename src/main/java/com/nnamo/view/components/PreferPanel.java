@@ -14,11 +14,13 @@ import java.util.List;
 
 public class PreferPanel extends JPanel {
 
+    JPanel stopContainer = new JPanel(new GridBagLayout());
     CustomTable tableStop = new CustomTable(new String[] { "Nome", "Codice" }, true);
-    CustomTable tableRoute = new CustomTable(new String[] { "Linea", "Codice" }, true);
+    CustomPreferButton removeStopButton = new CustomPreferButton("Fermata");
 
-    private final CustomPreferButton favoriteStopButton = new CustomPreferButton("Fermata");
-    private final CustomPreferButton favoriteRouteButton = new CustomPreferButton("Linea");
+    JPanel routeContainer = new JPanel(new GridBagLayout());
+    CustomTable tableRoute = new CustomTable(new String[] { "Linea", "Codice" }, true);
+    CustomPreferButton removeRouteButton = new CustomPreferButton("Linea");
 
     public PreferPanel() {
         super();
@@ -27,35 +29,32 @@ public class PreferPanel extends JPanel {
 
         // Table Stop
         TitledBorder tableStopBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Fermate");
-        tableStop.setBorder(BorderFactory.createCompoundBorder(
-                tableStopBorder,
-                BorderFactory.createEmptyBorder(2, 5, 2, 5)));
-        add(tableStop, new GbcCustom().setPosition(0, 1).setFill(GridBagConstraints.BOTH)
-                .setWeight(1.0, 0.5).setInsets(2, 5, 2, 5));
-        add(newButtonRow(), new GbcCustom().setPosition(0, 2).setFill(GridBagConstraints.BOTH)
+        stopContainer.setBorder(BorderFactory.createCompoundBorder(tableStopBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
+
+        tableStop.setSearchColumns(0, 1);
+        stopContainer.add(tableStop, new GbcCustom().setPosition(0, 1).setFill(GridBagConstraints.BOTH)
+                .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
+        tableRoute.setSearchColumns(0, 1);
+        stopContainer.add(removeRouteButton, new GbcCustom().setPosition(0, 2).setFill(GridBagConstraints.HORIZONTAL)
                 .setWeight(1.0, 0.1).setInsets(2, 5, 2, 5));
+        add(stopContainer, new GbcCustom().setPosition(0, 0).setFill(GridBagConstraints.BOTH)
+                .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
 
         // Table Route
         TitledBorder tableRouteBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Linee");
-        tableRoute.setBorder(BorderFactory.createCompoundBorder(
+        routeContainer.setBorder(BorderFactory.createCompoundBorder(
                 tableRouteBorder,
                 BorderFactory.createEmptyBorder(2, 5, 2, 5)));
-        add(tableRoute, new GbcCustom().setPosition(0, 4).setFill(GridBagConstraints.BOTH)
-                .setWeight(1.0, 0.5).setInsets(2, 5, 2, 5));
-        add(newButtonRow(), new GbcCustom().setPosition(0, 5).setFill(GridBagConstraints.BOTH)
+        routeContainer.add(tableRoute, new GbcCustom().setPosition(0, 4).setFill(GridBagConstraints.BOTH)
+                .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
+        routeContainer.add(removeStopButton, new GbcCustom().setPosition(0, 5).setFill(GridBagConstraints.HORIZONTAL)
                 .setWeight(1.0, 0.1).setInsets(2, 5, 2, 5));
+        add(routeContainer, new GbcCustom().setPosition(0, 3).setFill(GridBagConstraints.BOTH)
+                .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
+
 
         setPreferredSize(new Dimension(300, 600));
         setVisible(false);
-    }
-
-    private JPanel newButtonRow() {
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.add(favoriteRouteButton, new GbcCustom().setPosition(0, 0).setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
-                .setInsets(2, 5, 2, 5));
-        panel.add(favoriteStopButton, new GbcCustom().setPosition(1, 0).setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
-                .setInsets(2, 5, 2, 5));
-        return panel;
     }
 
     public void initPreferTable(List<StopModel> stops, List<RouteModel> routes) {
@@ -76,7 +75,7 @@ public class PreferPanel extends JPanel {
     }
 
     public void addRoute(RouteModel route) {
-        tableRoute.addRow(new Object[] { route.getLongName(), route.getId() });
+        tableRoute.addRow(new Object[] { route.getShortName(), route.getId() });
     }
 
     public void removeRoute(RouteModel route) {

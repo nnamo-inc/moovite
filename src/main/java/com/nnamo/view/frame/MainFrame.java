@@ -193,15 +193,15 @@ public class MainFrame extends JFrame {
         this.stopPanel.setFavRouteBehaviour(behaviour);
     }
 
-    public void setStopTimeTableClickListener(TableRowClickListener listener) {
+    public void setStopTimeTableClickListener(TableRowClickBehaviour listener) {
         this.stopPanel.setTableClickListener(listener);
     }
 
-    public void setSearchStopTableClickListener(TableRowClickListener listener) {
+    public void setSearchStopTableClickListener(TableRowClickBehaviour listener) {
         leftPanel.setSearchStopTableClickListener(listener);
     }
 
-    public void setSearchRouteTableClickListener(TableRowClickListener listener) {
+    public void setSearchRouteTableClickListener(TableRowClickBehaviour listener) {
         leftPanel.setSearchRouteTableClickListener(listener);
     }
 

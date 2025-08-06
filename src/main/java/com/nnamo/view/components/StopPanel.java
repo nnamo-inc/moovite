@@ -5,7 +5,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 import com.nnamo.interfaces.FavoriteBehaviour;
-import com.nnamo.interfaces.TableRowClickListener;
+import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.TripModel;
@@ -258,9 +258,9 @@ public class StopPanel extends JPanel {
         }
     }
 
-    public void setTableClickListener(TableRowClickListener tableRowClickListener) {
-        if (tableRowClickListener != null) {
-            this.table.setTableRowClickListener(tableRowClickListener);
+    public void setTableClickListener(TableRowClickBehaviour tableRowClickBehaviour) {
+        if (tableRowClickBehaviour != null) {
+            this.table.setTableRowClickListener(tableRowClickBehaviour);
         }
     }
 }
