@@ -25,7 +25,8 @@ public class LeftPanel extends JPanel {
         {
             put(searchPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/stop_medium.png"))));
             put(preferPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/stop_medium.png"))));
-            put(onlineSwitchButton, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/stop_medium.png"))));
+            put(onlineSwitchButton,
+                    new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/stop_medium.png"))));
         }
     });
 
@@ -38,13 +39,14 @@ public class LeftPanel extends JPanel {
     }
 
     public void updateModularPanel(JPanel panel, boolean isVisible) {
-        for (Component comp : modularPanel.getComponents()) { comp.setVisible(false); }
+        for (Component comp : modularPanel.getComponents()) {
+            comp.setVisible(false);
+        }
         modularPanel.removeAll();
         if (isVisible) {
             modularPanel.add(panel, BorderLayout.CENTER);
             panel.setVisible(true);
-        }
-        else {
+        } else {
             panel.setVisible(false);
         }
         modularPanel.revalidate();
@@ -71,8 +73,6 @@ public class LeftPanel extends JPanel {
         preferPanel.removeRoute(route);
     }
 
-
-
     public SearchPanel getSearchPanel() {
         return this.searchPanel;
     }
@@ -95,6 +95,14 @@ public class LeftPanel extends JPanel {
 
     public void setSearchRouteTableClickListener(TableRowClickBehaviour listener) {
         this.searchPanel.setSearchRouteTableClickListener(listener);
+    }
+
+    public void setFavStopRowClickListener(TableRowClickBehaviour behaviour) {
+        this.preferPanel.setFavStopRowClickListener(behaviour);
+    }
+
+    public void setFavRouteRowClickListener(TableRowClickBehaviour behaviour) {
+        this.preferPanel.setFavRouteRowClickListener(behaviour);
     }
 
     public void setRealtimeSwitchListener(SwitchBarListener listener) {

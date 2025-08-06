@@ -188,17 +188,17 @@ public class MainController {
                 }
 
                 mainFrame.updateStopPanelVisibility(false);
-                mainFrame.getMapPanel().repaint();
+                mainFrame.getMapPanel().repaintView();
             }
         });
     }
 
-/*
-    private void handleTableSearch(new )
-*/
+    /*
+     * private void handleTableSearch(new )
+     */
 
     private void handleTableBehaviour() {
-        mainFrame.setSearchStopTableClickListener(new TableRowClickBehaviour() {
+        TableRowClickBehaviour stopClickBehaviour = new TableRowClickBehaviour() {
             @Override
             public void onRowClick(Object rowData) throws SQLException {
                 final int zoomLevel = 0;
@@ -214,9 +214,11 @@ public class MainController {
                     throw new RuntimeException(e);
                 }
             }
-        });
+        };
+        mainFrame.setSearchStopTableClickListener(stopClickBehaviour);
+        mainFrame.setFavStopRowClickListener(stopClickBehaviour);
 
-        mainFrame.setSearchRouteTableClickListener(new TableRowClickBehaviour() {
+        TableRowClickBehaviour routeClickBehaviour = new TableRowClickBehaviour() {
             @Override
             public void onRowClick(Object rowData) throws SQLException {
                 String routeId = (String) ((List<Object>) rowData).get(1);
@@ -239,17 +241,19 @@ public class MainController {
                 }
 
                 GeoPosition geoPosition = new GeoPosition(firstStop.getLatitude(), firstStop.getLongitude());
-                int zoomLevel = 0; // default zoom level
-                mainFrame.setMapPanelMapPosition(geoPosition, zoomLevel);
+                int zoomLevel = 5; // default zoom level
 
                 List<VehiclePosition> routePositions = realtimeService.getRoutesVehiclePositions(routeId);
 
                 // render stops and route lines on the map
                 mainFrame.getMapPanel().renderStopsRoute(stopModels);
                 mainFrame.getMapPanel().renderVehiclePositions(routePositions);
-                mainFrame.getMapPanel().repaint();
+                mainFrame.getMapPanel().repaintView();
+                mainFrame.setMapPanelMapPosition(geoPosition, zoomLevel);
             }
-        });
+        };
+        mainFrame.setSearchRouteTableClickListener(routeClickBehaviour);
+        mainFrame.setFavRouteRowClickListener(routeClickBehaviour);
 
         mainFrame.setStopTimeTableClickListener(new TableRowClickBehaviour() {
             @Override

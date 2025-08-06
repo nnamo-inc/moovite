@@ -32,7 +32,7 @@ public class MainFrame extends JFrame {
     public MainFrame() throws IOException {
         super("Moovite Map View");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        /*setExtendedState(JFrame.MAXIMIZED_BOTH);*/
+        /* setExtendedState(JFrame.MAXIMIZED_BOTH); */
         setSize(new Dimension(1000, 800));
         setLayout(new BorderLayout());
 
@@ -54,7 +54,6 @@ public class MainFrame extends JFrame {
         splitLeftMap = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, splitMapStop);
         splitLeftMap.setResizeWeight(0.0);
         splitLeftMap.setDividerSize(0);
-
 
         add(splitLeftMap, BorderLayout.CENTER);
     }
@@ -122,7 +121,7 @@ public class MainFrame extends JFrame {
     public void updateLeftPanelModularPanel(JPanel panel, boolean isVisible) {
         leftPanel.updateModularPanel(panel, isVisible);
     }
-    
+
     public void initLeftPanelPreferPanelPreferTable(List<StopModel> stops, List<RouteModel> routes) {
         leftPanel.initPreferPanelPreferTable(stops, routes);
     }
@@ -203,6 +202,14 @@ public class MainFrame extends JFrame {
 
     public void setSearchRouteTableClickListener(TableRowClickBehaviour listener) {
         leftPanel.setSearchRouteTableClickListener(listener);
+    }
+
+    public void setFavStopRowClickListener(TableRowClickBehaviour behaviour) {
+        this.leftPanel.setFavStopRowClickListener(behaviour);
+    }
+
+    public void setFavRouteRowClickListener(TableRowClickBehaviour behaviour) {
+        this.leftPanel.setFavRouteRowClickListener(behaviour);
     }
 
     public void updateStopPanelPreferButtons(boolean favorite, String stop) {
