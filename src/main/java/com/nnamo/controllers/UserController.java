@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.sql.SQLException;
 
 import com.nnamo.enums.AuthResult;
+import com.nnamo.enums.RegisterResult;
 import com.nnamo.interfaces.LoginBehaviour;
 import com.nnamo.interfaces.RegisterBehaviour;
 import com.nnamo.interfaces.SessionListener;
@@ -73,9 +74,15 @@ public class UserController {
         });
         loginFrame.setRegisterBehaviour(new RegisterBehaviour() {
             @Override
-            public void register(String username, String password) throws SQLException {
+            public RegisterResult register(String username, String password) throws SQLException {
                 String passwordHash = hasher.hash(10, 65536, 1, password.toCharArray());
+                UserModel user = db.getUserByName(username);
+                if (user != null) {
+                    return RegisterResult.USER_ALREADY_EXISTS;
+                }
+
                 db.addUser(username, passwordHash);
+                return RegisterResult.SUCCESS;
             }
         });
         loginFrame.open();

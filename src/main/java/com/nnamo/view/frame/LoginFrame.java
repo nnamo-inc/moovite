@@ -3,6 +3,7 @@ package com.nnamo.view.frame;
 import javax.swing.*;
 
 import com.nnamo.enums.AuthResult;
+import com.nnamo.enums.RegisterResult;
 import com.nnamo.interfaces.LoginBehaviour;
 import com.nnamo.interfaces.RegisterBehaviour;
 import com.nnamo.view.customcomponents.GbcCustom;
@@ -105,8 +106,15 @@ public class LoginFrame extends JFrame {
                             infoLabel.setText("Password field is empty");
                             return;
                         }
-                        registerBehavior.register(username, password);
-                        infoLabel.setText("User " + username + " created");
+                        RegisterResult registerResult = registerBehavior.register(username, password);
+                        switch (registerResult) {
+                            case SUCCESS:
+                                infoLabel.setText("User " + username + " created");
+                                break;
+                            case USER_ALREADY_EXISTS:
+                                infoLabel.setText("User " + username + " already exists");
+                                break;
+                        }
                     } catch (SQLException exception) {
                         exception.printStackTrace();
                         System.exit(1);

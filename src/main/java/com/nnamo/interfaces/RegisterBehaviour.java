@@ -2,6 +2,8 @@ package com.nnamo.interfaces;
 
 import java.sql.SQLException;
 
+import com.nnamo.enums.RegisterResult;
+
 public interface RegisterBehaviour {
-    void register(String username, String password) throws SQLException;
+    RegisterResult register(String username, String password) throws SQLException;
 }
