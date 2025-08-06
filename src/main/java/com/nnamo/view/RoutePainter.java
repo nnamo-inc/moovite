@@ -18,23 +18,18 @@ public class RoutePainter implements Painter<JXMapViewer> {
     private Color lineColor;
     private int lineWidth;
 
-    public RoutePainter(List<StopModel> stops) {
-        this.stops = stops;
+    public RoutePainter() {
         this.lineColor = Color.BLUE;
         this.lineWidth = 3;
     }
 
-    public RoutePainter(List<StopModel> stops, Color lineColor, int lineWidth) {
-        this.stops = stops;
+    public RoutePainter(Color lineColor, int lineWidth) {
         this.lineColor = lineColor;
         this.lineWidth = lineWidth;
     }
 
     @Override
     public void paint(Graphics2D g, JXMapViewer map, int width, int height) {
-        // System.out.println("RoutePainter.paint() called with " + (stops != null ?
-        // stops.size() : 0) + " stops");
-
         if (stops == null || stops.size() < 2) {
             System.out.println("Not enough stops to draw route lines");
             return;
@@ -46,9 +41,6 @@ public class RoutePainter implements Painter<JXMapViewer> {
         g.setColor(lineColor);
         g.setStroke(new BasicStroke(lineWidth));
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        // System.out.println("Drawing route lines with color: " + lineColor + ", width:
-        // " + lineWidth);
 
         // Draw lines between consecutive stops
         for (int i = 0; i < stops.size() - 1; i++) {
@@ -69,10 +61,6 @@ public class RoutePainter implements Painter<JXMapViewer> {
 
             Point2D currentPoint = map.convertGeoPositionToPoint(currentGeo);
             Point2D nextPoint = map.convertGeoPositionToPoint(nextGeo);
-
-            // System.out.println("Drawing line from (" + currentPoint.getX() + ", " +
-            // currentPoint.getY() +
-            // ") to (" + nextPoint.getX() + ", " + nextPoint.getY() + ")");
 
             // Draw line between the two points
             g.drawLine((int) currentPoint.getX(), (int) currentPoint.getY(),

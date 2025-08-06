@@ -76,6 +76,7 @@ public class MapPanel extends JPanel {
 
         // Rendering of stops and vehicle positions icons on the map
         this.stopPainter = new StopPainter(this.map);
+        this.routePainter = new RoutePainter();
         this.routeStopPainter = new StopPainter(this.map);
         this.positionPainter = new PositionPainter(this.map);
 
@@ -86,7 +87,7 @@ public class MapPanel extends JPanel {
         this.stopsPaintersList = createPaintersList(stopPainter);
         this.stopsCompoundPainter.setPainters(stopsPaintersList);
 
-        this.routePaintersList = createPaintersList(positionPainter, routeStopPainter);
+        this.routePaintersList = createPaintersList(positionPainter, routeStopPainter, routePainter);
         this.routeCompoundPainter.setPainters(routePaintersList);
 
         setLayout(new BorderLayout());
@@ -176,7 +177,7 @@ public class MapPanel extends JPanel {
             this.routePaintersList.remove(this.routePainter);
         }
 
-        this.routePainter = new RoutePainter(stops, Color.RED, 5);
+        this.routePainter.setStops(stops);
         this.routePaintersList.add(routePainter); // Adds updated route painter to the list
         this.routeCompoundPainter.setPainters(routePaintersList);
         this.currentPainter = routeCompoundPainter;
