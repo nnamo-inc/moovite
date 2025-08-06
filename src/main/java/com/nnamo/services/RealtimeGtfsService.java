@@ -23,7 +23,8 @@ import java.util.HashSet;
 import java.util.List;
 
 public class RealtimeGtfsService {
-    public static final String FEED_URL = "https://romamobilita.it/sites/default/files/rome_rtgtfs_trip_updates_feed.pb";
+    public static final String TRIP_FEED_URL = "https://romamobilita.it/sites/default/files/rome_rtgtfs_trip_updates_feed.pb";
+    public static final String POSITIONS_FEED_URL = "https://romamobilita.it/sites/default/files/rome_rtgtfs_vehicle_positions_feed.pb";
     public static final Duration POLLING_INTERVAL = Duration.ofSeconds(30);
 
     private final Thread backgroundThread;
@@ -31,23 +32,27 @@ public class RealtimeGtfsService {
     private RealtimeStatusChangeListener statusChangeListener; // Listener for when status changes automatically (and
                                                                // not by pressing button in mainframe)
 
-    private final URL feedUrl;
+    private final URL tripFeedUrl;
+    private final URL positionsFeedUrl;
     private final List<FeedUpdateListener> feedUpdateListeners = new ArrayList<>();
     private final List<FeedStopLinesListener> feedStopLinesListeners = new ArrayList<>();
-    private List<FeedEntity> entityList;
+    private List<FeedEntity> tripEntityList;
+    private List<FeedEntity> positionEntityList;
     private HashMap<String, FeedEntity> tripsMap = new HashMap<>();
-    private final HashMap<String, List<FeedEntity>> routesMap = new HashMap<>();
+    private HashMap<String, List<VehiclePosition>> routesPositionsMap = new HashMap<>();
     private HashMap<String, List<RealtimeStopUpdate>> stopsMap = new HashMap<>();
 
     public RealtimeGtfsService() throws URISyntaxException, IOException {
-        this.feedUrl = new URI(FEED_URL).toURL();
+        this.tripFeedUrl = new URI(TRIP_FEED_URL).toURL();
+        this.positionsFeedUrl = new URI(POSITIONS_FEED_URL).toURL();
 
         this.backgroundThread = new Thread(() -> {
             try {
                 while (true) {
                     try {
                         if (realtimeStatus == RealtimeStatus.ONLINE) {
-                            System.out.println("Updating feed from " + feedUrl);
+                            System.out.println("Updating trip feed from " + tripFeedUrl);
+                            System.out.println("Updating vehicle feed from " + positionsFeedUrl);
                             updateFeed();
                             System.out.println("Feed updated successfully. Waiting 30s for the next update...");
                         }
@@ -89,11 +94,11 @@ public class RealtimeGtfsService {
                 break;
             case OFFLINE:
                 System.out.println("Realtime status switched to OFFLINE");
-                if (this.entityList != null) {
-                    this.entityList = new ArrayList<>();
+                if (this.tripEntityList != null) {
+                    this.tripEntityList = new ArrayList<>();
                     this.tripsMap.clear();
                     this.stopsMap.clear();
-                    this.routesMap.clear();
+                    this.routesPositionsMap.clear();
                 }
                 break;
         }
@@ -121,7 +126,7 @@ public class RealtimeGtfsService {
 
     private void notifyFeedUpdateListeners() {
         for (FeedUpdateListener listener : feedUpdateListeners) {
-            listener.onFeedUpdated(entityList);
+            listener.onFeedUpdated(tripEntityList);
         }
     }
 
@@ -146,25 +151,28 @@ public class RealtimeGtfsService {
     public synchronized void updateFeed() throws IOException {
         // all previous entities ids hashset
         HashSet<String> previousEntityIds = new HashSet<>();
-        if (entityList != null) {
-            for (FeedEntity entity : entityList) {
+        if (tripEntityList != null) {
+            for (FeedEntity entity : tripEntityList) {
                 previousEntityIds.add(entity.getId());
             }
         }
 
-        InputStream stream = feedUrl.openStream();
-        FeedMessage feed = FeedMessage.parseFrom(stream);
-        this.entityList = feed.getEntityList();
+        InputStream tripStream = tripFeedUrl.openStream();
+        FeedMessage tripFeed = FeedMessage.parseFrom(tripStream);
+
+        InputStream positionStream = positionsFeedUrl.openStream();
+        FeedMessage positionFeed = FeedMessage.parseFrom(positionStream);
+
+        this.tripEntityList = tripFeed.getEntityList();
         this.tripsMap = new HashMap<>();
         this.stopsMap = new HashMap<>();
-        this.tripsMap = new HashMap<>();
+        this.routesPositionsMap = new HashMap<>();
 
-        for (FeedEntity entity : entityList) {
+        for (FeedEntity entity : tripEntityList) {
             TripUpdate tripUpdate = entity.getTripUpdate();
             String tripId = tripUpdate.getTrip().getTripId();
             String routeId = tripUpdate.getTrip().getRouteId();
             tripsMap.put(tripId, entity);
-            routesMap.computeIfAbsent(routeId, x -> new ArrayList<>()).add(entity);
 
             for (StopTimeUpdate stopTime : tripUpdate.getStopTimeUpdateList()) {
                 String stopId = stopTime.getStopId();
@@ -174,10 +182,19 @@ public class RealtimeGtfsService {
                 // update
                 stopsMap.computeIfAbsent(stopId, k -> new ArrayList<>()).add(stopUpdate);
             }
-
             // TODO: logic to notify listeners about new or updated or removed stop lines
         }
-        System.out.println(entityList.size() + " entities");
+        System.out.println(tripEntityList.size() + " trip entities");
+
+        this.positionEntityList = positionFeed.getEntityList();
+        for (FeedEntity entity : positionEntityList) {
+            String routeId = entity.getVehicle().getTrip().getRouteId();
+            if (routeId.isEmpty()) {
+                continue;
+            }
+            routesPositionsMap.computeIfAbsent(routeId, x -> new ArrayList<>()).add(entity.getVehicle());
+        }
+        System.out.println(positionEntityList.size() + " vehicle position entities");
 
         notifyFeedUpdateListeners();
     }
@@ -188,23 +205,22 @@ public class RealtimeGtfsService {
 
     public synchronized List<VehiclePosition> getRoutesVehiclePositions(String routeId) {
         List<VehiclePosition> routePositions = new ArrayList<>();
-        List<FeedEntity> routesFeed = this.routesMap.get(routeId);
+        List<VehiclePosition> routesFeed = this.routesPositionsMap.get(routeId);
         if (routesFeed == null) {
             System.out.println("No feed found for route " + routeId);
             return routePositions;
         }
 
-        for (FeedEntity entity : routesFeed) {
+        for (VehiclePosition vehiclePosition : routesFeed) {
             System.out.println("Found vehicle position for route " + routeId);
-            VehiclePosition position = entity.getVehicle();
-            routePositions.add(position);
+            routePositions.add(vehiclePosition);
         }
         return routePositions;
     }
 
     public synchronized List<VehiclePosition> getAllVehiclePositions() {
         ArrayList<VehiclePosition> positions = new ArrayList<>();
-        for (FeedEntity entity : entityList) {
+        for (FeedEntity entity : tripEntityList) {
             positions.add(entity.getVehicle());
         }
         return positions;
