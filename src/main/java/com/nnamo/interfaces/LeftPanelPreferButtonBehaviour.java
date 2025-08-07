@@ -4,7 +4,7 @@ import javax.swing.*;
 
 public interface LeftPanelPreferButtonBehaviour {
 
-    public void onPanelModeButtonClick(JPanel panel);
+    public void onButtonPanelClick(JPanel panel);
 
 }
 

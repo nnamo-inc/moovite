@@ -2,15 +2,23 @@ package com.nnamo.enums;
 
 public enum ColumnName {
     LINEA("Linea"),
-    CODICE("Codice"),
-    NOME("Nome"),
-    ID("ID"),
+    DIREZIONE("Direzione"),
     ORARIO("Orario"),
-    LATITUDINE("Latitudine");
+    STATO("Stato"),
+    MINUTIRIMAMENTI("Minuti Rimanenti"),
+    POSTIDISPONIBILI("Posti Disponibili"),
+    NOME("Nome"),
+    CODICE("Codice");
+
 
     String name;
 
     ColumnName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

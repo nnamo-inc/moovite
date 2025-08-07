@@ -2,7 +2,6 @@ package com.nnamo.view.customcomponents;
 
 import com.nnamo.interfaces.LeftPanelGenericButtonBehaviour;
 import com.nnamo.interfaces.LeftPanelPreferButtonBehaviour;
-import com.nnamo.view.components.PreferPanel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -23,7 +22,7 @@ public class LeftPanelButton extends JButton {
             public void actionPerformed(ActionEvent e) {
                 leftPanelGenericButtonBehaviour.onPanelModeButtonClick(panel);
                 if (leftPanelPreferButtonBehaviour != null) {
-                    leftPanelPreferButtonBehaviour.onPanelModeButtonClick(panel);
+                    leftPanelPreferButtonBehaviour.onButtonPanelClick(panel);
                 }
             }
         });

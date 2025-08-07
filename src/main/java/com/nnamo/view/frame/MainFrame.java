@@ -90,10 +90,13 @@ public class MainFrame extends JFrame {
 
     public void updatePreferRouteButton(Boolean isFavorite, String routeNumber) {
         this.stopPanel.updatePreferRouteButton(isFavorite, routeNumber);
-        this.leftPanel.getPreferPanel().getRemoveRouteButton().setFavorite(isFavorite);
-        this.leftPanel.getPreferPanel().getRemoveRouteButton().setItemId(routeNumber);
-        this.leftPanel.getPreferPanel().getRemoveRouteButton().setEnabled(true);
+        this.leftPanel.updatePreferRouteButton(isFavorite, routeNumber);
     }
+
+    public void updatePreferStopButton(Boolean isFavorite, String routeId) {
+        this.leftPanel.updatePreferStopButton(isFavorite, routeId);
+        this.stopPanel.updatePreferStopButton(isFavorite, routeId);
+    };
 
     public void updateStopPanelVisibility(boolean visible) {
         JSplitPane jsp = splitMapStop;
@@ -174,9 +177,10 @@ public class MainFrame extends JFrame {
     // SETTERS FOR BEHAVIOURS //
     public void setFavStopBehaviour(FavoriteBehaviour behaviour) {
         this.stopPanel.setFavStopBehaviour(behaviour);
+        this.leftPanel.setFavStopBehaviour(behaviour);
     }
 
-    public void setFavLineBehaviour(FavoriteBehaviour behaviour) {
+    public void setFavRouteBehaviour(FavoriteBehaviour behaviour) {
         this.stopPanel.setFavRouteBehaviour(behaviour);
     }
 
@@ -200,8 +204,8 @@ public class MainFrame extends JFrame {
         leftPanel.setSearchStopRowClickBehaviour(listener);
     }
 
-    public void setRouteStopRowClickBehaviour(TableRowClickBehaviour listener) {
-        leftPanel.setRouteStopRowClickBehaviour(listener);
+    public void setSearchRouteRowClickBehaviour(TableRowClickBehaviour listener) {
+        leftPanel.setSearchRouteRowClickBehaviour(listener);
     }
 
     public void setFavStopRowClickBehaviour(TableRowClickBehaviour behaviour) {

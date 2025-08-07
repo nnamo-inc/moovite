@@ -8,10 +8,7 @@ import java.util.Objects;
 
 import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.enums.UpdateMode;
-import com.nnamo.interfaces.LeftPanelGenericButtonBehaviour;
-import com.nnamo.interfaces.LeftPanelPreferButtonBehaviour;
-import com.nnamo.interfaces.SwitchBarListener;
-import com.nnamo.interfaces.TableRowClickBehaviour;
+import com.nnamo.interfaces.*;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
 import com.nnamo.view.customcomponents.SwitchBar;
@@ -35,6 +32,7 @@ public class LeftPanel extends JPanel {
         }
     });
 
+    // CONSTRUCTOR //
     public LeftPanel() {
         setLayout(new BorderLayout());
 
@@ -43,6 +41,7 @@ public class LeftPanel extends JPanel {
 
     }
 
+    // METHODS //
     public void updateModularPanel(JPanel panel, boolean isVisible) {
         for (Component comp : modularPanel.getComponents()) {
             comp.setVisible(false);
@@ -58,10 +57,6 @@ public class LeftPanel extends JPanel {
         modularPanel.repaint();
     }
 
-    public void initPreferPanelPreferTable(List<StopModel> stops, List<RouteModel> routes) {
-        preferPanel.initPreferTable(stops, routes);
-    }
-
     public void updateFavStopTable(StopModel stop, UpdateMode updateMode) {
         preferPanel.updateFavStopTable(stop, updateMode);
     }
@@ -70,6 +65,19 @@ public class LeftPanel extends JPanel {
         preferPanel.updateFavRouteTable(route, updateMode);
     }
 
+    public void updatePreferRouteButton(Boolean isFavorite, String routeNumber) {
+        this.preferPanel.updatePreferRouteButton(isFavorite, routeNumber);
+    }
+
+    public void updatePreferStopButton(Boolean isFavorite, String routeId) {
+        this.preferPanel.updatePreferStopButton(isFavorite, routeId);
+    }
+
+    public void initPreferPanelPreferTable(List<StopModel> stops, List<RouteModel> routes) {
+        preferPanel.initPreferTable(stops, routes);
+    }
+
+    // GETTERS AND SETTERS //
     public SearchPanel getSearchPanel() {
         return this.searchPanel;
     }
@@ -78,6 +86,16 @@ public class LeftPanel extends JPanel {
         return this.buttonPanel;
     }
 
+    public PreferPanel getPreferPanel() {
+        return preferPanel;
+    }
+
+    public void setRealtimeStatus(RealtimeStatus status) {
+        this.onlineSwitchButton.setStatus(status);
+        System.out.println(this.onlineSwitchButton);
+    }
+
+    // SETTERS FOR LISTENERS //
     public void setButtonPanelGenericButtonBehaviour(LeftPanelGenericButtonBehaviour listener) {
         this.buttonPanel.setGenericButtonBehaviour(listener);
     }
@@ -90,8 +108,8 @@ public class LeftPanel extends JPanel {
         this.searchPanel.setSearchStopRowClickBehaviour(listener);
     }
 
-    public void setRouteStopRowClickBehaviour(TableRowClickBehaviour listener) {
-        this.searchPanel.setRouteStopRowClickBehaviour(listener);
+    public void setSearchRouteRowClickBehaviour(TableRowClickBehaviour listener) {
+        this.searchPanel.setSearchRouteRowClickBehaviour(listener);
     }
 
     public void setFavStopRowClickBehaviour(TableRowClickBehaviour behaviour) {
@@ -106,12 +124,7 @@ public class LeftPanel extends JPanel {
         this.onlineSwitchButton.addSwitchListener(listener);
     }
 
-    public void setRealtimeStatus(RealtimeStatus status) {
-        this.onlineSwitchButton.setStatus(status);
-        System.out.println(this.onlineSwitchButton);
-    }
-
-    public PreferPanel getPreferPanel() {
-        return preferPanel;
+    public void setFavStopBehaviour(FavoriteBehaviour behaviour) {
+        this.preferPanel.setFavStopBehaviour(behaviour);
     }
 }

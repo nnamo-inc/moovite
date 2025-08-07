@@ -1,6 +1,9 @@
 package com.nnamo.view.components;
 
+import com.nnamo.enums.ButtonMode;
+import com.nnamo.enums.ColumnName;
 import com.nnamo.enums.UpdateMode;
+import com.nnamo.interfaces.FavoriteBehaviour;
 import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
@@ -14,15 +17,17 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.util.List;
 
+import static com.nnamo.enums.ColumnName.*;
+
 public class PreferPanel extends JPanel {
 
     JPanel stopContainer = new JPanel(new GridBagLayout());
-    CustomTable stopTable = new CustomTable(new String[] { "Nome", "Codice" }, true);
-    CustomPreferButton removeStopButton = new CustomPreferButton("Fermata");
+    CustomTable stopTable = new CustomTable(new ColumnName[] { NOME, CODICE }, CODICE);
+    CustomPreferButton removeStopButton = new CustomPreferButton("Fermata", ButtonMode.REMOVE);
 
     JPanel routeContainer = new JPanel(new GridBagLayout());
-    CustomTable routeTable = new CustomTable(new String[] { "Linea", "Codice" }, true);
-    CustomPreferButton removeRouteButton = new CustomPreferButton("Linea");
+    CustomTable routeTable = new CustomTable(new ColumnName[] { LINEA, CODICE }, CODICE);
+    CustomPreferButton removeRouteButton = new CustomPreferButton("Linea", ButtonMode.REMOVE);
 
     // CONSTRUCTOR //
     public PreferPanel() {
@@ -34,10 +39,10 @@ public class PreferPanel extends JPanel {
         TitledBorder tableStopBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Fermate");
         stopContainer.setBorder(
                 BorderFactory.createCompoundBorder(tableStopBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
-        stopTable.setSearchColumns(0, 1);
+        stopTable.setSearchColumns(NOME, CODICE);
         stopContainer.add(stopTable, new GbcCustom().setPosition(0, 1).setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
-        routeTable.setSearchColumns(0, 1);
+        routeTable.setSearchColumns(LINEA, CODICE);
         stopContainer.add(removeStopButton, new GbcCustom().setPosition(0, 2).setFill(GridBagConstraints.HORIZONTAL)
                 .setWeight(1.0, 0.1).setInsets(2, 5, 2, 5));
         add(stopContainer, new GbcCustom().setPosition(0, 0).setFill(GridBagConstraints.BOTH)
@@ -66,6 +71,10 @@ public class PreferPanel extends JPanel {
 
     public CustomPreferButton getRemoveRouteButton() {
         return removeRouteButton;
+    }
+
+    public CustomPreferButton getRemoveStopButton() {
+        return removeStopButton;
     }
 
 
@@ -97,12 +106,24 @@ public class PreferPanel extends JPanel {
             }
     }
 
+    public void updatePreferStopButton(Boolean isFavorite, String stopId) {
+        removeStopButton.setItemId(stopId);
+    }
+
+    public void updatePreferRouteButton(Boolean isFavorite, String routeNumber) {
+        removeRouteButton.setItemId(routeNumber);
+    }
+
     public void setFavStopRowClickBehaviour(TableRowClickBehaviour behaviour) {
         this.stopTable.setRowClickBehaviour(behaviour);
     }
 
     public void setFavRouteRowClickBehaviour(TableRowClickBehaviour behaviour) {
         this.routeTable.setRowClickBehaviour(behaviour);
+    }
+
+    public void setFavStopBehaviour(FavoriteBehaviour behaviour) {
+        this.removeStopButton.setFavBehaviour(behaviour);
     }
 
 }

@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import com.nnamo.enums.ButtonMode;
 import com.nnamo.enums.ColumnName;
 import com.nnamo.interfaces.FavoriteBehaviour;
 import com.nnamo.interfaces.TableRowClickBehaviour;
@@ -34,8 +35,8 @@ public class StopPanel extends JPanel {
     // Route info components
     private CustomTable table;
     // Prefer components
-    private final CustomPreferButton favoriteStopButton = new CustomPreferButton("Fermata");
-    private final CustomPreferButton favoriteRouteButton = new CustomPreferButton("Linea");
+    private final CustomPreferButton favoriteStopButton = new CustomPreferButton("Fermata", ButtonMode.BOTH);
+    private final CustomPreferButton favoriteRouteButton = new CustomPreferButton("Linea", ButtonMode.BOTH);
 
     // CONSTRUCTOR //
     public StopPanel() {
@@ -125,10 +126,8 @@ public class StopPanel extends JPanel {
 
     private JPanel newRouteInfoPanel() {
         JPanel mainPanel = new JPanel(new GridBagLayout());
-        this.table = new CustomTable(
-                new String[] {"Linea", "Direzione", "Orario", "Stato", "Minuti rimanenti", "Posti disponibili" },
-                true);
-        table.setSearchColumns(0, 1, 2);
+        this.table = new CustomTable( new ColumnName[]{LINEA, DIREZIONE, ORARIO, STATO, MINUTIRIMAMENTI, POSTIDISPONIBILI}, LINEA);
+        table.setSearchColumns(LINEA, DIREZIONE, ORARIO);
         // Table
         mainPanel.add(table, new GbcCustom().setPosition(0, 1).setAnchor(GridBagConstraints.CENTER)
                 .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
@@ -221,6 +220,12 @@ public class StopPanel extends JPanel {
         favoriteStopButton.setItemId(idFermata.getTextField());
         updateFavRouteText(
                 "<html></p><p>Clicca su una riga</p><p>della tabella per</p><p>attivare il bottone</p></html>");
+    }
+
+    public void updatePreferStopButton(boolean isFavorite, String stopId) {
+        favoriteStopButton.setFavorite(isFavorite);
+        favoriteStopButton.setItemId(stopId);
+        favoriteStopButton.setEnabled(true);
     }
 
     public void updatePreferRouteButton(boolean isFavorite, String routeId) {

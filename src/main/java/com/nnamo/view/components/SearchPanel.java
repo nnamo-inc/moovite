@@ -1,5 +1,6 @@
 package com.nnamo.view.components;
 
+import com.nnamo.enums.ColumnName;
 import com.nnamo.interfaces.SearchBarListener;
 import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.models.RouteModel;
@@ -13,11 +14,13 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.util.List;
 
+import static com.nnamo.enums.ColumnName.*;
+
 public class SearchPanel extends JPanel {
 
     SearchBar searchBar = new SearchBar();
-    CustomTable tableStop = new CustomTable(new String[] { "Nome", "Codice" }, false);
-    CustomTable tableRoute = new CustomTable(new String[] { "Linea", "Codice" }, false);
+    CustomTable tableStop = new CustomTable(new ColumnName[]{ NOME, CODICE }, CODICE);
+    CustomTable tableRoute = new CustomTable(new ColumnName[]{ LINEA, CODICE }, CODICE);
 
     // CONSTRUCTOR //
     public SearchPanel() {
@@ -25,22 +28,24 @@ public class SearchPanel extends JPanel {
         setLayout(new GridBagLayout());
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        add(searchBar,
-                new GbcCustom().setPosition(0, 0).setFill(GridBagConstraints.HORIZONTAL).setInsets(5, 5, 5, 5));
-        // Add the tables to the panel
+        // search bar
+        add(searchBar, new GbcCustom().setPosition(0, 0).setFill(GridBagConstraints.HORIZONTAL).setInsets(5, 5, 5, 5));
+
+        // border for table stop and table stop
         TitledBorder tableStopBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Fermate");
-        tableStop.setBorder(BorderFactory.createCompoundBorder(
-                tableStopBorder,
-                BorderFactory.createEmptyBorder(2, 5, 2, 5)));
+        tableStop.setBorder(BorderFactory.createCompoundBorder(tableStopBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
+
+        tableStop.setIsSearchable(false);
         add(tableStop, new GbcCustom().setPosition(0, 1).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
                 .setInsets(2, 5, 2, 5));
+
+        // border for table route and table route
         TitledBorder tableRouteBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Linee");
-        tableRoute.setBorder(BorderFactory.createCompoundBorder(
-                tableRouteBorder,
-                BorderFactory.createEmptyBorder(2, 5, 2, 5)));
+        tableRoute.setBorder(BorderFactory.createCompoundBorder(tableRouteBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
+
+        tableRoute.setIsSearchable(false);
         add(tableRoute, new GbcCustom().setPosition(0, 2).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
                 .setInsets(2, 5, 2, 5));
-        setPreferredSize(new Dimension(300, 600)); // Scegli la dimensione che preferisci
         setVisible(false);
     }
 
@@ -67,7 +72,7 @@ public class SearchPanel extends JPanel {
         tableStop.setRowClickBehaviour(listener);
     }
 
-    public void setRouteStopRowClickBehaviour(TableRowClickBehaviour listener) {
+    public void setSearchRouteRowClickBehaviour(TableRowClickBehaviour listener) {
         tableRoute.setRowClickBehaviour(listener);
     }
 }

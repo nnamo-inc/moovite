@@ -87,9 +87,7 @@ public class MainController {
         mainFrame.setLocalMapCache(cacheDir);
     }
 
-    private void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes,
-                                 List<RealtimeStopUpdate> realtimeUpdates)
-            throws SQLException, IOException {
+    private void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes, List<RealtimeStopUpdate> realtimeUpdates) throws SQLException, IOException {
         mainFrame.updateStopPanelInfo(stop.getId(), stop.getName());
         mainFrame.updateStopPanelTimes(stopTimes, realtimeUpdates);
         mainFrame.updateStopPanelFavButtons(db.isFavoriteStop(sessionUser.getId(), stop.getId()), stop.getId());
@@ -169,6 +167,7 @@ public class MainController {
             }
         };
         mainFrame.setFavStopBehaviour(favStopBehaviour);
+        mainFrame.getLeftPanel().getPreferPanel().getRemoveStopButton().setFavBehaviour(favStopBehaviour);
 
         FavoriteBehaviour favRouteBehaviour = new FavoriteBehaviour() {
             @Override
@@ -194,7 +193,8 @@ public class MainController {
                 }
             }
         };
-        mainFrame.setFavLineBehaviour(favRouteBehaviour);
+        mainFrame.setFavRouteBehaviour(favRouteBehaviour);
+        mainFrame.getLeftPanel().getPreferPanel().getRemoveRouteButton().setFavBehaviour(favRouteBehaviour);
     }
 
     private void handleStopClick() {
@@ -255,9 +255,9 @@ public class MainController {
     private void handleTableBehaviour() {
         TableRowClickBehaviour stopClickBehaviour = new TableRowClickBehaviour() {
             @Override
-            public void onRowClick(Object rowData) throws SQLException {
+            public void onRowClick(Object rowData, int columnIndex) throws SQLException {
                 final int zoomLevel = 0;
-                String stopId = (String) ((List<Object>) rowData).get(1);
+                String stopId = (String) ((List<Object>) rowData).get(columnIndex);
                 StopModel stop = db.getStopById(stopId);
                 GeoPosition geoPosition = new GeoPosition(stop.getLatitude(), stop.getLongitude());
                 mainFrame.setMapPanelMapPosition(geoPosition, zoomLevel);
@@ -265,18 +265,26 @@ public class MainController {
                 try {
                     updateStopPanel(stop, db.getNextStopTimes(stopId, getCurrentTime(), getCurrentDate()),
                             realtimeUpdates);
+                    boolean isFavorite = db.isFavoriteStop(sessionUser.getId(), stopId);
+                    mainFrame.updateStopPanelFavButtons(isFavorite, stopId);
+                    mainFrame.updatePreferStopButton(isFavorite, stopId);
+
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
-        };
+        }; // QUESTA OK, NON LA TOCCARE
         mainFrame.setSearchStopRowClickBehaviour(stopClickBehaviour);
         mainFrame.setFavStopRowClickBehaviour(stopClickBehaviour);
 
         TableRowClickBehaviour routeClickBehaviour = new TableRowClickBehaviour() {
             @Override
-            public void onRowClick(Object rowData) throws SQLException {
-                String routeId = (String) ((List<Object>) rowData).get(1);
+            public void onRowClick(Object rowData ,int columnIndex) throws SQLException {
+                String routeId = (String) ((List<Object>) rowData).get(columnIndex);
+
+                boolean isFavorite = db.isFavouriteRoute(sessionUser.getId(), routeId);
+                mainFrame.updatePreferRouteButton(isFavorite, routeId);
+
                 System.out.println("Route clicked: " + routeId);
 
                 // get model from the db
@@ -287,7 +295,7 @@ public class MainController {
                 }
 
                 // get the first stop to center the map
-                StopModel firstStop = stopModels.get(0);
+                StopModel firstStop = stopModels.get(columnIndex);
 
                 // debug the positions
                 for (StopModel stop : stopModels) {
@@ -308,20 +316,18 @@ public class MainController {
                 mainFrame.setMapPanelMapPosition(geoPosition, zoomLevel);
             }
         };
-        mainFrame.setRouteStopRowClickBehaviour(routeClickBehaviour);
+        mainFrame.setSearchRouteRowClickBehaviour(routeClickBehaviour);
         mainFrame.setFavRouteRowClickBehaviour(routeClickBehaviour);
+        mainFrame.setStopTimeRowClickBehaviour(routeClickBehaviour);
 
-        TableRowClickBehaviour TableRouteRowClickBehaviour = new TableRowClickBehaviour() {
-            @Override
-            public void onRowClick(Object rowData) throws SQLException {
-                String routeNumber = (String) ((List<Object>) rowData).get(0);
-                boolean isFavorite = db.isFavouriteRoute(sessionUser.getId(), routeNumber);
-                mainFrame.updatePreferRouteButton(isFavorite, routeNumber);
-            }};
-        mainFrame.setStopTimeRowClickBehaviour(TableRouteRowClickBehaviour);
-
-        mainFrame.getLeftPanel().getPreferPanel().getRouteTable().setRowClickBehaviour(TableRouteRowClickBehaviour);
-
+//        TableRowClickBehaviour TableRouteRowClickBehaviour = new TableRowClickBehaviour() {
+//            @Override
+//            public void onRowClick(Object rowData,  int columnIndex) throws SQLException {
+//                System.out.println("Route clicked from stop time table: " + rowData);
+//                String routeNumber = (String) ((List<Object>) rowData).get(columnIndex);
+//                boolean isFavorite = db.isFavouriteRoute(sessionUser.getId(), routeNumber);
+//                mainFrame.updatePreferRouteButton(isFavorite, routeNumber);
+//            }};
 
     }
 
@@ -346,7 +352,7 @@ public class MainController {
             private boolean loaded = false;
 
             @Override
-            public void onPanelModeButtonClick(JPanel panel) {
+            public void onButtonPanelClick(JPanel panel) {
                 try {
                     if (!loaded) {
                         mainFrame.initLeftPanelPreferPanelPreferTable(db.getFavoriteStops(sessionUser.getId()),
