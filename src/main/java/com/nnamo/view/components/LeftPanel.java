@@ -2,12 +2,12 @@ package com.nnamo.view.components;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 
 import com.nnamo.enums.RealtimeStatus;
+import com.nnamo.enums.UpdateMode;
 import com.nnamo.interfaces.LeftPanelGenericButtonBehaviour;
 import com.nnamo.interfaces.LeftPanelPreferButtonBehaviour;
 import com.nnamo.interfaces.SwitchBarListener;
@@ -62,20 +62,12 @@ public class LeftPanel extends JPanel {
         preferPanel.initPreferTable(stops, routes);
     }
 
-    public void addPreferPanelStopTable(StopModel stop) {
-        preferPanel.addStop(stop);
+    public void updateFavStopTable(StopModel stop, UpdateMode updateMode) {
+        preferPanel.updateFavStopTable(stop, updateMode);
     }
 
-    public void removePreferPanelStopTable(StopModel route) {
-        preferPanel.removeStop(route);
-    }
-
-    public void addPreferPanelRouteTable(RouteModel route) {
-        preferPanel.addRoute(route);
-    }
-
-    public void removePreferPanelRouteTable(RouteModel route) {
-        preferPanel.removeRoute(route);
+    public void updateFavRouteTable(RouteModel route, UpdateMode updateMode) {
+        preferPanel.updateFavRouteTable(route, updateMode);
     }
 
     public SearchPanel getSearchPanel() {
@@ -94,20 +86,20 @@ public class LeftPanel extends JPanel {
         this.buttonPanel.setPreferButtonBehaviour(listener);
     }
 
-    public void setSearchStopTableClickListener(TableRowClickBehaviour listener) {
-        this.searchPanel.setSearchStopTableClickListener(listener);
+    public void setSearchStopRowClickBehaviour(TableRowClickBehaviour listener) {
+        this.searchPanel.setSearchStopRowClickBehaviour(listener);
     }
 
-    public void setSearchRouteTableClickListener(TableRowClickBehaviour listener) {
-        this.searchPanel.setSearchRouteTableClickListener(listener);
+    public void setRouteStopRowClickBehaviour(TableRowClickBehaviour listener) {
+        this.searchPanel.setRouteStopRowClickBehaviour(listener);
     }
 
-    public void setFavStopRowClickListener(TableRowClickBehaviour behaviour) {
-        this.preferPanel.setFavStopRowClickListener(behaviour);
+    public void setFavStopRowClickBehaviour(TableRowClickBehaviour behaviour) {
+        this.preferPanel.setFavStopRowClickBehaviour(behaviour);
     }
 
-    public void setFavRouteRowClickListener(TableRowClickBehaviour behaviour) {
-        this.preferPanel.setFavRouteRowClickListener(behaviour);
+    public void setFavRouteRowClickBehaviour(TableRowClickBehaviour behaviour) {
+        this.preferPanel.setFavRouteRowClickBehaviour(behaviour);
     }
 
     public void setRealtimeSwitchListener(SwitchBarListener listener) {

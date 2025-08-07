@@ -11,17 +11,17 @@ import java.util.ArrayList;
 
 public class SwitchBar extends JPanel {
 
-    private final JLabel switchLabel;
-    private final JButton switchButton = new JButton("Toggle");
+    private final JLabel label;
+    private final JButton button = new JButton("Toggle");
     private final ArrayList<SwitchBarListener> listeners = new ArrayList<>();
 
     private RealtimeStatus status;
 
-    // CONSTRUCTOR //
+    // CONSTRUCTORS //
     public SwitchBar() {
         super();
         this.status = RealtimeStatus.OFFLINE;
-        this.switchLabel = new JLabel("Status: offline");
+        this.label = new JLabel("Status: offline");
         handleLayout();
         handleActionListeners();
     }
@@ -31,44 +31,24 @@ public class SwitchBar extends JPanel {
         setStatus(initialStatus);
     }
 
+    // METHODS //
     private void handleLayout() {
         setLayout(new GridBagLayout());
-        add(switchLabel, new GbcCustom().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER).setWeight(1.0, 1.0)
+        add(label, new GbcCustom().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER).setWeight(1.0, 1.0)
                 .setInsets(2, 5, 2, 5));
-        switchButton.setMinimumSize(new Dimension(50, Integer.MAX_VALUE));
-        add(switchButton, new GbcCustom().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL).setWeight(1.0, 1.0)
+        button.setMinimumSize(new Dimension(50, Integer.MAX_VALUE));
+        add(button, new GbcCustom().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL).setWeight(1.0, 1.0)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
         setVisible(false);
     }
 
     private void handleActionListeners() {
-        switchButton.addActionListener(new ActionListener() {
+        button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 toggleStatus();
             }
         });
-    }
-
-    private void notifyListeners(RealtimeStatus status) {
-        for (SwitchBarListener listener : listeners) {
-            listener.onSwitch(status);
-        }
-    }
-
-    public void setStatus(RealtimeStatus status) {
-        this.status = status;
-
-        String initialText = "Status: ";
-        switch (status) {
-            case OFFLINE:
-                this.switchLabel.setText(initialText + "offline");
-                break;
-            case ONLINE:
-                this.switchLabel.setText(initialText + "online");
-                break;
-        }
-        notifyListeners(status);
     }
 
     public void toggleStatus() {
@@ -77,7 +57,28 @@ public class SwitchBar extends JPanel {
                 : RealtimeStatus.ONLINE);
     }
 
-    // METHODS //
+    public void setStatus(RealtimeStatus status) {
+        this.status = status;
+
+        String initialText = "Status: ";
+        switch (status) {
+            case OFFLINE:
+                this.label.setText(initialText + "offline");
+                break;
+            case ONLINE:
+                this.label.setText(initialText + "online");
+                break;
+        }
+        notifyListeners(status);
+    }
+
+    // LISTENER HANDLE //
+    private void notifyListeners(RealtimeStatus status) {
+        for (SwitchBarListener listener : listeners) {
+            listener.onSwitch(status);
+        }
+    }
+
     public void addSwitchListener(SwitchBarListener listener) {
         listeners.add(listener);
     }

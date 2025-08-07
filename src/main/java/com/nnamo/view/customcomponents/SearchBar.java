@@ -11,43 +11,37 @@ import java.util.ArrayList;
 
 public class SearchBar extends JPanel {
 
-    private final JTextField searchField = new JTextField(20);
-    private final JLabel searchLabel = new JLabel("Search:");
-    private final JButton searchButton = new JButton("X");
+    private final JTextField field = new JTextField(20);
+    private final JLabel label = new JLabel("Search:");
+    private final JButton button = new JButton("X");
     private final ArrayList<SearchBarListener> listeners = new ArrayList<>();
 
     // CONSTRUCTOR //
     public SearchBar() {
         super();
         setLayout(new GridBagLayout());
-        add(searchLabel, new GbcCustom().setPosition(0, 0).setAnchor(GridBagConstraints.WEST).setWeight(0, 1.0).setInsets(5, 5, 5, 5));
-        add(searchField, new GbcCustom().setPosition(1, 0).setFill(GridBagConstraints.HORIZONTAL).setWeight(1.0, 0.0).setWeight(1.0, 1.0).setInsets(5, 5, 5, 5));
-        searchButton.setBackground(CustomColor.RED);
-        add(searchButton, new GbcCustom().setPosition(2, 0).setAnchor(GridBagConstraints.EAST).setWeight(0, 0.0).setInsets(5, 5, 5, 5));
+        add(label, new GbcCustom().setPosition(0, 0).setAnchor(GridBagConstraints.WEST).setWeight(0, 1.0).setInsets(5, 5, 5, 5));
+        add(field, new GbcCustom().setPosition(1, 0).setFill(GridBagConstraints.HORIZONTAL).setWeight(1.0, 0.0).setWeight(1.0, 1.0).setInsets(5, 5, 5, 5));
+        button.setBackground(CustomColor.RED);
+        add(button, new GbcCustom().setPosition(2, 0).setAnchor(GridBagConstraints.EAST).setWeight(0, 0.0).setInsets(5, 5, 5, 5));
 
-        searchField.addActionListener(new ActionListener() {
+        field.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                notifyListeners(searchField.getText());
+                notifyListeners(field.getText());
             }
         });
 
-        searchButton.addActionListener(new ActionListener() {
+        button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                searchField.setText("");
+                field.setText("");
                 notifyListeners("");
             }
         });
     }
 
-    private void notifyListeners(String searchText) {
-        for (SearchBarListener listener : listeners) {
-            listener.onSearch(searchText);
-        }
-    }
-
-    // METHODS //
+    // LISTENER HANDLE //
     public void addSearchListener(SearchBarListener listener) {
         listeners.add(listener);
     }
@@ -56,20 +50,26 @@ public class SearchBar extends JPanel {
         listeners.remove(listener);
     }
 
+    private void notifyListeners(String searchText) {
+        for (SearchBarListener listener : listeners) {
+            listener.onSearch(searchText);
+        }
+    }
+
     // GETTERS AND SETTERS //
-    public JTextField getSearchField() {
-        return searchField;
+    public void setField(String field) {
+        this.field.setText(field);
     }
 
-    public String getText() {
-        return searchField.getText();
+    public JTextField getField() {
+        return field;
     }
 
-    public void setText(String text) {
-        searchField.setText(text);
+    public String getFieldText() {
+        return field.getText();
     }
 
-    public JButton getSearchButton() {
-        return searchButton;
+    public JButton getButton() {
+        return button;
     }
 }

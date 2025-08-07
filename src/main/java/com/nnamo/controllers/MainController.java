@@ -3,6 +3,7 @@ package com.nnamo.controllers;
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.nnamo.enums.RealtimeStatus;
+import com.nnamo.enums.UpdateMode;
 import com.nnamo.interfaces.*;
 import com.nnamo.models.*;
 import com.nnamo.view.frame.MainFrame;
@@ -31,6 +32,8 @@ public class MainController {
     UserController userController;
     UserModel sessionUser;
 
+
+    // CONSTRUCTORS //
     public MainController(DatabaseService db, RealtimeGtfsService realtimeService) throws IOException {
         this.db = db;
         this.userController = new UserController(db);
@@ -38,6 +41,7 @@ public class MainController {
         this.mainFrame = new MainFrame();
     }
 
+    // METHODS //
     public void run() throws InterruptedException, SQLException, IOException {
 
         mainFrame.renderStops(db.getAllStops());
@@ -71,6 +75,28 @@ public class MainController {
         this.searchQueryListener("");
     }
 
+    public Date getCurrentDate() {
+        return new Date();
+    }
+
+    public LocalTime getCurrentTime() {
+        return LocalTime.now();
+    }
+
+    public void setLocalMapCache(File cacheDir) {
+        mainFrame.setLocalMapCache(cacheDir);
+    }
+
+    private void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes,
+                                 List<RealtimeStopUpdate> realtimeUpdates)
+            throws SQLException, IOException {
+        mainFrame.updateStopPanelInfo(stop.getId(), stop.getName());
+        mainFrame.updateStopPanelTimes(stopTimes, realtimeUpdates);
+        mainFrame.updateStopPanelFavButtons(db.isFavoriteStop(sessionUser.getId(), stop.getId()), stop.getId());
+        mainFrame.updateStopPanelVisibility(true);
+    }
+
+    // LISTENER HANDLE //
     private void handleRealtimeListeners() {
         // Listener for when Realtime Service changes status
         realtimeService.setRealtimeChangeListener(new RealtimeStatusChangeListener() {
@@ -118,13 +144,12 @@ public class MainController {
     }
 
     private void handleFavouriteButtonClicks() {
-        mainFrame.setFavStopBehaviour(new FavoriteBehaviour() {
-
+        FavoriteBehaviour favStopBehaviour = new FavoriteBehaviour() {
             @Override
             public void addFavorite(String stopId) {
                 try {
-                    db.addFavoriteStop(sessionUser.getId(), stopId);
-                    mainFrame.addLeftPanelPreferPanelStopTable(db.getStopById(stopId));
+                    db.addFavStop(sessionUser.getId(), stopId);
+                    mainFrame.updateFavStopTable(db.getStopById(stopId), UpdateMode.ADD);
                     System.out.println(db.getFavoriteStops(sessionUser.getId()).stream().count());
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -135,21 +160,22 @@ public class MainController {
             @Override
             public void removeFavorite(String stopId) {
                 try {
-                    db.removeFavoriteStop(sessionUser.getId(), stopId);
-                    mainFrame.removeLeftPanelPreferPanelStopTable(db.getStopById(stopId));
+                    db.removeFavStop(sessionUser.getId(), stopId);
+                    mainFrame.updateFavStopTable(db.getStopById(stopId), UpdateMode.REMOVE);
                     System.out.println(db.getFavoriteStops(sessionUser.getId()).stream().count());
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
             }
-        });
+        };
+        mainFrame.setFavStopBehaviour(favStopBehaviour);
 
-        mainFrame.setFavLineBehaviour(new FavoriteBehaviour() {
+        FavoriteBehaviour favRouteBehaviour = new FavoriteBehaviour() {
             @Override
-            public void addFavorite(String string) {
+            public void addFavorite(String routeId) {
                 try {
-                    db.addFavoriteRoute(sessionUser.getId(), string);
-                    mainFrame.addLeftPanelPreferPanelRouteTable(db.getRouteById(string));
+                    db.addFavRoute(sessionUser.getId(), routeId);
+                    mainFrame.updateFavRouteTable(db.getRouteById(routeId), UpdateMode.ADD);
                     System.out.println(db.getFavoriteRoutes(sessionUser.getId()).stream().count());
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -158,20 +184,21 @@ public class MainController {
             }
 
             @Override
-            public void removeFavorite(String string) {
+            public void removeFavorite(String routeId) {
                 try {
-                    db.removeFavoriteRoute(sessionUser.getId(), string);
-                    mainFrame.removeLeftPanelPreferPanelRouteTable(db.getRouteById(string));
+                    db.removeFavRoute(sessionUser.getId(), routeId);
+                    mainFrame.updateFavRouteTable(db.getRouteById(routeId), UpdateMode.REMOVE);
                     System.out.println(db.getFavoriteRoutes(sessionUser.getId()).stream().count());
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
             }
-        });
+        };
+        mainFrame.setFavLineBehaviour(favRouteBehaviour);
     }
 
     private void handleStopClick() {
-        mainFrame.getMapPanel().setWaypointListener(new WaypointListener() {
+        WaypointBehaviour clickWaypointBehaviour = new WaypointBehaviour() {
             @Override
             public void onWaypointClick(GeoPosition geo, boolean b) throws SQLException, IOException {
                 // Convert the GeoPosition of the click to pixel coordinates
@@ -222,12 +249,8 @@ public class MainController {
                     mainFrame.updateStopPanelVisibility(false);
                 }
             }
-        });
-    }
-
-    /*
-     * private void handleTableSearch(new )
-     */
+        };
+        mainFrame.setClickWaypointBehaviour(clickWaypointBehaviour);}
 
     private void handleTableBehaviour() {
         TableRowClickBehaviour stopClickBehaviour = new TableRowClickBehaviour() {
@@ -247,8 +270,8 @@ public class MainController {
                 }
             }
         };
-        mainFrame.setSearchStopTableClickListener(stopClickBehaviour);
-        mainFrame.setFavStopRowClickListener(stopClickBehaviour);
+        mainFrame.setSearchStopRowClickBehaviour(stopClickBehaviour);
+        mainFrame.setFavStopRowClickBehaviour(stopClickBehaviour);
 
         TableRowClickBehaviour routeClickBehaviour = new TableRowClickBehaviour() {
             @Override
@@ -285,17 +308,21 @@ public class MainController {
                 mainFrame.setMapPanelMapPosition(geoPosition, zoomLevel);
             }
         };
-        mainFrame.setSearchRouteTableClickListener(routeClickBehaviour);
-        mainFrame.setFavRouteRowClickListener(routeClickBehaviour);
+        mainFrame.setRouteStopRowClickBehaviour(routeClickBehaviour);
+        mainFrame.setFavRouteRowClickBehaviour(routeClickBehaviour);
 
-        mainFrame.setStopTimeTableClickListener(new TableRowClickBehaviour() {
+        TableRowClickBehaviour TableRouteRowClickBehaviour = new TableRowClickBehaviour() {
             @Override
             public void onRowClick(Object rowData) throws SQLException {
                 String routeNumber = (String) ((List<Object>) rowData).get(0);
                 boolean isFavorite = db.isFavouriteRoute(sessionUser.getId(), routeNumber);
                 mainFrame.updatePreferRouteButton(isFavorite, routeNumber);
-            }
-        });
+            }};
+        mainFrame.setStopTimeRowClickBehaviour(TableRouteRowClickBehaviour);
+
+        mainFrame.getLeftPanel().getPreferPanel().getRouteTable().setRowClickBehaviour(TableRouteRowClickBehaviour);
+
+
     }
 
     private void handleLeftPanelButtonClick() {
@@ -333,15 +360,6 @@ public class MainController {
         });
     }
 
-    private void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes,
-            List<RealtimeStopUpdate> realtimeUpdates)
-            throws SQLException, IOException {
-        mainFrame.updateStopPanelInfo(stop.getId(), stop.getName());
-        mainFrame.updateStopPanelTimes(stopTimes, realtimeUpdates);
-        mainFrame.updateStopPanelPreferButtons(db.isFavoriteStop(sessionUser.getId(), stop.getId()), stop.getId());
-        mainFrame.updateStopPanelVisibility(true);
-    }
-
     public void searchQueryListener(String searchText) {
         // if (searchText == null || searchText.isEmpty()) {
         // mainFrame.getSearchPanel().updateView(new ArrayList<>());
@@ -356,17 +374,5 @@ public class MainController {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    public Date getCurrentDate() {
-        return new Date();
-    }
-
-    public LocalTime getCurrentTime() {
-        return LocalTime.now();
-    }
-
-    public void setLocalMapCache(File cacheDir) {
-        mainFrame.setLocalMapCache(cacheDir);
     }
 }

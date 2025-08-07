@@ -1,5 +1,6 @@
 package com.nnamo.view.customcomponents;
 
+import com.nnamo.enums.ColumnName;
 import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.interfaces.TableSearchBehaviour;
 import com.nnamo.utils.CustomColor;
@@ -15,7 +16,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.sql.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Vector;
@@ -103,16 +103,20 @@ public class CustomTable extends JPanel {
 
         if (isSearchable) {
 
-            searchBar.getSearchField().addKeyListener(new KeyAdapter() {
+            searchBar.getField().addKeyListener(new KeyAdapter() {
                 @Override
                 public void keyReleased(KeyEvent e) {
-                    String searchText = searchBar.getText().trim();
+                    String searchText = searchBar.getFieldText().trim();
                         if (searchText.isEmpty()) {
                             sorter.setRowFilter(null);
                         } else {
                             ArrayList<RowFilter<DefaultTableModel, Object>> filters = new ArrayList<>();
-                            for (int column : searchColumns) {
-                                filters.add(RowFilter.regexFilter("(?i)" + searchText, column));
+                            if (searchColumns.isEmpty()) {
+                                filters.add(RowFilter.regexFilter("(?i)" + searchText, 0));
+                            } else {
+                                for (int column : searchColumns) {
+                                    filters.add(RowFilter.regexFilter("(?i)" + searchText, column));
+                                }
                             }
                             RowFilter<DefaultTableModel, Object> combinedFilter = RowFilter.orFilter(filters);
                             sorter.setRowFilter(combinedFilter);
@@ -120,17 +124,17 @@ public class CustomTable extends JPanel {
                 }
             });
 
-            searchBar.getSearchButton().addActionListener(new ActionListener() {
+            searchBar.getButton().addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    searchBar.setText("");
+                    searchBar.setField("");
                     sorter.setRowFilter(null);
                 }
             });
         }
     }
 
-    public void setTableRowClickListener(TableRowClickBehaviour tableRowClickBehaviour) {
+    public void setRowClickBehaviour(TableRowClickBehaviour tableRowClickBehaviour) {
         this.tableRowClickBehaviour = tableRowClickBehaviour;
     }
 

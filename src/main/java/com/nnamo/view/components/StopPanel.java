@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import com.nnamo.enums.ColumnName;
 import com.nnamo.interfaces.FavoriteBehaviour;
 import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.models.RouteModel;
@@ -19,6 +20,8 @@ import java.awt.*;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
+
+import static com.nnamo.enums.ColumnName.*;
 
 public class StopPanel extends JPanel {
     // Stop info components
@@ -74,7 +77,7 @@ public class StopPanel extends JPanel {
         setVisible(false);
     }
 
-    // METHODS //
+    // COMPONENT METHODS //
     private JPanel newStopInfoPanel() {
         // Panel info stop with border
         JPanel infoStop = new JPanel(new GridBagLayout());
@@ -123,9 +126,9 @@ public class StopPanel extends JPanel {
     private JPanel newRouteInfoPanel() {
         JPanel mainPanel = new JPanel(new GridBagLayout());
         this.table = new CustomTable(
-                new String[] { "Linea", "Direzione", "Orario", "Stato", "Minuti rimanenti", "Posti disponibili" },
+                new String[] {"Linea", "Direzione", "Orario", "Stato", "Minuti rimanenti", "Posti disponibili" },
                 true);
-
+        table.setSearchColumns(0, 1, 2);
         // Table
         mainPanel.add(table, new GbcCustom().setPosition(0, 1).setAnchor(GridBagConstraints.CENTER)
                 .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
@@ -156,6 +159,7 @@ public class StopPanel extends JPanel {
         return panelPrefer;
     }
 
+    // METHODS //
     public void updateStopTimes(List<StopTimeModel> stopTimes, List<RealtimeStopUpdate> realtimeUpdates) {
         table.clear();
 
@@ -202,14 +206,35 @@ public class StopPanel extends JPanel {
         }
     }
 
-    public void updateStopPanelInfo(String id, String nome) {
+    public void updateStopInfo(String id, String nome) {
         this.nomeFermata.setTextField(nome);
         this.idFermata.setTextField(id);
     }
 
-    public void updateFavoriteRouteMessage(String string) {
+    public void updateFavRouteText(String string) {
         favoriteRouteButton.setText(string);
         favoriteRouteButton.setEnabled(false);
+    }
+
+    public void updateFavButtons(boolean favorite) {
+        favoriteStopButton.setFavorite(favorite);
+        favoriteStopButton.setItemId(idFermata.getTextField());
+        updateFavRouteText(
+                "<html></p><p>Clicca su una riga</p><p>della tabella per</p><p>attivare il bottone</p></html>");
+    }
+
+    public void updatePreferRouteButton(boolean isFavorite, String routeId) {
+        favoriteRouteButton.setFavorite(isFavorite);
+        favoriteRouteButton.setItemId(routeId);
+        favoriteRouteButton.setEnabled(true);
+    }
+
+    public void open() {
+        setVisible(true);
+    }
+
+    public void close() {
+        setVisible(false);
     }
 
     // GETTERS AND SETTERS //
@@ -225,27 +250,7 @@ public class StopPanel extends JPanel {
         return idFermata.getTextField();
     }
 
-    public void open() {
-        setVisible(true);
-    }
-
-    public void close() {
-        setVisible(false);
-    }
-
-    public void updatePreferButtons(boolean favorite) {
-        favoriteStopButton.setFavorite(favorite);
-        favoriteStopButton.setItemId(idFermata.getTextField());
-        updateFavoriteRouteMessage(
-                "<html></p><p>Clicca su una riga</p><p>della tabella per</p><p>attivare il bottone</p></html>");
-    }
-
-    public void updatePreferRouteButton(boolean isFavorite, String routeId) {
-        favoriteRouteButton.setFavorite(isFavorite);
-        favoriteRouteButton.setItemId(routeId);
-        favoriteRouteButton.setEnabled(true);
-    }
-
+    // LISTENERS METHODS //
     public void setFavStopBehaviour(FavoriteBehaviour behaviour) {
         if (behaviour != null) {
             this.favoriteStopButton.setFavBehaviour(behaviour);
@@ -258,9 +263,9 @@ public class StopPanel extends JPanel {
         }
     }
 
-    public void setTableClickListener(TableRowClickBehaviour tableRowClickBehaviour) {
+    public void setStopTimeRowClickBehaviour(TableRowClickBehaviour tableRowClickBehaviour) {
         if (tableRowClickBehaviour != null) {
-            this.table.setTableRowClickListener(tableRowClickBehaviour);
+            this.table.setRowClickBehaviour(tableRowClickBehaviour);
         }
     }
 }

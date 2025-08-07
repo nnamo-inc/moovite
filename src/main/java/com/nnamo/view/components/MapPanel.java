@@ -2,7 +2,7 @@ package com.nnamo.view.components;
 
 import com.google.transit.realtime.GtfsRealtime.Position;
 import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
-import com.nnamo.interfaces.WaypointListener;
+import com.nnamo.interfaces.WaypointBehaviour;
 import com.nnamo.interfaces.ZoomBehaviour;
 import com.nnamo.models.StopModel;
 import com.nnamo.view.PositionPainter;
@@ -62,7 +62,7 @@ public class MapPanel extends JPanel {
     private List<StopModel> stops;
 
     // Listener for waypoint clicks (Anonymous inner class in MapController)
-    private WaypointListener waypointListener;
+    private WaypointBehaviour waypointBehaviour;
 
     public MapPanel() throws IOException {
         TileFactoryInfo info = new OSMTileFactoryInfo();
@@ -237,16 +237,16 @@ public class MapPanel extends JPanel {
         this.map.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (waypointListener != null && map.getZoom() <= currentZoomLimit) {
+                if (waypointBehaviour != null && map.getZoom() <= currentZoomLimit) {
                     try {
                         GeoPosition geo = map.convertPointToGeoPosition(new Point(e.getX(), e.getY()));
-                        waypointListener.onWaypointClick(geo, true);
+                        waypointBehaviour.onWaypointClick(geo, true);
                     } catch (SQLException | IOException ex) {
                         throw new RuntimeException(ex);
                     }
                 } else {
                     try {
-                        waypointListener.onWaypointClick(null, true);
+                        waypointBehaviour.onWaypointClick(null, true);
                     } catch (SQLException | IOException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -269,12 +269,8 @@ public class MapPanel extends JPanel {
         return this.stopPainter;
     }
 
-    public TileFactory getTileFactory() {
-        return tileFactory;
-    }
-
-    public void setWaypointListener(WaypointListener waypointListener) {
-        this.waypointListener = waypointListener;
+    public void setClickWaypointBehaviour(WaypointBehaviour waypointBehaviour) {
+        this.waypointBehaviour = waypointBehaviour;
     }
 
     public void setZoom(int zoomLevel) {

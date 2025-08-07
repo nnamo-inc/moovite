@@ -11,9 +11,6 @@ import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.table.TableUtils;
 import com.nnamo.models.*;
 import com.nnamo.utils.FuzzyMatch;
-import com.nnamo.utils.UserDataUtils;
-
-import net.harawata.appdirs.AppDirs;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
@@ -497,7 +494,7 @@ public class DatabaseService {
         return getDao(UserModel.class).queryForId(id);
     }
 
-    public void addFavoriteStop(int userId, String stopId) throws SQLException {
+    public void addFavStop(int userId, String stopId) throws SQLException {
         Dao<FavoriteStopModel, String> favoriteStopDao = getDao(FavoriteStopModel.class);
         Dao<UserModel, Integer> userDao = getDao(UserModel.class);
         Dao<StopModel, String> stopDao = getDao(StopModel.class);
@@ -512,7 +509,7 @@ public class DatabaseService {
         favoriteStopDao.create(new FavoriteStopModel(user, stop));
     }
 
-    public void addFavoriteStop(UserModel user, StopModel stop) throws SQLException {
+    public void addFavStop(UserModel user, StopModel stop) throws SQLException {
         Dao<FavoriteStopModel, String> favoriteStopDao = getDao(FavoriteStopModel.class);
         if (user == null || stop == null) {
             return;
@@ -520,7 +517,7 @@ public class DatabaseService {
         favoriteStopDao.create(new FavoriteStopModel(user, stop));
     }
 
-    public void removeFavoriteStop(int userId, String stopId) throws SQLException {
+    public void removeFavStop(int userId, String stopId) throws SQLException {
         Dao<FavoriteStopModel, String> favoriteStopDao = getDao(FavoriteStopModel.class);
 
         var deleteBuilder = favoriteStopDao.deleteBuilder();
@@ -574,7 +571,7 @@ public class DatabaseService {
         return !favorites.isEmpty();
     }
 
-    public void addFavoriteRoute(int userId, String routeId) throws SQLException {
+    public void addFavRoute(int userId, String routeId) throws SQLException {
         Dao<FavoriteRouteModel, String> favoriteRouteDao = getDao(FavoriteRouteModel.class);
         Dao<UserModel, Integer> userDao = getDao(UserModel.class);
         Dao<RouteModel, String> routeDao = getDao(RouteModel.class);
@@ -589,7 +586,7 @@ public class DatabaseService {
         favoriteRouteDao.create(new FavoriteRouteModel(user, route));
     }
 
-    public void removeFavoriteRoute(int userId, String routeId) throws SQLException {
+    public void removeFavRoute(int userId, String routeId) throws SQLException {
         Dao<FavoriteRouteModel, String> favoriteRouteDao = getDao(FavoriteRouteModel.class);
 
         var deleteBuilder = favoriteRouteDao.deleteBuilder();

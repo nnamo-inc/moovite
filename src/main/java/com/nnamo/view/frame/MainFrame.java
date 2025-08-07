@@ -10,6 +10,7 @@ import javax.swing.*;
 
 import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.nnamo.enums.RealtimeStatus;
+import com.nnamo.enums.UpdateMode;
 import com.nnamo.interfaces.*;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
@@ -80,7 +81,7 @@ public class MainFrame extends JFrame {
     }
 
     public void updateStopPanelInfo(String id, String nome) {
-        this.stopPanel.updateStopPanelInfo(id, nome);
+        this.stopPanel.updateStopInfo(id, nome);
     }
 
     public void updateStopPanelTimes(List<StopTimeModel> stopTimes, List<RealtimeStopUpdate> realtimeUpdates) {
@@ -89,6 +90,9 @@ public class MainFrame extends JFrame {
 
     public void updatePreferRouteButton(Boolean isFavorite, String routeNumber) {
         this.stopPanel.updatePreferRouteButton(isFavorite, routeNumber);
+        this.leftPanel.getPreferPanel().getRemoveRouteButton().setFavorite(isFavorite);
+        this.leftPanel.getPreferPanel().getRemoveRouteButton().setItemId(routeNumber);
+        this.leftPanel.getPreferPanel().getRemoveRouteButton().setEnabled(true);
     }
 
     public void updateStopPanelVisibility(boolean visible) {
@@ -126,20 +130,12 @@ public class MainFrame extends JFrame {
         leftPanel.initPreferPanelPreferTable(stops, routes);
     }
 
-    public void addLeftPanelPreferPanelStopTable(StopModel stop) {
-        leftPanel.addPreferPanelStopTable(stop);
+    public void updateFavStopTable(StopModel stop, UpdateMode updateMode) {
+        leftPanel.updateFavStopTable(stop, updateMode);
     }
 
-    public void removeLeftPanelPreferPanelStopTable(StopModel route) {
-        leftPanel.removePreferPanelStopTable(route);
-    }
-
-    public void addLeftPanelPreferPanelRouteTable(RouteModel route) {
-        leftPanel.addPreferPanelRouteTable(route);
-    }
-
-    public void removeLeftPanelPreferPanelRouteTable(RouteModel route) {
-        leftPanel.removePreferPanelRouteTable(route);
+    public void updateFavRouteTable(RouteModel route, UpdateMode updateMode) {
+        leftPanel.updateFavRouteTable(route, updateMode);
     }
 
     // GETTERS AND SETTERS //
@@ -175,27 +171,7 @@ public class MainFrame extends JFrame {
         return this.getMapPanel().getStopPainter().getCurrentIcon();
     }
 
-    public void setStopId(String id) {
-        if (id != null) {
-            this.getStopPanel().getTextID().setText(id);
-        }
-    }
-
-    public void setStopName(String name) {
-        if (name != null) {
-            this.getStopPanel().getTextName().setText(name);
-        }
-    }
-
     // SETTERS FOR BEHAVIOURS //
-    public void setLeftPanelButtonPanelGenericButtonBehaviour(LeftPanelGenericButtonBehaviour listener) {
-        this.leftPanel.setButtonPanelGenericButtonBehaviour(listener);
-    }
-
-    public void setLeftPanelButtonPanelPreferButtonBehaviour(LeftPanelPreferButtonBehaviour listener) {
-        this.leftPanel.setButtonPanelPreferButtonBehaviour(listener);
-    }
-
     public void setFavStopBehaviour(FavoriteBehaviour behaviour) {
         this.stopPanel.setFavStopBehaviour(behaviour);
     }
@@ -204,28 +180,40 @@ public class MainFrame extends JFrame {
         this.stopPanel.setFavRouteBehaviour(behaviour);
     }
 
-    public void setStopTimeTableClickListener(TableRowClickBehaviour listener) {
-        this.stopPanel.setTableClickListener(listener);
+    public void setClickWaypointBehaviour(WaypointBehaviour waypointBehaviour) {
+        this.mapPanel.setClickWaypointBehaviour(waypointBehaviour);
     }
 
-    public void setSearchStopTableClickListener(TableRowClickBehaviour listener) {
-        leftPanel.setSearchStopTableClickListener(listener);
+    public void setLeftPanelButtonPanelGenericButtonBehaviour(LeftPanelGenericButtonBehaviour listener) {
+        this.leftPanel.setButtonPanelGenericButtonBehaviour(listener);
     }
 
-    public void setSearchRouteTableClickListener(TableRowClickBehaviour listener) {
-        leftPanel.setSearchRouteTableClickListener(listener);
+    public void setLeftPanelButtonPanelPreferButtonBehaviour(LeftPanelPreferButtonBehaviour listener) {
+        this.leftPanel.setButtonPanelPreferButtonBehaviour(listener);
     }
 
-    public void setFavStopRowClickListener(TableRowClickBehaviour behaviour) {
-        this.leftPanel.setFavStopRowClickListener(behaviour);
+    public void setStopTimeRowClickBehaviour(TableRowClickBehaviour listener) {
+        this.stopPanel.setStopTimeRowClickBehaviour(listener);
     }
 
-    public void setFavRouteRowClickListener(TableRowClickBehaviour behaviour) {
-        this.leftPanel.setFavRouteRowClickListener(behaviour);
+    public void setSearchStopRowClickBehaviour(TableRowClickBehaviour listener) {
+        leftPanel.setSearchStopRowClickBehaviour(listener);
     }
 
-    public void updateStopPanelPreferButtons(boolean favorite, String stop) {
-        this.stopPanel.updatePreferButtons(favorite);
+    public void setRouteStopRowClickBehaviour(TableRowClickBehaviour listener) {
+        leftPanel.setRouteStopRowClickBehaviour(listener);
+    }
+
+    public void setFavStopRowClickBehaviour(TableRowClickBehaviour behaviour) {
+        this.leftPanel.setFavStopRowClickBehaviour(behaviour);
+    }
+
+    public void setFavRouteRowClickBehaviour(TableRowClickBehaviour behaviour) {
+        this.leftPanel.setFavRouteRowClickBehaviour(behaviour);
+    }
+
+    public void updateStopPanelFavButtons(boolean favorite, String stop) {
+        this.stopPanel.updateFavButtons(favorite);
     }
 
     public void setMapPanelMapPosition(GeoPosition geoPosition, int zoomLevel) {

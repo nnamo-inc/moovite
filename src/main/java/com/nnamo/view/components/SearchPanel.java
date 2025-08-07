@@ -63,11 +63,11 @@ public class SearchPanel extends JPanel {
         }
     }
 
-    public void setSearchStopTableClickListener(TableRowClickBehaviour listener) {
-        tableStop.setTableRowClickListener(listener);
+    public void setSearchStopRowClickBehaviour(TableRowClickBehaviour listener) {
+        tableStop.setRowClickBehaviour(listener);
     }
 
-    public void setSearchRouteTableClickListener(TableRowClickBehaviour listener) {
-        tableRoute.setTableRowClickListener(listener);
+    public void setRouteStopRowClickBehaviour(TableRowClickBehaviour listener) {
+        tableRoute.setRowClickBehaviour(listener);
     }
 }
