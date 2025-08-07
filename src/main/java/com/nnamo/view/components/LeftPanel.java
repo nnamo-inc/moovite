@@ -25,10 +25,10 @@ public class LeftPanel extends JPanel {
     ButtonPanel buttonPanel = new ButtonPanel(new LinkedHashMap<>() {
         {
             put(searchPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/search_small.png"))));
-            put(preferPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/sidebar_stop_small.png"))));
+            put(preferPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/favorite_small.png"))));
             put(onlineSwitchButton,
                     new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/online_settings_small.png"))));
-            put(favoritePanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/favorite_small.png"))));
+            put(favoritePanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/sidebar_stop_small.png"))));
         }
     });
 
@@ -95,15 +95,18 @@ public class LeftPanel extends JPanel {
         System.out.println(this.onlineSwitchButton);
     }
 
-    // SETTERS FOR LISTENERS //
-    public void setButtonPanelGenericButtonBehaviour(LeftPanelGenericButtonBehaviour listener) {
-        this.buttonPanel.setGenericButtonBehaviour(listener);
+    // BEHAVIOUR //
+
+    // Stop panel behaviour //
+    public void setButtonPanelGeneralBehaviour(ButtonPanelBehaviour listener) {
+        this.buttonPanel.setButtonPanelBehaviour(listener);
     }
 
-    public void setButtonPanelPreferButtonBehaviour(LeftPanelPreferButtonBehaviour listener) {
-        this.buttonPanel.setPreferButtonBehaviour(listener);
+    public void setButtonPanelPreferBehaviour(ButtonPanelBehaviour listener) {
+        this.buttonPanel.setButtonPanelBehaviour(listener);
     }
 
+    // Search panel behaviour //
     public void setSearchStopRowClickBehaviour(TableRowClickBehaviour listener) {
         this.searchPanel.setSearchStopRowClickBehaviour(listener);
     }
@@ -112,6 +115,7 @@ public class LeftPanel extends JPanel {
         this.searchPanel.setSearchRouteRowClickBehaviour(listener);
     }
 
+    // Prefer panel behaviour //
     public void setFavStopRowClickBehaviour(TableRowClickBehaviour behaviour) {
         this.preferPanel.setFavStopRowClickBehaviour(behaviour);
     }
@@ -120,11 +124,11 @@ public class LeftPanel extends JPanel {
         this.preferPanel.setFavRouteRowClickBehaviour(behaviour);
     }
 
-    public void setRealtimeSwitchListener(SwitchBarListener listener) {
-        this.onlineSwitchButton.addSwitchListener(listener);
-    }
-
     public void setFavStopBehaviour(FavoriteBehaviour behaviour) {
         this.preferPanel.setFavStopBehaviour(behaviour);
+    }
+
+    public void setRealtimeSwitchListener(SwitchBarListener listener) {
+        this.onlineSwitchButton.addSwitchListener(listener);
     }
 }

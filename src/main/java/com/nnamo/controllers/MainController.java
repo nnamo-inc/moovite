@@ -31,6 +31,7 @@ public class MainController {
     MainFrame mainFrame;
     UserController userController;
     UserModel sessionUser;
+    boolean loaded = false;
 
 
     // CONSTRUCTORS //
@@ -45,10 +46,10 @@ public class MainController {
     public void run() throws InterruptedException, SQLException, IOException {
 
         mainFrame.renderStops(db.getAllStops());
-        handleStopClick();
-        handleFavouriteButtonClicks();
+        handleClickWaypointBehaviour();
+        handleFavouriteButtonClicksBehaviour();
         handleTableBehaviour();
-        handleLeftPanelButtonClick();
+        handleButtonPanelClickBehaviour();
         mainFrame.getSearchPanel().addSearchListener(this::searchQueryListener);
 
         // Login and Session Fetching
@@ -66,7 +67,7 @@ public class MainController {
         });
         userController.run();
 
-        handleRealtimeListeners();
+        handleRealtimeBehaviour();
         realtimeService.startBackgroundThread();
         mainFrame.setRealtimeStatus(RealtimeStatus.ONLINE); // Changing realtime status notifies the observer method,
                                                             // thus interacting with RealtimeService
@@ -94,8 +95,8 @@ public class MainController {
         mainFrame.updateStopPanelVisibility(true);
     }
 
-    // LISTENER HANDLE //
-    private void handleRealtimeListeners() {
+    // BEHAVIOUR //
+    private void handleRealtimeBehaviour() {
         // Listener for when Realtime Service changes status
         realtimeService.setRealtimeChangeListener(new RealtimeStatusChangeListener() {
             @Override
@@ -141,7 +142,8 @@ public class MainController {
         });
     }
 
-    private void handleFavouriteButtonClicks() {
+    private void handleFavouriteButtonClicksBehaviour() {
+
         FavoriteBehaviour favStopBehaviour = new FavoriteBehaviour() {
             @Override
             public void addFavorite(String stopId) {
@@ -197,7 +199,8 @@ public class MainController {
         mainFrame.getLeftPanel().getPreferPanel().getRemoveRouteButton().setFavBehaviour(favRouteBehaviour);
     }
 
-    private void handleStopClick() {
+    private void handleClickWaypointBehaviour() {
+
         WaypointBehaviour clickWaypointBehaviour = new WaypointBehaviour() {
             @Override
             public void onWaypointClick(GeoPosition geo, boolean b) throws SQLException, IOException {
@@ -253,6 +256,7 @@ public class MainController {
         mainFrame.setClickWaypointBehaviour(clickWaypointBehaviour);}
 
     private void handleTableBehaviour() {
+
         TableRowClickBehaviour stopClickBehaviour = new TableRowClickBehaviour() {
             @Override
             public void onRowClick(Object rowData, int columnIndex) throws SQLException {
@@ -331,39 +335,40 @@ public class MainController {
 
     }
 
-    private void handleLeftPanelButtonClick() {
-        mainFrame.setLeftPanelButtonPanelGenericButtonBehaviour(new LeftPanelGenericButtonBehaviour() {
+    private void handleButtonPanelClickBehaviour() {
+
+        ButtonPanelBehaviour baseButtonPanelBehaviour = new ButtonPanelBehaviour() {
             @Override
-            public void onPanelModeButtonClick(JPanel panel) {
-                System.out.println("Generic button clicked, panel: " + panel.getClass().getSimpleName());
+            public void onButtonPanelClick(JPanel panel) {
                 if (panel.isVisible()) {
-                    System.out.println("Generic panel is already visible, hiding it.");
                     mainFrame.updateLeftPanelVisibility(false);
                     mainFrame.updateLeftPanelModularPanel(panel, false);
                 } else {
-                    System.out.println("Generic panel is not already visible, showing it.");
                     mainFrame.updateLeftPanelVisibility(true);
                     mainFrame.updateLeftPanelModularPanel(panel, true);
                 }
             }
-        });
+        };
+        mainFrame.setButtonPanelGeneralBehaviour(baseButtonPanelBehaviour);
 
-        mainFrame.setLeftPanelButtonPanelPreferButtonBehaviour(new LeftPanelPreferButtonBehaviour() {
-            private boolean loaded = false;
-
+        ButtonPanelBehaviour preferButtonPanelBehaviour = new ButtonPanelBehaviour() {
             @Override
             public void onButtonPanelClick(JPanel panel) {
-                try {
-                    if (!loaded) {
-                        mainFrame.initLeftPanelPreferPanelPreferTable(db.getFavoriteStops(sessionUser.getId()),
-                                db.getFavoriteRoutes(sessionUser.getId()));
-                        loaded = !loaded;
+                if (!loaded) {
+                    try {
+                        mainFrame.initLeftPanelPreferPanelPreferTable(
+                                db.getFavoriteStops(sessionUser.getId()),
+                                db.getFavoriteRoutes(sessionUser.getId())
+                        );
+                        loaded = true;
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
                     }
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
                 }
-            }
-        });
+                baseButtonPanelBehaviour.onButtonPanelClick(panel); // TODO: not sure, but maybe need to refactor this
+            };
+        };
+        mainFrame.setButtonPanelPreferBehaviour(preferButtonPanelBehaviour);
     }
 
     public void searchQueryListener(String searchText) {

@@ -174,7 +174,9 @@ public class MainFrame extends JFrame {
         return this.getMapPanel().getStopPainter().getCurrentIcon();
     }
 
-    // SETTERS FOR BEHAVIOURS //
+    // BEHAVIOUR //
+
+    // Left Panel Behaviour //
     public void setFavStopBehaviour(FavoriteBehaviour behaviour) {
         this.stopPanel.setFavStopBehaviour(behaviour);
         this.leftPanel.setFavStopBehaviour(behaviour);
@@ -184,20 +186,12 @@ public class MainFrame extends JFrame {
         this.stopPanel.setFavRouteBehaviour(behaviour);
     }
 
-    public void setClickWaypointBehaviour(WaypointBehaviour waypointBehaviour) {
-        this.mapPanel.setClickWaypointBehaviour(waypointBehaviour);
+    public void setButtonPanelGeneralBehaviour(ButtonPanelBehaviour listener) {
+        this.leftPanel.setButtonPanelGeneralBehaviour(listener);
     }
 
-    public void setLeftPanelButtonPanelGenericButtonBehaviour(LeftPanelGenericButtonBehaviour listener) {
-        this.leftPanel.setButtonPanelGenericButtonBehaviour(listener);
-    }
-
-    public void setLeftPanelButtonPanelPreferButtonBehaviour(LeftPanelPreferButtonBehaviour listener) {
-        this.leftPanel.setButtonPanelPreferButtonBehaviour(listener);
-    }
-
-    public void setStopTimeRowClickBehaviour(TableRowClickBehaviour listener) {
-        this.stopPanel.setStopTimeRowClickBehaviour(listener);
+    public void setButtonPanelPreferBehaviour(ButtonPanelBehaviour listener) {
+        this.leftPanel.setButtonPanelPreferBehaviour(listener);
     }
 
     public void setSearchStopRowClickBehaviour(TableRowClickBehaviour listener) {
@@ -216,9 +210,28 @@ public class MainFrame extends JFrame {
         this.leftPanel.setFavRouteRowClickBehaviour(behaviour);
     }
 
+    public void setRealtimeSwitchListener(SwitchBarListener listener) {
+        this.leftPanel.setRealtimeSwitchListener(listener);
+    }
+
+    public void setRealtimeStatus(RealtimeStatus status) {
+        this.leftPanel.setRealtimeStatus(status);
+    }
+    // Waypoint Behaviour //
+
+    public void setClickWaypointBehaviour(WaypointBehaviour waypointBehaviour) {
+        this.mapPanel.setClickWaypointBehaviour(waypointBehaviour);
+    }
+    // Stop Panel Behaviour //
+
+    public void setStopTimeRowClickBehaviour(TableRowClickBehaviour listener) {
+        this.stopPanel.setStopTimeRowClickBehaviour(listener);
+    }
+
     public void updateStopPanelFavButtons(boolean favorite, String stop) {
         this.stopPanel.updateFavButtons(favorite);
     }
+    // Map Panel Behaviour //
 
     public void setMapPanelMapPosition(GeoPosition geoPosition, int zoomLevel) {
         this.mapPanel.setMapPanelMapPosition(geoPosition, zoomLevel);
@@ -226,13 +239,5 @@ public class MainFrame extends JFrame {
 
     public void setLocalMapCache(File cacheDir) {
         mapPanel.setLocalMapCache(cacheDir);
-    }
-
-    public void setRealtimeSwitchListener(SwitchBarListener listener) {
-        this.leftPanel.setRealtimeSwitchListener(listener);
-    }
-
-    public void setRealtimeStatus(RealtimeStatus status) {
-        this.leftPanel.setRealtimeStatus(status);
     }
 }

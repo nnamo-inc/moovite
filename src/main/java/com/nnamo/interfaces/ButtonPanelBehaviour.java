@@ -2,8 +2,8 @@ package com.nnamo.interfaces;
 
 import javax.swing.*;
 
-public interface LeftPanelGenericButtonBehaviour {
+public interface ButtonPanelBehaviour {
 
-    public void onPanelModeButtonClick(JPanel panel);
+    public void onButtonPanelClick(JPanel panel);
 
 }

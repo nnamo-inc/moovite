@@ -1,8 +1,7 @@
 package com.nnamo.view.components;
 
-import com.nnamo.interfaces.LeftPanelGenericButtonBehaviour;
-import com.nnamo.interfaces.LeftPanelPreferButtonBehaviour;
-import com.nnamo.view.customcomponents.LeftPanelButton;
+import com.nnamo.interfaces.ButtonPanelBehaviour;
+import com.nnamo.view.customcomponents.CustomButtonPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,13 +10,13 @@ import java.util.HashMap;
 
 public class ButtonPanel extends JPanel {
 
-    private final ArrayList <LeftPanelButton> buttons = new ArrayList<>();
+    private final ArrayList <CustomButtonPanel> buttons = new ArrayList<>();
 
     public ButtonPanel(HashMap<JPanel, Icon> panels) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         for (JPanel panel : panels.keySet()) {
-            LeftPanelButton button = new LeftPanelButton("", panel);
+            CustomButtonPanel button = new CustomButtonPanel("", panel);
             button.setIcon(panels.get(panel));
 
             button.setMargin(new Insets(5, 2, 5, 2));
@@ -32,17 +31,9 @@ public class ButtonPanel extends JPanel {
         }
     }
 
-    public void setGenericButtonBehaviour(LeftPanelGenericButtonBehaviour listener) {
-        for (LeftPanelButton button : buttons) {
-            button.setGenericButtonClickListener(listener);
-        }
-    }
-
-    public void setPreferButtonBehaviour(LeftPanelPreferButtonBehaviour listener) {
-        for (LeftPanelButton button : buttons) {
-            if (button.getPanel() instanceof PreferPanel) {
-                button.setPreferButtonClickListener(listener);
-            }
+    public void setButtonPanelBehaviour(ButtonPanelBehaviour listener) {
+        for (CustomButtonPanel button : buttons) {
+            button.setButtonPanelBehaviour(listener);
         }
     }
 }
