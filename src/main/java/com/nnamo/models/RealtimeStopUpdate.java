@@ -15,8 +15,10 @@ public class RealtimeStopUpdate {
     private final StopTimeUpdate timeUpdate;
     private final VehiclePosition vehiclePosition;
 
-    public RealtimeStopUpdate(String tripId, StopTimeUpdate timeUpdate, VehiclePosition vehiclePosition) {
+    public RealtimeStopUpdate(String tripId, String routeId, StopTimeUpdate timeUpdate,
+            VehiclePosition vehiclePosition) {
         this.tripId = tripId;
+        this.routeId = routeId;
         this.stopId = timeUpdate.getStopId();
         this.vehiclePosition = vehiclePosition;
         this.timeUpdate = timeUpdate;
@@ -28,6 +30,10 @@ public class RealtimeStopUpdate {
 
     public String getStopId() {
         return stopId;
+    }
+
+    public String getRouteId() {
+        return routeId;
     }
 
     public StopTimeUpdate getTimeUpdate() {

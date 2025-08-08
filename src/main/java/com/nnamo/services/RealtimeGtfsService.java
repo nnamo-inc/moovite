@@ -3,12 +3,14 @@ package com.nnamo.services;
 import com.google.transit.realtime.GtfsRealtime;
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.google.transit.realtime.GtfsRealtime.FeedMessage;
+import com.google.transit.realtime.GtfsRealtime.TripDescriptor;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate;
 import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate;
 import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.interfaces.RealtimeStatusChangeListener;
 import com.nnamo.models.RealtimeStopUpdate;
+import com.nnamo.models.StopTimeModel;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,25 +23,34 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import org.onebusaway.gtfs.model.Trip;
+
 public class RealtimeGtfsService {
     public static final String TRIP_FEED_URL = "https://romamobilita.it/sites/default/files/rome_rtgtfs_trip_updates_feed.pb";
     public static final String POSITIONS_FEED_URL = "https://romamobilita.it/sites/default/files/rome_rtgtfs_vehicle_positions_feed.pb";
     public static final Duration POLLING_INTERVAL = Duration.ofSeconds(30);
+    public static final int ALLOWED_DELAY = 5 * 60; // 5 minutes
+    public static final int ALLOWED_ADVANCE = 5 * 60; // 5 minutes
 
     private final Thread backgroundThread;
     private RealtimeStatus realtimeStatus = RealtimeStatus.ONLINE;
     private RealtimeStatusChangeListener statusChangeListener; // Listener for when status changes automatically (and
                                                                // not by pressing button in mainframe)
-
     private final URL tripFeedUrl;
     private final URL positionsFeedUrl;
+
+    private List<FeedEntity> positionEntityList;
+    private HashMap<String, List<VehiclePosition>> routesPositionsMap = new HashMap<>();
+
+    private List<FeedEntity> tripEntityList;
+    private HashMap<String, FeedEntity> tripsMap = new HashMap<>();
+    private HashMap<String, List<RealtimeStopUpdate>> stopsMap = new HashMap<>();
+    private int delayedTrips = 0;
+    private int onTimeTrips = 0;
+    private int earlyTrips = 0;
+
     private final List<FeedUpdateListener> feedUpdateListeners = new ArrayList<>();
     private final List<FeedStopLinesListener> feedStopLinesListeners = new ArrayList<>();
-    private List<FeedEntity> tripEntityList;
-    private List<FeedEntity> positionEntityList;
-    private HashMap<String, FeedEntity> tripsMap = new HashMap<>();
-    private HashMap<String, List<VehiclePosition>> routesPositionsMap = new HashMap<>();
-    private HashMap<String, List<RealtimeStopUpdate>> stopsMap = new HashMap<>();
 
     public RealtimeGtfsService() throws URISyntaxException, IOException {
         this.tripFeedUrl = new URI(TRIP_FEED_URL).toURL();
@@ -83,6 +94,68 @@ public class RealtimeGtfsService {
         backgroundThread.start();
         this.realtimeStatus = RealtimeStatus.ONLINE;
         System.out.println("Starting background thread for RealtimeGtfsService");
+    }
+
+    public synchronized void updateFeed() throws IOException {
+        // all previous entities ids hashset
+        HashSet<String> previousEntityIds = new HashSet<>();
+        if (tripEntityList != null) {
+            for (FeedEntity entity : tripEntityList) {
+                previousEntityIds.add(entity.getId());
+            }
+        }
+
+        InputStream tripStream = tripFeedUrl.openStream();
+        FeedMessage tripFeed = FeedMessage.parseFrom(tripStream);
+
+        InputStream positionStream = positionsFeedUrl.openStream();
+        FeedMessage positionFeed = FeedMessage.parseFrom(positionStream);
+
+        this.tripEntityList = tripFeed.getEntityList();
+        this.tripsMap = new HashMap<>();
+        this.stopsMap = new HashMap<>();
+        this.routesPositionsMap = new HashMap<>();
+
+        this.onTimeTrips = 0;
+        this.delayedTrips = 0;
+        this.earlyTrips = 0;
+        for (FeedEntity entity : tripEntityList) {
+            TripUpdate tripUpdate = entity.getTripUpdate();
+            String tripId = tripUpdate.getTrip().getTripId();
+            String routeId = tripUpdate.getTrip().getRouteId();
+            tripsMap.put(tripId, entity);
+
+            int delay = tripUpdate.getDelay();
+            if (delay < 0 && -delay >= ALLOWED_DELAY) { // Delay negativo: ritardo
+                delayedTrips++;
+            } else if (delay >= 0 && delay <= ALLOWED_ADVANCE) { // Delay sotto la soglia di anticipo: in orario
+                onTimeTrips++;
+            } else {
+                earlyTrips++;
+            }
+
+            for (StopTimeUpdate stopTime : tripUpdate.getStopTimeUpdateList()) {
+                String stopId = stopTime.getStopId();
+                RealtimeStopUpdate stopUpdate = new RealtimeStopUpdate(tripId, routeId, stopTime, entity.getVehicle());
+
+                // Creates ArrayList if it does not exist for the stopId, and adds the stop
+                // update
+                stopsMap.computeIfAbsent(stopId, k -> new ArrayList<>()).add(stopUpdate);
+            }
+        }
+        System.out.println(tripEntityList.size() + " trip entities");
+
+        this.positionEntityList = positionFeed.getEntityList();
+        for (FeedEntity entity : positionEntityList) {
+            String routeId = entity.getVehicle().getTrip().getRouteId();
+            if (routeId.isEmpty()) {
+                continue;
+            }
+            routesPositionsMap.computeIfAbsent(routeId, x -> new ArrayList<>()).add(entity.getVehicle());
+        }
+        System.out.println(positionEntityList.size() + " vehicle position entities");
+
+        notifyFeedUpdateListeners();
     }
 
     public synchronized void setRealtimeStatus(RealtimeStatus newStatus) {
@@ -147,54 +220,40 @@ public class RealtimeGtfsService {
         }
     }
 
-    public synchronized void updateFeed() throws IOException {
-        // all previous entities ids hashset
-        HashSet<String> previousEntityIds = new HashSet<>();
-        if (tripEntityList != null) {
-            for (FeedEntity entity : tripEntityList) {
-                previousEntityIds.add(entity.getId());
-            }
+    // Not needed, Realtime GTFS has already a delay method
+    public void updateTripMonitoring(List<StopTimeModel> stopTimes) {
+        HashMap<String, List<StopTimeModel>> stopTimesMap = new HashMap<>();
+        for (StopTimeModel stopTime : stopTimes) {
+            stopTimesMap.computeIfAbsent(
+                    stopTime.getTrip().getId(),
+                    k -> new ArrayList<>()).add(stopTime);
         }
-
-        InputStream tripStream = tripFeedUrl.openStream();
-        FeedMessage tripFeed = FeedMessage.parseFrom(tripStream);
-
-        InputStream positionStream = positionsFeedUrl.openStream();
-        FeedMessage positionFeed = FeedMessage.parseFrom(positionStream);
-
-        this.tripEntityList = tripFeed.getEntityList();
-        this.tripsMap = new HashMap<>();
-        this.stopsMap = new HashMap<>();
-        this.routesPositionsMap = new HashMap<>();
 
         for (FeedEntity entity : tripEntityList) {
             TripUpdate tripUpdate = entity.getTripUpdate();
-            String tripId = tripUpdate.getTrip().getTripId();
-            String routeId = tripUpdate.getTrip().getRouteId();
-            tripsMap.put(tripId, entity);
+            TripDescriptor trip = tripUpdate.getTrip();
+            String tripId = trip.getTripId();
 
-            for (StopTimeUpdate stopTime : tripUpdate.getStopTimeUpdateList()) {
-                String stopId = stopTime.getStopId();
-                RealtimeStopUpdate stopUpdate = new RealtimeStopUpdate(tripId, stopTime, entity.getVehicle());
-
-                // Creates ArrayList if it does not exist for the stopId, and adds the stop
-                // update
-                stopsMap.computeIfAbsent(stopId, k -> new ArrayList<>()).add(stopUpdate);
-            }
-        }
-        System.out.println(tripEntityList.size() + " trip entities");
-
-        this.positionEntityList = positionFeed.getEntityList();
-        for (FeedEntity entity : positionEntityList) {
-            String routeId = entity.getVehicle().getTrip().getRouteId();
-            if (routeId.isEmpty()) {
+            List<StopTimeModel> tripStopTimes = stopTimesMap.get(tripId);
+            if (tripStopTimes == null) {
                 continue;
             }
-            routesPositionsMap.computeIfAbsent(routeId, x -> new ArrayList<>()).add(entity.getVehicle());
-        }
-        System.out.println(positionEntityList.size() + " vehicle position entities");
 
-        notifyFeedUpdateListeners();
+            for (StopTimeModel stopTime : tripStopTimes) {
+            }
+        }
+    }
+
+    public int getEarlyTrips() {
+        return earlyTrips;
+    }
+
+    public int getDelayedTrips() {
+        return delayedTrips;
+    }
+
+    public int getOnTimeTrips() {
+        return onTimeTrips;
     }
 
     public synchronized VehiclePosition getTripVehiclePosition(String tripId) {
@@ -202,16 +261,10 @@ public class RealtimeGtfsService {
     }
 
     public synchronized List<VehiclePosition> getRoutesVehiclePositions(String routeId) {
-        List<VehiclePosition> routePositions = new ArrayList<>();
-        List<VehiclePosition> routesFeed = this.routesPositionsMap.get(routeId);
-        if (routesFeed == null) {
+        List<VehiclePosition> routePositions = this.routesPositionsMap.get(routeId);
+        if (routePositions == null) {
             System.out.println("No feed found for route " + routeId);
-            return routePositions;
-        }
-
-        for (VehiclePosition vehiclePosition : routesFeed) {
-            System.out.println("Found vehicle position for route " + routeId);
-            routePositions.add(vehiclePosition);
+            return new ArrayList<>();
         }
         return routePositions;
     }

@@ -417,8 +417,6 @@ public class DatabaseService {
         Dao<StopTimeModel, String> stopTimeDao = getDao(StopTimeModel.class);
         Dao<StopModel, String> stopDao = getDao(StopModel.class);
 
-        // Conversion from LocalTime to Date, since the time is stored in the db at the
-        // EPOCH Date (1970-01-01)
         int hoursToMillisec = 6 * 3600; // 6 hours
         int currentDateTime = LocalTime.now().toSecondOfDay();
         int nextHoursDate = currentDateTime + hoursToMillisec;
