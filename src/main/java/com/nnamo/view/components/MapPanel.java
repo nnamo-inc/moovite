@@ -82,7 +82,7 @@ public class MapPanel extends JPanel {
 
         this.stopsCompoundPainter = new CompoundPainter<JXMapViewer>();
         this.routeCompoundPainter = new CompoundPainter<JXMapViewer>();
-        this.currentPainter = stopsCompoundPainter;
+        updateCurrentCompoundPainter(this.stopsCompoundPainter);
 
         this.stopsPaintersList = createPaintersList(stopPainter);
         this.stopsCompoundPainter.setPainters(stopsPaintersList);
@@ -97,7 +97,6 @@ public class MapPanel extends JPanel {
         zoomBehaviour = (new ZoomBehaviour() {
             @Override
             public void onZoomChange(int zoomLevel) {
-                currentZoomLimit = (currentPainter == stopsCompoundPainter) ? stopsZoomLimit : routeZoomLimit;
                 updateOverlayPainter();
                 repaintView();
             }
@@ -110,6 +109,8 @@ public class MapPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 if (stops != null)
                     renderStops(stops);
+                updateOverlayPainter();
+                repaintView();
             }
         });
         add(resetRouteButton, BorderLayout.SOUTH);
@@ -136,13 +137,17 @@ public class MapPanel extends JPanel {
         this.stopsCompoundPainter.setPainters(this.stopsPaintersList);
     }
 
+    private void updateCurrentCompoundPainter(CompoundPainter<JXMapViewer> painter) {
+        this.currentZoomLimit = (currentPainter == stopsCompoundPainter) ? stopsZoomLimit : routeZoomLimit;
+        this.currentPainter = painter;
+    }
+
     public void removeRoutePainting() {
         if (this.routePainter != null) {
             this.routePaintersList.remove(this.routePainter);
         }
         this.positionPainter.setWaypoints(new HashSet<Waypoint>());
         this.routeStopPainter.setWaypoints(new HashSet<Waypoint>());
-        this.currentPainter = this.stopsCompoundPainter;
         this.currentRouteId = null;
         updateOverlayPainter();
     }
@@ -158,7 +163,7 @@ public class MapPanel extends JPanel {
         this.stops = stops; // Save stops in order to reset painting after route painting
 
         this.resetRouteButton.setVisible(false);
-        this.currentPainter = stopsCompoundPainter;
+        updateCurrentCompoundPainter(this.stopsCompoundPainter);
         removeRoutePainting();
         repaintView();
     }
@@ -180,7 +185,7 @@ public class MapPanel extends JPanel {
         this.routePainter.setStops(stops);
         this.routePaintersList.add(routePainter); // Adds updated route painter to the list
         this.routeCompoundPainter.setPainters(routePaintersList);
-        this.currentPainter = routeCompoundPainter;
+        updateCurrentCompoundPainter(this.routeCompoundPainter);
 
         this.resetRouteButton.setVisible(true);
         repaintView();
