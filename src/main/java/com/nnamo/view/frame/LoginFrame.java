@@ -6,8 +6,8 @@ import com.nnamo.enums.AuthResult;
 import com.nnamo.enums.RegisterResult;
 import com.nnamo.interfaces.LoginBehaviour;
 import com.nnamo.interfaces.RegisterBehaviour;
-import com.nnamo.view.customcomponents.GbcCustom;
-import com.nnamo.view.customcomponents.InfoBar;
+import com.nnamo.view.customcomponents.CustomGbc;
+import com.nnamo.view.customcomponents.CustomInfoBar;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -16,7 +16,7 @@ import java.sql.SQLException;
 
 public class LoginFrame extends JFrame {
 
-    private final InfoBar fieldUsername = new InfoBar("Username:");
+    private final CustomInfoBar fieldUsername = new CustomInfoBar("Username:");
     private final PasswordBar fieldPassword = new PasswordBar();
     private final JButton buttonLogin = new JButton("Login");
     private final JButton buttonRegister = new JButton("Registrati");
@@ -34,19 +34,19 @@ public class LoginFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         fieldUsername.getJTextField().setEditable(true);
-        add(fieldUsername, new GbcCustom().setPosition(0, 0).setWeight(1.0, 0.0)
+        add(fieldUsername, new CustomGbc().setPosition(0, 0).setWeight(1.0, 0.0)
                 .setAnchor(GridBagConstraints.CENTER).setInsets(10, 10, 5, 10));
-        add(fieldPassword, new GbcCustom().setPosition(0, 1).setWeight(1.0, 0.0)
+        add(fieldPassword, new CustomGbc().setPosition(0, 1).setWeight(1.0, 0.0)
                 .setAnchor(GridBagConstraints.CENTER).setInsets(5, 10, 5, 10));
-        add(buttonLogin, new GbcCustom().setPosition(0, 2).setWeight(1.0, 0.0)
+        add(buttonLogin, new CustomGbc().setPosition(0, 2).setWeight(1.0, 0.0)
                 .setAnchor(GridBagConstraints.CENTER).setInsets(5, 10, 5, 10));
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout());
         buttonPanel.add(buttonLogin);
         buttonPanel.add(buttonRegister);
-        add(buttonPanel, new GbcCustom().setPosition(0, 3).setWeight(1.0, 0.0)
+        add(buttonPanel, new CustomGbc().setPosition(0, 3).setWeight(1.0, 0.0)
                 .setAnchor(GridBagConstraints.CENTER).setInsets(5, 10, 5, 10));
-        add(infoLabel, new GbcCustom().setPosition(0, 4).setWeight(1.0, 0.0)
+        add(infoLabel, new CustomGbc().setPosition(0, 4).setWeight(1.0, 0.0)
                 .setAnchor(GridBagConstraints.CENTER).setInsets(5, 10, 5, 10));
 
         handleButtonListeners();
@@ -154,9 +154,9 @@ public class LoginFrame extends JFrame {
             password.setHorizontalAlignment(JTextField.LEFT);
             password.setEditable(true);
             setLayout(new GridBagLayout());
-            add(label, new GbcCustom().setPosition(0, 0).setWeight(0.0, 0.0)
+            add(label, new CustomGbc().setPosition(0, 0).setWeight(0.0, 0.0)
                     .setInsets(2, 5, 2, 5).setAnchor(GridBagConstraints.EAST));
-            add(password, new GbcCustom().setPosition(1, 0).setWeight(1.0, 1.0)
+            add(password, new CustomGbc().setPosition(1, 0).setWeight(1.0, 1.0)
                     .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 0, 2, 10).setAnchor(GridBagConstraints.WEST));
         }
 

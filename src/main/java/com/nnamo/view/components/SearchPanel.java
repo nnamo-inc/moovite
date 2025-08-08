@@ -6,8 +6,8 @@ import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
 import com.nnamo.view.customcomponents.CustomTable;
-import com.nnamo.view.customcomponents.GbcCustom;
-import com.nnamo.view.customcomponents.SearchBar;
+import com.nnamo.view.customcomponents.CustomGbc;
+import com.nnamo.view.customcomponents.CustomSearchBar;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
@@ -18,7 +18,7 @@ import static com.nnamo.enums.ColumnName.*;
 
 public class SearchPanel extends JPanel {
 
-    SearchBar searchBar = new SearchBar();
+    CustomSearchBar customSearchBar = new CustomSearchBar();
     CustomTable tableStop = new CustomTable(new ColumnName[]{ NOME, CODICE }, CODICE);
     CustomTable tableRoute = new CustomTable(new ColumnName[]{ LINEA, CODICE }, CODICE);
 
@@ -29,14 +29,14 @@ public class SearchPanel extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         // search bar
-        add(searchBar, new GbcCustom().setPosition(0, 0).setFill(GridBagConstraints.HORIZONTAL).setInsets(5, 5, 5, 5));
+        add(customSearchBar, new CustomGbc().setPosition(0, 0).setFill(GridBagConstraints.HORIZONTAL).setInsets(5, 5, 5, 5));
 
         // border for table stop and table stop
         TitledBorder tableStopBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Fermate");
         tableStop.setBorder(BorderFactory.createCompoundBorder(tableStopBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
 
         tableStop.setIsSearchable(false);
-        add(tableStop, new GbcCustom().setPosition(0, 1).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
+        add(tableStop, new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
                 .setInsets(2, 5, 2, 5));
 
         // border for table route and table route
@@ -44,13 +44,13 @@ public class SearchPanel extends JPanel {
         tableRoute.setBorder(BorderFactory.createCompoundBorder(tableRouteBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
 
         tableRoute.setIsSearchable(false);
-        add(tableRoute, new GbcCustom().setPosition(0, 2).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
+        add(tableRoute, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
                 .setInsets(2, 5, 2, 5));
         setVisible(false);
     }
 
     public void addSearchListener(SearchBarListener listener) {
-        searchBar.addSearchListener(listener);
+        customSearchBar.addSearchListener(listener);
     }
 
     public void updateView(List<StopModel> stopModels, List<RouteModel> routeModels) {

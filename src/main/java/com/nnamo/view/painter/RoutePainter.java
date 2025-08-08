@@ -1,4 +1,4 @@
-package com.nnamo.view;
+package com.nnamo.view.painter;
 
 import com.nnamo.models.StopModel;
 import org.jxmapviewer.JXMapViewer;

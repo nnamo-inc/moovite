@@ -9,7 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class SwitchBar extends JPanel {
+public class CustomSwitchBar extends JPanel {
 
     private final JLabel label;
     private final JButton button = new JButton("Toggle");
@@ -18,7 +18,7 @@ public class SwitchBar extends JPanel {
     private RealtimeStatus status;
 
     // CONSTRUCTORS //
-    public SwitchBar() {
+    public CustomSwitchBar() {
         super();
         this.status = RealtimeStatus.OFFLINE;
         this.label = new JLabel("Status: offline");
@@ -26,20 +26,14 @@ public class SwitchBar extends JPanel {
         handleActionListeners();
     }
 
-    public SwitchBar(RealtimeStatus initialStatus) {
-        this();
-        setStatus(initialStatus);
-    }
-
     // METHODS //
     private void handleLayout() {
         setLayout(new GridBagLayout());
-        add(label, new GbcCustom().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER).setWeight(1.0, 1.0)
+        add(label, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER).setWeight(1.0, 1.0)
                 .setInsets(2, 5, 2, 5));
         button.setMinimumSize(new Dimension(50, Integer.MAX_VALUE));
-        add(button, new GbcCustom().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL).setWeight(1.0, 1.0)
+        add(button, new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL).setWeight(1.0, 1.0)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
-        setVisible(false);
     }
 
     private void handleActionListeners() {

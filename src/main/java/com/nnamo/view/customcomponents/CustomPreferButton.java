@@ -25,7 +25,7 @@ public class CustomPreferButton extends JButton {
             case ADD -> {
 
                 this.mode = ButtonMode.ADD;
-                setText("<html><p>Aggiungi</p><p>" + itemName + "</p><p>dai Preferiti</p></html>");
+                setText("<html><p>Aggiungi</p><p>" + itemName + "</p><p>ai Preferiti</p></html>");
                 setBackground(CustomColor.RED);
 
                 addActionListener(new ActionListener() {
@@ -48,7 +48,6 @@ public class CustomPreferButton extends JButton {
                         favoriteBehaviour.removeFavorite(itemId);
                     }
                 });
-
 
             }
             case BOTH -> {

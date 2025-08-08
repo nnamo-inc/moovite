@@ -9,7 +9,7 @@ import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
 import com.nnamo.view.customcomponents.CustomPreferButton;
 import com.nnamo.view.customcomponents.CustomTable;
-import com.nnamo.view.customcomponents.GbcCustom;
+import com.nnamo.view.customcomponents.CustomGbc;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -40,12 +40,12 @@ public class PreferPanel extends JPanel {
         stopContainer.setBorder(
                 BorderFactory.createCompoundBorder(tableStopBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
         stopTable.setSearchColumns(NOME, CODICE);
-        stopContainer.add(stopTable, new GbcCustom().setPosition(0, 1).setFill(GridBagConstraints.BOTH)
+        stopContainer.add(stopTable, new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
         routeTable.setSearchColumns(LINEA, CODICE);
-        stopContainer.add(removeStopButton, new GbcCustom().setPosition(0, 2).setFill(GridBagConstraints.HORIZONTAL)
+        stopContainer.add(removeStopButton, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.HORIZONTAL)
                 .setWeight(1.0, 0.1).setInsets(2, 5, 2, 5));
-        add(stopContainer, new GbcCustom().setPosition(0, 0).setFill(GridBagConstraints.BOTH)
+        add(stopContainer, new CustomGbc().setPosition(0, 0).setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
 
         // Table Route
@@ -53,14 +53,13 @@ public class PreferPanel extends JPanel {
         routeContainer.setBorder(BorderFactory.createCompoundBorder(
                 tableRouteBorder,
                 BorderFactory.createEmptyBorder(2, 5, 2, 5)));
-        routeContainer.add(routeTable, new GbcCustom().setPosition(0, 4).setFill(GridBagConstraints.BOTH)
+        routeContainer.add(routeTable, new CustomGbc().setPosition(0, 4).setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
-        routeContainer.add(removeRouteButton, new GbcCustom().setPosition(0, 5).setFill(GridBagConstraints.HORIZONTAL)
+        routeContainer.add(removeRouteButton, new CustomGbc().setPosition(0, 5).setFill(GridBagConstraints.HORIZONTAL)
                 .setWeight(1.0, 0.1).setInsets(2, 5, 2, 5));
-        add(routeContainer, new GbcCustom().setPosition(0, 3).setFill(GridBagConstraints.BOTH)
+        add(routeContainer, new CustomGbc().setPosition(0, 3).setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
 
-        setPreferredSize(new Dimension(300, 600));
         setVisible(false);
     }
 

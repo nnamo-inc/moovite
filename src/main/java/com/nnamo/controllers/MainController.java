@@ -257,7 +257,7 @@ public class MainController {
 
     private void handleTableBehaviour() {
 
-        TableRowClickBehaviour stopClickBehaviour = new TableRowClickBehaviour() {
+        TableRowClickBehaviour defaultStopClickBehaviour = new TableRowClickBehaviour() {
             @Override
             public void onRowClick(Object rowData, int columnIndex) throws SQLException {
                 final int zoomLevel = 0;
@@ -278,10 +278,10 @@ public class MainController {
                 }
             }
         }; // QUESTA OK, NON LA TOCCARE
-        mainFrame.setSearchStopRowClickBehaviour(stopClickBehaviour);
-        mainFrame.setFavStopRowClickBehaviour(stopClickBehaviour);
+        mainFrame.setSearchStopRowClickBehaviour(defaultStopClickBehaviour);
+        mainFrame.setFavStopRowClickBehaviour(defaultStopClickBehaviour);
 
-        TableRowClickBehaviour routeClickBehaviour = new TableRowClickBehaviour() {
+        TableRowClickBehaviour defaultRouteClickBehaviour = new TableRowClickBehaviour() {
             @Override
             public void onRowClick(Object rowData ,int columnIndex) throws SQLException {
                 String routeId = (String) ((List<Object>) rowData).get(columnIndex);
@@ -320,18 +320,50 @@ public class MainController {
                 mainFrame.setMapPanelMapPosition(geoPosition, zoomLevel);
             }
         };
-        mainFrame.setSearchRouteRowClickBehaviour(routeClickBehaviour);
-        mainFrame.setFavRouteRowClickBehaviour(routeClickBehaviour);
-        mainFrame.setStopTimeRowClickBehaviour(routeClickBehaviour);
+        mainFrame.setSearchRouteRowClickBehaviour(defaultRouteClickBehaviour);
+        mainFrame.setFavRouteRowClickBehaviour(defaultRouteClickBehaviour);
+        mainFrame.setStopTimeRowClickBehaviour(defaultRouteClickBehaviour);
 
-//        TableRowClickBehaviour TableRouteRowClickBehaviour = new TableRowClickBehaviour() {
-//            @Override
-//            public void onRowClick(Object rowData,  int columnIndex) throws SQLException {
-//                System.out.println("Route clicked from stop time table: " + rowData);
-//                String routeNumber = (String) ((List<Object>) rowData).get(columnIndex);
-//                boolean isFavorite = db.isFavouriteRoute(sessionUser.getId(), routeNumber);
-//                mainFrame.updatePreferRouteButton(isFavorite, routeNumber);
-//            }};
+        TableRowClickBehaviour noZoomrouteClickBehaviour = new TableRowClickBehaviour() {
+            @Override
+            public void onRowClick(Object rowData ,int columnIndex) throws SQLException {
+                String routeId = (String) ((List<Object>) rowData).get(columnIndex);
+
+                boolean isFavorite = db.isFavouriteRoute(sessionUser.getId(), routeId);
+                mainFrame.updatePreferRouteButton(isFavorite, routeId);
+
+                System.out.println("Route clicked: " + routeId);
+
+                // get model from the db
+                List<StopModel> stopModels = db.getOrderedStopsForRoute(routeId);
+                if (stopModels.isEmpty()) {
+                    System.out.println("No stops found for route: " + routeId);
+                    return;
+                }
+
+                // get the first stop to center the map
+                StopModel firstStop = stopModels.get(columnIndex);
+
+                // debug the positions
+                for (StopModel stop : stopModels) {
+                    System.out.println("Stop: " + stop.getName() + " - Position: "
+                            + stop.getLatitude() + ", " + stop.getLongitude());
+                }
+
+                GeoPosition geoPosition = new GeoPosition(firstStop.getLatitude(), firstStop.getLongitude());
+                int zoomLevel = 5; // default zoom level
+
+                List<VehiclePosition> routePositions = realtimeService.getRoutesVehiclePositions(routeId);
+
+                // render stops and route lines on the map
+                mainFrame.getMapPanel().renderStopsRoute(stopModels);
+                mainFrame.getMapPanel().renderVehiclePositions(routePositions);
+                mainFrame.getMapPanel().repaintView();
+                mainFrame.setCurrentRouteId(routeId);
+                mainFrame.setMapPanelMapPosition(geoPosition, zoomLevel);
+            }
+        };
+
 
     }
 

@@ -19,13 +19,14 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Vector;
 
 public class CustomTable extends JPanel {
 
     JTable table;
     JButton resetSortingButton = new JButton("Reset Sorting");
-    SearchBar searchBar = new SearchBar();
+    CustomSearchBar customSearchBar = new CustomSearchBar();
 
     JScrollPane scrollPane;
     ColumnName[] tableColumns;
@@ -45,7 +46,6 @@ public class CustomTable extends JPanel {
     public CustomTable(ColumnName[] tableColumns, ColumnName columnSelect) {
         super(new BorderLayout());
         this.columnSelect = columnSelect;
-
         this.tableColumns = tableColumns;
         this.model = new DefaultTableModel(tableColumns, 0) {
             @Override
@@ -53,11 +53,9 @@ public class CustomTable extends JPanel {
                 return false;
             }
         };
-
         this.table = new JTable(model);
         this.scrollPane = new JScrollPane(table);
         add(scrollPane, BorderLayout.CENTER);
-
         this.sorter = new TableRowSorter(model);
         table.setRowSorter(sorter);
 
@@ -68,8 +66,10 @@ public class CustomTable extends JPanel {
         add(resetSortingButton, BorderLayout.SOUTH);
 
         checkSearchable();
-        checkClickRowData();
+        checkDataColumnAvailable();
+        initDefaultComparator();
         initListeners();
+
     }
 
     // METHODS //
@@ -92,13 +92,13 @@ public class CustomTable extends JPanel {
 
     private void checkSearchable() {
         if (isSearchable) {
-            add(searchBar, BorderLayout.NORTH);
+            add(customSearchBar, BorderLayout.NORTH);
         } else {
-            searchBar.setVisible(false);
+            customSearchBar.setVisible(false);
         }
     };
 
-    private void checkClickRowData() {
+    private void checkDataColumnAvailable() {
         if (Arrays.asList(tableColumns).contains(columnSelect)) {
             this.columnSelect = columnSelect;
         } else {
@@ -109,6 +109,80 @@ public class CustomTable extends JPanel {
         }
     };
 
+    ////////////// COMPLETAMENTE FATTO CON AI //////////////
+    private void initDefaultComparator() {
+        Comparator<Object> comparator = (o1, o2) -> {
+            String s1 = o1 == null ? "" : o1.toString().trim();
+            String s2 = o2 == null ? "" : o2.toString().trim();
+
+            // 1. Solo numeri che iniziano con 0
+            boolean s1OnlyDigits = s1.matches("\\d+");
+            boolean s2OnlyDigits = s2.matches("\\d+");
+            boolean s1StartsWithZero = s1OnlyDigits && s1.startsWith("0");
+            boolean s2StartsWithZero = s2OnlyDigits && s2.startsWith("0");
+            if (s1StartsWithZero && !s2StartsWithZero) return -1;
+            if (!s1StartsWithZero && s2StartsWithZero) return 1;
+            if (s1StartsWithZero && s2StartsWithZero)
+                return Long.compare(Long.parseLong(s1), Long.parseLong(s2));
+
+            // 2. Solo numeri (senza lettere)
+            if (s1OnlyDigits && !s2OnlyDigits) return -1;
+            if (!s1OnlyDigits && s2OnlyDigits) return 1;
+            if (s1OnlyDigits && s2OnlyDigits)
+                return Long.compare(Long.parseLong(s1), Long.parseLong(s2));
+
+            // 3. Numeri seguiti da lettere (es: 123abc)
+                boolean s1NumLet = s1.matches("\\d+[a-zA-Z]+.*");
+                boolean s2NumLet = s2.matches("\\d+[a-zA-Z]+.*");
+                if (s1NumLet && !s2NumLet) return -1;
+                if (!s1NumLet && s2NumLet) return 1;
+                if (s1NumLet && s2NumLet) {
+                    s1StartsWithZero = s1.startsWith("0");
+                    s2StartsWithZero = s2.startsWith("0");
+                    if (s1StartsWithZero && !s2StartsWithZero) return -1;
+                    if (!s1StartsWithZero && s2StartsWithZero) return 1;
+                    // Se entrambi iniziano con lo stesso tipo di cifra, confronto numerico e poi alfabetico
+                    String n1 = s1.replaceAll("\\D.*", "");
+                    String n2 = s2.replaceAll("\\D.*", "");
+                    int cmp = Long.compare(Long.parseLong(n1), Long.parseLong(n2));
+                    if (cmp != 0) return cmp;
+                    return s1.compareToIgnoreCase(s2);
+                }
+
+            // 4. Lettere seguite da numeri (es: abc123)
+            boolean s1LetNum = s1.matches("[a-zA-Z]+\\d+.*");
+            boolean s2LetNum = s2.matches("[a-zA-Z]+\\d+.*");
+            if (s1LetNum && !s2LetNum) return -1;
+            if (!s1LetNum && s2LetNum) return 1;
+            if (s1LetNum && s2LetNum) {
+                // Estrai la parte di lettere e la parte numerica
+                String l1 = s1.replaceAll("(\\D+).*", "$1");
+                String l2 = s2.replaceAll("(\\D+).*", "$1");
+                int cmp = l1.compareToIgnoreCase(l2);
+                if (cmp != 0) return cmp;
+                // Se le lettere sono uguali, confronta la parte numerica
+                String n1 = s1.replaceAll(".*?(\\d+).*", "$1");
+                String n2 = s2.replaceAll(".*?(\\d+).*", "$1");
+                return Long.compare(Long.parseLong(n1), Long.parseLong(n2));
+            }
+
+// 5. Nessun numero: solo lettere, ordina alfabeticamente
+            boolean s1NoNum = !s1.matches(".*\\d.*");
+            boolean s2NoNum = !s2.matches(".*\\d.*");
+            if (s1NoNum && !s2NoNum) return -1;
+            if (!s1NoNum && s2NoNum) return 1;
+            if (s1NoNum && s2NoNum) {
+                return s1.compareToIgnoreCase(s2);
+            }
+
+            // Fallback alfabetico
+            return s1.compareToIgnoreCase(s2);
+        };
+
+        for (int i = 0; i < tableColumns.length; i++) {
+            sorter.setComparator(i, comparator);
+        }
+    }
     // LISTENERS METHODS //
     public void initListeners() {
 
@@ -141,10 +215,10 @@ public class CustomTable extends JPanel {
 
         if (isSearchable) {
 
-            searchBar.getField().addKeyListener(new KeyAdapter() {
+            customSearchBar.getField().addKeyListener(new KeyAdapter() {
                 @Override
                 public void keyReleased(KeyEvent e) {
-                    String searchText = searchBar.getFieldText().trim();
+                    String searchText = customSearchBar.getFieldText().trim();
                     if (searchText.isEmpty()) {
                         sorter.setRowFilter(null);
                     } else {
@@ -163,10 +237,10 @@ public class CustomTable extends JPanel {
                 }
             });
 
-            searchBar.getButton().addActionListener(new ActionListener() {
+            customSearchBar.getButton().addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    searchBar.setField("");
+                    customSearchBar.setField("");
                     sorter.setRowFilter(null);
                 }
             });
@@ -192,7 +266,7 @@ public class CustomTable extends JPanel {
 
     // GETTERS AND SETTERS //
     public void setIsSearchable(boolean isSearchable) {
-        searchBar.setVisible(isSearchable);
+        customSearchBar.setVisible(isSearchable);
     }
 
     public JTable getTable() {
@@ -206,4 +280,4 @@ public class CustomTable extends JPanel {
     public TableRowSorter getRowSorter() {
         return sorter;
     }
-    }
+}

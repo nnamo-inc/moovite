@@ -12,8 +12,8 @@ import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.TripModel;
 import com.nnamo.models.RealtimeStopUpdate;
-import com.nnamo.view.customcomponents.GbcCustom;
-import com.nnamo.view.customcomponents.InfoBar;
+import com.nnamo.view.customcomponents.CustomGbc;
+import com.nnamo.view.customcomponents.CustomInfoBar;
 import com.nnamo.view.customcomponents.CustomTable;
 import com.nnamo.view.customcomponents.CustomPreferButton;
 
@@ -26,12 +26,12 @@ import static com.nnamo.enums.ColumnName.*;
 
 public class StopPanel extends JPanel {
     // Stop info components
-    private final InfoBar nomeFermata = new InfoBar("Nome fermata: ");
-    private final InfoBar idFermata = new InfoBar("ID fermata: ");
+    private final CustomInfoBar nomeFermata = new CustomInfoBar("Nome fermata: ");
+    private final CustomInfoBar idFermata = new CustomInfoBar("ID fermata: ");
     // Bus info components
-    private final InfoBar busInArrivo = new InfoBar("In arrivo: ");
-    private final InfoBar statoBusInArrivo = new InfoBar("Stato: ");
-    private final InfoBar numeroPosti = new InfoBar("Numero posti: ");
+    private final CustomInfoBar busInArrivo = new CustomInfoBar("In arrivo: ");
+    private final CustomInfoBar statoBusInArrivo = new CustomInfoBar("Stato: ");
+    private final CustomInfoBar numeroPosti = new CustomInfoBar("Numero posti: ");
     // Route info components
     private CustomTable table;
     // Prefer components
@@ -48,29 +48,29 @@ public class StopPanel extends JPanel {
 
         // Stop info panel
         JPanel PanelStopInfo = newStopInfoPanel();
-        add(PanelStopInfo, new GbcCustom().setPosition(0, 0).setAnchor(GridBagConstraints.WEST)
-                .setFill(GridBagConstraints.BOTH).setWeight(0.9, 0.9)
+        add(PanelStopInfo, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER)
+                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.1).setWidth(2)
                 .setInsets(2, 5, 2, 5));
 
-        // Bus info panel
-        JPanel PanelbusInfo = newBusInfoPanel();
-        add(PanelbusInfo, new GbcCustom().setPosition(0, 1).setAnchor(GridBagConstraints.WEST)
-                .setFill(GridBagConstraints.BOTH).setWeight(0.9, 0.9)
-                .setInsets(2, 5, 2, 5));
+//        // Bus info panel
+//        JPanel PanelbusInfo = newBusInfoPanel();
+//        add(PanelbusInfo, new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.WEST)
+//                .setFill(GridBagConstraints.BOTH).setWeight(0.9, 0.9)
+//                .setInsets(2, 5, 2, 5));
 
         // Route info panel
         JPanel tableRouteInfo = newRouteInfoPanel();
         TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Tabella corse");
         tableRouteInfo.setBorder(titledBorder);
         add(tableRouteInfo,
-                new GbcCustom().setPosition(1, 0).setHeight(2).setAnchor(GridBagConstraints.CENTER)
+                new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.WEST)
                         .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
                         .setInsets(2, 5, 2, 5));
 
         // Buttons prefer
         JPanel PanelPrefer = newPanelPrefer();
         add(PanelPrefer,
-                new GbcCustom().setPosition(2, 0).setHeight(2).setAnchor(GridBagConstraints.EAST)
+                new CustomGbc().setPosition(1, 1).setAnchor(GridBagConstraints.EAST)
                         .setFill(GridBagConstraints.BOTH).setWeight(0.1, 0.1)
                         .setInsets(2, 5, 2, 5));
 
@@ -87,53 +87,48 @@ public class StopPanel extends JPanel {
 
         // label name
         infoStop.add(nomeFermata,
-                new GbcCustom().setPosition(0, 0).setAnchor(GridBagConstraints.WEST)
-                        .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
-                        .setInsets(2, 5, 2, 5));
+                new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.WEST)
+                        .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0));
 
         // text name
-        infoStop.add(idFermata, new GbcCustom().setPosition(0, 1).setAnchor(GridBagConstraints.WEST)
-                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
-                .setInsets(2, 5, 2, 5));
+        infoStop.add(idFermata, new CustomGbc().setPosition(1, 0).setAnchor(GridBagConstraints.WEST)
+                .setFill(GridBagConstraints.BOTH).setWeight(0.3, 1.0));
 
         return infoStop;
     }
 
-    private JPanel newBusInfoPanel() {
-        // Info bus panel with border
-        JPanel infoBus = new JPanel(new GridBagLayout());
-        TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Informazioni bus");
-        infoBus.setBorder(titledBorder);
-
-        // label bus
-        infoBus.add(busInArrivo,
-                new GbcCustom().setPosition(0, 0).setAnchor(GridBagConstraints.WEST)
-                        .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
-                        .setInsets(2, 5, 2, 5));
-        // text bus
-        infoBus.add(statoBusInArrivo,
-                new GbcCustom().setPosition(0, 1).setAnchor(GridBagConstraints.WEST)
-                        .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
-                        .setInsets(2, 5, 2, 5));
-        // label state
-        infoBus.add(numeroPosti,
-                new GbcCustom().setPosition(0, 2).setAnchor(GridBagConstraints.WEST)
-                        .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
-                        .setInsets(2, 5, 2, 5));
-
-        return infoBus;
-    }
+//    private JPanel newBusInfoPanel() {
+//        // Info bus panel with border
+//        JPanel infoBus = new JPanel(new GridBagLayout());
+//        TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Informazioni bus");
+//        infoBus.setBorder(titledBorder);
+//
+//        // label bus
+//        infoBus.add(busInArrivo,
+//                new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.WEST)
+//                        .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
+//                        .setInsets(2, 5, 2, 5));
+//        // text bus
+//        infoBus.add(statoBusInArrivo,
+//                new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.WEST)
+//                        .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
+//                        .setInsets(2, 5, 2, 5));
+//        // label state
+//        infoBus.add(numeroPosti,
+//                new CustomGbc().setPosition(0, 2).setAnchor(GridBagConstraints.WEST)
+//                        .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
+//                        .setInsets(2, 5, 2, 5));
+//
+//        return infoBus;
+//    }
 
     private JPanel newRouteInfoPanel() {
         JPanel mainPanel = new JPanel(new GridBagLayout());
         this.table = new CustomTable( new ColumnName[]{LINEA, DIREZIONE, ORARIO, STATO, MINUTIRIMAMENTI, POSTIDISPONIBILI}, LINEA);
         table.setSearchColumns(LINEA, DIREZIONE, ORARIO);
         // Table
-        mainPanel.add(table, new GbcCustom().setPosition(0, 1).setAnchor(GridBagConstraints.CENTER)
+        mainPanel.add(table, new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.CENTER)
                 .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
-
-        table.getRowSorter().setSortable(1, false);
-
         return mainPanel;
     }
 
@@ -147,12 +142,12 @@ public class StopPanel extends JPanel {
         favoriteStopButton.setMinimumSize(minButtonSize);
         favoriteRouteButton.setMinimumSize(minButtonSize);
         // button prefer
-        panelPrefer.add(favoriteStopButton, new GbcCustom().setPosition(0, 0)
+        panelPrefer.add(favoriteStopButton, new CustomGbc().setPosition(0, 0)
                 .setInsets(2, 5, 2, 5).setAnchor(GridBagConstraints.CENTER)
                 .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0));
 
         favoriteRouteButton.setEnabled(false);
-        panelPrefer.add(favoriteRouteButton, new GbcCustom().setPosition(0, 1)
+        panelPrefer.add(favoriteRouteButton, new CustomGbc().setPosition(0, 1)
                 .setInsets(2, 5, 2, 5).setAnchor(GridBagConstraints.CENTER)
                 .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0));
         return panelPrefer;

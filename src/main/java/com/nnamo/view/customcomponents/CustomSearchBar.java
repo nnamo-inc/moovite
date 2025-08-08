@@ -9,7 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class SearchBar extends JPanel {
+public class CustomSearchBar extends JPanel {
 
     private final JTextField field = new JTextField(20);
     private final JLabel label = new JLabel("Search:");
@@ -17,13 +17,13 @@ public class SearchBar extends JPanel {
     private final ArrayList<SearchBarListener> listeners = new ArrayList<>();
 
     // CONSTRUCTOR //
-    public SearchBar() {
+    public CustomSearchBar() {
         super();
         setLayout(new GridBagLayout());
-        add(label, new GbcCustom().setPosition(0, 0).setAnchor(GridBagConstraints.WEST).setWeight(0, 1.0).setInsets(5, 5, 5, 5));
-        add(field, new GbcCustom().setPosition(1, 0).setFill(GridBagConstraints.HORIZONTAL).setWeight(1.0, 0.0).setWeight(1.0, 1.0).setInsets(5, 5, 5, 5));
+        add(label, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.WEST).setWeight(0, 1.0).setInsets(5, 5, 5, 5));
+        add(field, new CustomGbc().setPosition(1, 0).setFill(GridBagConstraints.HORIZONTAL).setWeight(1.0, 0.0).setWeight(1.0, 1.0).setInsets(5, 5, 5, 5));
         button.setBackground(CustomColor.RED);
-        add(button, new GbcCustom().setPosition(2, 0).setAnchor(GridBagConstraints.EAST).setWeight(0, 0.0).setInsets(5, 5, 5, 5));
+        add(button, new CustomGbc().setPosition(2, 0).setAnchor(GridBagConstraints.EAST).setWeight(0, 0.0).setInsets(5, 5, 5, 5));
 
         field.addActionListener(new ActionListener() {
             @Override

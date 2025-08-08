@@ -1,4 +1,4 @@
-package com.nnamo.view;
+package com.nnamo.view.painter;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Objects;
+
 import javax.imageio.ImageIO;
 
 import org.jxmapviewer.JXMapViewer;
@@ -13,12 +14,12 @@ import org.jxmapviewer.viewer.Waypoint;
 import org.jxmapviewer.viewer.WaypointPainter;
 import org.jxmapviewer.viewer.WaypointRenderer;
 
-public class StopPainter extends WaypointPainter<Waypoint> {
+public class PositionPainter extends WaypointPainter<Waypoint> {
     private final JXMapViewer map;
     private final HashMap<Sizes, BufferedImage> icons = new HashMap<Sizes, BufferedImage>();
     private BufferedImage currentIcon;
 
-    // Inner enum to define the sizes of the stop icons
+    // Inner enum to define the sizes of the position icons
     public enum Sizes {
         EXTRA_SMALL,
         SMALL,
@@ -26,18 +27,18 @@ public class StopPainter extends WaypointPainter<Waypoint> {
         LARGE,
     }
 
-    public StopPainter(JXMapViewer map) throws IOException {
+    public PositionPainter(JXMapViewer map) throws IOException {
         super();
         this.map = map;
 
         icons.put(Sizes.EXTRA_SMALL, ImageIO
-                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/stop_extra_small.png"))));
+                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/vehicle_extra_small.png"))));
         icons.put(Sizes.SMALL, ImageIO
-                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/stop_small.png"))));
+                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/vehicle_small.png"))));
         icons.put(Sizes.MEDIUM, ImageIO
-                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/stop_medium.png"))));
-        icons.put(Sizes.LARGE, ImageIO
-                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/stop_large.png"))));
+                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/vehicle_flame_medium.png"))));
+        // icons.put(Sizes.LARGE, ImageIO
+        // .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/vehicle_medium.png"))));
     }
 
     // GETTERS AND SETTERS OUTER CLASS //
@@ -52,8 +53,9 @@ public class StopPainter extends WaypointPainter<Waypoint> {
     public void repaint() {
         int zoom = map.getZoom();
         currentIcon = icons.get(Sizes.MEDIUM);
-        final BufferedImage icon = (zoom <= 1) ? icons.get(Sizes.MEDIUM) : icons.get(Sizes.SMALL);
+        final BufferedImage icon = (zoom < 1) ? icons.get(Sizes.MEDIUM) : icons.get(Sizes.SMALL);
         this.currentIcon = icon;
+
         // Update the waypoint painter with the new icon with an anonymous class
         this.setRenderer(new WaypointRenderer<Waypoint>() {
             @Override

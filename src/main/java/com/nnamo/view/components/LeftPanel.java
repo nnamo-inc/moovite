@@ -11,24 +11,19 @@ import com.nnamo.enums.UpdateMode;
 import com.nnamo.interfaces.*;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
-import com.nnamo.view.customcomponents.SwitchBar;
+import com.nnamo.view.customcomponents.CustomSwitchBar;
 
 public class LeftPanel extends JPanel {
     JPanel modularPanel = new JPanel(new BorderLayout());
     SearchPanel searchPanel = new SearchPanel();
     PreferPanel preferPanel = new PreferPanel();
-    SwitchBar onlineSwitchButton = new SwitchBar();
-
-    // TODO: change to FavoritePanel
-    SwitchBar favoritePanel = new SwitchBar();
+    SettingPanel settingPanel = new SettingPanel();
 
     ButtonPanel buttonPanel = new ButtonPanel(new LinkedHashMap<>() {
         {
             put(searchPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/search_small.png"))));
             put(preferPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/favorite_small.png"))));
-            put(onlineSwitchButton,
-                    new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/online_settings_small.png"))));
-            put(favoritePanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/sidebar_stop_small.png"))));
+            put(settingPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/setting_small.png"))));
         }
     });
 
@@ -91,8 +86,7 @@ public class LeftPanel extends JPanel {
     }
 
     public void setRealtimeStatus(RealtimeStatus status) {
-        this.onlineSwitchButton.setStatus(status);
-        System.out.println(this.onlineSwitchButton);
+        this.settingPanel.setRealtimeStatus(status);
     }
 
     // BEHAVIOUR //
@@ -129,6 +123,7 @@ public class LeftPanel extends JPanel {
     }
 
     public void setRealtimeSwitchListener(SwitchBarListener listener) {
-        this.onlineSwitchButton.addSwitchListener(listener);
+        this.settingPanel.setRealtimeSwitchListener(listener);
     }
+
 }

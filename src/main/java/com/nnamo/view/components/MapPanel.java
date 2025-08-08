@@ -5,9 +5,9 @@ import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.nnamo.interfaces.WaypointBehaviour;
 import com.nnamo.interfaces.ZoomBehaviour;
 import com.nnamo.models.StopModel;
-import com.nnamo.view.PositionPainter;
-import com.nnamo.view.RoutePainter;
-import com.nnamo.view.StopPainter;
+import com.nnamo.view.painter.PositionPainter;
+import com.nnamo.view.painter.RoutePainter;
+import com.nnamo.view.painter.StopPainter;
 
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
