@@ -23,6 +23,7 @@ import org.onebusaway.gtfs.model.Trip;
 import org.sqlite.Function;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class DatabaseService {
         TableUtils.createTableIfNotExists(connection, FavoriteRouteModel.class);
     }
 
-    public void preloadGtfsData(StaticGtfsService gtfs) throws SQLException, IOException {
+    public void preloadGtfsData(StaticGtfsService gtfs) throws SQLException, IOException, URISyntaxException {
         if (needsCaching()) {
             System.out.println("Starting GTFS data import...");
             gtfs.load();

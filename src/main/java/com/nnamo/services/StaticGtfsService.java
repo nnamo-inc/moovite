@@ -5,6 +5,10 @@ import org.onebusaway.gtfs.serialization.GtfsReader;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Paths;
+import java.util.Objects;
 
 public class StaticGtfsService {
 
@@ -17,10 +21,13 @@ public class StaticGtfsService {
         this.store = store;
     }
 
-    public void load() throws IOException {
+    public void load() throws IOException, URISyntaxException {
         GtfsReader reader = new GtfsReader();
         reader.setEntityStore(this.store);
-        reader.setInputLocation(new File("assets/gtfs/rome_static_gtfs.zip"));
+
+        URL staticFeedURL = getClass().getResource("rome_static_gtfs.zip");
+        File staticFeedFile = Paths.get(staticFeedURL.toURI()).toFile();
+        reader.setInputLocation(staticFeedFile);
         reader.run();
         System.out.println("Dati GTFS statici caricati con successo.");
     }
