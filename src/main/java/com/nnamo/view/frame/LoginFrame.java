@@ -16,8 +16,8 @@ import java.sql.SQLException;
 
 public class LoginFrame extends JFrame {
 
-    private final CustomInfoBar fieldUsername = new CustomInfoBar("Username:");
-    private final PasswordBar fieldPassword = new PasswordBar();
+    private final CustomInfoBar usernameField = new CustomInfoBar("Username:");
+    private final PasswordBar passwordField = new PasswordBar();
     private final JButton buttonLogin = new JButton("Login");
     private final JButton buttonRegister = new JButton("Registrati");
     private final JLabel infoLabel = new JLabel("");
@@ -33,10 +33,10 @@ public class LoginFrame extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        fieldUsername.getJTextField().setEditable(true);
-        add(fieldUsername, new CustomGbc().setPosition(0, 0).setWeight(1.0, 0.0)
+        usernameField.getJTextField().setEditable(true);
+        add(usernameField, new CustomGbc().setPosition(0, 0).setWeight(1.0, 0.0)
                 .setAnchor(GridBagConstraints.CENTER).setInsets(10, 10, 5, 10));
-        add(fieldPassword, new CustomGbc().setPosition(0, 1).setWeight(1.0, 0.0)
+        add(passwordField, new CustomGbc().setPosition(0, 1).setWeight(1.0, 0.0)
                 .setAnchor(GridBagConstraints.CENTER).setInsets(5, 10, 5, 10));
         add(buttonLogin, new CustomGbc().setPosition(0, 2).setWeight(1.0, 0.0)
                 .setAnchor(GridBagConstraints.CENTER).setInsets(5, 10, 5, 10));
@@ -53,10 +53,12 @@ public class LoginFrame extends JFrame {
     }
 
     public void open() {
+        resetFields();
         setVisible(true);
     }
 
     public void close() {
+        resetFields();
         setVisible(false);
     }
 
@@ -64,8 +66,8 @@ public class LoginFrame extends JFrame {
         this.buttonLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String username = fieldUsername.getJTextField().getText();
-                String password = new String(fieldPassword.getJPasswordField().getPassword());
+                String username = usernameField.getJTextField().getText();
+                String password = passwordField.getPasswordField();
                 if (loginBehavior != null) {
                     if (username == null || username.isEmpty()) {
                         infoLabel.setText("Username field is empty");
@@ -93,8 +95,8 @@ public class LoginFrame extends JFrame {
         this.buttonRegister.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String username = fieldUsername.getJTextField().getText();
-                String password = new String(fieldPassword.getJPasswordField().getPassword());
+                String username = usernameField.getJTextField().getText();
+                String password = passwordField.getPasswordField();
                 if (registerBehavior != null) {
                     try {
                         if (username == null || username.isEmpty()) {
@@ -133,8 +135,9 @@ public class LoginFrame extends JFrame {
     }
 
     public void resetFields() {
-        fieldUsername.getJTextField().setText("");
-        fieldPassword.getJPasswordField().setText("");
+        usernameField.setTextField("");
+        passwordField.setText("");
+        infoLabel.setText("");
     }
 
     public void setInfoText(String infoText) {
@@ -143,26 +146,30 @@ public class LoginFrame extends JFrame {
 
     private class PasswordBar extends JPanel {
         private final JLabel label;
-        private final JPasswordField password;
+        private final JPasswordField passwordField;
 
         // CONSTRUCTOR //
         public PasswordBar() {
             super();
             label = new JLabel("Password:");
             label.setHorizontalAlignment(SwingConstants.RIGHT);
-            password = new JPasswordField(20);
-            password.setHorizontalAlignment(JTextField.LEFT);
-            password.setEditable(true);
+            passwordField = new JPasswordField(20);
+            passwordField.setHorizontalAlignment(JTextField.LEFT);
+            passwordField.setEditable(true);
             setLayout(new GridBagLayout());
             add(label, new CustomGbc().setPosition(0, 0).setWeight(0.0, 0.0)
                     .setInsets(2, 5, 2, 5).setAnchor(GridBagConstraints.EAST));
-            add(password, new CustomGbc().setPosition(1, 0).setWeight(1.0, 1.0)
+            add(passwordField, new CustomGbc().setPosition(1, 0).setWeight(1.0, 1.0)
                     .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 0, 2, 10).setAnchor(GridBagConstraints.WEST));
         }
 
         // GETTERS AND SETTERS //
-        public JPasswordField getJPasswordField() {
-            return password;
+        public String getPasswordField() {
+            return new String(this.passwordField.getPassword());
+        }
+
+        public void setText(String text) {
+            this.passwordField.setText(text);
         }
     }
 

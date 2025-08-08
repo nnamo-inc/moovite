@@ -42,7 +42,7 @@ public class UserController {
         if (sessionExists()) {
             UserModel user = db.getUserById(userId);
 
-            // Session id is stored but the user is not in the database: session.txt gets
+            // If session id is stored but the user is not in the database: session.txt gets
             // deleted
             if (user == null) {
                 deleteCurrentSession();
@@ -62,8 +62,6 @@ public class UserController {
         loginFrame.setLoginBehaviour(new LoginBehaviour() {
             @Override
             public AuthResult login(String username, String password) throws SQLException {
-                System.out.printf("Login: %s %s%n", username, password);
-
                 UserModel user = db.getUserByName(username);
                 if (user != null && hasher.verify(user.getPasswordHash(), password.getBytes())) {
                     createSession(user);

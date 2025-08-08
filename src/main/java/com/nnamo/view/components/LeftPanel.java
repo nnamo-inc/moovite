@@ -14,16 +14,18 @@ import com.nnamo.models.StopModel;
 import com.nnamo.view.customcomponents.CustomSwitchBar;
 
 public class LeftPanel extends JPanel {
-    JPanel modularPanel = new JPanel(new BorderLayout());
-    SearchPanel searchPanel = new SearchPanel();
-    PreferPanel preferPanel = new PreferPanel();
-    SettingPanel settingPanel = new SettingPanel();
+    private JPanel modularPanel = new JPanel(new BorderLayout());
+    private SearchPanel searchPanel = new SearchPanel();
+    private PreferPanel preferPanel = new PreferPanel();
+    private SettingPanel settingPanel = new SettingPanel();
 
     ButtonPanel buttonPanel = new ButtonPanel(new LinkedHashMap<>() {
         {
             put(searchPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/search_small.png"))));
-            put(preferPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/favorite_small.png"))));
-            put(settingPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/setting_small.png"))));
+            put(preferPanel,
+                    new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/favorite_small.png"))));
+            put(settingPanel,
+                    new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/setting_small.png"))));
         }
     });
 
@@ -124,6 +126,10 @@ public class LeftPanel extends JPanel {
 
     public void setRealtimeSwitchListener(SwitchBarListener listener) {
         this.settingPanel.setRealtimeSwitchListener(listener);
+    }
+
+    public void setLogoutBehaviour(LogoutBehaviour behaviour) {
+        settingPanel.setLogoutBehaviour(behaviour);
     }
 
 }

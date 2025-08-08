@@ -175,6 +175,9 @@ public class MainFrame extends JFrame {
     }
 
     // BEHAVIOUR //
+    public void setLogoutBehaviour(LogoutBehaviour behaviour) {
+        leftPanel.setLogoutBehaviour(behaviour);
+    }
 
     // Left Panel Behaviour //
     public void setFavStopBehaviour(FavoriteBehaviour behaviour) {

@@ -33,7 +33,6 @@ public class MainController {
     UserModel sessionUser;
     boolean loaded = false;
 
-
     // CONSTRUCTORS //
     public MainController(DatabaseService db, RealtimeGtfsService realtimeService) throws IOException {
         this.db = db;
@@ -67,6 +66,20 @@ public class MainController {
         });
         userController.run();
 
+        // Logout Behaviour.
+        mainFrame.setLogoutBehaviour(new LogoutBehaviour() {
+            @Override
+            public void onLogout() {
+                userController.deleteCurrentSession();
+                mainFrame.close();
+                try {
+                    userController.run();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
         handleRealtimeBehaviour();
         realtimeService.startBackgroundThread();
         mainFrame.setRealtimeStatus(RealtimeStatus.ONLINE); // Changing realtime status notifies the observer method,
@@ -88,7 +101,8 @@ public class MainController {
         mainFrame.setLocalMapCache(cacheDir);
     }
 
-    private void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes, List<RealtimeStopUpdate> realtimeUpdates) throws SQLException, IOException {
+    private void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes,
+            List<RealtimeStopUpdate> realtimeUpdates) throws SQLException, IOException {
         mainFrame.updateStopPanelInfo(stop.getId(), stop.getName());
         mainFrame.updateStopPanelTimes(stopTimes, realtimeUpdates);
         mainFrame.updateStopPanelFavButtons(db.isFavoriteStop(sessionUser.getId(), stop.getId()), stop.getId());
@@ -253,7 +267,8 @@ public class MainController {
                 }
             }
         };
-        mainFrame.setClickWaypointBehaviour(clickWaypointBehaviour);}
+        mainFrame.setClickWaypointBehaviour(clickWaypointBehaviour);
+    }
 
     private void handleTableBehaviour() {
 
@@ -283,7 +298,7 @@ public class MainController {
 
         TableRowClickBehaviour defaultRouteClickBehaviour = new TableRowClickBehaviour() {
             @Override
-            public void onRowClick(Object rowData ,int columnIndex) throws SQLException {
+            public void onRowClick(Object rowData, int columnIndex) throws SQLException {
                 String routeId = (String) ((List<Object>) rowData).get(columnIndex);
 
                 boolean isFavorite = db.isFavouriteRoute(sessionUser.getId(), routeId);
@@ -326,7 +341,7 @@ public class MainController {
 
         TableRowClickBehaviour noZoomrouteClickBehaviour = new TableRowClickBehaviour() {
             @Override
-            public void onRowClick(Object rowData ,int columnIndex) throws SQLException {
+            public void onRowClick(Object rowData, int columnIndex) throws SQLException {
                 String routeId = (String) ((List<Object>) rowData).get(columnIndex);
 
                 boolean isFavorite = db.isFavouriteRoute(sessionUser.getId(), routeId);
@@ -364,7 +379,6 @@ public class MainController {
             }
         };
 
-
     }
 
     private void handleButtonPanelClickBehaviour() {
@@ -390,8 +404,7 @@ public class MainController {
                     try {
                         mainFrame.initLeftPanelPreferPanelPreferTable(
                                 db.getFavoriteStops(sessionUser.getId()),
-                                db.getFavoriteRoutes(sessionUser.getId())
-                        );
+                                db.getFavoriteRoutes(sessionUser.getId()));
                         loaded = true;
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
