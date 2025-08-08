@@ -36,7 +36,7 @@ public class PositionPainter extends WaypointPainter<Waypoint> {
         icons.put(Sizes.SMALL, ImageIO
                 .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/vehicle_small.png"))));
         icons.put(Sizes.MEDIUM, ImageIO
-                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/vehicle_medium.png"))));
+                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/vehicle_flame_medium.png"))));
         // icons.put(Sizes.LARGE, ImageIO
         // .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/vehicle_medium.png"))));
     }
