@@ -25,7 +25,7 @@ public class StaticGtfsService {
         GtfsReader reader = new GtfsReader();
         reader.setEntityStore(this.store);
 
-        URL staticFeedURL = getClass().getResource("rome_static_gtfs.zip");
+        URL staticFeedURL = getClass().getResource("/rome_static_gtfs.zip");
         File staticFeedFile = Paths.get(staticFeedURL.toURI()).toFile();
         reader.setInputLocation(staticFeedFile);
         reader.run();
