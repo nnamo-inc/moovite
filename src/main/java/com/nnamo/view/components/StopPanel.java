@@ -210,11 +210,10 @@ public class StopPanel extends JPanel {
         favoriteRouteButton.setEnabled(false);
     }
 
-    public void updateFavButtons(boolean favorite) {
-        favoriteStopButton.setFavorite(favorite);
-        favoriteStopButton.setItemId(idFermata.getTextField());
-        updateFavRouteText(
-                "<html></p><p>Clicca su una riga</p><p>della tabella per</p><p>attivare il bottone</p></html>");
+    public void updateFavButtons(boolean isFavorite, String stopId) {
+        favoriteStopButton.update(isFavorite);
+        favoriteStopButton.setItemId(stopId);
+        favoriteRouteButton.reset();
     }
 
     public void updatePreferStopButton(boolean isFavorite, String stopId) {
@@ -238,12 +237,12 @@ public class StopPanel extends JPanel {
     }
 
     // GETTERS AND SETTERS //
-    public JTextField getTextID() {
-        return idFermata.getJTextField();
+    public CustomPreferButton getFavoriteStopButton() {
+        return favoriteStopButton;
     }
 
-    public JTextField getTextName() {
-        return nomeFermata.getJTextField();
+    public CustomPreferButton getFavoriteRouteButton() {
+        return favoriteRouteButton;
     }
 
     public String getStopId() {

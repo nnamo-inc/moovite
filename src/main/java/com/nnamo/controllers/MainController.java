@@ -3,6 +3,7 @@ package com.nnamo.controllers;
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.nnamo.enums.RealtimeStatus;
+import com.nnamo.enums.ResetType;
 import com.nnamo.enums.UpdateMode;
 import com.nnamo.interfaces.*;
 import com.nnamo.models.*;
@@ -158,6 +159,7 @@ public class MainController {
 
     private void handleFavouriteButtonClicksBehaviour() {
 
+        // STOP BEHAVIOUR //
         FavoriteBehaviour favStopBehaviour = new FavoriteBehaviour() {
             @Override
             public void addFavorite(String stopId) {
@@ -182,9 +184,39 @@ public class MainController {
                 }
             }
         };
-        mainFrame.setFavStopBehaviour(favStopBehaviour);
-        mainFrame.getLeftPanel().getPreferPanel().getRemoveStopButton().setFavBehaviour(favStopBehaviour);
 
+        FavoriteBehaviour bothStopStopBehaviour = new FavoriteBehaviour() {
+            @Override
+            public void addFavorite(String string) {
+                favStopBehaviour.addFavorite(string);
+            }
+
+            @Override
+            public void removeFavorite(String string) {
+                favStopBehaviour.removeFavorite(string);
+                mainFrame.getLeftPanel().getPreferPanel().getRemoveStopButton().reset(ResetType.STOP);
+            }
+        };
+        mainFrame.getStopPanel().getFavoriteStopButton().setFavBehaviour(bothStopStopBehaviour);
+
+        FavoriteBehaviour onlyRemovePreferFavStopBehaviour = new FavoriteBehaviour() {
+            @Override
+            public void addFavorite(String string) {
+
+            }
+
+            @Override
+            public void removeFavorite(String string) {
+                favStopBehaviour.removeFavorite(string);
+                mainFrame.getLeftPanel().getPreferPanel().getRemoveStopButton().reset();
+                mainFrame.getStopPanel().getFavoriteStopButton().reset(ResetType.STOP);
+
+
+            }
+        };
+        mainFrame.getLeftPanel().getPreferPanel().getRemoveStopButton().setFavBehaviour(onlyRemovePreferFavStopBehaviour);
+
+        // ROUTE BEHAVIOUR //
         FavoriteBehaviour favRouteBehaviour = new FavoriteBehaviour() {
             @Override
             public void addFavorite(String routeId) {
@@ -209,8 +241,174 @@ public class MainController {
                 }
             }
         };
-        mainFrame.setFavRouteBehaviour(favRouteBehaviour);
-        mainFrame.getLeftPanel().getPreferPanel().getRemoveRouteButton().setFavBehaviour(favRouteBehaviour);
+        mainFrame.getStopPanel().getFavoriteRouteButton().setFavBehaviour(favRouteBehaviour);
+
+        FavoriteBehaviour onlyAddSearchFavRouteBehaviour = new FavoriteBehaviour() {
+
+            @Override
+            public void addFavorite(String string) {
+                favRouteBehaviour.addFavorite(string);
+                mainFrame.getLeftPanel().getSearchPanel().getAddRouteButton().reset();
+            }
+
+            @Override
+            public void removeFavorite(String string) {
+
+            }
+        };
+        mainFrame.getLeftPanel().getSearchPanel().getAddRouteButton().setFavBehaviour(onlyAddSearchFavRouteBehaviour);
+
+        FavoriteBehaviour onlyRemovePreferFavRouteBehaviour = new FavoriteBehaviour() {
+
+            @Override
+            public void addFavorite(String string) {
+
+            }
+
+            @Override
+            public void removeFavorite(String string) {
+                favRouteBehaviour.removeFavorite(string);
+                mainFrame.getLeftPanel().getSearchPanel().getAddRouteButton().reset();
+            }
+        };
+        mainFrame.getLeftPanel().getPreferPanel().getRemoveRouteButton().setFavBehaviour(onlyRemovePreferFavRouteBehaviour);
+
+//        FavoriteBehaviour bothStopFavRouteBehaviour = new FavoriteBehaviour() {
+//            @Override
+//            public void addFavorite(String string) {
+//                favRouteBehaviour.addFavorite(string);
+//            }
+//
+//            @Override
+//            public void removeFavorite(String string) {
+//                favRouteBehaviour.removeFavorite(string);
+//            }
+//        };
+    }
+
+    private void handleTableBehaviour() {
+
+        // STOP TABLE BEHAVIOUR //
+        TableRowClickBehaviour ZoomStopClickBehaviour = new TableRowClickBehaviour() {
+            @Override
+            public void onRowClick(Object rowData, int columnIndex) throws SQLException, IOException {
+                final int zoomLevel = 0;
+                String stopId = (String) ((List<Object>) rowData).get(columnIndex);
+                StopModel stop = db.getStopById(stopId);
+                GeoPosition geoPosition = new GeoPosition(stop.getLatitude(), stop.getLongitude());
+                mainFrame.setMapPanelMapPosition(geoPosition, zoomLevel);
+                updateStopPanel(stop, db.getNextStopTimes(stopId, getCurrentTime(), getCurrentDate()), realtimeService.getStopUpdatesById(stopId));
+                List<RealtimeStopUpdate> realtimeUpdates = realtimeService.getStopUpdatesById(stop.getId());
+                try {
+                    updateStopPanel(stop, db.getNextStopTimes(stopId, getCurrentTime(), getCurrentDate()),
+                            realtimeUpdates);
+                    boolean isFavorite = db.isFavoriteStop(sessionUser.getId(), stopId);
+                    mainFrame.updateStopPanelFavButtons(isFavorite, stopId);
+//                    mainFrame.updatePreferStopButton(isFavorite, stopId);
+
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+        mainFrame.setSearchStopRowClickBehaviour(ZoomStopClickBehaviour);
+
+        TableRowClickBehaviour PreferStopClickBehaviour = new TableRowClickBehaviour() {
+            @Override
+            public void onRowClick(Object rowData, int columnIndex) throws SQLException, IOException {
+                ZoomStopClickBehaviour.onRowClick(rowData, columnIndex);
+                String stopId = (String) ((List<Object>) rowData).get(columnIndex);
+                boolean isFavorite = db.isFavoriteStop(sessionUser.getId(), stopId);
+                mainFrame.getLeftPanel().getPreferPanel().getRemoveStopButton().setItemId(stopId);
+                mainFrame.getLeftPanel().getPreferPanel().getRemoveStopButton().update(isFavorite);
+
+                mainFrame.getStopPanel().getFavoriteStopButton().setItemId(stopId);
+                mainFrame.getStopPanel().getFavoriteStopButton().update(isFavorite);
+                System.out.println("Click su Prefer Panel Stop: " + stopId + " is favorite: " + isFavorite + "XXXXXXXXXXXXXXXX");
+            }
+        };
+        mainFrame.getLeftPanel().getPreferPanel().setFavStopRowClickBehaviour(PreferStopClickBehaviour);
+
+        // ROUTE TABLE BEHAVIOUR //
+
+        TableRowClickBehaviour ZoomRouteClickBehaviour = new TableRowClickBehaviour() {
+            @Override
+            public void onRowClick(Object rowData, int columnIndex) throws SQLException {
+                String routeId = (String) ((List<Object>) rowData).get(columnIndex);
+
+                // get model from the db
+                List<StopModel> stopModels = db.getOrderedStopsForRoute(routeId);
+                if (stopModels.isEmpty()) {
+                    System.out.println("No stops found for route: " + routeId);
+                    return;
+                }
+
+                // get the first stop to center the map
+                StopModel firstStop = stopModels.get(columnIndex);
+
+                GeoPosition geoPosition = new GeoPosition(firstStop.getLatitude(), firstStop.getLongitude());
+                int zoomLevel = 5; // default zoom level
+
+                List<VehiclePosition> routePositions = realtimeService.getRoutesVehiclePositions(routeId);
+
+                // render stops and route lines on the map
+                mainFrame.getMapPanel().renderStopsRoute(stopModels);
+                mainFrame.getMapPanel().renderVehiclePositions(routePositions);
+                mainFrame.getMapPanel().repaintView();
+                mainFrame.setCurrentRouteId(routeId);
+                mainFrame.setMapPanelMapPosition(geoPosition, zoomLevel);
+            }
+        };
+        TableRowClickBehaviour noZoomRouteClickBehaviour = new TableRowClickBehaviour() {
+            @Override
+            public void onRowClick(Object rowData, int columnIndex) throws SQLException {
+                String routeId = (String) ((List<Object>) rowData).get(columnIndex);
+                mainFrame.setCurrentRouteId(routeId);
+            }
+        };
+
+        TableRowClickBehaviour StopRouteClickBehaviour = new TableRowClickBehaviour() {
+            @Override
+            public void onRowClick(Object rowData, int columnIndex) throws SQLException, IOException {
+                noZoomRouteClickBehaviour.onRowClick(rowData, columnIndex);
+                String routeId = (String) ((List<Object>) rowData).get(columnIndex);
+                boolean isFavorite = db.isFavouriteRoute(sessionUser.getId(), routeId);
+                mainFrame.getStopPanel().getFavoriteRouteButton().update(isFavorite);
+                mainFrame.getStopPanel().getFavoriteRouteButton().setItemId(routeId);
+                System.out.println("Click su Stop Panel Route: " + routeId + " is favorite: " + isFavorite + "XXXXXXXXXXXXXXXX");
+            }
+        };
+        mainFrame.setStopTimeRowClickBehaviour(StopRouteClickBehaviour);
+
+        TableRowClickBehaviour PreferRouteClickBehaviour = new TableRowClickBehaviour() {
+            @Override
+            public void onRowClick(Object rowData, int columnIndex) throws SQLException, IOException {
+                ZoomRouteClickBehaviour.onRowClick(rowData, columnIndex);
+
+                String routeId = (String) ((List<Object>) rowData).get(columnIndex);
+                boolean isFavorite = db.isFavouriteRoute(sessionUser.getId(), routeId);
+
+                mainFrame.getLeftPanel().getPreferPanel().getRemoveRouteButton().setItemId((routeId));
+                mainFrame.getLeftPanel().getPreferPanel().getRemoveRouteButton().update(isFavorite);
+                System.out.println("Click su Prefer Panel Route: " + routeId + " is favorite: " + isFavorite + "XXXXXXXXXXXXXXXX");
+            }
+        };
+        mainFrame.setFavRouteRowClickBehaviour(PreferRouteClickBehaviour);
+
+        TableRowClickBehaviour SearchRouteClickBehaviour = new TableRowClickBehaviour() {
+            @Override
+            public void onRowClick(Object rowData, int columnIndex) throws SQLException, IOException {
+                ZoomRouteClickBehaviour.onRowClick(rowData, columnIndex);
+
+                String routeId = (String) ((List<Object>) rowData).get(columnIndex);
+                boolean isFavorite = db.isFavouriteRoute(sessionUser.getId(), routeId);
+
+                mainFrame.getLeftPanel().getSearchPanel().getAddRouteButton().update(isFavorite);
+                mainFrame.getLeftPanel().getSearchPanel().getAddRouteButton().setItemId((String) ((List<Object>) rowData).get(columnIndex));
+                System.out.println("Click su Search Panel Route: " + routeId + " is favorite: " + isFavorite + "XXXXXXXXXXXXXXXX");
+            }
+        };
+        mainFrame.setSearchRouteRowClickBehaviour(SearchRouteClickBehaviour);
     }
 
     private void handleClickWaypointBehaviour() {
@@ -268,117 +466,6 @@ public class MainController {
             }
         };
         mainFrame.setClickWaypointBehaviour(clickWaypointBehaviour);
-    }
-
-    private void handleTableBehaviour() {
-
-        TableRowClickBehaviour defaultStopClickBehaviour = new TableRowClickBehaviour() {
-            @Override
-            public void onRowClick(Object rowData, int columnIndex) throws SQLException {
-                final int zoomLevel = 0;
-                String stopId = (String) ((List<Object>) rowData).get(columnIndex);
-                StopModel stop = db.getStopById(stopId);
-                GeoPosition geoPosition = new GeoPosition(stop.getLatitude(), stop.getLongitude());
-                mainFrame.setMapPanelMapPosition(geoPosition, zoomLevel);
-                List<RealtimeStopUpdate> realtimeUpdates = realtimeService.getStopUpdatesById(stop.getId());
-                try {
-                    updateStopPanel(stop, db.getNextStopTimes(stopId, getCurrentTime(), getCurrentDate()),
-                            realtimeUpdates);
-                    boolean isFavorite = db.isFavoriteStop(sessionUser.getId(), stopId);
-                    mainFrame.updateStopPanelFavButtons(isFavorite, stopId);
-                    mainFrame.updatePreferStopButton(isFavorite, stopId);
-
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }; // QUESTA OK, NON LA TOCCARE
-        mainFrame.setSearchStopRowClickBehaviour(defaultStopClickBehaviour);
-        mainFrame.setFavStopRowClickBehaviour(defaultStopClickBehaviour);
-
-        TableRowClickBehaviour defaultRouteClickBehaviour = new TableRowClickBehaviour() {
-            @Override
-            public void onRowClick(Object rowData, int columnIndex) throws SQLException {
-                String routeId = (String) ((List<Object>) rowData).get(columnIndex);
-
-                boolean isFavorite = db.isFavouriteRoute(sessionUser.getId(), routeId);
-                mainFrame.updatePreferRouteButton(isFavorite, routeId);
-
-                System.out.println("Route clicked: " + routeId);
-
-                // get model from the db
-                List<StopModel> stopModels = db.getOrderedStopsForRoute(routeId);
-                if (stopModels.isEmpty()) {
-                    System.out.println("No stops found for route: " + routeId);
-                    return;
-                }
-
-                // get the first stop to center the map
-                StopModel firstStop = stopModels.get(columnIndex);
-
-                // debug the positions
-                for (StopModel stop : stopModels) {
-                    System.out.println("Stop: " + stop.getName() + " - Position: "
-                            + stop.getLatitude() + ", " + stop.getLongitude());
-                }
-
-                GeoPosition geoPosition = new GeoPosition(firstStop.getLatitude(), firstStop.getLongitude());
-                int zoomLevel = 5; // default zoom level
-
-                List<VehiclePosition> routePositions = realtimeService.getRoutesVehiclePositions(routeId);
-
-                // render stops and route lines on the map
-                mainFrame.getMapPanel().renderStopsRoute(stopModels);
-                mainFrame.getMapPanel().renderVehiclePositions(routePositions);
-                mainFrame.getMapPanel().repaintView();
-                mainFrame.setCurrentRouteId(routeId);
-                mainFrame.setMapPanelMapPosition(geoPosition, zoomLevel);
-            }
-        };
-        mainFrame.setSearchRouteRowClickBehaviour(defaultRouteClickBehaviour);
-        mainFrame.setFavRouteRowClickBehaviour(defaultRouteClickBehaviour);
-        mainFrame.setStopTimeRowClickBehaviour(defaultRouteClickBehaviour);
-
-        TableRowClickBehaviour noZoomrouteClickBehaviour = new TableRowClickBehaviour() {
-            @Override
-            public void onRowClick(Object rowData, int columnIndex) throws SQLException {
-                String routeId = (String) ((List<Object>) rowData).get(columnIndex);
-
-                boolean isFavorite = db.isFavouriteRoute(sessionUser.getId(), routeId);
-                mainFrame.updatePreferRouteButton(isFavorite, routeId);
-
-                System.out.println("Route clicked: " + routeId);
-
-                // get model from the db
-                List<StopModel> stopModels = db.getOrderedStopsForRoute(routeId);
-                if (stopModels.isEmpty()) {
-                    System.out.println("No stops found for route: " + routeId);
-                    return;
-                }
-
-                // get the first stop to center the map
-                StopModel firstStop = stopModels.get(columnIndex);
-
-                // debug the positions
-                for (StopModel stop : stopModels) {
-                    System.out.println("Stop: " + stop.getName() + " - Position: "
-                            + stop.getLatitude() + ", " + stop.getLongitude());
-                }
-
-                GeoPosition geoPosition = new GeoPosition(firstStop.getLatitude(), firstStop.getLongitude());
-                int zoomLevel = 5; // default zoom level
-
-                List<VehiclePosition> routePositions = realtimeService.getRoutesVehiclePositions(routeId);
-
-                // render stops and route lines on the map
-                mainFrame.getMapPanel().renderStopsRoute(stopModels);
-                mainFrame.getMapPanel().renderVehiclePositions(routePositions);
-                mainFrame.getMapPanel().repaintView();
-                mainFrame.setCurrentRouteId(routeId);
-                mainFrame.setMapPanelMapPosition(geoPosition, zoomLevel);
-            }
-        };
-
     }
 
     private void handleButtonPanelClickBehaviour() {

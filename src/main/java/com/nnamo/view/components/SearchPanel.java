@@ -1,10 +1,12 @@
 package com.nnamo.view.components;
 
+import com.nnamo.enums.ButtonMode;
 import com.nnamo.enums.ColumnName;
 import com.nnamo.interfaces.SearchBarListener;
 import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
+import com.nnamo.view.customcomponents.CustomPreferButton;
 import com.nnamo.view.customcomponents.CustomTable;
 import com.nnamo.view.customcomponents.CustomGbc;
 import com.nnamo.view.customcomponents.CustomSearchBar;
@@ -21,6 +23,7 @@ public class SearchPanel extends JPanel {
     CustomSearchBar customSearchBar = new CustomSearchBar();
     CustomTable tableStop = new CustomTable(new ColumnName[]{ NOME, CODICE }, CODICE);
     CustomTable tableRoute = new CustomTable(new ColumnName[]{ LINEA, CODICE }, CODICE);
+    CustomPreferButton addRouteButton = new CustomPreferButton("Linea", ButtonMode.ADD);
 
     // CONSTRUCTOR //
     public SearchPanel() {
@@ -40,12 +43,19 @@ public class SearchPanel extends JPanel {
                 .setInsets(2, 5, 2, 5));
 
         // border for table route and table route
+        JPanel routePanel = new JPanel(new GridBagLayout());
         TitledBorder tableRouteBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Linee");
-        tableRoute.setBorder(BorderFactory.createCompoundBorder(tableRouteBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
+        routePanel.setBorder(BorderFactory.createCompoundBorder(tableRouteBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
 
         tableRoute.setIsSearchable(false);
-        add(tableRoute, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
+        routePanel.add(tableRoute, new CustomGbc().setPosition(0, 0).setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
                 .setInsets(2, 5, 2, 5));
+        routePanel.add(addRouteButton, new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL).setWeight(1.0, 0.1)
+                .setInsets(2, 5, 2, 5));
+        add(routePanel, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
+                .setInsets(2, 5, 2, 5));
+
+
         setVisible(false);
     }
 
@@ -74,5 +84,9 @@ public class SearchPanel extends JPanel {
 
     public void setSearchRouteRowClickBehaviour(TableRowClickBehaviour listener) {
         tableRoute.setRowClickBehaviour(listener);
+    }
+
+    public CustomPreferButton getAddRouteButton() {
+        return addRouteButton;
     }
 }

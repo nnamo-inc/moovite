@@ -232,7 +232,7 @@ public class MainFrame extends JFrame {
     }
 
     public void updateStopPanelFavButtons(boolean favorite, String stop) {
-        this.stopPanel.updateFavButtons(favorite);
+        this.stopPanel.updateFavButtons(favorite, stop);
     }
     // Map Panel Behaviour //
 
