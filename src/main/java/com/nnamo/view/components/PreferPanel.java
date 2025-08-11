@@ -77,39 +77,45 @@ public class PreferPanel extends JPanel {
         return removeStopButton;
     }
 
-
     // LISTENERS METHODS //
-    public void setTableCheckIsFavBehaviour(TableCheckIsFavBehaviour listener)
-    {
+    public void setTableCheckIsFavBehaviour(TableCheckIsFavBehaviour listener) {
         this.stopTable.setTableCheckIsFavBehaviour(listener);
         this.routeTable.setTableCheckIsFavBehaviour(listener);
     }
 
     public void initPreferTable(List<StopModel> stops, List<RouteModel> routes) {
         for (StopModel stop : stops) {
-            stopTable.addRow(new Object[] { stop.getName(), stop.getId() });
+            updateFavStopTable(stop, UpdateMode.ADD);
         }
         for (RouteModel route : routes) {
-            routeTable.addRow(new Object[] { route.getShortName(), route.getId() });
+            updateFavRouteTable(route, UpdateMode.ADD);
         }
     }
 
     public void updateFavStopTable(StopModel stop, UpdateMode updateMode) {
         switch (updateMode) {
             case ADD:
-                stopTable.addRow(new Object[] { stop.getName(), stop.getId() }); break;
+                stopTable.addRow(new Object[] { stop.getName(), stop.getId() });
+                break;
             case REMOVE:
-                stopTable.removeRow(stop.getId()); break;
+                stopTable.removeRow(stop.getId());
+                break;
         }
     }
 
     public void updateFavRouteTable(RouteModel route, UpdateMode updateMode) {
-            switch (updateMode) {
-                case ADD:
-                    routeTable.addRow(new Object[] { route.getLongName() != null ? route.getLongName() : "", route.getId(), route.getType() });; break;
-                case REMOVE:
-                    routeTable.removeRow(route.getId()); break;
-            }
+        switch (updateMode) {
+            case ADD:
+                routeTable.addRow(new Object[] {
+                        route.getLongName() != null ? route.getLongName() : route.getShortName(),
+                        route.getId(),
+                        route.getType(),
+                });
+                break;
+            case REMOVE:
+                routeTable.removeRow(route.getId());
+                break;
+        }
     }
 
     public void updatePreferStopButton(Boolean isFavorite, String stopId) {
