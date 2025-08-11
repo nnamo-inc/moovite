@@ -416,6 +416,15 @@ public class DatabaseService {
         return queryBuilder.query();
     }
 
+    public List<RouteModel> getStopRoutes(String stopId) throws SQLException {
+        Dao<RouteModel, String> routeDao = getDao(RouteModel.class);
+        String rawQuery = "SELECT DISTINCT r.* FROM routes r " +
+                "JOIN trips t ON r.id = t.route_id " +
+                "JOIN stop_times st ON t.id = st.trip_id " +
+                "WHERE st.stop_id = ?";
+        return routeDao.queryRaw(rawQuery, routeDao.getRawRowMapper(), stopId).getResults();
+    }
+
     public List<StopTimeModel> getStopTimes(String stopId) throws SQLException {
         Dao<StopTimeModel, String> stopTimeDao = getDao(StopTimeModel.class);
         Dao<StopModel, String> stopDao = getDao(StopModel.class);
