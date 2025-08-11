@@ -9,6 +9,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.SelectArg;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.table.TableUtils;
+import com.nnamo.enums.RouteType;
 import com.nnamo.models.*;
 import com.nnamo.utils.FuzzyMatch;
 
@@ -164,12 +165,27 @@ public class DatabaseService {
                 }
 
                 Route route = trip.getRoute();
+                RouteType routeType;
+                switch (route.getType()) {
+                    case 0:
+                        routeType = RouteType.TRAM;
+                        break;
+                    case 1:
+                        routeType = RouteType.METRO;
+                        break;
+                    case 3:
+                    default:
+                        routeType = RouteType.BUS;
+                        break;
+                }
+
                 if (!routeMap.containsKey(route.getId().getId())) {
                     RouteModel routeModel = new RouteModel(
                             route.getId().getId(),
                             agencyMap.get(route.getAgency().getId()),
                             route.getLongName(),
-                            route.getShortName());
+                            route.getShortName(),
+                            routeType);
                     routes.add(routeModel);
                     routeMap.put(route.getId().getId(), routeModel);
                 }

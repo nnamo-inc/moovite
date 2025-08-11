@@ -2,6 +2,7 @@ package com.nnamo.models;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import com.nnamo.enums.RouteType;
 
 @DatabaseTable(tableName = "routes")
 public class RouteModel {
@@ -20,19 +21,18 @@ public class RouteModel {
     @DatabaseField(canBeNull = true)
     private String shortName;
 
-    // This should be a foreign key that represents the type of the route
-    // https://gtfs.org/documentation/schedule/reference/#routestxt
-    // @DatabaseField
-    // private RouteType type;
+    @DatabaseField // Stores the type in the database as VARCHAR (string)
+    private RouteType type;
 
     public RouteModel() { // Empty constructor required by OrmLite
     }
 
-    public RouteModel(String id, AgencyModel agency, String longName, String shortName) { // Empty constructor required
+    public RouteModel(String id, AgencyModel agency, String longName, String shortName, RouteType routeType) {
         this.id = id;
         this.longName = longName;
         this.shortName = shortName;
         this.agency = agency;
+        this.type = routeType;
     }
 
     public String getId() {
@@ -49,5 +49,9 @@ public class RouteModel {
 
     public AgencyModel getAgency() {
         return agency;
+    }
+
+    public RouteType getType() {
+        return type;
     }
 }
