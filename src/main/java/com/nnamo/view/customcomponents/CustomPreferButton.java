@@ -106,7 +106,7 @@ public class CustomPreferButton extends JButton {
 
             case BOTH -> {
                 setEnabled(true);
-                this.favorite = isFavorite; // Sincronizza lo stato interno
+                this.favorite = isFavorite;
                 if (isFavorite) {
                     setText("<html><p>Rimuovi</p><p>" + itemName + "</p><p>dai Preferiti</p></html>");
                     setBackground(CustomColor.RED);

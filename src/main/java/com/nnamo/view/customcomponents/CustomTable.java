@@ -1,6 +1,7 @@
 package com.nnamo.view.customcomponents;
 
 import com.nnamo.enums.ColumnName;
+import com.nnamo.interfaces.TableCheckIsFavBehaviour;
 import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.interfaces.TableSearchBehaviour;
 import com.nnamo.utils.CustomColor;
@@ -40,7 +41,7 @@ public class CustomTable extends JPanel {
 
 
     TableRowClickBehaviour tableRowClickBehaviour;
-    TableSearchBehaviour tableSearchBehaviour;
+    TableCheckIsFavBehaviour tableCheckIsFavBehaviour;
 
     // CONSTRUCTOR //
     public CustomTable(ColumnName[] tableColumns, ColumnName columnSelect) {
@@ -196,8 +197,9 @@ public class CustomTable extends JPanel {
                         int modelRow = table.convertRowIndexToModel(selectedRow);
                         rowData = (Vector<Object>) model.getDataVector().get(modelRow);
                         try {
-                            int index = table.getColumnModel().getColumnIndex(columnSelect.toString());
-                            tableRowClickBehaviour.onRowClick(rowData, index);
+                            int columnIndex = table.getColumnModel().getColumnIndex(columnSelect.toString());
+                            boolean isFav = tableCheckIsFavBehaviour.onCheckIsFav(rowData, columnIndex);
+                            tableRowClickBehaviour.onRowClick(rowData, columnIndex, isFav);
                         } catch (SQLException | IOException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -245,10 +247,8 @@ public class CustomTable extends JPanel {
                 }
             });
         }
-
-    // LISTENERS METHODS //
     }
-
+        // LISTENERS METHODS //
     public void setRowClickBehaviour(TableRowClickBehaviour tableRowClickBehaviour) {
         this.tableRowClickBehaviour = tableRowClickBehaviour;
     }
@@ -262,6 +262,10 @@ public class CustomTable extends JPanel {
                 throw new IllegalArgumentException("Column index out of bounds: " + column);
             }
         }
+    }
+
+    public void setTableCheckIsFavBehaviour(TableCheckIsFavBehaviour tableCheckIsFavBehaviour) {
+        this.tableCheckIsFavBehaviour = tableCheckIsFavBehaviour;
     }
 
     // GETTERS AND SETTERS //

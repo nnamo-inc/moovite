@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 public class MainController {
 
@@ -210,8 +211,6 @@ public class MainController {
                 favStopBehaviour.removeFavorite(string);
                 mainFrame.getLeftPanel().getPreferPanel().getRemoveStopButton().reset();
                 mainFrame.getStopPanel().getFavoriteStopButton().reset(ResetType.STOP);
-
-
             }
         };
         mainFrame.getLeftPanel().getPreferPanel().getRemoveStopButton().setFavBehaviour(onlyRemovePreferFavStopBehaviour);
@@ -269,6 +268,7 @@ public class MainController {
             public void removeFavorite(String string) {
                 favRouteBehaviour.removeFavorite(string);
                 mainFrame.getLeftPanel().getSearchPanel().getAddRouteButton().reset();
+                mainFrame.getStopPanel().getFavoriteRouteButton().reset(ResetType.GENERIC);
             }
         };
         mainFrame.getLeftPanel().getPreferPanel().getRemoveRouteButton().setFavBehaviour(onlyRemovePreferFavRouteBehaviour);
@@ -288,10 +288,24 @@ public class MainController {
 
     private void handleTableBehaviour() {
 
-        // STOP TABLE BEHAVIOUR //
-        TableRowClickBehaviour ZoomStopClickBehaviour = new TableRowClickBehaviour() {
+        TableCheckIsFavBehaviour checkIsFavBehaviour = new TableCheckIsFavBehaviour() {
             @Override
-            public void onRowClick(Object rowData, int columnIndex) throws SQLException, IOException {
+            public boolean onCheckIsFav(Vector<Object> rowData, int columnIndex) {
+                try {
+                    String itemId = (String) (rowData).get(columnIndex);
+                    return db.isFavoriteStop(sessionUser.getId(), itemId) || db.isFavouriteRoute(sessionUser.getId(), itemId);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+        };
+        mainFrame.setTableCheckIsFavBehaviour(checkIsFavBehaviour);
+
+        // STOP TABLE BEHAVIOUR //
+        TableRowClickBehaviour zoomStopClickBehaviour = new TableRowClickBehaviour() {
+            @Override
+            public void onRowClick(Object rowData, int columnIndex, boolean isFav) throws SQLException, IOException {
                 final int zoomLevel = 0;
                 String stopId = (String) ((List<Object>) rowData).get(columnIndex);
                 StopModel stop = db.getStopById(stopId);
@@ -299,41 +313,38 @@ public class MainController {
                 mainFrame.setMapPanelMapPosition(geoPosition, zoomLevel);
                 updateStopPanel(stop, db.getNextStopTimes(stopId, getCurrentTime(), getCurrentDate()), realtimeService.getStopUpdatesById(stopId));
                 List<RealtimeStopUpdate> realtimeUpdates = realtimeService.getStopUpdatesById(stop.getId());
+
                 try {
                     updateStopPanel(stop, db.getNextStopTimes(stopId, getCurrentTime(), getCurrentDate()),
                             realtimeUpdates);
-                    boolean isFavorite = db.isFavoriteStop(sessionUser.getId(), stopId);
-                    mainFrame.updateStopPanelFavButtons(isFavorite, stopId);
-//                    mainFrame.updatePreferStopButton(isFavorite, stopId);
+                    mainFrame.updateStopPanelFavButtons(isFav, stopId);
 
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
         };
-        mainFrame.setSearchStopRowClickBehaviour(ZoomStopClickBehaviour);
+        mainFrame.setSearchStopRowClickBehaviour(zoomStopClickBehaviour);
 
         TableRowClickBehaviour PreferStopClickBehaviour = new TableRowClickBehaviour() {
             @Override
-            public void onRowClick(Object rowData, int columnIndex) throws SQLException, IOException {
-                ZoomStopClickBehaviour.onRowClick(rowData, columnIndex);
+            public void onRowClick(Object rowData, int columnIndex, boolean isFav) throws SQLException, IOException {
+                zoomStopClickBehaviour.onRowClick(rowData, columnIndex, isFav);
                 String stopId = (String) ((List<Object>) rowData).get(columnIndex);
-                boolean isFavorite = db.isFavoriteStop(sessionUser.getId(), stopId);
                 mainFrame.getLeftPanel().getPreferPanel().getRemoveStopButton().setItemId(stopId);
-                mainFrame.getLeftPanel().getPreferPanel().getRemoveStopButton().update(isFavorite);
+                mainFrame.getLeftPanel().getPreferPanel().getRemoveStopButton().update(isFav);
 
                 mainFrame.getStopPanel().getFavoriteStopButton().setItemId(stopId);
-                mainFrame.getStopPanel().getFavoriteStopButton().update(isFavorite);
-                System.out.println("Click su Prefer Panel Stop: " + stopId + " is favorite: " + isFavorite + "XXXXXXXXXXXXXXXX");
+                mainFrame.getStopPanel().getFavoriteStopButton().update(isFav);
+                System.out.println("Click su Prefer Panel Stop: " + stopId + " is favorite: " + isFav + "XXXXXXXXXXXXXXXX");
             }
         };
         mainFrame.getLeftPanel().getPreferPanel().setFavStopRowClickBehaviour(PreferStopClickBehaviour);
 
         // ROUTE TABLE BEHAVIOUR //
-
         TableRowClickBehaviour ZoomRouteClickBehaviour = new TableRowClickBehaviour() {
             @Override
-            public void onRowClick(Object rowData, int columnIndex) throws SQLException {
+            public void onRowClick(Object rowData, int columnIndex, boolean isFav) throws SQLException {
                 String routeId = (String) ((List<Object>) rowData).get(columnIndex);
 
                 // get model from the db
@@ -352,16 +363,12 @@ public class MainController {
                 List<VehiclePosition> routePositions = realtimeService.getRoutesVehiclePositions(routeId);
 
                 // render stops and route lines on the map
-                mainFrame.getMapPanel().renderStopsRoute(stopModels);
-                mainFrame.getMapPanel().renderVehiclePositions(routePositions);
-                mainFrame.getMapPanel().repaintView();
-                mainFrame.setCurrentRouteId(routeId);
-                mainFrame.setMapPanelMapPosition(geoPosition, zoomLevel);
+                mainFrame.renderRouteLines(stopModels, routePositions, routeId, geoPosition, zoomLevel);
             }
         };
         TableRowClickBehaviour noZoomRouteClickBehaviour = new TableRowClickBehaviour() {
             @Override
-            public void onRowClick(Object rowData, int columnIndex) throws SQLException {
+            public void onRowClick(Object rowData, int columnIndex, boolean isFav) throws SQLException {
                 String routeId = (String) ((List<Object>) rowData).get(columnIndex);
                 mainFrame.setCurrentRouteId(routeId);
             }
@@ -369,36 +376,46 @@ public class MainController {
 
         TableRowClickBehaviour StopRouteClickBehaviour = new TableRowClickBehaviour() {
             @Override
-            public void onRowClick(Object rowData, int columnIndex) throws SQLException, IOException {
-                noZoomRouteClickBehaviour.onRowClick(rowData, columnIndex);
+            public void onRowClick(Object rowData, int columnIndex, boolean isFav) throws SQLException, IOException {
+                noZoomRouteClickBehaviour.onRowClick(rowData, columnIndex, isFav);
                 String routeId = (String) ((List<Object>) rowData).get(columnIndex);
-                boolean isFavorite = db.isFavouriteRoute(sessionUser.getId(), routeId);
-                mainFrame.getStopPanel().getFavoriteRouteButton().update(isFavorite);
+
+                mainFrame.getStopPanel().getFavoriteRouteButton().update(isFav);
                 mainFrame.getStopPanel().getFavoriteRouteButton().setItemId(routeId);
-                System.out.println("Click su Stop Panel Route: " + routeId + " is favorite: " + isFavorite + "XXXXXXXXXXXXXXXX");
+
+
+
+                List<StopModel> stopModels = db.getOrderedStopsForRoute(routeId);
+                StopModel firstStop = stopModels.getFirst();
+                GeoPosition geoPosition = new GeoPosition(firstStop.getLatitude(), firstStop.getLongitude());
+
+                List<VehiclePosition> routePositions = realtimeService.getRoutesVehiclePositions(routeId);
+
+
+                mainFrame.renderRouteLines(stopModels, routePositions, routeId, geoPosition, 1);
+
             }
         };
         mainFrame.setStopTimeRowClickBehaviour(StopRouteClickBehaviour);
 
         TableRowClickBehaviour PreferRouteClickBehaviour = new TableRowClickBehaviour() {
             @Override
-            public void onRowClick(Object rowData, int columnIndex) throws SQLException, IOException {
-                ZoomRouteClickBehaviour.onRowClick(rowData, columnIndex);
+            public void onRowClick(Object rowData, int columnIndex, boolean isFav) throws SQLException, IOException {
+                ZoomRouteClickBehaviour.onRowClick(rowData, columnIndex, isFav);
 
                 String routeId = (String) ((List<Object>) rowData).get(columnIndex);
-                boolean isFavorite = db.isFavouriteRoute(sessionUser.getId(), routeId);
 
                 mainFrame.getLeftPanel().getPreferPanel().getRemoveRouteButton().setItemId((routeId));
-                mainFrame.getLeftPanel().getPreferPanel().getRemoveRouteButton().update(isFavorite);
-                System.out.println("Click su Prefer Panel Route: " + routeId + " is favorite: " + isFavorite + "XXXXXXXXXXXXXXXX");
+                mainFrame.getLeftPanel().getPreferPanel().getRemoveRouteButton().update(isFav);
+                System.out.println("Click su Prefer Panel Route: " + routeId + " is favorite: " + isFav + "XXXXXXXXXXXXXXXX");
             }
         };
         mainFrame.setFavRouteRowClickBehaviour(PreferRouteClickBehaviour);
 
         TableRowClickBehaviour SearchRouteClickBehaviour = new TableRowClickBehaviour() {
             @Override
-            public void onRowClick(Object rowData, int columnIndex) throws SQLException, IOException {
-                ZoomRouteClickBehaviour.onRowClick(rowData, columnIndex);
+            public void onRowClick(Object rowData, int columnIndex, boolean isFav) throws SQLException, IOException {
+                ZoomRouteClickBehaviour.onRowClick(rowData, columnIndex, isFav);
 
                 String routeId = (String) ((List<Object>) rowData).get(columnIndex);
                 boolean isFavorite = db.isFavouriteRoute(sessionUser.getId(), routeId);

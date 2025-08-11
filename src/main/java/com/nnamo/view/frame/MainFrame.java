@@ -71,6 +71,14 @@ public class MainFrame extends JFrame {
         mapPanel.renderStops(stops);
     }
 
+    public void renderRouteLines(List<StopModel> stopModels, List<VehiclePosition> routePositions, String routeId, GeoPosition geoPosition, int zoomLevel) {
+        mapPanel.renderStopsRoute(stopModels);
+        mapPanel.renderVehiclePositions(routePositions);
+        mapPanel.repaintView();
+        setCurrentRouteId(routeId);
+        setMapPanelMapPosition(geoPosition, zoomLevel);
+    }
+
     public void renderVehiclePositions(List<VehiclePosition> positions) {
         mapPanel.renderVehiclePositions(positions);
     }
@@ -203,6 +211,11 @@ public class MainFrame extends JFrame {
 
     public void setSearchRouteRowClickBehaviour(TableRowClickBehaviour listener) {
         leftPanel.setSearchRouteRowClickBehaviour(listener);
+    }
+
+    public void setTableCheckIsFavBehaviour(TableCheckIsFavBehaviour listener) {
+        leftPanel.setTableCheckIsFavBehaviour(listener);
+        stopPanel.setTableCheckIsFavBehaviour(listener);
     }
 
     public void setFavStopRowClickBehaviour(TableRowClickBehaviour behaviour) {

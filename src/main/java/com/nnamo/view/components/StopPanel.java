@@ -7,6 +7,7 @@ import javax.swing.border.TitledBorder;
 import com.nnamo.enums.ButtonMode;
 import com.nnamo.enums.ColumnName;
 import com.nnamo.interfaces.FavoriteBehaviour;
+import com.nnamo.interfaces.TableCheckIsFavBehaviour;
 import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopTimeModel;
@@ -124,7 +125,7 @@ public class StopPanel extends JPanel {
 
     private JPanel newRouteInfoPanel() {
         JPanel mainPanel = new JPanel(new GridBagLayout());
-        this.table = new CustomTable( new ColumnName[]{LINEA, DIREZIONE, ORARIO, STATO, MINUTIRIMAMENTI, POSTIDISPONIBILI}, LINEA);
+        this.table = new CustomTable( new ColumnName[]{LINEA, DIREZIONE, ORARIO, STATO, MINUTIRIMAMENTI, POSTIDISPONIBILI, TIPO}, LINEA);
         table.setSearchColumns(LINEA, DIREZIONE, ORARIO);
         // Table
         mainPanel.add(table, new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.CENTER)
@@ -195,8 +196,12 @@ public class StopPanel extends JPanel {
                     stopTime.getArrivalTimeAsStr(),
                     state,
                     remainingMinutes >= 0 ? remainingMinutes : "N/A",
-                    occupancyStatus
+                    occupancyStatus,
+                    route.getType()
+                    // TODO: add "String vehicleId = timeUpdate.getVehiclePosition().getVehicle().getId(); // ID del veicolo fisico"
+                    //  inside an invisile column to get the vehicle ID for row clicking and zooming on the map!
             });
+            System.out.println("route type: " + route.getType());
         }
     }
 
@@ -265,6 +270,12 @@ public class StopPanel extends JPanel {
     public void setStopTimeRowClickBehaviour(TableRowClickBehaviour tableRowClickBehaviour) {
         if (tableRowClickBehaviour != null) {
             this.table.setRowClickBehaviour(tableRowClickBehaviour);
+        }
+    }
+
+    public void setTableCheckIsFavBehaviour(TableCheckIsFavBehaviour tableCheckIsFavBehaviour) {
+    if (tableCheckIsFavBehaviour != null) {
+            this.table.setTableCheckIsFavBehaviour(tableCheckIsFavBehaviour);
         }
     }
 }

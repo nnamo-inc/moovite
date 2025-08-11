@@ -136,6 +136,14 @@ public class MapPanel extends JPanel {
         this.stopsCompoundPainter.setPainters(this.stopsPaintersList);
     }
 
+    public void repaintView(boolean isLive) {
+        super.repaint();
+        routeStopPainter.repaint();
+        stopPainter.repaint();
+        positionPainter.repaint();
+        this.stopsCompoundPainter.setPainters(this.stopsPaintersList);
+    }
+
     private void updateCurrentCompoundPainter(CompoundPainter<JXMapViewer> painter) {
         System.out.println("Updated compound painter");
         this.currentZoomLimit = (painter == stopsCompoundPainter) ? stopsZoomLimit : routeZoomLimit;

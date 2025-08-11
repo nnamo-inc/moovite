@@ -3,6 +3,7 @@ package com.nnamo.view.components;
 import com.nnamo.enums.ButtonMode;
 import com.nnamo.enums.ColumnName;
 import com.nnamo.interfaces.SearchBarListener;
+import com.nnamo.interfaces.TableCheckIsFavBehaviour;
 import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
@@ -22,7 +23,7 @@ public class SearchPanel extends JPanel {
 
     CustomSearchBar customSearchBar = new CustomSearchBar();
     CustomTable tableStop = new CustomTable(new ColumnName[]{ NOME, CODICE }, CODICE);
-    CustomTable tableRoute = new CustomTable(new ColumnName[]{ LINEA, CODICE }, CODICE);
+    CustomTable tableRoute = new CustomTable(new ColumnName[]{ LINEA, CODICE, TIPO }, CODICE);
     CustomPreferButton addRouteButton = new CustomPreferButton("Linea", ButtonMode.ADD);
 
     // CONSTRUCTOR //
@@ -48,13 +49,13 @@ public class SearchPanel extends JPanel {
         routePanel.setBorder(BorderFactory.createCompoundBorder(tableRouteBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
 
         tableRoute.setIsSearchable(false);
+        tableRoute.setIsSearchable(false);
         routePanel.add(tableRoute, new CustomGbc().setPosition(0, 0).setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
                 .setInsets(2, 5, 2, 5));
         routePanel.add(addRouteButton, new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL).setWeight(1.0, 0.1)
                 .setInsets(2, 5, 2, 5));
         add(routePanel, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
                 .setInsets(2, 5, 2, 5));
-
 
         setVisible(false);
     }
@@ -74,7 +75,7 @@ public class SearchPanel extends JPanel {
         for (RouteModel route : routeModels) {
             String shortName = route.getShortName() != null ? route.getShortName() : "";
             String longName = route.getLongName() != null ? route.getLongName() : "";
-            tableRoute.addRow(new Object[] { longName, shortName });
+            tableRoute.addRow(new Object[] { longName, shortName, route.getType().toString() });
         }
     }
 
@@ -84,6 +85,12 @@ public class SearchPanel extends JPanel {
 
     public void setSearchRouteRowClickBehaviour(TableRowClickBehaviour listener) {
         tableRoute.setRowClickBehaviour(listener);
+    }
+
+    public void setTableCheckIsFavBehaviour(TableCheckIsFavBehaviour listener)
+    {
+        tableStop.setTableCheckIsFavBehaviour(listener);
+        tableRoute.setTableCheckIsFavBehaviour(listener);
     }
 
     public CustomPreferButton getAddRouteButton() {

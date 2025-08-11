@@ -4,6 +4,7 @@ import com.nnamo.enums.ButtonMode;
 import com.nnamo.enums.ColumnName;
 import com.nnamo.enums.UpdateMode;
 import com.nnamo.interfaces.FavoriteBehaviour;
+import com.nnamo.interfaces.TableCheckIsFavBehaviour;
 import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
@@ -26,7 +27,7 @@ public class PreferPanel extends JPanel {
     CustomPreferButton removeStopButton = new CustomPreferButton("Fermata", ButtonMode.REMOVE);
 
     JPanel routeContainer = new JPanel(new GridBagLayout());
-    CustomTable routeTable = new CustomTable(new ColumnName[] { LINEA, CODICE }, CODICE);
+    CustomTable routeTable = new CustomTable(new ColumnName[] { LINEA, CODICE, TIPO }, CODICE);
     CustomPreferButton removeRouteButton = new CustomPreferButton("Linea", ButtonMode.REMOVE);
 
     // CONSTRUCTOR //
@@ -78,6 +79,12 @@ public class PreferPanel extends JPanel {
 
 
     // LISTENERS METHODS //
+    public void setTableCheckIsFavBehaviour(TableCheckIsFavBehaviour listener)
+    {
+        this.stopTable.setTableCheckIsFavBehaviour(listener);
+        this.routeTable.setTableCheckIsFavBehaviour(listener);
+    }
+
     public void initPreferTable(List<StopModel> stops, List<RouteModel> routes) {
         for (StopModel stop : stops) {
             stopTable.addRow(new Object[] { stop.getName(), stop.getId() });
@@ -99,7 +106,7 @@ public class PreferPanel extends JPanel {
     public void updateFavRouteTable(RouteModel route, UpdateMode updateMode) {
             switch (updateMode) {
                 case ADD:
-                    routeTable.addRow(new Object[] { route.getShortName(), route.getId() });; break;
+                    routeTable.addRow(new Object[] { route.getLongName() != null ? route.getLongName() : "", route.getId(), route.getType() });; break;
                 case REMOVE:
                     routeTable.removeRow(route.getId()); break;
             }

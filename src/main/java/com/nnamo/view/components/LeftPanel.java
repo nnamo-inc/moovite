@@ -93,6 +93,12 @@ public class LeftPanel extends JPanel {
 
     // BEHAVIOUR //
 
+    public void setTableCheckIsFavBehaviour(TableCheckIsFavBehaviour listener) {
+        this.searchPanel.setTableCheckIsFavBehaviour(listener);
+        this.preferPanel.setTableCheckIsFavBehaviour(listener);
+    }
+
+
     // Stop panel behaviour //
     public void setButtonPanelGeneralBehaviour(ButtonPanelBehaviour listener) {
         this.buttonPanel.setButtonPanelBehaviour(listener);

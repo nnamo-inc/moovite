@@ -8,7 +8,8 @@ public enum ColumnName {
     MINUTIRIMAMENTI("Minuti Rimanenti"),
     POSTIDISPONIBILI("Posti Disponibili"),
     NOME("Nome"),
-    CODICE("Codice");
+    CODICE("Codice"),
+    TIPO("Tipo");
 
 
     String name;
