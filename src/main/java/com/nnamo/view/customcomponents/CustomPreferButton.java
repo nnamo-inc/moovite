@@ -21,21 +21,19 @@ public class CustomPreferButton extends JButton {
         super();
         this.itemName = itemName;
 
-        setText("<html></p><p>Clicca su una riga</p><p>della tabella per</p><p>attivare il bottone</p></html>");
-        setBackground(CustomColor.GREEN);
+        setText("Gestione Preferiti");
+        setEnabled(false);
 
         addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
                 if (favorite) {
                     favoriteBehaviour.removeFavorite(itemId, mode);
-                    // Aggiorna UI solo se l'operazione ha successo
                     favorite = false;
                     setText("<html><p>Aggiungi</p><p>" + itemName + "</p><p>ai Preferiti</p></html>");
                     setBackground(CustomColor.GREEN);
                 } else {
                     favoriteBehaviour.addFavorite(itemId, mode);
-                    // Aggiorna UI solo se l'operazione ha successo
                     favorite = true;
                     setText("<html><p>Rimuovi</p><p>" + itemName + "</p><p>dai Preferiti</p></html>");
                     setBackground(CustomColor.RED);
@@ -55,27 +53,6 @@ public class CustomPreferButton extends JButton {
         } else {
             setText("<html><p>Aggiungi</p><p>" + itemName + "</p><p>ai Preferiti</p></html>");
             setBackground(CustomColor.GREEN);
-        }
-    }
-
-    public void reset() {
-        this.favorite = false;
-        setText("<html></p><p>Clicca su una riga</p><p>della tabella per</p><p>attivare il bottone</p></html>");
-        setEnabled(false);
-    }
-
-    public void reset(ResetType resetType) {
-        switch (resetType) {
-            case GENERIC -> {
-                this.favorite = false;
-                setText("<html></p><p>Clicca su una riga</p><p>della tabella per</p><p>attivare il bottone</p></html>");
-                setEnabled(false);
-            }
-            case STOP -> {
-                this.favorite = false;
-                setText("<html></p><p>Clicca su una fermata</p><p>qualunque per</p><p>attivare il bottone</p></html>");
-                setEnabled(false);
-            }
         }
     }
     // BEHAVIOUR LISTENER //

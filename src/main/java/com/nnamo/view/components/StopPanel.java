@@ -5,7 +5,6 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 import com.nnamo.enums.ColumnName;
-import com.nnamo.interfaces.FavoriteBehaviour;
 import com.nnamo.interfaces.TableCheckIsFavBehaviour;
 import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.models.RouteModel;
@@ -54,7 +53,7 @@ public class StopPanel extends JPanel {
         // Route service panel
         JPanel routeInfoPanel = newRouteInfoPanel();
         add(routeInfoPanel, new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.CENTER)
-                .setFill(GridBagConstraints.BOTH).setWeight(0.5, 1.0)
+                .setFill(GridBagConstraints.BOTH).setWeight(0.2, 1.0)
                 .setInsets(2, 5, 2, 5));
 
         // Route info panel
@@ -66,12 +65,12 @@ public class StopPanel extends JPanel {
                         .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
                         .setInsets(2, 5, 2, 5));
 
-        // Buttons prefer
+ /*       // Buttons prefer
         JPanel PanelPrefer = newPanelPrefer();
         add(PanelPrefer,
                 new CustomGbc().setPosition(2, 1).setAnchor(GridBagConstraints.EAST)
                         .setFill(GridBagConstraints.BOTH).setWeight(0.1, 0.1)
-                        .setInsets(2, 5, 2, 5));
+                        .setInsets(2, 5, 2, 5));*/
 
         setVisible(false);
     }
@@ -118,6 +117,7 @@ public class StopPanel extends JPanel {
         return mainPanel;
     }
 
+/*
     private JPanel newPanelPrefer() {
 
         JPanel panelPrefer = new JPanel(new GridBagLayout());
@@ -138,6 +138,7 @@ public class StopPanel extends JPanel {
                 .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0));
         return panelPrefer;
     }
+*/
 
     // METHODS //
     public void updateStopTimes(List<StopTimeModel> stopTimes, List<RealtimeStopUpdate> realtimeUpdates) {
@@ -190,7 +191,6 @@ public class StopPanel extends JPanel {
         }
         }
 
-
     public void updateStopRoutes(List<StopTimeModel> stopTimes) {
         tableService.clear();
         HashSet<List<String>> uniqueRoutes = new HashSet<>();
@@ -213,27 +213,9 @@ public class StopPanel extends JPanel {
         this.idFermata.setTextField(id);
     }
 
-    public void updateFavRouteText(String string) {
-        favoriteRouteButton.setText(string);
-        favoriteRouteButton.setEnabled(false);
-    }
-
     public void updateFavButtons(boolean isFavorite, String stopId) {
         favoriteStopButton.update(isFavorite);
         favoriteStopButton.setItemId(stopId);
-        favoriteRouteButton.reset();
-    }
-
-    public void updatePreferStopButton(boolean isFavorite, String stopId) {
-        favoriteStopButton.setFavorite(isFavorite);
-        favoriteStopButton.setItemId(stopId);
-        favoriteStopButton.setEnabled(true);
-    }
-
-    public void updatePreferRouteButton(boolean isFavorite, String routeId) {
-        favoriteRouteButton.setFavorite(isFavorite);
-        favoriteRouteButton.setItemId(routeId);
-        favoriteRouteButton.setEnabled(true);
     }
 
     public void open() {
@@ -245,34 +227,14 @@ public class StopPanel extends JPanel {
     }
 
     // GETTERS AND SETTERS //
-    public CustomPreferButton getFavoriteStopButton() {
-        return favoriteStopButton;
-    }
-
-    public CustomPreferButton getFavoriteRouteButton() {
-        return favoriteRouteButton;
-    }
-
     public String getStopId() {
         return idFermata.getTextField();
     }
 
     // LISTENERS METHODS //
-    public void setTableRowClickBehaviour(TableRowClickBehaviour listener) {
+    public void setGenericTableRowClickBehaviour(TableRowClickBehaviour listener) {
             this.tableService.setRowClickBehaviour(listener);
             this.tableTime.setRowClickBehaviour(listener);
-    }
-
-    public void setFavStopBehaviour(FavoriteBehaviour behaviour) {
-        if (behaviour != null) {
-            this.favoriteStopButton.setFavBehaviour(behaviour);
-        }
-    }
-
-    public void setFavRouteBehaviour(FavoriteBehaviour behaviour) {
-        if (behaviour != null) {
-            this.favoriteRouteButton.setFavBehaviour(behaviour);
-        }
     }
 
     public void setStopInfoRowClickBehaviour(TableRowClickBehaviour tableRowClickBehaviour) {

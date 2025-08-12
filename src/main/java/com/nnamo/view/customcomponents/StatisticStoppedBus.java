@@ -2,24 +2,18 @@ package com.nnamo.view.customcomponents;
 
 import com.google.transit.realtime.GtfsRealtime;
 
-import java.awt.*;
 import java.util.List;
 
 public class StatisticStoppedBus extends StatisticUnit {
     public StatisticStoppedBus() {
-        super("Stopped Bus", "Buses", new Color(255, 152, 0)); // Material Orange 500
+        super("Stopped Bus", "Buses");
     }
 
     @Override
     public void onFeedUpdated(List<GtfsRealtime.FeedEntity> entities) {
         int busCount = 0;
         for (GtfsRealtime.FeedEntity entity : entities) {
-            if (!entity.hasVehicle()) continue;
-            GtfsRealtime.VehiclePosition vehiclePosition = entity.getVehicle();
-            if (!vehiclePosition.hasCurrentStatus()) continue;
-            GtfsRealtime.VehiclePosition.VehicleStopStatus status = vehiclePosition.getCurrentStatus();
-            // Count the bus if it is stopped
-            if (status == GtfsRealtime.VehiclePosition.VehicleStopStatus.STOPPED_AT) {
+            if (entity.hasTripUpdate() && entity.getTripUpdate().getVehicle() != null) {
                 busCount++;
             }
         }

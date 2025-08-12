@@ -2,12 +2,10 @@ package com.nnamo.view.components;
 
 import com.nnamo.enums.ColumnName;
 import com.nnamo.enums.UpdateMode;
-import com.nnamo.interfaces.FavoriteBehaviour;
 import com.nnamo.interfaces.TableCheckIsFavBehaviour;
 import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
-import com.nnamo.view.customcomponents.CustomPreferButton;
 import com.nnamo.view.customcomponents.CustomTable;
 import com.nnamo.view.customcomponents.CustomGbc;
 
@@ -24,24 +22,14 @@ public class PreferPanel extends JPanel {
 
     JPanel stopContainer = new JPanel(new GridBagLayout());
     CustomTable stopTable = new CustomTable(new ColumnName[] { NOME, CODICE }, CODICE, STOP);
-    CustomPreferButton removeStopButton = new CustomPreferButton("Fermata");
 
     JPanel routeContainer = new JPanel(new GridBagLayout());
     CustomTable routeTable = new CustomTable(new ColumnName[] { LINEA, CODICE, TIPO }, CODICE, ROUTE);
-    CustomPreferButton removeRouteButton = new CustomPreferButton("Linea");
-
     // CONSTRUCTOR //
     public PreferPanel() {
         super();
         setLayout(new GridBagLayout());
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
-        JLabel titleLabel = new JLabel("Favorites");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        add(titleLabel, new CustomGbc().setPosition(0, 0)
-                .setAnchor(GridBagConstraints.NORTH)
-                .setInsets(5, 5, 5, 5));
-
 
         // Table Stop
         TitledBorder tableStopBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Fermate");
@@ -51,9 +39,7 @@ public class PreferPanel extends JPanel {
         stopContainer.add(stopTable, new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
         routeTable.setSearchColumns(LINEA, CODICE);
-        stopContainer.add(removeStopButton, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.HORIZONTAL)
-                .setWeight(1.0, 0.1).setInsets(2, 5, 2, 5));
-        add(stopContainer, new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.BOTH)
+        add(stopContainer, new CustomGbc().setPosition(0, 0).setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
 
         // Table Route
@@ -63,29 +49,14 @@ public class PreferPanel extends JPanel {
                 BorderFactory.createEmptyBorder(2, 5, 2, 5)));
         routeContainer.add(routeTable, new CustomGbc().setPosition(0, 4).setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
-        routeContainer.add(removeRouteButton, new CustomGbc().setPosition(0, 5).setFill(GridBagConstraints.HORIZONTAL)
-                .setWeight(1.0, 0.1).setInsets(2, 5, 2, 5));
-        add(routeContainer, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.BOTH)
+        add(routeContainer, new CustomGbc().setPosition(0, 3).setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
 
         setVisible(false);
     }
 
-    // METHODS //
-    public CustomTable getRouteTable() {
-        return routeTable;
-    }
-
-    public CustomPreferButton getRemoveRouteButton() {
-        return removeRouteButton;
-    }
-
-    public CustomPreferButton getRemoveStopButton() {
-        return removeStopButton;
-    }
-
     // LISTENERS METHODS //
-    public void setTableRowClickBehaviour(TableRowClickBehaviour listener) {
+    public void setGenericTableRowClickBehaviour(TableRowClickBehaviour listener) {
         this.stopTable.setRowClickBehaviour(listener);
         this.routeTable.setRowClickBehaviour(listener);
     }
@@ -130,24 +101,12 @@ public class PreferPanel extends JPanel {
         }
     }
 
-    public void updatePreferStopButton(Boolean isFavorite, String stopId) {
-        removeStopButton.setItemId(stopId);
-    }
-
-    public void updatePreferRouteButton(Boolean isFavorite, String routeNumber) {
-        removeRouteButton.setItemId(routeNumber);
-    }
-
     public void setFavStopRowClickBehaviour(TableRowClickBehaviour behaviour) {
         this.stopTable.setRowClickBehaviour(behaviour);
     }
 
     public void setFavRouteRowClickBehaviour(TableRowClickBehaviour behaviour) {
         this.routeTable.setRowClickBehaviour(behaviour);
-    }
-
-    public void setFavStopBehaviour(FavoriteBehaviour behaviour) {
-        this.removeStopButton.setFavBehaviour(behaviour);
     }
 
 }

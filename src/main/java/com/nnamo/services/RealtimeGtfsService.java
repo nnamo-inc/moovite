@@ -23,11 +23,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import org.onebusaway.gtfs.model.Trip;
+
 public class RealtimeGtfsService {
-    public static final String ROME_TRIP_FEED_URL = "https://romamobilita.it/sites/default/files/rome_rtgtfs_trip_updates_feed.pb";
-    public static final String ROME_POSITIONS_FEED_URL = "https://romamobilita.it/sites/default/files/rome_rtgtfs_vehicle_positions_feed.pb";
-    public static final String TEST_FRANCE_TRIP_FEED_URL = "https://proxy.transport.data.gouv.fr/resource/sncf-all-gtfs-rt-trip-updates";
-    public static final String TEST_FRANCE_POSITIONS_FEED_URL = "https://proxy.transport.data.gouv.fr/resource/sncf-all-gtfs-rt-trip-updates";
+    public static final String TRIP_FEED_URL = "https://romamobilita.it/sites/default/files/rome_rtgtfs_trip_updates_feed.pb";
+    public static final String POSITIONS_FEED_URL = "https://romamobilita.it/sites/default/files/rome_rtgtfs_vehicle_positions_feed.pb";
     public static final Duration POLLING_INTERVAL = Duration.ofSeconds(30);
     public static final int ALLOWED_DELAY = 5 * 60; // 5 minutes
     public static final int ALLOWED_ADVANCE = 5 * 60; // 5 minutes
@@ -45,13 +45,16 @@ public class RealtimeGtfsService {
     private List<FeedEntity> tripEntityList;
     private HashMap<String, FeedEntity> tripsMap = new HashMap<>();
     private HashMap<String, List<RealtimeStopUpdate>> stopsMap = new HashMap<>();
+    private int delayedTrips = 0;
+    private int onTimeTrips = 0;
+    private int earlyTrips = 0;
 
     private final List<FeedUpdateListener> feedUpdateListeners = new ArrayList<>();
     private final List<FeedStopLinesListener> feedStopLinesListeners = new ArrayList<>();
 
     public RealtimeGtfsService() throws URISyntaxException, IOException {
-        this.tripFeedUrl = new URI(ROME_TRIP_FEED_URL).toURL();
-        this.positionsFeedUrl = new URI(ROME_POSITIONS_FEED_URL).toURL();
+        this.tripFeedUrl = new URI(TRIP_FEED_URL).toURL();
+        this.positionsFeedUrl = new URI(POSITIONS_FEED_URL).toURL();
 
         this.backgroundThread = new Thread(() -> {
             try {
@@ -113,11 +116,23 @@ public class RealtimeGtfsService {
         this.stopsMap = new HashMap<>();
         this.routesPositionsMap = new HashMap<>();
 
+        this.onTimeTrips = 0;
+        this.delayedTrips = 0;
+        this.earlyTrips = 0;
         for (FeedEntity entity : tripEntityList) {
             TripUpdate tripUpdate = entity.getTripUpdate();
             String tripId = tripUpdate.getTrip().getTripId();
             String routeId = tripUpdate.getTrip().getRouteId();
             tripsMap.put(tripId, entity);
+
+            int delay = tripUpdate.getDelay();
+            if (delay < 0 && -delay >= ALLOWED_DELAY) { // Delay negativo: ritardo
+                delayedTrips++;
+            } else if (delay >= 0 && delay <= ALLOWED_ADVANCE) { // Delay sotto la soglia di anticipo: in orario
+                onTimeTrips++;
+            } else {
+                earlyTrips++;
+            }
 
             for (StopTimeUpdate stopTime : tripUpdate.getStopTimeUpdateList()) {
                 String stopId = stopTime.getStopId();
@@ -227,6 +242,18 @@ public class RealtimeGtfsService {
             for (StopTimeModel stopTime : tripStopTimes) {
             }
         }
+    }
+
+    public int getEarlyTrips() {
+        return earlyTrips;
+    }
+
+    public int getDelayedTrips() {
+        return delayedTrips;
+    }
+
+    public int getOnTimeTrips() {
+        return onTimeTrips;
     }
 
     public synchronized VehiclePosition getTripVehiclePosition(String tripId) {
