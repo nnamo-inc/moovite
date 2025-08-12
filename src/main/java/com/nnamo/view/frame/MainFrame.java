@@ -76,7 +76,9 @@ public class MainFrame extends JFrame {
         mapPanel.renderVehiclePositions(routePositions);
         mapPanel.repaintView();
         setCurrentRouteId(routeId);
-        setMapPanelMapPosition(geoPosition, zoomLevel);
+        if (geoPosition != null) {
+            setMapPanelMapPosition(geoPosition, zoomLevel);
+        }
     }
 
     public void renderVehiclePositions(List<VehiclePosition> positions) {
@@ -94,6 +96,10 @@ public class MainFrame extends JFrame {
 
     public void updateStopPanelTimes(List<StopTimeModel> stopTimes, List<RealtimeStopUpdate> realtimeUpdates) {
         this.stopPanel.updateStopTimes(stopTimes, realtimeUpdates);
+    }
+
+    public void updateStopPanelRoutes(List<StopTimeModel> stopTimes) {
+        this.stopPanel.updateStopRoutes(stopTimes);
     }
 
     public void updatePreferRouteButton(Boolean isFavorite, String routeNumber) {
@@ -240,8 +246,12 @@ public class MainFrame extends JFrame {
     }
     // Stop Panel Behaviour //
 
-    public void setStopTimeRowClickBehaviour(TableRowClickBehaviour listener) {
-        this.stopPanel.setStopTimeRowClickBehaviour(listener);
+    public void setStopInfoRowClickBehaviour(TableRowClickBehaviour listener) {
+        this.stopPanel.setStopInfoRowClickBehaviour(listener);
+    }
+
+    public void setStopRouteRowClickBehaviour(TableRowClickBehaviour listener) {
+        this.stopPanel.setStopRouteRowClickBehaviour(listener);
     }
 
     public void updateStopPanelFavButtons(boolean favorite, String stop) {

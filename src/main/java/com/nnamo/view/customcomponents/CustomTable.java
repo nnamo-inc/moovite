@@ -204,6 +204,8 @@ public class CustomTable extends JPanel {
                             throw new RuntimeException(ex);
                         }
                     }
+                } else {
+                    System.out.println("Row selection not changed or click behaviour not set");
                 }
             }
         });
