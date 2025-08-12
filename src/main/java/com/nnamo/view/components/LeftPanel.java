@@ -17,6 +17,7 @@ public class LeftPanel extends JPanel {
     private JPanel modularPanel = new JPanel(new BorderLayout());
     private SearchPanel searchPanel = new SearchPanel();
     private PreferPanel preferPanel = new PreferPanel();
+    private StatisticsPanel statsPanel = new StatisticsPanel();
     private SettingPanel settingPanel = new SettingPanel();
 
     ButtonPanel buttonPanel = new ButtonPanel(new LinkedHashMap<>() {
@@ -24,6 +25,7 @@ public class LeftPanel extends JPanel {
             put(searchPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/search_small.png"))));
             put(preferPanel,
                     new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/favorite_small.png"))));
+            put(statsPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/statistics_small.png"))));
             put(settingPanel,
                     new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/setting_small.png"))));
         }
@@ -87,6 +89,8 @@ public class LeftPanel extends JPanel {
         return preferPanel;
     }
 
+    public StatisticsPanel getStatisticsPanel() { return statsPanel; }
+
     public void setRealtimeStatus(RealtimeStatus status) {
         this.settingPanel.setRealtimeStatus(status);
     }
@@ -97,7 +101,6 @@ public class LeftPanel extends JPanel {
         this.searchPanel.setTableCheckIsFavBehaviour(listener);
         this.preferPanel.setTableCheckIsFavBehaviour(listener);
     }
-
 
     // Stop panel behaviour //
     public void setButtonPanelGeneralBehaviour(ButtonPanelBehaviour listener) {
@@ -137,5 +140,4 @@ public class LeftPanel extends JPanel {
     public void setLogoutBehaviour(LogoutBehaviour behaviour) {
         settingPanel.setLogoutBehaviour(behaviour);
     }
-
 }

@@ -8,6 +8,7 @@ import com.nnamo.enums.ResetType;
 import com.nnamo.enums.UpdateMode;
 import com.nnamo.interfaces.*;
 import com.nnamo.models.*;
+import com.nnamo.view.customcomponents.*;
 import com.nnamo.view.frame.MainFrame;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.FeedUpdateListener;
@@ -53,6 +54,22 @@ public class MainController {
         handleTableBehaviour();
         handleButtonPanelClickBehaviour();
         mainFrame.getSearchPanel().addSearchListener(this::searchQueryListener);
+
+        StatisticTotalBus statBusTile = new StatisticTotalBus();
+        StatisticEarlyBus statEarlyBusTile = new StatisticEarlyBus();
+        StatisticLateBus statLateBusTile = new StatisticLateBus();
+        StatisticPunctualBus statPunctualBusTile = new StatisticPunctualBus();
+        StatisticStoppedBus statStoppedBusTile = new StatisticStoppedBus();
+        realtimeService.addListener(statBusTile);
+        realtimeService.addListener(statEarlyBusTile);
+        realtimeService.addListener(statLateBusTile);
+        realtimeService.addListener(statPunctualBusTile);
+        realtimeService.addListener(statStoppedBusTile);
+        mainFrame.getLeftPanel().getStatisticsPanel().addStatisticTile(statBusTile);
+        mainFrame.getLeftPanel().getStatisticsPanel().addStatisticTile(statEarlyBusTile);
+        mainFrame.getLeftPanel().getStatisticsPanel().addStatisticTile(statLateBusTile);
+        mainFrame.getLeftPanel().getStatisticsPanel().addStatisticTile(statPunctualBusTile);
+        mainFrame.getLeftPanel().getStatisticsPanel().addStatisticTile(statStoppedBusTile);
 
         // Login and Session Fetching
         userController.addSessionListener(new SessionListener() { // [!] Listener must be implemented before run()
