@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import com.nnamo.enums.Direction;
 
 // Rappresenta una corsa di una linea (ad esempio, corsa delle 8:00 della linea 163)
 @DatabaseTable(tableName = "trips")
@@ -22,12 +23,12 @@ public class TripModel {
     private String headsign; // Stringa che segnala la direzione della corsa
 
     @DatabaseField(canBeNull = true)
-    private String direction;
+    private Direction direction;
 
     public TripModel() { // Empty constructor required by OrmLite
     }
 
-    public TripModel(String id, RouteModel route, String serviceId, String headsign, String direction) {
+    public TripModel(String id, RouteModel route, String serviceId, String headsign, Direction direction) {
         this.id = id;
         this.serviceId = serviceId;
         this.route = route;
@@ -47,7 +48,7 @@ public class TripModel {
         return headsign;
     }
 
-    public String getDirection() {
+    public Direction getDirection() {
         return direction;
     }
 

@@ -9,6 +9,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.SelectArg;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.table.TableUtils;
+import com.nnamo.enums.Direction;
 import com.nnamo.enums.RouteType;
 import com.nnamo.models.*;
 import com.nnamo.utils.FuzzyMatch;
@@ -203,12 +204,23 @@ public class DatabaseService {
 
             int totalProcessed = 0;
             for (Trip trip : store.getAllTrips()) {
+                Direction direction = null;
+                switch (trip.getDirectionId()) {
+                    case "0":
+                        direction = Direction.OUTBOUND;
+                        break;
+                    case "1":
+                    default:
+                        direction = Direction.INBOUND;
+                        break;
+                }
+
                 trips.add(new TripModel(
                         trip.getId().getId(),
                         routeMap.get(trip.getRoute().getId().getId()),
                         trip.getServiceId().getId(),
                         trip.getTripHeadsign(),
-                        trip.getDirectionId()));
+                        direction));
 
                 if (trips.size() >= 20000) {
                     tripDao.create(trips);
@@ -379,7 +391,7 @@ public class DatabaseService {
         return queryBuilder.query();
     }
 
-    public List<RouteModel> getRoutesByName(String searchTerm) throws SQLException {
+    public List<RouteDirection> getRoutesByName(String searchTerm) throws SQLException {
         Dao<RouteModel, String> routeDao = getDao(RouteModel.class);
         double scoreThresholdPercentage = 60;
 
@@ -413,9 +425,29 @@ public class DatabaseService {
                 new SelectArg(SqlType.STRING, searchTerm),
                 new SelectArg(SqlType.STRING, searchTerm));
 
-        return queryBuilder.query();
+        List<RouteModel> routes = queryBuilder.query();
+
+        // Add routes for both directions
+        List<RouteDirection> result = new ArrayList<>();
+        for (RouteModel route : routes) {
+            for (Direction direction : Direction.values()) {
+                TripModel trip = getDirectionTrip(route.getId(), direction);
+                if (trip != null) {
+                    result.add(new RouteDirection(
+                            route.getId(),
+                            route.getAgency(),
+                            route.getLongName(),
+                            route.getShortName(),
+                            route.getType(),
+                            trip.getDirection(),
+                            trip.getHeadsign()));
+                }
+            }
+        }
+        return result;
     }
 
+    // Gets the routes that go through a stop
     public List<RouteModel> getStopRoutes(String stopId) throws SQLException {
         Dao<RouteModel, String> routeDao = getDao(RouteModel.class);
         String rawQuery = "SELECT DISTINCT r.* FROM routes r " +
@@ -656,21 +688,27 @@ public class DatabaseService {
         return routeDao.queryForId(id);
     }
 
-    public List<StopModel> getOrderedStopsForRoute(String routeId) throws SQLException {
-        // TODO: maybe update this method to work based on the current date and time
-
+    public TripModel getDirectionTrip(String routeId, Direction direction) throws SQLException {
         Dao<TripModel, String> tripDao = getDao(TripModel.class);
-        Dao<StopModel, String> stopDao = getDao(StopModel.class);
-
         List<TripModel> trips = tripDao.queryBuilder()
-                .where().eq("route_id", routeId)
+                .distinct()
+                .limit(1l)
+                .where()
+                .eq("route_id", routeId)
+                .and()
+                .eq("direction", direction)
                 .query();
 
         if (trips.isEmpty()) {
-            return new ArrayList<>();
+            return null;
         }
+        return trips.getFirst();
+    }
 
-        String tripId = trips.get(0).getId();
+    public List<StopModel> getOrderedStopsForRoute(String routeId, Direction direction) throws SQLException {
+        Dao<StopModel, String> stopDao = getDao(StopModel.class);
+
+        String tripId = getDirectionTrip(routeId, direction).getId();
 
         String rawQuery = "SELECT s.* FROM stops s " +
                 "JOIN stop_times st ON s.id = st.stop_id " +

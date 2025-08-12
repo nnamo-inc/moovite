@@ -2,6 +2,7 @@ package com.nnamo.controllers;
 
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
+import com.nnamo.enums.Direction;
 import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.enums.ResetType;
 import com.nnamo.enums.UpdateMode;
@@ -214,7 +215,8 @@ public class MainController {
                 mainFrame.getStopPanel().getFavoriteStopButton().reset(ResetType.STOP);
             }
         };
-        mainFrame.getLeftPanel().getPreferPanel().getRemoveStopButton().setFavBehaviour(onlyRemovePreferFavStopBehaviour);
+        mainFrame.getLeftPanel().getPreferPanel().getRemoveStopButton()
+                .setFavBehaviour(onlyRemovePreferFavStopBehaviour);
 
         // ROUTE BEHAVIOUR //
         FavoriteBehaviour favRouteBehaviour = new FavoriteBehaviour() {
@@ -272,19 +274,20 @@ public class MainController {
                 mainFrame.getStopPanel().getFavoriteRouteButton().reset(ResetType.GENERIC);
             }
         };
-        mainFrame.getLeftPanel().getPreferPanel().getRemoveRouteButton().setFavBehaviour(onlyRemovePreferFavRouteBehaviour);
+        mainFrame.getLeftPanel().getPreferPanel().getRemoveRouteButton()
+                .setFavBehaviour(onlyRemovePreferFavRouteBehaviour);
 
-//        FavoriteBehaviour bothStopFavRouteBehaviour = new FavoriteBehaviour() {
-//            @Override
-//            public void addFavorite(String string) {
-//                favRouteBehaviour.addFavorite(string);
-//            }
-//
-//            @Override
-//            public void removeFavorite(String string) {
-//                favRouteBehaviour.removeFavorite(string);
-//            }
-//        };
+        // FavoriteBehaviour bothStopFavRouteBehaviour = new FavoriteBehaviour() {
+        // @Override
+        // public void addFavorite(String string) {
+        // favRouteBehaviour.addFavorite(string);
+        // }
+        //
+        // @Override
+        // public void removeFavorite(String string) {
+        // favRouteBehaviour.removeFavorite(string);
+        // }
+        // };
     }
 
     private void handleTableBehaviour() {
@@ -294,7 +297,8 @@ public class MainController {
             public boolean onCheckIsFav(Vector<Object> rowData, int columnIndex) {
                 try {
                     String itemId = (String) (rowData).get(columnIndex);
-                    return db.isFavoriteStop(sessionUser.getId(), itemId) || db.isFavouriteRoute(sessionUser.getId(), itemId);
+                    return db.isFavoriteStop(sessionUser.getId(), itemId)
+                            || db.isFavouriteRoute(sessionUser.getId(), itemId);
                 } catch (SQLException e) {
                     e.printStackTrace();
                     return false;
@@ -312,7 +316,8 @@ public class MainController {
                 StopModel stop = db.getStopById(stopId);
                 GeoPosition geoPosition = new GeoPosition(stop.getLatitude(), stop.getLongitude());
                 mainFrame.setMapPanelMapPosition(geoPosition, zoomLevel);
-                updateStopPanel(stop, db.getNextStopTimes(stopId, getCurrentTime(), getCurrentDate()), realtimeService.getStopUpdatesById(stopId));
+                updateStopPanel(stop, db.getNextStopTimes(stopId, getCurrentTime(), getCurrentDate()),
+                        realtimeService.getStopUpdatesById(stopId));
                 List<RealtimeStopUpdate> realtimeUpdates = realtimeService.getStopUpdatesById(stop.getId());
 
                 try {
@@ -337,7 +342,8 @@ public class MainController {
 
                 mainFrame.getStopPanel().getFavoriteStopButton().setItemId(stopId);
                 mainFrame.getStopPanel().getFavoriteStopButton().update(isFav);
-                System.out.println("Click su Prefer Panel Stop: " + stopId + " is favorite: " + isFav + "XXXXXXXXXXXXXXXX");
+                System.out.println(
+                        "Click su Prefer Panel Stop: " + stopId + " is favorite: " + isFav + "XXXXXXXXXXXXXXXX");
             }
         };
         mainFrame.getLeftPanel().getPreferPanel().setFavStopRowClickBehaviour(PreferStopClickBehaviour);
@@ -349,7 +355,7 @@ public class MainController {
                 String routeId = (String) ((List<Object>) rowData).get(columnIndex);
 
                 // get model from the db
-                List<StopModel> stopModels = db.getOrderedStopsForRoute(routeId);
+                List<StopModel> stopModels = db.getOrderedStopsForRoute(routeId, Direction.OUTBOUND);
                 if (stopModels.isEmpty()) {
                     System.out.println("No stops found for route: " + routeId);
                     return;
@@ -384,10 +390,13 @@ public class MainController {
                 mainFrame.getStopPanel().getFavoriteRouteButton().update(isFav);
                 mainFrame.getStopPanel().getFavoriteRouteButton().setItemId(routeId);
 
-                List<StopModel> stopModels = db.getOrderedStopsForRoute(routeId);
+                List<StopModel> stopModels = db.getOrderedStopsForRoute(routeId, Direction.OUTBOUND);
+                StopModel firstStop = stopModels.getFirst();
+                GeoPosition geoPosition = new GeoPosition(firstStop.getLatitude(), firstStop.getLongitude());
+
                 List<VehiclePosition> routePositions = realtimeService.getRoutesVehiclePositions(routeId);
 
-                mainFrame.renderRouteLines(stopModels, routePositions, routeId, null, 1);
+                mainFrame.renderRouteLines(stopModels, routePositions, routeId, geoPosition, 1);
             }
         };
         mainFrame.setStopInfoRowClickBehaviour(StopInfoRouteClickBehaviour);
@@ -410,9 +419,8 @@ public class MainController {
 
                 mainFrame.getLeftPanel().getPreferPanel().getRemoveRouteButton().setItemId((routeId));
                 mainFrame.getLeftPanel().getPreferPanel().getRemoveRouteButton().update(isFav);
-                mainFrame.getStopPanel().getFavoriteRouteButton().update(isFav);
-                mainFrame.getStopPanel().getFavoriteRouteButton().setItemId(routeId);
-
+                System.out.println(
+                        "Click su Prefer Panel Route: " + routeId + " is favorite: " + isFav + "XXXXXXXXXXXXXXXX");
             }
         };
         mainFrame.setFavRouteRowClickBehaviour(PreferRouteClickBehaviour);
@@ -426,8 +434,10 @@ public class MainController {
                 boolean isFavorite = db.isFavouriteRoute(sessionUser.getId(), routeId);
 
                 mainFrame.getLeftPanel().getSearchPanel().getAddRouteButton().update(isFavorite);
-                mainFrame.getLeftPanel().getSearchPanel().getAddRouteButton().setItemId((String) ((List<Object>) rowData).get(columnIndex));
-                System.out.println("Click su Search Panel Route: " + routeId + " is favorite: " + isFavorite + "XXXXXXXXXXXXXXXX");
+                mainFrame.getLeftPanel().getSearchPanel().getAddRouteButton()
+                        .setItemId((String) ((List<Object>) rowData).get(columnIndex));
+                System.out.println(
+                        "Click su Search Panel Route: " + routeId + " is favorite: " + isFavorite + "XXXXXXXXXXXXXXXX");
             }
         };
         mainFrame.setSearchRouteRowClickBehaviour(SearchRouteClickBehaviour);
@@ -526,11 +536,6 @@ public class MainController {
     }
 
     public void searchQueryListener(String searchText) {
-        // if (searchText == null || searchText.isEmpty()) {
-        // mainFrame.getSearchPanel().updateView(new ArrayList<>());
-        // return; // Exit if the search text is empty
-        // }
-
         var searchPanel = mainFrame.getSearchPanel();
         try {
             var stops = db.getStopsByName(searchText);
