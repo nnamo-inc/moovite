@@ -14,7 +14,12 @@ public class StatisticStoppedBus extends StatisticUnit {
     public void onFeedUpdated(List<GtfsRealtime.FeedEntity> entities) {
         int busCount = 0;
         for (GtfsRealtime.FeedEntity entity : entities) {
-            if (entity.hasTripUpdate() && entity.getTripUpdate().getVehicle() != null) {
+            if (!entity.hasVehicle()) continue;
+            GtfsRealtime.VehiclePosition vehiclePosition = entity.getVehicle();
+            if (!vehiclePosition.hasCurrentStatus()) continue;
+            GtfsRealtime.VehiclePosition.VehicleStopStatus status = vehiclePosition.getCurrentStatus();
+            // Count the bus if it is stopped
+            if (status == GtfsRealtime.VehiclePosition.VehicleStopStatus.STOPPED_AT) {
                 busCount++;
             }
         }

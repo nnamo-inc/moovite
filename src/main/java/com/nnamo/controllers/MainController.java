@@ -60,16 +60,19 @@ public class MainController {
         StatisticLateBus statLateBusTile = new StatisticLateBus();
         StatisticPunctualBus statPunctualBusTile = new StatisticPunctualBus();
         StatisticStoppedBus statStoppedBusTile = new StatisticStoppedBus();
+        StatisticDetourBus statDetourBusTile = new StatisticDetourBus();
         realtimeService.addListener(statBusTile);
         realtimeService.addListener(statEarlyBusTile);
         realtimeService.addListener(statLateBusTile);
         realtimeService.addListener(statPunctualBusTile);
         realtimeService.addListener(statStoppedBusTile);
+        realtimeService.addListener(statDetourBusTile);
         mainFrame.getLeftPanel().getStatisticsPanel().addStatisticTile(statBusTile);
         mainFrame.getLeftPanel().getStatisticsPanel().addStatisticTile(statEarlyBusTile);
         mainFrame.getLeftPanel().getStatisticsPanel().addStatisticTile(statLateBusTile);
         mainFrame.getLeftPanel().getStatisticsPanel().addStatisticTile(statPunctualBusTile);
         mainFrame.getLeftPanel().getStatisticsPanel().addStatisticTile(statStoppedBusTile);
+        mainFrame.getLeftPanel().getStatisticsPanel().addStatisticTile(statDetourBusTile);
 
         // Login and Session Fetching
         userController.addSessionListener(new SessionListener() { // [!] Listener must be implemented before run()
