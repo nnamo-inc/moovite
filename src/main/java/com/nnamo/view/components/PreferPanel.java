@@ -36,6 +36,13 @@ public class PreferPanel extends JPanel {
         setLayout(new GridBagLayout());
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
+        JLabel titleLabel = new JLabel("Favorites");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        add(titleLabel, new CustomGbc().setPosition(0, 0)
+                .setAnchor(GridBagConstraints.NORTH)
+                .setInsets(5, 5, 5, 5));
+
+
         // Table Stop
         TitledBorder tableStopBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Fermate");
         stopContainer.setBorder(
@@ -46,7 +53,7 @@ public class PreferPanel extends JPanel {
         routeTable.setSearchColumns(LINEA, CODICE);
         stopContainer.add(removeStopButton, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.HORIZONTAL)
                 .setWeight(1.0, 0.1).setInsets(2, 5, 2, 5));
-        add(stopContainer, new CustomGbc().setPosition(0, 0).setFill(GridBagConstraints.BOTH)
+        add(stopContainer, new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
 
         // Table Route
@@ -58,7 +65,7 @@ public class PreferPanel extends JPanel {
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
         routeContainer.add(removeRouteButton, new CustomGbc().setPosition(0, 5).setFill(GridBagConstraints.HORIZONTAL)
                 .setWeight(1.0, 0.1).setInsets(2, 5, 2, 5));
-        add(routeContainer, new CustomGbc().setPosition(0, 3).setFill(GridBagConstraints.BOTH)
+        add(routeContainer, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
 
         setVisible(false);
