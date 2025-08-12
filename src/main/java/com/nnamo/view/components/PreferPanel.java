@@ -24,12 +24,9 @@ public class PreferPanel extends JPanel {
 
     JPanel stopContainer = new JPanel(new GridBagLayout());
     CustomTable stopTable = new CustomTable(new ColumnName[] { NOME, CODICE }, CODICE, STOP);
-    CustomPreferButton removeStopButton = new CustomPreferButton("Fermata");
 
     JPanel routeContainer = new JPanel(new GridBagLayout());
     CustomTable routeTable = new CustomTable(new ColumnName[] { LINEA, CODICE, TIPO }, CODICE, ROUTE);
-    CustomPreferButton removeRouteButton = new CustomPreferButton("Linea");
-
     // CONSTRUCTOR //
     public PreferPanel() {
         super();
@@ -51,8 +48,6 @@ public class PreferPanel extends JPanel {
         stopContainer.add(stopTable, new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
         routeTable.setSearchColumns(LINEA, CODICE);
-        stopContainer.add(removeStopButton, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.HORIZONTAL)
-                .setWeight(1.0, 0.1).setInsets(2, 5, 2, 5));
         add(stopContainer, new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
 
@@ -63,29 +58,14 @@ public class PreferPanel extends JPanel {
                 BorderFactory.createEmptyBorder(2, 5, 2, 5)));
         routeContainer.add(routeTable, new CustomGbc().setPosition(0, 4).setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
-        routeContainer.add(removeRouteButton, new CustomGbc().setPosition(0, 5).setFill(GridBagConstraints.HORIZONTAL)
-                .setWeight(1.0, 0.1).setInsets(2, 5, 2, 5));
         add(routeContainer, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
 
         setVisible(false);
     }
 
-    // METHODS //
-    public CustomTable getRouteTable() {
-        return routeTable;
-    }
-
-    public CustomPreferButton getRemoveRouteButton() {
-        return removeRouteButton;
-    }
-
-    public CustomPreferButton getRemoveStopButton() {
-        return removeStopButton;
-    }
-
     // LISTENERS METHODS //
-    public void setTableRowClickBehaviour(TableRowClickBehaviour listener) {
+    public void setGenericTableRowClickBehaviour(TableRowClickBehaviour listener) {
         this.stopTable.setRowClickBehaviour(listener);
         this.routeTable.setRowClickBehaviour(listener);
     }
@@ -130,24 +110,12 @@ public class PreferPanel extends JPanel {
         }
     }
 
-    public void updatePreferStopButton(Boolean isFavorite, String stopId) {
-        removeStopButton.setItemId(stopId);
-    }
-
-    public void updatePreferRouteButton(Boolean isFavorite, String routeNumber) {
-        removeRouteButton.setItemId(routeNumber);
-    }
-
     public void setFavStopRowClickBehaviour(TableRowClickBehaviour behaviour) {
         this.stopTable.setRowClickBehaviour(behaviour);
     }
 
     public void setFavRouteRowClickBehaviour(TableRowClickBehaviour behaviour) {
         this.routeTable.setRowClickBehaviour(behaviour);
-    }
-
-    public void setFavStopBehaviour(FavoriteBehaviour behaviour) {
-        this.removeStopButton.setFavBehaviour(behaviour);
     }
 
 }

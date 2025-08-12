@@ -9,6 +9,7 @@ import java.util.List;
 import javax.swing.*;
 
 import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
+import com.nnamo.enums.DataType;
 import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.enums.UpdateMode;
 import com.nnamo.interfaces.*;
@@ -108,16 +109,6 @@ public class MainFrame extends JFrame {
         this.stopPanel.updateStopRoutes(stopTimes);
     }
 
-    public void updatePreferRouteButton(Boolean isFavorite, String routeNumber) {
-        this.stopPanel.updatePreferRouteButton(isFavorite, routeNumber);
-        this.leftPanel.updatePreferRouteButton(isFavorite, routeNumber);
-    }
-
-    public void updatePreferStopButton(Boolean isFavorite, String routeId) {
-        this.leftPanel.updatePreferStopButton(isFavorite, routeId);
-        this.stopPanel.updatePreferStopButton(isFavorite, routeId);
-    };
-
     public void updateStopPanelVisibility(boolean visible) {
         JSplitPane jsp = splitMapStop;
         if (visible) {
@@ -161,6 +152,9 @@ public class MainFrame extends JFrame {
         leftPanel.updateFavRouteTable(route, updateMode);
     }
 
+    public void updatePreferButton(String itemId, boolean isFav, DataType dataType) {
+        this.preferBar.updatePreferButton(itemId, isFav, dataType);
+    }
     // GETTERS AND SETTERS //
     public MapPanel getMapPanel() {
         return mapPanel;
@@ -204,18 +198,18 @@ public class MainFrame extends JFrame {
     }
 
     // Left Panel Behaviour //
-    public void setTableRowClickBehaviour(TableRowClickBehaviour listener) {
-        this.leftPanel.setTableRowClickBehaviour(listener);
-        this.stopPanel.setTableRowClickBehaviour(listener);
+    public void setGenericTableRowClickBehaviour(TableRowClickBehaviour listener) {
+        this.leftPanel.setGenericTableRowClickBehaviour(listener);
+        this.stopPanel.setGenericTableRowClickBehaviour(listener);
     }
 
-    public void setFavStopBehaviour(FavoriteBehaviour behaviour) {
-        this.stopPanel.setFavStopBehaviour(behaviour);
-        this.leftPanel.setFavStopBehaviour(behaviour);
-    }
+/*    public void setZoomTableRowClickBehaviour(TableRowClickBehaviour listener) {
+        this.leftPanel.setZoomTableRowClickBehaviour(listener);
+        this.stopPanel.setZoomTableRowClickBehaviour(listener);
+    }*/
 
-    public void setFavRouteBehaviour(FavoriteBehaviour behaviour) {
-        this.stopPanel.setFavRouteBehaviour(behaviour);
+    public void setGeneralFavBehaviour(FavoriteBehaviour behaviour) {
+        this.preferBar.setGeneralFavBehaviour(behaviour);
     }
 
     public void setButtonPanelGeneralBehaviour(ButtonPanelBehaviour listener) {

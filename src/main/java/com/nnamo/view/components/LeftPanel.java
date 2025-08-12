@@ -63,14 +63,6 @@ public class LeftPanel extends JPanel {
         preferPanel.updateFavRouteTable(route, updateMode);
     }
 
-    public void updatePreferRouteButton(Boolean isFavorite, String routeNumber) {
-        this.preferPanel.updatePreferRouteButton(isFavorite, routeNumber);
-    }
-
-    public void updatePreferStopButton(Boolean isFavorite, String routeId) {
-        this.preferPanel.updatePreferStopButton(isFavorite, routeId);
-    }
-
     public void initPreferPanelPreferTable(List<StopModel> stops, List<RouteModel> routes) {
         preferPanel.initPreferTable(stops, routes);
     }
@@ -101,9 +93,9 @@ public class LeftPanel extends JPanel {
         this.preferPanel.setTableCheckIsFavBehaviour(listener);
     }
 
-    public void setTableRowClickBehaviour(TableRowClickBehaviour listener) {
-        searchPanel.setTableRowClickBehaviour(listener);
-        preferPanel.setTableRowClickBehaviour(listener);
+    public void setGenericTableRowClickBehaviour(TableRowClickBehaviour listener) {
+        searchPanel.setGenericTableRowClickBehaviour(listener);
+        preferPanel.setGenericTableRowClickBehaviour(listener);
     }
 
 
@@ -132,10 +124,6 @@ public class LeftPanel extends JPanel {
 
     public void setFavRouteRowClickBehaviour(TableRowClickBehaviour behaviour) {
         this.preferPanel.setFavRouteRowClickBehaviour(behaviour);
-    }
-
-    public void setFavStopBehaviour(FavoriteBehaviour behaviour) {
-        this.preferPanel.setFavStopBehaviour(behaviour);
     }
 
     public void setRealtimeSwitchListener(SwitchBarListener listener) {

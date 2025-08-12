@@ -53,20 +53,12 @@ public class SearchPanel extends JPanel {
                 .setInsets(2, 5, 2, 5));
 
         // border for table route and table route
-        JPanel routePanel = new JPanel(new GridBagLayout());
         TitledBorder tableRouteBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Linee");
-        routePanel.setBorder(
+        tableRoute.setBorder(
                 BorderFactory.createCompoundBorder(tableRouteBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
 
         tableRoute.setIsSearchable(false);
-        tableRoute.setIsSearchable(false);
-        routePanel.add(tableRoute,
-                new CustomGbc().setPosition(0, 0).setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
-                        .setInsets(2, 5, 2, 5));
-        routePanel.add(addRouteButton,
-                new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL).setWeight(1.0, 0.1)
-                        .setInsets(2, 5, 2, 5));
-        add(routePanel, new CustomGbc().setPosition(0, 3).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
+        add(tableRoute, new CustomGbc().setPosition(0, 3).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
                 .setInsets(2, 5, 2, 5));
 
         setVisible(false);
@@ -96,7 +88,7 @@ public class SearchPanel extends JPanel {
         }
     }
 
-    public void setTableRowClickBehaviour(TableRowClickBehaviour listener) {
+    public void setGenericTableRowClickBehaviour(TableRowClickBehaviour listener) {
         tableStop.setRowClickBehaviour(listener);
         tableRoute.setRowClickBehaviour(listener);
     }
@@ -112,9 +104,5 @@ public class SearchPanel extends JPanel {
     public void setTableCheckIsFavBehaviour(TableCheckIsFavBehaviour listener) {
         tableStop.setTableCheckIsFavBehaviour(listener);
         tableRoute.setTableCheckIsFavBehaviour(listener);
-    }
-
-    public CustomPreferButton getAddRouteButton() {
-        return addRouteButton;
     }
 }
