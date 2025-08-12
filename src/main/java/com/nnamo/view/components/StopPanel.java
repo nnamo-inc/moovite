@@ -4,7 +4,6 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import com.nnamo.enums.ButtonMode;
 import com.nnamo.enums.ColumnName;
 import com.nnamo.interfaces.FavoriteBehaviour;
 import com.nnamo.interfaces.TableCheckIsFavBehaviour;
@@ -24,6 +23,7 @@ import java.util.*;
 import java.util.List;
 
 import static com.nnamo.enums.ColumnName.*;
+import static com.nnamo.enums.DataType.*;
 
 public class StopPanel extends JPanel {
     // Stop info components
@@ -34,8 +34,8 @@ public class StopPanel extends JPanel {
     // Route service components
     private CustomTable tableService;
     // Prefer components
-    private final CustomPreferButton favoriteStopButton = new CustomPreferButton("Fermata", ButtonMode.BOTH);
-    private final CustomPreferButton favoriteRouteButton = new CustomPreferButton("Linea", ButtonMode.BOTH);
+    private final CustomPreferButton favoriteStopButton = new CustomPreferButton("Fermata");
+    private final CustomPreferButton favoriteRouteButton = new CustomPreferButton("Linea");
 
     // CONSTRUCTOR //
     public StopPanel() {
@@ -97,7 +97,7 @@ public class StopPanel extends JPanel {
 
     private JPanel newRouteTimePanel() {
         JPanel mainPanel = new JPanel(new GridBagLayout());
-        this.tableTime = new CustomTable( new ColumnName[]{LINEA, DIREZIONE, ORARIO, STATO, MINUTIRIMAMENTI, POSTIDISPONIBILI, TIPO}, LINEA);
+        this.tableTime = new CustomTable( new ColumnName[]{LINEA, DIREZIONE, ORARIO, STATO, MINUTIRIMAMENTI, POSTIDISPONIBILI, TIPO}, LINEA, ROUTE);
         tableTime.setSearchColumns(LINEA, DIREZIONE, ORARIO);
         // Table
         mainPanel.add(tableTime, new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.CENTER)
@@ -110,7 +110,7 @@ public class StopPanel extends JPanel {
         TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Tabella Linee");
         mainPanel.setBorder(titledBorder);
 
-        this.tableService = new CustomTable(new ColumnName[]{ LINEA, DIREZIONE, TIPO }, LINEA);
+        this.tableService = new CustomTable(new ColumnName[]{ LINEA, DIREZIONE, TIPO }, LINEA, ROUTE);
         tableService.setSearchColumns(LINEA, DIREZIONE);
         // Table
         mainPanel.add(tableService, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER)
@@ -197,6 +197,7 @@ public class StopPanel extends JPanel {
 
         for (StopTimeModel stopTime : stopTimes) {
             TripModel trip = stopTime.getTrip();
+            trip.getDirection();
             RouteModel route = trip.getRoute();
             List<String> routeInfo = Arrays.asList(route.getShortName(), trip.getHeadsign(), route.getType().toString());
             uniqueRoutes.add(routeInfo);
@@ -257,6 +258,11 @@ public class StopPanel extends JPanel {
     }
 
     // LISTENERS METHODS //
+    public void setTableRowClickBehaviour(TableRowClickBehaviour listener) {
+            this.tableService.setRowClickBehaviour(listener);
+            this.tableTime.setRowClickBehaviour(listener);
+    }
+
     public void setFavStopBehaviour(FavoriteBehaviour behaviour) {
         if (behaviour != null) {
             this.favoriteStopButton.setFavBehaviour(behaviour);

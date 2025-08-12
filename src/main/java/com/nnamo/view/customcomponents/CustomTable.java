@@ -1,9 +1,9 @@
 package com.nnamo.view.customcomponents;
 
 import com.nnamo.enums.ColumnName;
+import com.nnamo.enums.DataType;
 import com.nnamo.interfaces.TableCheckIsFavBehaviour;
 import com.nnamo.interfaces.TableRowClickBehaviour;
-import com.nnamo.interfaces.TableSearchBehaviour;
 import com.nnamo.utils.CustomColor;
 
 import javax.swing.*;
@@ -32,22 +32,22 @@ public class CustomTable extends JPanel {
     JScrollPane scrollPane;
     ColumnName[] tableColumns;
     ColumnName columnSelect;
+    DataType dataType;
     ArrayList<ColumnName> searchColumns = new ArrayList<>();
     DefaultTableModel model;
     TableRowSorter sorter;
     Vector<Object> rowData;
     boolean isSearchable = true;
 
-
-
     TableRowClickBehaviour tableRowClickBehaviour;
     TableCheckIsFavBehaviour tableCheckIsFavBehaviour;
 
     // CONSTRUCTOR //
-    public CustomTable(ColumnName[] tableColumns, ColumnName columnSelect) {
+    public CustomTable(ColumnName[] tableColumns, ColumnName columnSelect, DataType dataType) {
         super(new BorderLayout());
         this.columnSelect = columnSelect;
         this.tableColumns = tableColumns;
+        this.dataType = dataType;
         this.model = new DefaultTableModel(tableColumns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -198,8 +198,7 @@ public class CustomTable extends JPanel {
                         rowData = (Vector<Object>) model.getDataVector().get(modelRow);
                         try {
                             int columnIndex = table.getColumnModel().getColumnIndex(columnSelect.toString());
-                            boolean isFav = tableCheckIsFavBehaviour.onCheckIsFav(rowData, columnIndex);
-                            tableRowClickBehaviour.onRowClick(rowData, columnIndex, isFav);
+                            tableRowClickBehaviour.onRowClick(rowData, columnIndex, dataType);
                         } catch (SQLException | IOException ex) {
                             throw new RuntimeException(ex);
                         }

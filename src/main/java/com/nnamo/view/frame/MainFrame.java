@@ -16,28 +16,26 @@ import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.RealtimeStopUpdate;
-import com.nnamo.view.components.LeftPanel;
-import com.nnamo.view.components.MapPanel;
-import com.nnamo.view.components.SearchPanel;
-import com.nnamo.view.components.StopPanel;
+import com.nnamo.view.components.*;
 import org.jxmapviewer.viewer.GeoPosition;
 
 public class MainFrame extends JFrame {
     MapPanel mapPanel = new MapPanel();
     StopPanel stopPanel = new StopPanel();
     LeftPanel leftPanel = new LeftPanel();
+    PreferBar preferBar = new PreferBar();
 
+    JSplitPane splitMapPrefer;
     JSplitPane splitMapStop;
     JSplitPane splitLeftMap;
 
     public MainFrame() throws IOException {
         super("Moovite Map View");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        /* setExtendedState(JFrame.MAXIMIZED_BOTH); */
         setSize(new Dimension(1000, 800));
         setLayout(new BorderLayout());
 
-        // set resources/icons/application-bar-icon.png as the app icon
+        // Icona dell'app...
         try {
             setIconImage(
                     Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/application-bar-icon.png")));
@@ -46,16 +44,24 @@ public class MainFrame extends JFrame {
             System.err.println("Icon not found, using default icon.");
         }
 
-        // Split verticale tra mappa e stop panel
+        // 1. Pannello che contiene PreferBar + Mappa + StopPanel
+        JPanel rightPanel = new JPanel(new BorderLayout());
+        rightPanel.add(preferBar, BorderLayout.NORTH);  // PreferBar sopra la mappa
+
+        // 2. Split verticale tra mappa e stop panel
         splitMapStop = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mapPanel, stopPanel);
         splitMapStop.setResizeWeight(1.0);
         splitMapStop.setDividerSize(0);
 
-        // Split orizzontale tra search panel e centro (mappa+stop)
-        splitLeftMap = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, splitMapStop);
+        // 3. Aggiungi il split mappa-stop al pannello destro
+        rightPanel.add(splitMapStop, BorderLayout.CENTER);
+
+        // 4. Split orizzontale tra left panel e tutto il resto (prefer+mappa+stop)
+        splitLeftMap = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
         splitLeftMap.setResizeWeight(0.0);
         splitLeftMap.setDividerSize(0);
 
+        // 5. Aggiungi solo il split principale
         add(splitLeftMap, BorderLayout.CENTER);
     }
 
@@ -168,6 +174,10 @@ public class MainFrame extends JFrame {
         return mapPanel.getCurrentRouteId();
     }
 
+    public PreferBar getPreferBar() {
+        return preferBar;
+    }
+
     public void setCurrentRouteId(String routeId) {
         mapPanel.setCurrentRouteId(routeId);
     }
@@ -194,6 +204,11 @@ public class MainFrame extends JFrame {
     }
 
     // Left Panel Behaviour //
+    public void setTableRowClickBehaviour(TableRowClickBehaviour listener) {
+        this.leftPanel.setTableRowClickBehaviour(listener);
+        this.stopPanel.setTableRowClickBehaviour(listener);
+    }
+
     public void setFavStopBehaviour(FavoriteBehaviour behaviour) {
         this.stopPanel.setFavStopBehaviour(behaviour);
         this.leftPanel.setFavStopBehaviour(behaviour);

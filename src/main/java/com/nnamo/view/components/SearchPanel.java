@@ -1,6 +1,5 @@
 package com.nnamo.view.components;
 
-import com.nnamo.enums.ButtonMode;
 import com.nnamo.enums.ColumnName;
 import com.nnamo.interfaces.SearchBarListener;
 import com.nnamo.interfaces.TableCheckIsFavBehaviour;
@@ -19,13 +18,14 @@ import java.awt.*;
 import java.util.List;
 
 import static com.nnamo.enums.ColumnName.*;
+import static com.nnamo.enums.DataType.*;
 
 public class SearchPanel extends JPanel {
 
     CustomSearchBar customSearchBar = new CustomSearchBar();
-    CustomTable tableStop = new CustomTable(new ColumnName[] { NOME, CODICE }, CODICE);
-    CustomTable tableRoute = new CustomTable(new ColumnName[] { LINEA, CODICE, TIPO, DIREZIONE }, CODICE);
-    CustomPreferButton addRouteButton = new CustomPreferButton("Linea", ButtonMode.ADD);
+    CustomTable tableStop = new CustomTable(new ColumnName[]{ NOME, CODICE }, CODICE, STOP);
+    CustomTable tableRoute = new CustomTable(new ColumnName[]{ LINEA, CODICE, TIPO }, CODICE, ROUTE);
+    CustomPreferButton addRouteButton = new CustomPreferButton("Linea");
 
     // CONSTRUCTOR //
     public SearchPanel() {
@@ -88,6 +88,11 @@ public class SearchPanel extends JPanel {
                     route.getDirectionName(),
             });
         }
+    }
+
+    public void setTableRowClickBehaviour(TableRowClickBehaviour listener) {
+        tableStop.setRowClickBehaviour(listener);
+        tableRoute.setRowClickBehaviour(listener);
     }
 
     public void setSearchStopRowClickBehaviour(TableRowClickBehaviour listener) {

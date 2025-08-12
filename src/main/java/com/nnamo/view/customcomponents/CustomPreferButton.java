@@ -1,6 +1,6 @@
 package com.nnamo.view.customcomponents;
 
-import com.nnamo.enums.ButtonMode;
+import com.nnamo.enums.DataType;
 import com.nnamo.enums.ResetType;
 import com.nnamo.interfaces.FavoriteBehaviour;
 import com.nnamo.utils.CustomColor;
@@ -14,108 +14,47 @@ public class CustomPreferButton extends JButton {
     FavoriteBehaviour favoriteBehaviour;
     String itemId;
     String itemName;
-    ButtonMode mode;
+    DataType mode;
 
     // CONSTRUCTOR //
-    public CustomPreferButton(String itemName, ButtonMode buttonMode) {
+    public CustomPreferButton(String itemName) {
         super();
         this.itemName = itemName;
 
-        switch (buttonMode) {
-            case ADD -> {
+        setText("<html></p><p>Clicca su una riga</p><p>della tabella per</p><p>attivare il bottone</p></html>");
+        setBackground(CustomColor.GREEN);
 
-                this.mode = ButtonMode.ADD;
-//                setText("<html><p>Aggiungi</p><p>" + itemName + "</p><p>ai Preferiti</p></html>");
-                setText("<html></p><p>Clicca su una riga</p><p>della tabella per</p><p>attivare il bottone</p></html>");
-                setEnabled(false);
-
-                addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(java.awt.event.ActionEvent e) {
-                        favoriteBehaviour.addFavorite(itemId);
-                        reset();
-                    }
-                });
-
+        addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                if (favorite) {
+                    favoriteBehaviour.removeFavorite(itemId, mode);
+                    // Aggiorna UI solo se l'operazione ha successo
+                    favorite = false;
+                    setText("<html><p>Aggiungi</p><p>" + itemName + "</p><p>ai Preferiti</p></html>");
+                    setBackground(CustomColor.GREEN);
+                } else {
+                    favoriteBehaviour.addFavorite(itemId, mode);
+                    // Aggiorna UI solo se l'operazione ha successo
+                    favorite = true;
+                    setText("<html><p>Rimuovi</p><p>" + itemName + "</p><p>dai Preferiti</p></html>");
+                    setBackground(CustomColor.RED);
+                }
             }
-            case REMOVE -> {
-
-                this.mode = ButtonMode.REMOVE;
-//                setText("<html><p>Rimuovi</p><p>" + itemName + "</p><p>dai Preferiti</p></html>");
-                setText("<html></p><p>Clicca su una riga</p><p>della tabella per</p><p>attivare il bottone</p></html>");
-                setEnabled(false);
-
-                addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(java.awt.event.ActionEvent e) {
-                        favoriteBehaviour.removeFavorite(itemId);
-                        reset();
-                    }
-                });
-
-            }
-            case BOTH -> {
-
-                this.mode = ButtonMode.BOTH;
-                setText("<html></p><p>Clicca su una riga</p><p>della tabella per</p><p>attivare il bottone</p></html>");
-                setBackground(CustomColor.GREEN);
-
-                addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(java.awt.event.ActionEvent e) {
-                        if (favorite) {
-                            favoriteBehaviour.removeFavorite(itemId);
-                            // Aggiorna UI solo se l'operazione ha successo
-                            favorite = false;
-                            setText("<html><p>Aggiungi</p><p>" + itemName + "</p><p>ai Preferiti</p></html>");
-                            setBackground(CustomColor.GREEN);
-                        } else {
-                            favoriteBehaviour.addFavorite(itemId);
-                            // Aggiorna UI solo se l'operazione ha successo
-                            favorite = true;
-                            setText("<html><p>Rimuovi</p><p>" + itemName + "</p><p>dai Preferiti</p></html>");
-                            setBackground(CustomColor.RED);
-                        }
-                    }
-                });
-            }
-        }
+        });
 
     }
 
     // METHODS //
     public void update(boolean isFavorite) {
-        switch (mode) {
-
-            case ADD -> {
-                if (isFavorite) {
-                    setText(itemName + "<html><p>già nei</p><p>" + itemName + "</p><p>tuoi Preferiti</p></html>");
-                    setEnabled(false);
-                } else {
-                    setText("<html><p>Aggiungi</p><p>" + itemName + "</p><p>ai Preferiti</p></html>");
-                    setEnabled(true);
-                    setBackground(CustomColor.GREEN);
-                }
-            }
-
-            case REMOVE -> {
-                setEnabled(true);
-                setText("<html><p>Rimuovi</p><p>" + itemName + "</p><p>dai Preferiti</p></html>");
-                setBackground(CustomColor.RED);
-            }
-
-            case BOTH -> {
-                setEnabled(true);
-                this.favorite = isFavorite;
-                if (isFavorite) {
-                    setText("<html><p>Rimuovi</p><p>" + itemName + "</p><p>dai Preferiti</p></html>");
-                    setBackground(CustomColor.RED);
-                } else {
-                    setText("<html><p>Aggiungi</p><p>" + itemName + "</p><p>ai Preferiti</p></html>");
-                    setBackground(CustomColor.GREEN);
-                }
-            }
-
+        setEnabled(true);
+        this.favorite = isFavorite;
+        if (isFavorite) {
+            setText("<html><p>Rimuovi</p><p>" + itemName + "</p><p>dai Preferiti</p></html>");
+            setBackground(CustomColor.RED);
+        } else {
+            setText("<html><p>Aggiungi</p><p>" + itemName + "</p><p>ai Preferiti</p></html>");
+            setBackground(CustomColor.GREEN);
         }
     }
 
@@ -148,6 +87,10 @@ public class CustomPreferButton extends JButton {
     }
 
     // GETTERS AND SETTERS //
+
+    public void setDataType(DataType mode) {
+        this.mode = mode;
+    }
 
     public void setItemId(String itemId) {
         this.itemId = itemId;

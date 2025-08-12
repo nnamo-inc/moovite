@@ -1,6 +1,5 @@
 package com.nnamo.view.components;
 
-import com.nnamo.enums.ButtonMode;
 import com.nnamo.enums.ColumnName;
 import com.nnamo.enums.UpdateMode;
 import com.nnamo.interfaces.FavoriteBehaviour;
@@ -19,16 +18,17 @@ import java.awt.*;
 import java.util.List;
 
 import static com.nnamo.enums.ColumnName.*;
+import static com.nnamo.enums.DataType.*;
 
 public class PreferPanel extends JPanel {
 
     JPanel stopContainer = new JPanel(new GridBagLayout());
-    CustomTable stopTable = new CustomTable(new ColumnName[] { NOME, CODICE }, CODICE);
-    CustomPreferButton removeStopButton = new CustomPreferButton("Fermata", ButtonMode.REMOVE);
+    CustomTable stopTable = new CustomTable(new ColumnName[] { NOME, CODICE }, CODICE, STOP);
+    CustomPreferButton removeStopButton = new CustomPreferButton("Fermata");
 
     JPanel routeContainer = new JPanel(new GridBagLayout());
-    CustomTable routeTable = new CustomTable(new ColumnName[] { LINEA, CODICE, TIPO }, CODICE);
-    CustomPreferButton removeRouteButton = new CustomPreferButton("Linea", ButtonMode.REMOVE);
+    CustomTable routeTable = new CustomTable(new ColumnName[] { LINEA, CODICE, TIPO }, CODICE, ROUTE);
+    CustomPreferButton removeRouteButton = new CustomPreferButton("Linea");
 
     // CONSTRUCTOR //
     public PreferPanel() {
@@ -78,6 +78,11 @@ public class PreferPanel extends JPanel {
     }
 
     // LISTENERS METHODS //
+    public void setTableRowClickBehaviour(TableRowClickBehaviour listener) {
+        this.stopTable.setRowClickBehaviour(listener);
+        this.routeTable.setRowClickBehaviour(listener);
+    }
+
     public void setTableCheckIsFavBehaviour(TableCheckIsFavBehaviour listener) {
         this.stopTable.setTableCheckIsFavBehaviour(listener);
         this.routeTable.setTableCheckIsFavBehaviour(listener);
