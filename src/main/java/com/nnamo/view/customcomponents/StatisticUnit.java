@@ -22,7 +22,6 @@ public abstract class StatisticUnit extends JLabel implements StatisticInterface
         this.unit = unit;
 
         this.setHorizontalAlignment(SwingConstants.CENTER);
-        this.setPreferredSize(new Dimension(70, 30));
         this.setFont(new Font("Arial", Font.BOLD, 16));
         this.setText("<html><div style='text-align: center;'>" + name + "<br>" + value + " <span style='font-size: 12px;'>" + unit + "</span></div></html>");
         this.setOpaque(false); // Important: set to false so we can draw custom background

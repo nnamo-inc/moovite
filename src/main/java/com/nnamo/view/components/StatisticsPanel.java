@@ -49,8 +49,7 @@ public class StatisticsPanel extends JPanel {
             throw new IllegalArgumentException("Tile cannot be null");
         }
 
-        // Set preferred and minimum sizes to maintain consistent tile dimensions
-        Dimension tileSize = new Dimension(120, 80); // Increased size for better visibility
+        Dimension tileSize = new Dimension(120, 80);
         tile.setPreferredSize(tileSize);
         tile.setMinimumSize(tileSize);
         tile.setMaximumSize(tileSize);
