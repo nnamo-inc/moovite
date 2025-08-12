@@ -22,7 +22,20 @@ public class App {
             DatabaseService db = new DatabaseService();
             StaticGtfsService staticGtfs = new StaticGtfsService();
             RealtimeGtfsService realtimeGtfs = new RealtimeGtfsService();
+
+            // Processing... window
+            JFrame processingFrame = new JFrame("Processing...");
+            processingFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            processingFrame.setSize(300, 100);
+            processingFrame.setLocationRelativeTo(null);
+            JLabel processingLabel = new JLabel("Loading GTFS data, please wait...", SwingConstants.CENTER);
+            processingFrame.add(processingLabel);
+            processingFrame.setVisible(true);
+
             db.preloadGtfsData(staticGtfs);
+
+            // Close processing frame after loading GTFS data
+            processingFrame.dispose();
 
             try {
                 UIManager.setLookAndFeel(new FlatDarculaLaf());
