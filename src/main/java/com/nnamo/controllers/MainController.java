@@ -188,7 +188,6 @@ public class MainController {
                 try {
                     switch (dataType) {
                         case STOP: {
-                            boolean isFav = db.isFavoriteStop(sessionUser.getId(), stopId);
                             db.addFavStop(sessionUser.getId(), stopId);
                             mainFrame.updateFavStopTable(db.getStopById(stopId), UpdateMode.ADD);
                             System.out.println(db.getFavoriteStops(sessionUser.getId()).stream().count());
