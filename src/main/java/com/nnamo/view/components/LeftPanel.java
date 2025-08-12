@@ -11,14 +11,13 @@ import com.nnamo.enums.UpdateMode;
 import com.nnamo.interfaces.*;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
-import com.nnamo.view.customcomponents.CustomSwitchBar;
 
 public class LeftPanel extends JPanel {
     private JPanel modularPanel = new JPanel(new BorderLayout());
     private SearchPanel searchPanel = new SearchPanel();
     private PreferPanel preferPanel = new PreferPanel();
     private StatisticsPanel statsPanel = new StatisticsPanel();
-    private SettingPanel settingPanel = new SettingPanel();
+    private SettingsPanel settingsPanel = new SettingsPanel();
 
     ButtonPanel buttonPanel = new ButtonPanel(new LinkedHashMap<>() {
         {
@@ -26,7 +25,7 @@ public class LeftPanel extends JPanel {
             put(preferPanel,
                     new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/favorite_small.png"))));
             put(statsPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/statistics_small.png"))));
-            put(settingPanel,
+            put(settingsPanel,
                     new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/setting_small.png"))));
         }
     });
@@ -92,7 +91,7 @@ public class LeftPanel extends JPanel {
     public StatisticsPanel getStatisticsPanel() { return statsPanel; }
 
     public void setRealtimeStatus(RealtimeStatus status) {
-        this.settingPanel.setRealtimeStatus(status);
+        this.settingsPanel.setRealtimeStatus(status);
     }
 
     // BEHAVIOUR //
@@ -140,11 +139,11 @@ public class LeftPanel extends JPanel {
     }
 
     public void setRealtimeSwitchListener(SwitchBarListener listener) {
-        this.settingPanel.setRealtimeSwitchListener(listener);
+        this.settingsPanel.setRealtimeSwitchListener(listener);
     }
 
     public void setLogoutBehaviour(LogoutBehaviour behaviour) {
-        settingPanel.setLogoutBehaviour(behaviour);
+        settingsPanel.setLogoutBehaviour(behaviour);
     }
 
 }
