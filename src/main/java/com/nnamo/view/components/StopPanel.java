@@ -20,7 +20,7 @@ import com.nnamo.view.customcomponents.CustomPreferButton;
 
 import java.awt.*;
 import java.time.LocalTime;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
 
 import static com.nnamo.enums.ColumnName.*;
@@ -29,12 +29,10 @@ public class StopPanel extends JPanel {
     // Stop info components
     private final CustomInfoBar nomeFermata = new CustomInfoBar("Nome fermata: ");
     private final CustomInfoBar idFermata = new CustomInfoBar("ID fermata: ");
-    // Bus info components
-    private final CustomInfoBar busInArrivo = new CustomInfoBar("In arrivo: ");
-    private final CustomInfoBar statoBusInArrivo = new CustomInfoBar("Stato: ");
-    private final CustomInfoBar numeroPosti = new CustomInfoBar("Numero posti: ");
     // Route info components
-    private CustomTable table;
+    private CustomTable tableTime;
+    // Route service components
+    private CustomTable tableService;
     // Prefer components
     private final CustomPreferButton favoriteStopButton = new CustomPreferButton("Fermata", ButtonMode.BOTH);
     private final CustomPreferButton favoriteRouteButton = new CustomPreferButton("Linea", ButtonMode.BOTH);
@@ -48,34 +46,33 @@ public class StopPanel extends JPanel {
         setBackground(new Color(60, 63, 65));
 
         // Stop info panel
-        JPanel PanelStopInfo = newStopInfoPanel();
-        add(PanelStopInfo, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER)
-                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.1).setWidth(2)
+        JPanel stopInfoPanel = newStopInfoPanel();
+        add(stopInfoPanel, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER)
+                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.1).setWidth(3)
                 .setInsets(2, 5, 2, 5));
 
-//        // Bus info panel
-//        JPanel PanelbusInfo = newBusInfoPanel();
-//        add(PanelbusInfo, new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.WEST)
-//                .setFill(GridBagConstraints.BOTH).setWeight(0.9, 0.9)
-//                .setInsets(2, 5, 2, 5));
+        // Route service panel
+        JPanel routeInfoPanel = newRouteInfoPanel();
+        add(routeInfoPanel, new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.CENTER)
+                .setFill(GridBagConstraints.BOTH).setWeight(0.5, 1.0)
+                .setInsets(2, 5, 2, 5));
 
         // Route info panel
-        JPanel tableRouteInfo = newRouteInfoPanel();
+        JPanel routeTimePanel = newRouteTimePanel();
         TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Tabella corse");
-        tableRouteInfo.setBorder(titledBorder);
-        add(tableRouteInfo,
-                new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.WEST)
+        routeTimePanel.setBorder(titledBorder);
+        add(routeTimePanel,
+                new CustomGbc().setPosition(1, 1).setAnchor(GridBagConstraints.WEST)
                         .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
                         .setInsets(2, 5, 2, 5));
 
         // Buttons prefer
         JPanel PanelPrefer = newPanelPrefer();
         add(PanelPrefer,
-                new CustomGbc().setPosition(1, 1).setAnchor(GridBagConstraints.EAST)
+                new CustomGbc().setPosition(2, 1).setAnchor(GridBagConstraints.EAST)
                         .setFill(GridBagConstraints.BOTH).setWeight(0.1, 0.1)
                         .setInsets(2, 5, 2, 5));
 
-        // inizialize the listeners
         setVisible(false);
     }
 
@@ -98,37 +95,25 @@ public class StopPanel extends JPanel {
         return infoStop;
     }
 
-//    private JPanel newBusInfoPanel() {
-//        // Info bus panel with border
-//        JPanel infoBus = new JPanel(new GridBagLayout());
-//        TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Informazioni bus");
-//        infoBus.setBorder(titledBorder);
-//
-//        // label bus
-//        infoBus.add(busInArrivo,
-//                new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.WEST)
-//                        .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
-//                        .setInsets(2, 5, 2, 5));
-//        // text bus
-//        infoBus.add(statoBusInArrivo,
-//                new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.WEST)
-//                        .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
-//                        .setInsets(2, 5, 2, 5));
-//        // label state
-//        infoBus.add(numeroPosti,
-//                new CustomGbc().setPosition(0, 2).setAnchor(GridBagConstraints.WEST)
-//                        .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
-//                        .setInsets(2, 5, 2, 5));
-//
-//        return infoBus;
-//    }
+    private JPanel newRouteTimePanel() {
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        this.tableTime = new CustomTable( new ColumnName[]{LINEA, DIREZIONE, ORARIO, STATO, MINUTIRIMAMENTI, POSTIDISPONIBILI, TIPO}, LINEA);
+        tableTime.setSearchColumns(LINEA, DIREZIONE, ORARIO);
+        // Table
+        mainPanel.add(tableTime, new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.CENTER)
+                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
+        return mainPanel;
+    }
 
     private JPanel newRouteInfoPanel() {
         JPanel mainPanel = new JPanel(new GridBagLayout());
-        this.table = new CustomTable( new ColumnName[]{LINEA, DIREZIONE, ORARIO, STATO, MINUTIRIMAMENTI, POSTIDISPONIBILI, TIPO}, LINEA);
-        table.setSearchColumns(LINEA, DIREZIONE, ORARIO);
+        TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Tabella Linee");
+        mainPanel.setBorder(titledBorder);
+
+        this.tableService = new CustomTable(new ColumnName[]{ LINEA, DIREZIONE, TIPO }, LINEA);
+        tableService.setSearchColumns(LINEA, DIREZIONE);
         // Table
-        mainPanel.add(table, new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.CENTER)
+        mainPanel.add(tableService, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER)
                 .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
         return mainPanel;
     }
@@ -156,7 +141,7 @@ public class StopPanel extends JPanel {
 
     // METHODS //
     public void updateStopTimes(List<StopTimeModel> stopTimes, List<RealtimeStopUpdate> realtimeUpdates) {
-        table.clear();
+        tableTime.clear();
 
         HashMap<String, RealtimeStopUpdate> realtimeTrips = new HashMap<>();
         for (RealtimeStopUpdate update : realtimeUpdates) {
@@ -190,7 +175,7 @@ public class StopPanel extends JPanel {
                 occupancyStatus = timeUpdate.getVehiclePosition().getOccupancyStatus().name();
             }
 
-            table.addRow(new Object[] {
+            tableTime.addRow(new Object[] {
                     route.getShortName(),
                     trip.getHeadsign(),
                     stopTime.getArrivalTimeAsStr(),
@@ -202,6 +187,23 @@ public class StopPanel extends JPanel {
                     //  inside an invisile column to get the vehicle ID for row clicking and zooming on the map!
             });
             System.out.println("route type: " + route.getType());
+        }
+        }
+
+
+    public void updateStopRoutes(List<StopTimeModel> stopTimes) {
+        tableService.clear();
+        HashSet<List<String>> uniqueRoutes = new HashSet<>();
+
+        for (StopTimeModel stopTime : stopTimes) {
+            TripModel trip = stopTime.getTrip();
+            RouteModel route = trip.getRoute();
+            List<String> routeInfo = Arrays.asList(route.getShortName(), trip.getHeadsign(), route.getType().toString());
+            uniqueRoutes.add(routeInfo);
+        }
+
+        for (List<String> routeInfo : uniqueRoutes) {
+            tableService.addRow(routeInfo.toArray());
         }
     }
 
@@ -267,15 +269,22 @@ public class StopPanel extends JPanel {
         }
     }
 
-    public void setStopTimeRowClickBehaviour(TableRowClickBehaviour tableRowClickBehaviour) {
+    public void setStopInfoRowClickBehaviour(TableRowClickBehaviour tableRowClickBehaviour) {
         if (tableRowClickBehaviour != null) {
-            this.table.setRowClickBehaviour(tableRowClickBehaviour);
+            this.tableService.setRowClickBehaviour(tableRowClickBehaviour);
+        }
+    }
+
+    public void setStopRouteRowClickBehaviour(TableRowClickBehaviour tableRowClickBehaviour) {
+        if (tableRowClickBehaviour != null) {
+            this.tableTime.setRowClickBehaviour(tableRowClickBehaviour);
         }
     }
 
     public void setTableCheckIsFavBehaviour(TableCheckIsFavBehaviour tableCheckIsFavBehaviour) {
     if (tableCheckIsFavBehaviour != null) {
-            this.table.setTableCheckIsFavBehaviour(tableCheckIsFavBehaviour);
+            this.tableService.setTableCheckIsFavBehaviour(tableCheckIsFavBehaviour);
+            this.tableTime.setTableCheckIsFavBehaviour(tableCheckIsFavBehaviour);
         }
     }
 }
