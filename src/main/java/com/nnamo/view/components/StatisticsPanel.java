@@ -9,11 +9,17 @@ import com.nnamo.view.customcomponents.WrapLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class StatisticsPanel extends JPanel {
     private final JPanel tileContainer = new JPanel();
+    private final ArrayList<StatisticUnit> statisticTiles = new ArrayList<>();
+    private static final int TILE_WIDTH = 120;
+    private static final int TILE_HEIGHT = 80;
+    private static final int GAP = 10;
 
     public StatisticsPanel() {
         super();
@@ -26,8 +32,8 @@ public class StatisticsPanel extends JPanel {
                 .setAnchor(GridBagConstraints.NORTH)
                 .setInsets(5, 5, 5, 5));
 
-        // tile container with custom wrap layout
-        tileContainer.setLayout(new WrapLayout(FlowLayout.LEFT, 10, 10));
+        // Use GridBagLayout for the tile container for better control
+        tileContainer.setLayout(new GridBagLayout());
         tileContainer.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         JScrollPane scrollPane = new JScrollPane(tileContainer);
@@ -41,6 +47,20 @@ public class StatisticsPanel extends JPanel {
                 .setWeight(1.0, 1.0)
                 .setInsets(5, 5, 5, 5));
 
+        // Add component listener to both the panel and the tile container
+        ComponentAdapter resizeListener = new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                SwingUtilities.invokeLater(() -> relayoutTiles());
+            }
+        };
+
+        addComponentListener(resizeListener);
+        tileContainer.addComponentListener(resizeListener);
+
+        // Also listen to the scroll pane viewport changes
+        scrollPane.getViewport().addChangeListener(e -> SwingUtilities.invokeLater(() -> relayoutTiles()));
+
         setVisible(false);
     }
 
@@ -49,12 +69,83 @@ public class StatisticsPanel extends JPanel {
             throw new IllegalArgumentException("Tile cannot be null");
         }
 
-        Dimension tileSize = new Dimension(120, 80);
-        tile.setPreferredSize(tileSize);
-        tile.setMinimumSize(tileSize);
-        tile.setMaximumSize(tileSize);
+        statisticTiles.add(tile);
+        relayoutTiles();
+    }
 
-        tileContainer.add(tile);
+    private void relayoutTiles() {
+        tileContainer.removeAll();
+
+        if (statisticTiles.isEmpty()) {
+            tileContainer.revalidate();
+            tileContainer.repaint();
+            return;
+        }
+
+        // Get the actual available width from the viewport
+        int containerWidth = tileContainer.getParent() instanceof JViewport ?
+                ((JViewport) tileContainer.getParent()).getWidth() : tileContainer.getWidth();
+
+        // Fallback to parent panel width if viewport width is not available
+        if (containerWidth <= 0) {
+            containerWidth = getWidth() - 40; // Account for borders, padding, and potential scrollbar
+        }
+
+        // Ensure minimum width
+        containerWidth = Math.max(containerWidth, TILE_WIDTH + GAP);
+
+        // Calculate how many columns can fit
+        int maxColumns = Math.max(1, (containerWidth + GAP) / (TILE_WIDTH + GAP));
+
+        int row = 0;
+        int col = 0;
+
+        for (StatisticUnit tile : statisticTiles) {
+            Dimension tileSize;
+            int gridWidth = 1;
+
+            // Check if this is TotalBus and if we have space for 3 columns
+            if (tile instanceof StatisticTotalBus && maxColumns >= 3 && col == 0) {
+                // Only span 3 columns if we're at the start of a row and have enough space
+                gridWidth = Math.min(3, maxColumns);
+                tileSize = new Dimension(TILE_WIDTH * gridWidth + GAP * (gridWidth - 1), TILE_HEIGHT);
+            } else {
+                tileSize = new Dimension(TILE_WIDTH, TILE_HEIGHT);
+            }
+
+            tile.setPreferredSize(tileSize);
+            tile.setMinimumSize(tileSize);
+            tile.setMaximumSize(tileSize);
+
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.gridx = col;
+            gbc.gridy = row;
+            gbc.gridwidth = gridWidth;
+            gbc.fill = GridBagConstraints.BOTH;
+            gbc.insets = new Insets(GAP / 2, GAP / 2, GAP / 2, GAP / 2);
+            gbc.weightx = gridWidth; // Give more weight to wider tiles
+            gbc.weighty = 0;
+
+            tileContainer.add(tile, gbc);
+
+            col += gridWidth;
+
+            // Move to next row if we've filled this one
+            if (col >= maxColumns) {
+                row++;
+                col = 0;
+            }
+        }
+
+        // Add a filler component to push everything to the top
+        GridBagConstraints fillerGbc = new GridBagConstraints();
+        fillerGbc.gridx = 0;
+        fillerGbc.gridy = row + 1;
+        fillerGbc.gridwidth = GridBagConstraints.REMAINDER;
+        fillerGbc.fill = GridBagConstraints.BOTH;
+        fillerGbc.weighty = 1.0;
+        tileContainer.add(Box.createVerticalGlue(), fillerGbc);
+
         tileContainer.revalidate();
         tileContainer.repaint();
     }

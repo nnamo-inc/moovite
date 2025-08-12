@@ -1,7 +1,5 @@
 package com.nnamo.view.components;
 
-import com.nnamo.enums.DataType;
-import com.nnamo.interfaces.FavoriteBehaviour;
 import com.nnamo.view.customcomponents.CustomGbc;
 import com.nnamo.view.customcomponents.CustomPreferButton;
 
@@ -21,14 +19,8 @@ public class PreferBar extends JPanel {
         setVisible(true);
     }
 
-    public void setGeneralFavBehaviour(FavoriteBehaviour favoriteBehaviour) {
-        preferButton.setFavBehaviour(favoriteBehaviour);
-
+    public CustomPreferButton getPreferButton() {
+        return preferButton;
     }
 
-    public void updatePreferButton(String itemId, boolean isFav, DataType dataType) {
-        preferButton.setItemId(itemId);
-        preferButton.update(isFav);
-        preferButton.setDataType(dataType);
-    }
 }

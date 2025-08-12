@@ -2,6 +2,7 @@ package com.nnamo.controllers;
 
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.nnamo.enums.RealtimeStatus;
+import com.nnamo.enums.ResetType;
 import com.nnamo.enums.DataType;
 import com.nnamo.enums.UpdateMode;
 import com.nnamo.interfaces.*;
@@ -59,16 +60,19 @@ public class MainController {
         StatisticLateBus statLateBusTile = new StatisticLateBus();
         StatisticPunctualBus statPunctualBusTile = new StatisticPunctualBus();
         StatisticStoppedBus statStoppedBusTile = new StatisticStoppedBus();
+        StatisticDetourBus statDetourBusTile = new StatisticDetourBus();
         realtimeService.addListener(statBusTile);
         realtimeService.addListener(statEarlyBusTile);
         realtimeService.addListener(statLateBusTile);
         realtimeService.addListener(statPunctualBusTile);
         realtimeService.addListener(statStoppedBusTile);
+        realtimeService.addListener(statDetourBusTile);
         mainFrame.getLeftPanel().getStatisticsPanel().addStatisticTile(statBusTile);
         mainFrame.getLeftPanel().getStatisticsPanel().addStatisticTile(statEarlyBusTile);
         mainFrame.getLeftPanel().getStatisticsPanel().addStatisticTile(statLateBusTile);
         mainFrame.getLeftPanel().getStatisticsPanel().addStatisticTile(statPunctualBusTile);
         mainFrame.getLeftPanel().getStatisticsPanel().addStatisticTile(statStoppedBusTile);
+        mainFrame.getLeftPanel().getStatisticsPanel().addStatisticTile(statDetourBusTile);
 
         // Login and Session Fetching
         userController.addSessionListener(new SessionListener() { // [!] Listener must be implemented before run()
@@ -120,15 +124,13 @@ public class MainController {
         mainFrame.setLocalMapCache(cacheDir);
     }
 
-    private void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes, List<RealtimeStopUpdate> realtimeUpdates) throws SQLException, IOException {
+    private void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes,
+            List<RealtimeStopUpdate> realtimeUpdates) throws SQLException, IOException {
         mainFrame.updateStopPanelInfo(stop.getId(), stop.getName());
         mainFrame.updateStopPanelTimes(stopTimes, realtimeUpdates);
+        mainFrame.updateStopPanelFavButtons(db.isFavoriteStop(sessionUser.getId(), stop.getId()), stop.getId());
         mainFrame.updateStopPanelVisibility(true);
         mainFrame.updateStopPanelRoutes(db.getStopTimes(stop.getId()));
-    }
-
-    private void updatePreferButton(String itemId, boolean isFav, DataType dataType) {
-        mainFrame.updatePreferButton(itemId, isFav, dataType);
     }
 
     // BEHAVIOUR //
@@ -179,12 +181,14 @@ public class MainController {
     }
 
     private void handleFavouriteButtonClicksBehaviour() {
-        FavoriteBehaviour generalFavBehaviour = new FavoriteBehaviour() {
+
+        FavoriteBehaviour favStopBehaviour = new FavoriteBehaviour() {
             @Override
             public void addFavorite(String stopId, DataType dataType) {
                 try {
                     switch (dataType) {
                         case STOP: {
+                            boolean isFav = db.isFavoriteStop(sessionUser.getId(), stopId);
                             db.addFavStop(sessionUser.getId(), stopId);
                             mainFrame.updateFavStopTable(db.getStopById(stopId), UpdateMode.ADD);
                             System.out.println(db.getFavoriteStops(sessionUser.getId()).stream().count());
@@ -209,12 +213,10 @@ public class MainController {
                     switch (dataType) {
                         case STOP: {
                             db.removeFavStop(sessionUser.getId(), stopId);
-                            mainFrame.updatePreferButton("stop", false, dataType);
                             mainFrame.updateFavStopTable(db.getStopById(stopId), UpdateMode.REMOVE);
                             System.out.println(db.getFavoriteStops(sessionUser.getId()).stream().count());
                             break;
                         }
-
                         case ROUTE: {
                             db.removeFavRoute(sessionUser.getId(), stopId);
                             mainFrame.updateFavRouteTable(db.getRouteById(stopId), UpdateMode.REMOVE);
@@ -227,53 +229,32 @@ public class MainController {
                 }
             }
         };
-        mainFrame.setGeneralFavBehaviour(generalFavBehaviour);
+        mainFrame.getPreferBar().getPreferButton().setFavBehaviour(favStopBehaviour);
     }
 
     private void handleTableBehaviour() {
 
-        TableRowClickBehaviour genericTableRowClickBehaviour = new TableRowClickBehaviour() {
+        TableRowClickBehaviour tableRowClickBehaviour = new TableRowClickBehaviour() {
             @Override
             public void onRowClick(Object rowData, int columnIndex, DataType dataType) throws SQLException, IOException {
-                String itemId = (String) ((List<Object>) rowData).get(columnIndex);
-                boolean isFav = switch (dataType) {
-                    case STOP -> {
-                        StopModel stop = db.getStopById(itemId);
-                        GeoPosition geoPosition = new GeoPosition(stop.getLatitude(), stop.getLongitude());
-                        mainFrame.setMapPanelMapPosition(geoPosition, 1);
-                        yield db.isFavoriteStop(sessionUser.getId(), itemId);
-                    }
-                    case ROUTE -> {
-
-
-                        yield db.isFavouriteRoute(sessionUser.getId(), itemId);
-                    }
-                };
-                updatePreferButton(itemId, isFav, dataType);
-            }
-        };
-        mainFrame.setGenericTableRowClickBehaviour(genericTableRowClickBehaviour);
-
-        TableRowClickBehaviour zoomTableRowClickBehaviour = new TableRowClickBehaviour() {
-            @Override
-            public void onRowClick(Object rowData, int columnIndex, DataType dataType) throws SQLException, IOException {
-                genericTableRowClickBehaviour.onRowClick(rowData, columnIndex, dataType);
                 String itemId = (String) ((List<Object>) rowData).get(columnIndex);
                 switch (dataType) {
-                    case STOP: {
-                        StopModel stop = db.getStopById(itemId);
-                        GeoPosition geoPosition = new GeoPosition(stop.getLatitude(), stop.getLongitude());
-                        mainFrame.setMapPanelMapPosition(geoPosition, 1);
-                        break;
-                    }
-                    case ROUTE: {
-
-                        break;
+                    case STOP -> {
+                        boolean isFav = db.isFavoriteStop(sessionUser.getId(), itemId);
+                            mainFrame.getPreferBar().getPreferButton().setItemId(itemId);
+                            mainFrame.getPreferBar().getPreferButton().update(isFav);
+                            mainFrame.getPreferBar().getPreferButton().setDataType(dataType);
+                        }
+                    case ROUTE -> {
+                        boolean isFav = db.isFavouriteRoute(sessionUser.getId(), itemId);
+                        mainFrame.getPreferBar().getPreferButton().setItemId(itemId);
+                        mainFrame.getPreferBar().getPreferButton().update(isFav);
+                        mainFrame.getPreferBar().getPreferButton().setDataType(dataType);
                     }
                 }
             }
         };
-        /*mainFrame.setZoomTableRowClickBehaviour(zoomTableRowClickBehaviour);*/
+        mainFrame.setTableRowClickBehaviour(tableRowClickBehaviour);
     }
 
     private void handleClickWaypointBehaviour() {
@@ -318,7 +299,6 @@ public class MainController {
                                 List<RealtimeStopUpdate> realtimeUpdates = realtimeService
                                         .getStopUpdatesById(stop.getId());
                                 updateStopPanel(stop, stopTimes, realtimeUpdates);
-                                mainFrame.updatePreferButton(stop.getId(), db.isFavoriteStop(sessionUser.getId(), stop.getId()), STOP);
                                 return;
                             }
                         }

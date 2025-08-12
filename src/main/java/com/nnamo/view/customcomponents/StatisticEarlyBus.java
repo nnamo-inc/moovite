@@ -2,11 +2,15 @@ package com.nnamo.view.customcomponents;
 
 import com.google.transit.realtime.GtfsRealtime;
 
+import java.awt.*;
+import java.time.Duration;
 import java.util.List;
 
 public class StatisticEarlyBus extends StatisticUnit {
+    private final static Duration EARLY_THRESHOLD_DURATION = Duration.ofMinutes(2);
+
     public StatisticEarlyBus() {
-        super("Early Bus", "Buses");
+        super("Early Bus", "Buses", new Color(139, 195, 74)); // Material Light Green 500
     }
 
     @Override
@@ -14,7 +18,14 @@ public class StatisticEarlyBus extends StatisticUnit {
         int busCount = 0;
         for (GtfsRealtime.FeedEntity entity : entities) {
             if (entity.hasTripUpdate() && entity.getTripUpdate().getVehicle() != null) {
-                busCount++;
+                GtfsRealtime.TripUpdate tripUpdate = entity.getTripUpdate();
+                if (tripUpdate.hasDelay()) {
+                    Duration delayDuration = Duration.ofSeconds(tripUpdate.getDelay());
+                    // If the bus is early (delay < -2 minutes), we count it
+                    if (delayDuration.compareTo(EARLY_THRESHOLD_DURATION.negated()) < 0) {
+                        busCount++;
+                    }
+                }
             }
         }
         setValue(String.valueOf(busCount));

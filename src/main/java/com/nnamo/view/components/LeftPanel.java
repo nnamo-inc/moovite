@@ -17,7 +17,7 @@ public class LeftPanel extends JPanel {
     private SearchPanel searchPanel = new SearchPanel();
     private PreferPanel preferPanel = new PreferPanel();
     private StatisticsPanel statsPanel = new StatisticsPanel();
-    private SettingPanel settingPanel = new SettingPanel();
+    private SettingsPanel settingsPanel = new SettingsPanel();
 
     ButtonPanel buttonPanel = new ButtonPanel(new LinkedHashMap<>() {
         {
@@ -25,7 +25,7 @@ public class LeftPanel extends JPanel {
             put(preferPanel,
                     new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/favorite_small.png"))));
             put(statsPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/statistics_small.png"))));
-            put(settingPanel,
+            put(settingsPanel,
                     new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/setting_small.png"))));
         }
     });
@@ -63,6 +63,14 @@ public class LeftPanel extends JPanel {
         preferPanel.updateFavRouteTable(route, updateMode);
     }
 
+    public void updatePreferRouteButton(Boolean isFavorite, String routeNumber) {
+        this.preferPanel.updatePreferRouteButton(isFavorite, routeNumber);
+    }
+
+    public void updatePreferStopButton(Boolean isFavorite, String routeId) {
+        this.preferPanel.updatePreferStopButton(isFavorite, routeId);
+    }
+
     public void initPreferPanelPreferTable(List<StopModel> stops, List<RouteModel> routes) {
         preferPanel.initPreferTable(stops, routes);
     }
@@ -83,7 +91,7 @@ public class LeftPanel extends JPanel {
     public StatisticsPanel getStatisticsPanel() { return statsPanel; }
 
     public void setRealtimeStatus(RealtimeStatus status) {
-        this.settingPanel.setRealtimeStatus(status);
+        this.settingsPanel.setRealtimeStatus(status);
     }
 
     // BEHAVIOUR //
@@ -93,9 +101,9 @@ public class LeftPanel extends JPanel {
         this.preferPanel.setTableCheckIsFavBehaviour(listener);
     }
 
-    public void setGenericTableRowClickBehaviour(TableRowClickBehaviour listener) {
-        searchPanel.setGenericTableRowClickBehaviour(listener);
-        preferPanel.setGenericTableRowClickBehaviour(listener);
+    public void setTableRowClickBehaviour(TableRowClickBehaviour listener) {
+        searchPanel.setTableRowClickBehaviour(listener);
+        preferPanel.setTableRowClickBehaviour(listener);
     }
 
 
@@ -126,12 +134,16 @@ public class LeftPanel extends JPanel {
         this.preferPanel.setFavRouteRowClickBehaviour(behaviour);
     }
 
+    public void setFavStopBehaviour(FavoriteBehaviour behaviour) {
+        this.preferPanel.setFavStopBehaviour(behaviour);
+    }
+
     public void setRealtimeSwitchListener(SwitchBarListener listener) {
-        this.settingPanel.setRealtimeSwitchListener(listener);
+        this.settingsPanel.setRealtimeSwitchListener(listener);
     }
 
     public void setLogoutBehaviour(LogoutBehaviour behaviour) {
-        settingPanel.setLogoutBehaviour(behaviour);
+        settingsPanel.setLogoutBehaviour(behaviour);
     }
 
 }
