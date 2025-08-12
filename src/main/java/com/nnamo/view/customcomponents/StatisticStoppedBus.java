@@ -2,11 +2,12 @@ package com.nnamo.view.customcomponents;
 
 import com.google.transit.realtime.GtfsRealtime;
 
+import java.awt.*;
 import java.util.List;
 
 public class StatisticStoppedBus extends StatisticUnit {
     public StatisticStoppedBus() {
-        super("Stopped Bus", "Buses");
+        super("Stopped Bus", "Buses", new Color(255, 152, 0)); // Material Orange 500
     }
 
     @Override
