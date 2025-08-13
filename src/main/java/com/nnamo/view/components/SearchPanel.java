@@ -76,7 +76,7 @@ public class SearchPanel extends JPanel {
         tableRoute.clear();
 
         for (StopModel stop : stopModels) {
-            tableStop.addRow(new Object[] { stop.getName(), stop.getId() });
+            tableStop.addRow(new Object[] { stop.getId(), stop.getName() });
         }
 
         for (RouteDirection route : routeModels) {

@@ -240,18 +240,19 @@ public class MainController {
                         yield db.isFavoriteStop(sessionUser.getId(), itemId);
                     }
                     case ROUTE -> {
-                        String directionName = (String) ((List<Object>) rowData).get(
-                                columnsList.indexOf(ColumnName.DIREZIONE));
-
-                        Direction direction = null;
-                        switch (directionName) {
-                            case "INBOUND":
-                                direction = Direction.INBOUND;
-                                break;
-                            case "OUTBOUND":
-                            default:
-                                direction = Direction.OUTBOUND;
-                                break;
+                        Direction direction = Direction.OUTBOUND;
+                        int directionIndex = columnsList.indexOf(ColumnName.DIREZIONE);
+                        if (directionIndex != -1) {
+                            String directionName = (String) ((List<Object>) rowData).get(directionIndex);
+                            switch (directionName) {
+                                case "INBOUND":
+                                    direction = Direction.INBOUND;
+                                    break;
+                                case "OUTBOUND":
+                                default:
+                                    direction = Direction.OUTBOUND;
+                                    break;
+                            }
                         }
 
                         // get model from the db
@@ -279,29 +280,6 @@ public class MainController {
             }
         };
         mainFrame.setGenericTableRowClickBehaviour(genericTableRowClickBehaviour);
-
-        TableRowClickBehaviour zoomTableRowClickBehaviour = new TableRowClickBehaviour() {
-            @Override
-            public void onRowClick(Object rowData, ColumnName[] columnNames, DataType dataType)
-                    throws SQLException, IOException {
-                genericTableRowClickBehaviour.onRowClick(rowData, columnNames, dataType);
-                List<ColumnName> columnsList = Arrays.asList(columnNames);
-                String itemId = (String) ((List<Object>) rowData).get(columnsList.indexOf(ColumnName.CODICE));
-                switch (dataType) {
-                    case STOP: {
-                        StopModel stop = db.getStopById(itemId);
-                        GeoPosition geoPosition = new GeoPosition(stop.getLatitude(), stop.getLongitude());
-                        mainFrame.setMapPanelMapPosition(geoPosition, 1);
-                        break;
-                    }
-                    case ROUTE: {
-
-                        break;
-                    }
-                }
-            }
-        };
-        /* mainFrame.setZoomTableRowClickBehaviour(zoomTableRowClickBehaviour); */
     }
 
     private void handleClickWaypointBehaviour() {

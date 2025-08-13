@@ -2,12 +2,10 @@ package com.nnamo.view.components;
 
 import com.nnamo.enums.ColumnName;
 import com.nnamo.enums.UpdateMode;
-import com.nnamo.interfaces.FavoriteBehaviour;
 import com.nnamo.interfaces.TableCheckIsFavBehaviour;
 import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
-import com.nnamo.view.customcomponents.CustomPreferButton;
 import com.nnamo.view.customcomponents.CustomTable;
 import com.nnamo.view.customcomponents.CustomGbc;
 
@@ -26,7 +24,10 @@ public class PreferPanel extends JPanel {
     CustomTable stopTable = new CustomTable(new ColumnName[] { NOME, CODICE }, STOP);
 
     JPanel routeContainer = new JPanel(new GridBagLayout());
-    CustomTable routeTable = new CustomTable(new ColumnName[] { LINEA, CODICE, TIPO }, ROUTE);
+    CustomTable routeTable = new CustomTable(
+            new ColumnName[] { LINEA, CODICE, TIPO, DIREZIONE },
+            new ColumnName[] { DIREZIONE },
+            ROUTE);
 
     // CONSTRUCTOR //
     public PreferPanel() {
