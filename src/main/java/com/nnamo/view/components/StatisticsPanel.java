@@ -2,10 +2,12 @@ package com.nnamo.view.components;
 
 import com.google.transit.realtime.GtfsRealtime;
 import com.nnamo.services.FeedUpdateListener;
-import com.nnamo.view.customcomponents.CustomGbc;
-import com.nnamo.view.customcomponents.StatisticTotalBus;
-import com.nnamo.view.customcomponents.StatisticUnit;
-import com.nnamo.view.customcomponents.WrapLayout;
+import com.nnamo.services.RealtimeGtfsService;
+import com.nnamo.view.customcomponents.*;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.title.TextTitle;
+import org.jfree.chart.ui.RectangleInsets;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,6 +22,13 @@ public class StatisticsPanel extends JPanel {
     private static final int TILE_WIDTH = 120;
     private static final int TILE_HEIGHT = 80;
     private static final int GAP = 10;
+
+    private StatisticTotalBus statBusTile = new StatisticTotalBus();
+    private StatisticEarlyBus statEarlyBusTile = new StatisticEarlyBus();
+    private StatisticLateBus statLateBusTile = new StatisticLateBus();
+    private StatisticPunctualBus statPunctualBusTile = new StatisticPunctualBus();
+    private StatisticStoppedBus statStoppedBusTile = new StatisticStoppedBus();
+    private StatisticDetourBus statDetourBusTile = new StatisticDetourBus();
 
     public StatisticsPanel() {
         super();
@@ -57,6 +66,40 @@ public class StatisticsPanel extends JPanel {
 
         addComponentListener(resizeListener);
         tileContainer.addComponentListener(resizeListener);
+
+        this.addStatisticTile(statBusTile);
+        this.addStatisticTile(statEarlyBusTile);
+        this.addStatisticTile(statLateBusTile);
+        this.addStatisticTile(statPunctualBusTile);
+        this.addStatisticTile(statStoppedBusTile);
+        this.addStatisticTile(statDetourBusTile);
+
+        JFreeChart chart = ChartFactory.createTimeSeriesChart(
+                "Historical Data",
+                "Date",
+                "Count",
+                null, // No dataset for now
+                true, // Show legend
+                true, // Tooltips
+                false // URLs
+        );
+        chart.setBackgroundPaint(Color.WHITE);
+        chart.setBorderPaint(Color.LIGHT_GRAY);
+        chart.setBorderStroke(new BasicStroke(1.0f));
+        chart.setBorderVisible(true);
+        chart.setPadding(new RectangleInsets(5, 5, 5, 5));
+        chart.setTitle(new TextTitle("Historical Data", new Font("Arial", Font.BOLD, 16)));
+
+        chart.getPlot().setBackgroundPaint(Color.WHITE);
+
+        // add chart to the panel
+        JPanel chartPanel = new JPanel(new BorderLayout());
+        chartPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        chartPanel.add(new org.jfree.chart.ChartPanel(chart), BorderLayout.CENTER);
+        add(chartPanel, new CustomGbc().setPosition(0, 2)
+                .setFill(GridBagConstraints.BOTH)
+                .setWeight(1.0, 0.5)
+                .setInsets(5, 5, 5, 5));
 
         // Also listen to the scroll pane viewport changes
         scrollPane.getViewport().addChangeListener(e -> SwingUtilities.invokeLater(() -> relayoutTiles()));
@@ -148,5 +191,15 @@ public class StatisticsPanel extends JPanel {
 
         tileContainer.revalidate();
         tileContainer.repaint();
+    }
+
+    public void setupListeners(RealtimeGtfsService realtimeGtfsService) {
+        if (realtimeGtfsService == null) {
+            throw new IllegalArgumentException("Listener cannot be null");
+        }
+
+        for (StatisticUnit tile : statisticTiles) {
+            realtimeGtfsService.addListener(tile);
+        }
     }
 }

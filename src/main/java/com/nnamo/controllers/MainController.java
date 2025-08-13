@@ -52,26 +52,9 @@ public class MainController {
         handleFavouriteButtonClicksBehaviour();
         handleTableBehaviour();
         handleButtonPanelClickBehaviour();
-        mainFrame.getSearchPanel().addSearchListener(this::searchQueryListener);
 
-        StatisticTotalBus statBusTile = new StatisticTotalBus();
-        StatisticEarlyBus statEarlyBusTile = new StatisticEarlyBus();
-        StatisticLateBus statLateBusTile = new StatisticLateBus();
-        StatisticPunctualBus statPunctualBusTile = new StatisticPunctualBus();
-        StatisticStoppedBus statStoppedBusTile = new StatisticStoppedBus();
-        StatisticDetourBus statDetourBusTile = new StatisticDetourBus();
-        realtimeService.addListener(statBusTile);
-        realtimeService.addListener(statEarlyBusTile);
-        realtimeService.addListener(statLateBusTile);
-        realtimeService.addListener(statPunctualBusTile);
-        realtimeService.addListener(statStoppedBusTile);
-        realtimeService.addListener(statDetourBusTile);
-        mainFrame.getLeftPanel().getStatisticsPanel().addStatisticTile(statBusTile);
-        mainFrame.getLeftPanel().getStatisticsPanel().addStatisticTile(statEarlyBusTile);
-        mainFrame.getLeftPanel().getStatisticsPanel().addStatisticTile(statLateBusTile);
-        mainFrame.getLeftPanel().getStatisticsPanel().addStatisticTile(statPunctualBusTile);
-        mainFrame.getLeftPanel().getStatisticsPanel().addStatisticTile(statStoppedBusTile);
-        mainFrame.getLeftPanel().getStatisticsPanel().addStatisticTile(statDetourBusTile);
+        mainFrame.getSearchPanel().addSearchListener(this::searchQueryListener);
+        mainFrame.getLeftPanel().getStatisticsPanel().setupListeners(realtimeService);
 
         // Login and Session Fetching
         userController.addSessionListener(new SessionListener() { // [!] Listener must be implemented before run()
