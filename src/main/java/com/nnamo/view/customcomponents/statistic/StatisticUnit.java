@@ -1,13 +1,11 @@
-package com.nnamo.view.customcomponents;
+package com.nnamo.view.customcomponents.statistic;
 
 import com.google.transit.realtime.GtfsRealtime;
 import com.nnamo.interfaces.StatisticInterface;
 import com.nnamo.services.FeedUpdateListener;
-import com.nnamo.utils.CustomColor;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.RoundRectangle2D;
 import java.util.List;
 
 public abstract class StatisticUnit extends JLabel implements StatisticInterface, FeedUpdateListener {

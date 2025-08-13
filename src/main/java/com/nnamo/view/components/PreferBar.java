@@ -10,7 +10,7 @@ import java.awt.*;
 
 public class PreferBar extends JPanel {
 
-    private CustomPreferButton preferButton = new CustomPreferButton("fermata");
+    private CustomPreferButton preferButton = new CustomPreferButton();
 
     public PreferBar() {
         super(new GridBagLayout());

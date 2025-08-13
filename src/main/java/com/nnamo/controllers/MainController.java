@@ -1,12 +1,8 @@
 package com.nnamo.controllers;
 
+import com.google.transit.realtime.GtfsRealtime;
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
-import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
-import com.nnamo.enums.RealtimeStatus;
-import com.nnamo.enums.ColumnName;
-import com.nnamo.enums.DataType;
-import com.nnamo.enums.Direction;
-import com.nnamo.enums.UpdateMode;
+import com.nnamo.enums.*;
 import com.nnamo.interfaces.*;
 import com.nnamo.models.*;
 import com.nnamo.view.customcomponents.*;
@@ -120,6 +116,55 @@ public class MainController {
 
     private void updatePreferButton(String itemId, boolean isFav, DataType dataType) {
         mainFrame.updatePreferButton(itemId, isFav, dataType);
+    }
+
+    private GeoPosition calculateBaricentro(List<StopModel> stopList) {
+        double latStop = 0;
+        double lonStop = 0;
+        int divider = 0;
+
+        for (StopModel stop : stopList) {
+            divider++;
+            latStop += stop.getLatitude();
+            lonStop += stop.getLongitude();
+        }
+        return new GeoPosition(latStop/divider, lonStop/divider);
+    }
+
+    private int calculateZoomLevel(List<StopModel> stopList) {
+        int zoomLevel;
+        double topPosition = Double.MIN_VALUE;
+        double bottomPosition = Double.MAX_VALUE;
+        double leftPosition = Double.MAX_VALUE;
+        double rightPosition = Double.MIN_VALUE;
+
+        for (StopModel stop : stopList) {
+            topPosition = Math.max(topPosition, stop.getLatitude());
+            bottomPosition = Math.min(bottomPosition, stop.getLatitude());
+            leftPosition = Math.min(leftPosition, stop.getLongitude());
+            rightPosition = Math.max(rightPosition, stop.getLongitude());
+        }
+
+        double latDiff = topPosition - bottomPosition;
+        double lonDiff = rightPosition - leftPosition;
+        double absoluteDiff = Math.max(latDiff, lonDiff);
+
+        if (absoluteDiff > 0.12) {
+            zoomLevel = 7; // zoom molto lontano per route molto estese
+        } else if (absoluteDiff > 0.050) {
+            zoomLevel = 6; // zoom molto lontano per route molto estese
+        } else if (absoluteDiff > 0.030) {
+            zoomLevel = 5; // zoom intermedio
+        } else if (absoluteDiff > 0.013) {
+            zoomLevel = 4; // zoom più vicino per route medie
+        } else if (absoluteDiff > 0.010) {
+            zoomLevel = 3; // zoom più vicino per route piccole
+        } else if (absoluteDiff > 0.009) {
+            zoomLevel = 2; // zoom molto vicino per route piccole
+        } else {
+            zoomLevel = 1; // zoom molto vicino per route piccolissime
+        }
+        return zoomLevel;
     }
 
     // BEHAVIOUR //
@@ -261,13 +306,10 @@ public class MainController {
                             System.out.println("No stops found for route: " + itemId);
                         }
 
-                        // get the first stop to center the map
-                        StopModel firstStop = stopModels.getFirst();
+                        GeoPosition geoPosition = calculateBaricentro(stopModels);
+                        int zoomLevel = calculateZoomLevel(stopModels);
 
-                        GeoPosition geoPosition = new GeoPosition(firstStop.getLatitude(), firstStop.getLongitude());
-                        int zoomLevel = 5; // default zoom level
-
-                        List<VehiclePosition> routePositions = realtimeService.getRoutesVehiclePositions(itemId);
+                        List<GtfsRealtime.VehiclePosition> routePositions = realtimeService.getRoutesVehiclePositions(itemId);
 
                         // render stops and route lines on the map
                         mainFrame.renderRouteLines(stopModels, routePositions, itemId, geoPosition, zoomLevel);
@@ -277,6 +319,7 @@ public class MainController {
                 };
                 updatePreferButton(itemId, isFav, dataType);
                 mainFrame.updatePreferBarVisibility(true);
+                updatePreferButton(itemId, isFav, dataType);
             }
         };
         mainFrame.setGenericTableRowClickBehaviour(genericTableRowClickBehaviour);

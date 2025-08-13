@@ -1,4 +1,4 @@
-package com.nnamo.view.customcomponents;
+package com.nnamo.view.customcomponents.statistic;
 
 import com.google.transit.realtime.GtfsRealtime;
 

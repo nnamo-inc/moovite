@@ -17,7 +17,7 @@ public class CustomPreferButton extends JButton {
     DataType mode;
 
     // CONSTRUCTOR //
-    public CustomPreferButton(String itemName) {
+    public CustomPreferButton() {
         super();
         this.itemName = itemName;
 

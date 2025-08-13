@@ -34,8 +34,6 @@ public class StopPanel extends JPanel {
     // Route service components
     private CustomTable tableService;
     // Prefer components
-    private final CustomPreferButton favoriteStopButton = new CustomPreferButton("Fermata");
-    private final CustomPreferButton favoriteRouteButton = new CustomPreferButton("Linea");
 
     // CONSTRUCTOR //
     public StopPanel() {
@@ -219,11 +217,6 @@ public class StopPanel extends JPanel {
     public void updateStopInfo(String id, String nome) {
         this.nomeFermata.setTextField(nome);
         this.idFermata.setTextField(id);
-    }
-
-    public void updateFavButtons(boolean isFavorite, String stopId) {
-        favoriteStopButton.update(isFavorite);
-        favoriteStopButton.setItemId(stopId);
     }
 
     public void open() {

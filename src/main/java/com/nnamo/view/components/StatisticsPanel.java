@@ -1,9 +1,8 @@
 package com.nnamo.view.components;
 
-import com.google.transit.realtime.GtfsRealtime;
-import com.nnamo.services.FeedUpdateListener;
 import com.nnamo.services.RealtimeGtfsService;
 import com.nnamo.view.customcomponents.*;
+import com.nnamo.view.customcomponents.statistic.*;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.title.TextTitle;
@@ -14,7 +13,6 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class StatisticsPanel extends JPanel {
     private final JPanel tileContainer = new JPanel();

@@ -1,4 +1,4 @@
-package com.nnamo.view.customcomponents;
+package com.nnamo.view.customcomponents.statistic;
 
 import javax.swing.*;
 import java.awt.*;

@@ -26,7 +26,6 @@ public class MainFrame extends JFrame {
     LeftPanel leftPanel = new LeftPanel();
     PreferBar preferBar = new PreferBar();
 
-    JSplitPane splitMapPrefer;
     JSplitPane splitMapStop;
     JSplitPane splitLeftMap;
 
@@ -175,10 +174,6 @@ public class MainFrame extends JFrame {
         return mapPanel.getCurrentRouteId();
     }
 
-    public PreferBar getPreferBar() {
-        return preferBar;
-    }
-
     public void setCurrentRouteId(String routeId) {
         mapPanel.setCurrentRouteId(routeId);
     }
@@ -210,11 +205,6 @@ public class MainFrame extends JFrame {
         this.stopPanel.setGenericTableRowClickBehaviour(listener);
     }
 
-/*    public void setZoomTableRowClickBehaviour(TableRowClickBehaviour listener) {
-        this.leftPanel.setZoomTableRowClickBehaviour(listener);
-        this.stopPanel.setZoomTableRowClickBehaviour(listener);
-    }*/
-
     public void setGeneralFavBehaviour(FavoriteBehaviour behaviour) {
         this.preferBar.setGeneralFavBehaviour(behaviour);
     }
@@ -225,27 +215,6 @@ public class MainFrame extends JFrame {
 
     public void setButtonPanelPreferBehaviour(ButtonPanelBehaviour listener) {
         this.leftPanel.setButtonPanelPreferBehaviour(listener);
-    }
-
-    public void setSearchStopRowClickBehaviour(TableRowClickBehaviour listener) {
-        leftPanel.setSearchStopRowClickBehaviour(listener);
-    }
-
-    public void setSearchRouteRowClickBehaviour(TableRowClickBehaviour listener) {
-        leftPanel.setSearchRouteRowClickBehaviour(listener);
-    }
-
-    public void setTableCheckIsFavBehaviour(TableCheckIsFavBehaviour listener) {
-        leftPanel.setTableCheckIsFavBehaviour(listener);
-        stopPanel.setTableCheckIsFavBehaviour(listener);
-    }
-
-    public void setFavStopRowClickBehaviour(TableRowClickBehaviour behaviour) {
-        this.leftPanel.setFavStopRowClickBehaviour(behaviour);
-    }
-
-    public void setFavRouteRowClickBehaviour(TableRowClickBehaviour behaviour) {
-        this.leftPanel.setFavRouteRowClickBehaviour(behaviour);
     }
 
     public void setRealtimeSwitchListener(SwitchBarListener listener) {
@@ -260,20 +229,6 @@ public class MainFrame extends JFrame {
     public void setClickWaypointBehaviour(WaypointBehaviour waypointBehaviour) {
         this.mapPanel.setClickWaypointBehaviour(waypointBehaviour);
     }
-    // Stop Panel Behaviour //
-
-    public void setStopInfoRowClickBehaviour(TableRowClickBehaviour listener) {
-        this.stopPanel.setStopInfoRowClickBehaviour(listener);
-    }
-
-    public void setStopRouteRowClickBehaviour(TableRowClickBehaviour listener) {
-        this.stopPanel.setStopRouteRowClickBehaviour(listener);
-    }
-
-    public void updateStopPanelFavButtons(boolean favorite, String stop) {
-        this.stopPanel.updateFavButtons(favorite, stop);
-    }
-    // Map Panel Behaviour //
 
     public void setMapPanelMapPosition(GeoPosition geoPosition, int zoomLevel) {
         this.mapPanel.setMapPanelMapPosition(geoPosition, zoomLevel);

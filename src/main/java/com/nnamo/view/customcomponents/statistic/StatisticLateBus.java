@@ -1,4 +1,4 @@
-package com.nnamo.view.customcomponents;
+package com.nnamo.view.customcomponents.statistic;
 
 import com.google.transit.realtime.GtfsRealtime;
 
@@ -6,11 +6,11 @@ import java.awt.*;
 import java.time.Duration;
 import java.util.List;
 
-public class StatisticPunctualBus extends StatisticUnit {
-    private final static Duration PUNCTUAL_THRESHOLD_DURATION = Duration.ofMinutes(2);
+public class StatisticLateBus extends StatisticUnit {
+    private final static Duration LATE_THRESHOLD_DURATION = Duration.ofMinutes(2);
 
-    public StatisticPunctualBus() {
-        super("Punctual Bus", "Buses", new Color(76, 175, 80)); // Material Green 500
+    public StatisticLateBus() {
+        super("Late Bus", "Buses", new Color(244, 67, 54)); // Material Red 500
     }
 
     @Override
@@ -21,9 +21,8 @@ public class StatisticPunctualBus extends StatisticUnit {
                 GtfsRealtime.TripUpdate tripUpdate = entity.getTripUpdate();
                 if (tripUpdate.hasDelay()) {
                     Duration delayDuration = Duration.ofSeconds(tripUpdate.getDelay());
-                    // if between -2 and 2 minutes, we count it as punctual
-                    if (delayDuration.compareTo(PUNCTUAL_THRESHOLD_DURATION.negated()) >= 0 &&
-                        delayDuration.compareTo(PUNCTUAL_THRESHOLD_DURATION) <= 0) {
+                    // If the bus is late (delay > 2 minutes), we count it
+                    if (delayDuration.compareTo(LATE_THRESHOLD_DURATION) > 0) {
                         busCount++;
                     }
                 }

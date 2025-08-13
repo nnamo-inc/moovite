@@ -28,7 +28,6 @@ public class SearchPanel extends JPanel {
     CustomTable tableRoute = new CustomTable(
             new ColumnName[] { CODICE, TIPO, CAPOLINEA, DIREZIONE },
             ROUTE);
-    CustomPreferButton addRouteButton = new CustomPreferButton("Linea");
 
     // CONSTRUCTOR //
     public SearchPanel() {
