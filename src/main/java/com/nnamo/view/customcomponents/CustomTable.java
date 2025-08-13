@@ -31,7 +31,6 @@ public class CustomTable extends JPanel {
 
     JScrollPane scrollPane;
     ColumnName[] tableColumns;
-    ColumnName columnSelect;
     DataType dataType;
     ArrayList<ColumnName> searchColumns = new ArrayList<>();
     DefaultTableModel model;
@@ -43,9 +42,8 @@ public class CustomTable extends JPanel {
     TableCheckIsFavBehaviour tableCheckIsFavBehaviour;
 
     // CONSTRUCTOR //
-    public CustomTable(ColumnName[] tableColumns, ColumnName columnSelect, DataType dataType) {
+    public CustomTable(ColumnName[] tableColumns, DataType dataType) {
         super(new BorderLayout());
-        this.columnSelect = columnSelect;
         this.tableColumns = tableColumns;
         this.dataType = dataType;
         this.model = new DefaultTableModel(tableColumns, 0) {
@@ -67,10 +65,29 @@ public class CustomTable extends JPanel {
         add(resetSortingButton, BorderLayout.SOUTH);
 
         checkSearchable();
-        checkDataColumnAvailable();
         initDefaultComparator();
         initListeners();
 
+    }
+
+    // Constructor that supports hidden columns
+    public CustomTable(ColumnName[] tableColumns, ColumnName[] hiddenColumns, DataType dataType) {
+        this(tableColumns, dataType);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        table.getTableHeader().setReorderingAllowed(false);
+
+        for (ColumnName columnName : hiddenColumns) {
+            int colIndex = Arrays.asList(tableColumns).indexOf(columnName);
+            var column = table.getColumnModel().getColumn(colIndex);
+            if (column != null) {
+                table.removeColumn(column);
+                System.out.println((String) column.getHeaderValue());
+            }
+        }
+    }
+
+    public CustomTable(ColumnName[] tableColumns, ColumnName[] hiddenColumns, ColumnName[] columnSelect,
+            DataType dataType) {
     }
 
     // METHODS //
@@ -99,17 +116,6 @@ public class CustomTable extends JPanel {
         }
     };
 
-    private void checkDataColumnAvailable() {
-        if (Arrays.asList(tableColumns).contains(columnSelect)) {
-            this.columnSelect = columnSelect;
-        } else {
-            String callerClass = new Exception().getStackTrace()[1].getClassName();
-            throw new IllegalArgumentException(
-                    "\"" + columnSelect + "\"" + " colonna clickRowData invalida: " + callerClass + ".\n" +
-                            "Colonne valide: " + Arrays.toString(tableColumns));
-        }
-    };
-
     ////////////// COMPLETAMENTE FATTO CON AI //////////////
     private void initDefaultComparator() {
         Comparator<Object> comparator = (o1, o2) -> {
@@ -121,57 +127,72 @@ public class CustomTable extends JPanel {
             boolean s2OnlyDigits = s2.matches("\\d+");
             boolean s1StartsWithZero = s1OnlyDigits && s1.startsWith("0");
             boolean s2StartsWithZero = s2OnlyDigits && s2.startsWith("0");
-            if (s1StartsWithZero && !s2StartsWithZero) return -1;
-            if (!s1StartsWithZero && s2StartsWithZero) return 1;
+            if (s1StartsWithZero && !s2StartsWithZero)
+                return -1;
+            if (!s1StartsWithZero && s2StartsWithZero)
+                return 1;
             if (s1StartsWithZero && s2StartsWithZero)
                 return Long.compare(Long.parseLong(s1), Long.parseLong(s2));
 
             // 2. Solo numeri (senza lettere)
-            if (s1OnlyDigits && !s2OnlyDigits) return -1;
-            if (!s1OnlyDigits && s2OnlyDigits) return 1;
+            if (s1OnlyDigits && !s2OnlyDigits)
+                return -1;
+            if (!s1OnlyDigits && s2OnlyDigits)
+                return 1;
             if (s1OnlyDigits && s2OnlyDigits)
                 return Long.compare(Long.parseLong(s1), Long.parseLong(s2));
 
             // 3. Numeri seguiti da lettere (es: 123abc)
-                boolean s1NumLet = s1.matches("\\d+[a-zA-Z]+.*");
-                boolean s2NumLet = s2.matches("\\d+[a-zA-Z]+.*");
-                if (s1NumLet && !s2NumLet) return -1;
-                if (!s1NumLet && s2NumLet) return 1;
-                if (s1NumLet && s2NumLet) {
-                    s1StartsWithZero = s1.startsWith("0");
-                    s2StartsWithZero = s2.startsWith("0");
-                    if (s1StartsWithZero && !s2StartsWithZero) return -1;
-                    if (!s1StartsWithZero && s2StartsWithZero) return 1;
-                    // Se entrambi iniziano con lo stesso tipo di cifra, confronto numerico e poi alfabetico
-                    String n1 = s1.replaceAll("\\D.*", "");
-                    String n2 = s2.replaceAll("\\D.*", "");
-                    int cmp = Long.compare(Long.parseLong(n1), Long.parseLong(n2));
-                    if (cmp != 0) return cmp;
-                    return s1.compareToIgnoreCase(s2);
-                }
+            boolean s1NumLet = s1.matches("\\d+[a-zA-Z]+.*");
+            boolean s2NumLet = s2.matches("\\d+[a-zA-Z]+.*");
+            if (s1NumLet && !s2NumLet)
+                return -1;
+            if (!s1NumLet && s2NumLet)
+                return 1;
+            if (s1NumLet && s2NumLet) {
+                s1StartsWithZero = s1.startsWith("0");
+                s2StartsWithZero = s2.startsWith("0");
+                if (s1StartsWithZero && !s2StartsWithZero)
+                    return -1;
+                if (!s1StartsWithZero && s2StartsWithZero)
+                    return 1;
+                // Se entrambi iniziano con lo stesso tipo di cifra, confronto numerico e poi
+                // alfabetico
+                String n1 = s1.replaceAll("\\D.*", "");
+                String n2 = s2.replaceAll("\\D.*", "");
+                int cmp = Long.compare(Long.parseLong(n1), Long.parseLong(n2));
+                if (cmp != 0)
+                    return cmp;
+                return s1.compareToIgnoreCase(s2);
+            }
 
             // 4. Lettere seguite da numeri (es: abc123)
             boolean s1LetNum = s1.matches("[a-zA-Z]+\\d+.*");
             boolean s2LetNum = s2.matches("[a-zA-Z]+\\d+.*");
-            if (s1LetNum && !s2LetNum) return -1;
-            if (!s1LetNum && s2LetNum) return 1;
+            if (s1LetNum && !s2LetNum)
+                return -1;
+            if (!s1LetNum && s2LetNum)
+                return 1;
             if (s1LetNum && s2LetNum) {
                 // Estrai la parte di lettere e la parte numerica
                 String l1 = s1.replaceAll("(\\D+).*", "$1");
                 String l2 = s2.replaceAll("(\\D+).*", "$1");
                 int cmp = l1.compareToIgnoreCase(l2);
-                if (cmp != 0) return cmp;
+                if (cmp != 0)
+                    return cmp;
                 // Se le lettere sono uguali, confronta la parte numerica
                 String n1 = s1.replaceAll(".*?(\\d+).*", "$1");
                 String n2 = s2.replaceAll(".*?(\\d+).*", "$1");
                 return Long.compare(Long.parseLong(n1), Long.parseLong(n2));
             }
 
-// 5. Nessun numero: solo lettere, ordina alfabeticamente
+            // 5. Nessun numero: solo lettere, ordina alfabeticamente
             boolean s1NoNum = !s1.matches(".*\\d.*");
             boolean s2NoNum = !s2.matches(".*\\d.*");
-            if (s1NoNum && !s2NoNum) return -1;
-            if (!s1NoNum && s2NoNum) return 1;
+            if (s1NoNum && !s2NoNum)
+                return -1;
+            if (!s1NoNum && s2NoNum)
+                return 1;
             if (s1NoNum && s2NoNum) {
                 return s1.compareToIgnoreCase(s2);
             }
@@ -184,6 +205,7 @@ public class CustomTable extends JPanel {
             sorter.setComparator(i, comparator);
         }
     }
+
     // LISTENERS METHODS //
     public void initListeners() {
 
@@ -197,8 +219,7 @@ public class CustomTable extends JPanel {
                         int modelRow = table.convertRowIndexToModel(selectedRow);
                         rowData = (Vector<Object>) model.getDataVector().get(modelRow);
                         try {
-                            int columnIndex = table.getColumnModel().getColumnIndex(columnSelect.toString());
-                            tableRowClickBehaviour.onRowClick(rowData, columnIndex, dataType);
+                            tableRowClickBehaviour.onRowClick(rowData, tableColumns, dataType);
                         } catch (SQLException | IOException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -249,7 +270,8 @@ public class CustomTable extends JPanel {
             });
         }
     }
-        // LISTENERS METHODS //
+
+    // LISTENERS METHODS //
     public void setRowClickBehaviour(TableRowClickBehaviour tableRowClickBehaviour) {
         this.tableRowClickBehaviour = tableRowClickBehaviour;
     }

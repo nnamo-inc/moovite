@@ -1,8 +1,11 @@
 package com.nnamo.controllers;
 
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
+import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.nnamo.enums.RealtimeStatus;
+import com.nnamo.enums.ColumnName;
 import com.nnamo.enums.DataType;
+import com.nnamo.enums.Direction;
 import com.nnamo.enums.UpdateMode;
 import com.nnamo.interfaces.*;
 import com.nnamo.models.*;
@@ -22,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -223,8 +227,11 @@ public class MainController {
 
         TableRowClickBehaviour genericTableRowClickBehaviour = new TableRowClickBehaviour() {
             @Override
-            public void onRowClick(Object rowData, int columnIndex, DataType dataType) throws SQLException, IOException {
-                String itemId = (String) ((List<Object>) rowData).get(columnIndex);
+            public void onRowClick(Object rowData, ColumnName[] columnNames, DataType dataType)
+                    throws SQLException, IOException {
+                List<ColumnName> columnsList = Arrays.asList(columnNames);
+                String itemId = (String) ((List<Object>) rowData).get(
+                        columnsList.indexOf(ColumnName.CODICE));
                 boolean isFav = switch (dataType) {
                     case STOP -> {
                         StopModel stop = db.getStopById(itemId);
@@ -233,6 +240,37 @@ public class MainController {
                         yield db.isFavoriteStop(sessionUser.getId(), itemId);
                     }
                     case ROUTE -> {
+                        String directionName = (String) ((List<Object>) rowData).get(
+                                columnsList.indexOf(ColumnName.DIREZIONE));
+
+                        Direction direction = null;
+                        switch (directionName) {
+                            case "INBOUND":
+                                direction = Direction.INBOUND;
+                                break;
+                            case "OUTBOUND":
+                            default:
+                                direction = Direction.OUTBOUND;
+                                break;
+                        }
+
+                        // get model from the db
+                        List<StopModel> stopModels = db.getOrderedStopsForRoute(itemId, direction);
+                        if (stopModels.isEmpty()) {
+                            System.out.println("No stops found for route: " + itemId);
+                        }
+
+                        // get the first stop to center the map
+                        StopModel firstStop = stopModels.getFirst();
+
+                        GeoPosition geoPosition = new GeoPosition(firstStop.getLatitude(), firstStop.getLongitude());
+                        int zoomLevel = 5; // default zoom level
+
+                        List<VehiclePosition> routePositions = realtimeService.getRoutesVehiclePositions(itemId);
+
+                        // render stops and route lines on the map
+                        mainFrame.renderRouteLines(stopModels, routePositions, itemId, geoPosition, zoomLevel);
+
                         yield db.isFavouriteRoute(sessionUser.getId(), itemId);
                     }
                 };
@@ -244,9 +282,11 @@ public class MainController {
 
         TableRowClickBehaviour zoomTableRowClickBehaviour = new TableRowClickBehaviour() {
             @Override
-            public void onRowClick(Object rowData, int columnIndex, DataType dataType) throws SQLException, IOException {
-                genericTableRowClickBehaviour.onRowClick(rowData, columnIndex, dataType);
-                String itemId = (String) ((List<Object>) rowData).get(columnIndex);
+            public void onRowClick(Object rowData, ColumnName[] columnNames, DataType dataType)
+                    throws SQLException, IOException {
+                genericTableRowClickBehaviour.onRowClick(rowData, columnNames, dataType);
+                List<ColumnName> columnsList = Arrays.asList(columnNames);
+                String itemId = (String) ((List<Object>) rowData).get(columnsList.indexOf(ColumnName.CODICE));
                 switch (dataType) {
                     case STOP: {
                         StopModel stop = db.getStopById(itemId);
@@ -261,7 +301,7 @@ public class MainController {
                 }
             }
         };
-        /*mainFrame.setZoomTableRowClickBehaviour(zoomTableRowClickBehaviour);*/
+        /* mainFrame.setZoomTableRowClickBehaviour(zoomTableRowClickBehaviour); */
     }
 
     private void handleClickWaypointBehaviour() {
@@ -306,7 +346,8 @@ public class MainController {
                                 List<RealtimeStopUpdate> realtimeUpdates = realtimeService
                                         .getStopUpdatesById(stop.getId());
                                 updateStopPanel(stop, stopTimes, realtimeUpdates);
-                                updatePreferButton(stop.getId(), db.isFavoriteStop(sessionUser.getId(), stop.getId()), STOP);
+                                updatePreferButton(stop.getId(), db.isFavoriteStop(sessionUser.getId(), stop.getId()),
+                                        STOP);
                                 mainFrame.updatePreferBarVisibility(true);
                                 return;
                             }
@@ -314,7 +355,7 @@ public class MainController {
                     }
 
                     mainFrame.updateStopPanelVisibility(false);
-                    mainFrame.updatePreferBarVisibility (false);
+                    mainFrame.updatePreferBarVisibility(false);
                     mainFrame.getMapPanel().repaintView();
                 } else {
                     mainFrame.updateStopPanelVisibility(false);

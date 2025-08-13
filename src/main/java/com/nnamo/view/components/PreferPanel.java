@@ -23,10 +23,11 @@ import static com.nnamo.enums.DataType.*;
 public class PreferPanel extends JPanel {
 
     JPanel stopContainer = new JPanel(new GridBagLayout());
-    CustomTable stopTable = new CustomTable(new ColumnName[] { NOME, CODICE }, CODICE, STOP);
+    CustomTable stopTable = new CustomTable(new ColumnName[] { NOME, CODICE }, STOP);
 
     JPanel routeContainer = new JPanel(new GridBagLayout());
-    CustomTable routeTable = new CustomTable(new ColumnName[] { LINEA, CODICE, TIPO }, CODICE, ROUTE);
+    CustomTable routeTable = new CustomTable(new ColumnName[] { LINEA, CODICE, TIPO }, ROUTE);
+
     // CONSTRUCTOR //
     public PreferPanel() {
         super();
@@ -38,7 +39,6 @@ public class PreferPanel extends JPanel {
         add(titleLabel, new CustomGbc().setPosition(0, 0)
                 .setAnchor(GridBagConstraints.NORTH)
                 .setInsets(5, 5, 5, 5));
-
 
         // Table Stop
         TitledBorder tableStopBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Fermate");

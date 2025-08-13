@@ -22,8 +22,12 @@ import static com.nnamo.enums.DataType.*;
 public class SearchPanel extends JPanel {
 
     CustomSearchBar customSearchBar = new CustomSearchBar();
-    CustomTable tableStop = new CustomTable(new ColumnName[] { NOME, CODICE }, CODICE, STOP);
-    CustomTable tableRoute = new CustomTable(new ColumnName[] { LINEA, TIPO, DIREZIONE }, LINEA, ROUTE);
+    CustomTable tableStop = new CustomTable(
+            new ColumnName[] { CODICE, NOME },
+            STOP);
+    CustomTable tableRoute = new CustomTable(
+            new ColumnName[] { CODICE, TIPO, CAPOLINEA, DIREZIONE },
+            ROUTE);
     CustomPreferButton addRouteButton = new CustomPreferButton("Linea");
 
     // CONSTRUCTOR //
@@ -81,6 +85,7 @@ public class SearchPanel extends JPanel {
                     shortName,
                     route.getType().name(),
                     route.getDirectionName(),
+                    route.getDirection().name(),
             });
         }
     }

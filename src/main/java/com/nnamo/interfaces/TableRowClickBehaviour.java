@@ -1,11 +1,15 @@
 package com.nnamo.interfaces;
 
+import com.nnamo.enums.ColumnName;
 import com.nnamo.enums.DataType;
 
 import java.io.IOException;
 import java.sql.SQLException;
 
+import javax.swing.table.TableColumn;
+
 public interface TableRowClickBehaviour {
 
-    void onRowClick(Object rowData, int columnIndex, DataType dataType) throws SQLException, IOException;
+    void onRowClick(Object rowData, ColumnName[] tableColumns, DataType dataType)
+            throws SQLException, IOException;
 }

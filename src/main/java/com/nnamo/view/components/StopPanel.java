@@ -66,12 +66,14 @@ public class StopPanel extends JPanel {
                         .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
                         .setInsets(2, 5, 2, 5));
 
- /*       // Buttons prefer
-        JPanel PanelPrefer = newPanelPrefer();
-        add(PanelPrefer,
-                new CustomGbc().setPosition(2, 1).setAnchor(GridBagConstraints.EAST)
-                        .setFill(GridBagConstraints.BOTH).setWeight(0.1, 0.1)
-                        .setInsets(2, 5, 2, 5));*/
+        /*
+         * // Buttons prefer
+         * JPanel PanelPrefer = newPanelPrefer();
+         * add(PanelPrefer,
+         * new CustomGbc().setPosition(2, 1).setAnchor(GridBagConstraints.EAST)
+         * .setFill(GridBagConstraints.BOTH).setWeight(0.1, 0.1)
+         * .setInsets(2, 5, 2, 5));
+         */
 
         setVisible(false);
     }
@@ -97,7 +99,8 @@ public class StopPanel extends JPanel {
 
     private JPanel newRouteTimePanel() {
         JPanel mainPanel = new JPanel(new GridBagLayout());
-        this.tableTime = new CustomTable( new ColumnName[]{LINEA, DIREZIONE, ORARIO, STATO, MINUTIRIMAMENTI, POSTIDISPONIBILI, TIPO}, LINEA, ROUTE);
+        this.tableTime = new CustomTable(
+                new ColumnName[] { LINEA, DIREZIONE, ORARIO, STATO, MINUTIRIMAMENTI, POSTIDISPONIBILI, TIPO }, ROUTE);
         tableTime.setSearchColumns(LINEA, DIREZIONE, ORARIO);
         // Table
         mainPanel.add(tableTime, new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.CENTER)
@@ -110,7 +113,7 @@ public class StopPanel extends JPanel {
         TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Tabella Linee");
         mainPanel.setBorder(titledBorder);
 
-        this.tableService = new CustomTable(new ColumnName[]{ LINEA, DIREZIONE, TIPO }, LINEA, ROUTE);
+        this.tableService = new CustomTable(new ColumnName[] { LINEA, DIREZIONE, TIPO }, ROUTE);
         tableService.setSearchColumns(LINEA, DIREZIONE);
         // Table
         mainPanel.add(tableService, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER)
@@ -118,28 +121,29 @@ public class StopPanel extends JPanel {
         return mainPanel;
     }
 
-/*
-    private JPanel newPanelPrefer() {
-
-        JPanel panelPrefer = new JPanel(new GridBagLayout());
-        TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Preferiti");
-        panelPrefer.setBorder(titledBorder);
-
-        Dimension minButtonSize = new Dimension(100, Integer.MAX_VALUE);
-        favoriteStopButton.setMinimumSize(minButtonSize);
-        favoriteRouteButton.setMinimumSize(minButtonSize);
-        // button prefer
-        panelPrefer.add(favoriteStopButton, new CustomGbc().setPosition(0, 0)
-                .setInsets(2, 5, 2, 5).setAnchor(GridBagConstraints.CENTER)
-                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0));
-
-        favoriteRouteButton.setEnabled(false);
-        panelPrefer.add(favoriteRouteButton, new CustomGbc().setPosition(0, 1)
-                .setInsets(2, 5, 2, 5).setAnchor(GridBagConstraints.CENTER)
-                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0));
-        return panelPrefer;
-    }
-*/
+    /*
+     * private JPanel newPanelPrefer() {
+     * 
+     * JPanel panelPrefer = new JPanel(new GridBagLayout());
+     * TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray,
+     * 2), "Preferiti");
+     * panelPrefer.setBorder(titledBorder);
+     * 
+     * Dimension minButtonSize = new Dimension(100, Integer.MAX_VALUE);
+     * favoriteStopButton.setMinimumSize(minButtonSize);
+     * favoriteRouteButton.setMinimumSize(minButtonSize);
+     * // button prefer
+     * panelPrefer.add(favoriteStopButton, new CustomGbc().setPosition(0, 0)
+     * .setInsets(2, 5, 2, 5).setAnchor(GridBagConstraints.CENTER)
+     * .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0));
+     * 
+     * favoriteRouteButton.setEnabled(false);
+     * panelPrefer.add(favoriteRouteButton, new CustomGbc().setPosition(0, 1)
+     * .setInsets(2, 5, 2, 5).setAnchor(GridBagConstraints.CENTER)
+     * .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0));
+     * return panelPrefer;
+     * }
+     */
 
     // METHODS //
     public void updateStopTimes(List<StopTimeModel> stopTimes, List<RealtimeStopUpdate> realtimeUpdates) {
@@ -185,12 +189,14 @@ public class StopPanel extends JPanel {
                     remainingMinutes >= 0 ? remainingMinutes : "N/A",
                     occupancyStatus,
                     route.getType()
-                    // TODO: add "String vehicleId = timeUpdate.getVehiclePosition().getVehicle().getId(); // ID del veicolo fisico"
-                    //  inside an invisile column to get the vehicle ID for row clicking and zooming on the map!
+                    // TODO: add "String vehicleId =
+                    // timeUpdate.getVehiclePosition().getVehicle().getId(); // ID del veicolo
+                    // fisico"
+                    // inside an invisile column to get the vehicle ID for row clicking and zooming
+                    // on the map!
             });
-            System.out.println("route type: " + route.getType());
         }
-        }
+    }
 
     public void updateStopRoutes(List<StopTimeModel> stopTimes) {
         tableService.clear();
@@ -200,7 +206,8 @@ public class StopPanel extends JPanel {
             TripModel trip = stopTime.getTrip();
             trip.getDirection();
             RouteModel route = trip.getRoute();
-            List<String> routeInfo = Arrays.asList(route.getShortName(), trip.getHeadsign(), route.getType().toString());
+            List<String> routeInfo = Arrays.asList(route.getShortName(), trip.getHeadsign(),
+                    route.getType().toString());
             uniqueRoutes.add(routeInfo);
         }
 
@@ -234,8 +241,8 @@ public class StopPanel extends JPanel {
 
     // LISTENERS METHODS //
     public void setGenericTableRowClickBehaviour(TableRowClickBehaviour listener) {
-            this.tableService.setRowClickBehaviour(listener);
-            this.tableTime.setRowClickBehaviour(listener);
+        this.tableService.setRowClickBehaviour(listener);
+        this.tableTime.setRowClickBehaviour(listener);
     }
 
     public void setStopInfoRowClickBehaviour(TableRowClickBehaviour tableRowClickBehaviour) {
@@ -251,7 +258,7 @@ public class StopPanel extends JPanel {
     }
 
     public void setTableCheckIsFavBehaviour(TableCheckIsFavBehaviour tableCheckIsFavBehaviour) {
-    if (tableCheckIsFavBehaviour != null) {
+        if (tableCheckIsFavBehaviour != null) {
             this.tableService.setTableCheckIsFavBehaviour(tableCheckIsFavBehaviour);
             this.tableTime.setTableCheckIsFavBehaviour(tableCheckIsFavBehaviour);
         }

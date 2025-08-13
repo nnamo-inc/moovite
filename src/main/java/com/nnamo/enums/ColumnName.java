@@ -2,6 +2,7 @@ package com.nnamo.enums;
 
 public enum ColumnName {
     LINEA("Linea"),
+    CAPOLINEA("Capolinea"),
     DIREZIONE("Direzione"),
     ORARIO("Orario"),
     STATO("Stato"),
@@ -10,7 +11,6 @@ public enum ColumnName {
     NOME("Nome"),
     CODICE("Codice"),
     TIPO("Tipo");
-
 
     String name;
 

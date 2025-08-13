@@ -49,7 +49,6 @@ public class SettingsPanel extends JPanel {
     // METHODS //
     public void setRealtimeStatus(RealtimeStatus status) {
         switchBar.setStatus(status);
-        System.out.println(switchBar);
     }
 
     // BEHAVIOR //
