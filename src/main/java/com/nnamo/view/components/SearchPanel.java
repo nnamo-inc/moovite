@@ -5,7 +5,6 @@ import com.nnamo.interfaces.SearchBarListener;
 import com.nnamo.interfaces.TableCheckIsFavBehaviour;
 import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.models.RouteDirection;
-import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
 import com.nnamo.view.customcomponents.CustomPreferButton;
 import com.nnamo.view.customcomponents.CustomTable;
@@ -23,8 +22,8 @@ import static com.nnamo.enums.DataType.*;
 public class SearchPanel extends JPanel {
 
     CustomSearchBar customSearchBar = new CustomSearchBar();
-    CustomTable tableStop = new CustomTable(new ColumnName[]{ NOME, CODICE }, CODICE, STOP);
-    CustomTable tableRoute = new CustomTable(new ColumnName[]{ LINEA, CODICE, TIPO }, CODICE, ROUTE);
+    CustomTable tableStop = new CustomTable(new ColumnName[] { NOME, CODICE }, CODICE, STOP);
+    CustomTable tableRoute = new CustomTable(new ColumnName[] { LINEA, TIPO, DIREZIONE }, LINEA, ROUTE);
     CustomPreferButton addRouteButton = new CustomPreferButton("Linea");
 
     // CONSTRUCTOR //
@@ -78,11 +77,9 @@ public class SearchPanel extends JPanel {
 
         for (RouteDirection route : routeModels) {
             String shortName = route.getShortName() != null ? route.getShortName() : "";
-            String longName = route.getLongName() != null ? route.getLongName() : "";
             tableRoute.addRow(new Object[] {
-                    longName,
                     shortName,
-                    route.getType().toString(),
+                    route.getType().name(),
                     route.getDirectionName(),
             });
         }
