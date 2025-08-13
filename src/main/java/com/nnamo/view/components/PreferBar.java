@@ -18,7 +18,7 @@ public class PreferBar extends JPanel {
         add(preferButton, new CustomGbc().setPosition(0, 0).setFill(GridBagConstraints.HORIZONTAL)
                 .setWeight(1.0, 0.1).setInsets(2, 5, 2, 5));
 
-        setVisible(true);
+        setVisible(false);
     }
 
     public void setGeneralFavBehaviour(FavoriteBehaviour favoriteBehaviour) {
@@ -27,8 +27,24 @@ public class PreferBar extends JPanel {
     }
 
     public void updatePreferButton(String itemId, boolean isFav, DataType dataType) {
+        switch (dataType) {
+            case STOP:
+                preferButton.setItemName("fermata");
+                break;
+            case ROUTE:
+                preferButton.setItemName("linea");
+                break;
+        }
+        preferButton.setDataType(dataType);
         preferButton.setItemId(itemId);
         preferButton.update(isFav);
-        preferButton.setDataType(dataType);
+    }
+
+    public void open() {
+        setVisible(true);
+    }
+
+    public void close() {
+        setVisible(false);
     }
 }

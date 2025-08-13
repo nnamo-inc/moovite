@@ -185,18 +185,20 @@ public class MainController {
     private void handleFavouriteButtonClicksBehaviour() {
         FavoriteBehaviour generalFavBehaviour = new FavoriteBehaviour() {
             @Override
-            public void addFavorite(String stopId, DataType dataType) {
+            public void addFavorite(String itemId, DataType dataType) {
                 try {
                     switch (dataType) {
                         case STOP: {
-                            db.addFavStop(sessionUser.getId(), stopId);
-                            mainFrame.updateFavStopTable(db.getStopById(stopId), UpdateMode.ADD);
+                            db.addFavStop(sessionUser.getId(), itemId);
+                            mainFrame.updateFavStopTable(db.getStopById(itemId), UpdateMode.ADD);
+                            mainFrame.updatePreferButton(itemId, true, DataType.STOP);
                             System.out.println(db.getFavoriteStops(sessionUser.getId()).stream().count());
                             break;
                         }
                         case ROUTE: {
-                            db.addFavRoute(sessionUser.getId(), stopId);
-                            mainFrame.updateFavRouteTable(db.getRouteById(stopId), UpdateMode.ADD);
+                            db.addFavRoute(sessionUser.getId(), itemId);
+                            mainFrame.updateFavRouteTable(db.getRouteById(itemId), UpdateMode.ADD);
+                            mainFrame.updatePreferButton(itemId, true, DataType.ROUTE);
                             System.out.println(db.getFavoriteRoutes(sessionUser.getId()).stream().count());
                             break;
                         }
@@ -208,19 +210,20 @@ public class MainController {
             }
 
             @Override
-            public void removeFavorite(String stopId, DataType dataType) {
+            public void removeFavorite(String itemId, DataType dataType) {
                 try {
                     switch (dataType) {
                         case STOP: {
-                            db.removeFavStop(sessionUser.getId(), stopId);
-                            mainFrame.updatePreferButton("stop", false, dataType);
-                            mainFrame.updateFavStopTable(db.getStopById(stopId), UpdateMode.REMOVE);
+                            db.removeFavStop(sessionUser.getId(), itemId);
+                            mainFrame.updateFavStopTable(db.getStopById(itemId), UpdateMode.REMOVE);
+                            mainFrame.updatePreferButton(itemId, false, dataType);
                             System.out.println(db.getFavoriteStops(sessionUser.getId()).stream().count());
                             break;
                         }
                         case ROUTE: {
-                            db.removeFavRoute(sessionUser.getId(), stopId);
-                            mainFrame.updateFavRouteTable(db.getRouteById(stopId), UpdateMode.REMOVE);
+                            db.removeFavRoute(sessionUser.getId(), itemId);
+                            mainFrame.updateFavRouteTable(db.getRouteById(itemId), UpdateMode.REMOVE);
+                            mainFrame.updatePreferButton(itemId, false, dataType);
                             System.out.println(db.getFavoriteRoutes(sessionUser.getId()).stream().count());
                             break;
                         }
@@ -247,12 +250,11 @@ public class MainController {
                         yield db.isFavoriteStop(sessionUser.getId(), itemId);
                     }
                     case ROUTE -> {
-
-
                         yield db.isFavouriteRoute(sessionUser.getId(), itemId);
                     }
                 };
                 updatePreferButton(itemId, isFav, dataType);
+                mainFrame.updatePreferBarVisibility(true);
             }
         };
         mainFrame.setGenericTableRowClickBehaviour(genericTableRowClickBehaviour);
@@ -321,13 +323,15 @@ public class MainController {
                                 List<RealtimeStopUpdate> realtimeUpdates = realtimeService
                                         .getStopUpdatesById(stop.getId());
                                 updateStopPanel(stop, stopTimes, realtimeUpdates);
-                                mainFrame.updatePreferButton(stop.getId(), db.isFavoriteStop(sessionUser.getId(), stop.getId()), STOP);
+                                updatePreferButton(stop.getId(), db.isFavoriteStop(sessionUser.getId(), stop.getId()), STOP);
+                                mainFrame.updatePreferBarVisibility(true);
                                 return;
                             }
                         }
                     }
 
                     mainFrame.updateStopPanelVisibility(false);
+                    mainFrame.updatePreferBarVisibility (false);
                     mainFrame.getMapPanel().repaintView();
                 } else {
                     mainFrame.updateStopPanelVisibility(false);

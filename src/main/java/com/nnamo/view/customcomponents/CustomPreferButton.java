@@ -57,27 +57,6 @@ public class CustomPreferButton extends JButton {
             setBackground(CustomColor.GREEN);
         }
     }
-
-    public void reset() {
-        this.favorite = false;
-        setText("<html></p><p>Clicca su una riga</p><p>della tabella per</p><p>attivare il bottone</p></html>");
-        setEnabled(false);
-    }
-
-    public void reset(ResetType resetType) {
-        switch (resetType) {
-            case GENERIC -> {
-                this.favorite = false;
-                setText("<html></p><p>Clicca su una riga</p><p>della tabella per</p><p>attivare il bottone</p></html>");
-                setEnabled(false);
-            }
-            case STOP -> {
-                this.favorite = false;
-                setText("<html></p><p>Clicca su una fermata</p><p>qualunque per</p><p>attivare il bottone</p></html>");
-                setEnabled(false);
-            }
-        }
-    }
     // BEHAVIOUR LISTENER //
 
     public void setFavBehaviour(FavoriteBehaviour behaviour) {
@@ -96,19 +75,7 @@ public class CustomPreferButton extends JButton {
         this.itemId = itemId;
     }
 
-    public String getItemId() {
-        return itemId;
-    }
-
-    public void setFavorite(boolean favorite) {
-        this.favorite = favorite;
-        if (favorite) {
-            setText("<html><p>Rimuovi</p><p>" + itemName + "</p><p>dai Preferiti</p></html>");
-            setBackground(CustomColor.RED);
-        }
-        else {
-            setText("<html><p>Aggiungi</p><p>" + itemName + "</p><p>dai Preferiti</p></html>");
-            setBackground(CustomColor.GREEN);
-        }
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
     }
 }

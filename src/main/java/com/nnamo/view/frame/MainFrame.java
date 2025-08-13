@@ -47,7 +47,7 @@ public class MainFrame extends JFrame {
 
         // 1. Pannello che contiene PreferBar + Mappa + StopPanel
         JPanel rightPanel = new JPanel(new BorderLayout());
-        rightPanel.add(preferBar, BorderLayout.NORTH);  // PreferBar sopra la mappa
+        rightPanel.add(preferBar, BorderLayout.SOUTH);  // PreferBar sopra la mappa
 
         // 2. Split verticale tra mappa e stop panel
         splitMapStop = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mapPanel, stopPanel);
@@ -120,7 +120,14 @@ public class MainFrame extends JFrame {
             jsp.setDividerSize(0);
             jsp.setDividerLocation(1.0);
         }
-        stopPanel.revalidate();
+    }
+
+    public void updatePreferBarVisibility(boolean visible) {
+        if (visible) {
+            preferBar.open();
+        } else {
+            preferBar.close();
+        }
     }
 
     public void updateLeftPanelVisibility(boolean visible) {
