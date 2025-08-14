@@ -175,6 +175,7 @@ public class RealtimeGtfsService {
                 continue;
             }
             tripsPositionMap.put(tripId, entity.getVehicle());
+//            System.out.println(getTripVehiclePosition(tripId) + " vehicle position for trip " + tripId);
             routesPositionsMap.computeIfAbsent(routeId, x -> new ArrayList<>()).add(entity.getVehicle());
         }
         System.out.println(positionEntityList.size() + " vehicle position entities");

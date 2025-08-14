@@ -87,7 +87,7 @@ public class StopPanel extends JPanel {
     private JPanel newRouteTimePanel() {
         JPanel mainPanel = new JPanel(new GridBagLayout());
         this.tableTime = new CustomTable(
-                new ColumnName[] { LINEA, DIREZIONE, ORARIO, STATO, MINUTIRIMAMENTI, POSTIDISPONIBILI, TIPO }, ROUTE);
+                new ColumnName[] { LINEA, DIREZIONE, ORARIO, STATO, MINUTIRIMAMENTI, POSTIDISPONIBILI, TIPO, TRIP }, ROUTE);
         tableTime.setSearchColumns(LINEA, DIREZIONE, ORARIO);
         // Table
         mainPanel.add(tableTime, new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.CENTER)
@@ -178,7 +178,8 @@ public class StopPanel extends JPanel {
                     state,
                     remainingMinutes >= 0 ? remainingMinutes : "N/A",
                     occupancyStatus,
-                    route.getType()
+                    route.getType().toString(),
+                    trip.getId()
                     // TODO: add "String vehicleId =
                     // timeUpdate.getVehiclePosition().getVehicle().getId(); // ID del veicolo
                     // fisico"
@@ -225,6 +226,10 @@ public class StopPanel extends JPanel {
     // GETTERS AND SETTERS //
     public String getStopId() {
         return idFermata.getTextField();
+    }
+
+    public CustomTable getTimeTable() {
+        return tableTime;
     }
 
     // LISTENERS METHODS //

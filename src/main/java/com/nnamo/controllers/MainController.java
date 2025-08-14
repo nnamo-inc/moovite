@@ -304,6 +304,7 @@ public class MainController {
                         StopModel stop = db.getStopById(itemId);
                         GeoPosition geoPosition = new GeoPosition(stop.getLatitude(), stop.getLongitude());
                         mainFrame.setMapPanelMapPosition(geoPosition, 1);
+                        updateStopPanel(stop, db.getNextStopTimes(itemId, getCurrentTime(), getCurrentDate()), realtimeService.getStopUpdatesById(itemId));
                         yield db.isFavoriteStop(sessionUser.getId(), itemId);
                     }
                     case ROUTE -> {
@@ -346,6 +347,27 @@ public class MainController {
             }
         };
         mainFrame.setGenericTableRowClickBehaviour(genericTableRowClickBehaviour);
+
+        TableRowClickBehaviour busPositionTableRowClickBehaviour = new TableRowClickBehaviour() {
+            @Override
+            public void onRowClick(Object rowData, ColumnName[] columnNames, DataType dataType)
+                    throws SQLException, IOException {
+                List<ColumnName> columnsList = Arrays.asList(columnNames);
+                String routeId = (String) ((List<Object>) rowData).get(
+                        columnsList.indexOf(ColumnName.TIPO));
+                String tripId = (String) ((List<Object>) rowData).get(
+                        columnsList.indexOf(ColumnName.TRIP));
+                System.out.println(realtimeService.getTripVehiclePosition(tripId).getVehicle());
+                GeoPosition busPosition = new GeoPosition(realtimeService.getTripVehiclePosition(tripId).getPosition().getLatitude(), realtimeService.getTripVehiclePosition(routeId).getPosition().getLongitude());
+                mainFrame.setMapPanelMapPosition(busPosition, 1);
+
+            }
+        };
+        mainFrame.getStopPanel().getTimeTable().setRowClickBehaviour(busPositionTableRowClickBehaviour);
+
+
+
+
     }
 
     private void handleClickWaypointBehaviour() {
