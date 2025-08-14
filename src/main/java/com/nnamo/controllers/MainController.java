@@ -10,6 +10,7 @@ import com.nnamo.view.frame.MainFrame;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.FeedUpdateListener;
 import com.nnamo.services.RealtimeGtfsService;
+import com.nnamo.services.StatisticsBehaviour;
 
 import org.jxmapviewer.viewer.GeoPosition;
 
@@ -86,9 +87,8 @@ public class MainController {
         });
 
         handleRealtimeBehaviour();
-        realtimeService.startBackgroundThread();
+        realtimeService.startFeedThread();
         mainFrame.setRealtimeStatus(RealtimeStatus.ONLINE); // Changing realtime status notifies the observer method,
-                                                            // thus interacting with RealtimeService
 
         // Mostra tutte le fermate allo startup del programma.
         this.searchQueryListener("");
@@ -128,7 +128,7 @@ public class MainController {
             latStop += stop.getLatitude();
             lonStop += stop.getLongitude();
         }
-        return new GeoPosition(latStop/divider, lonStop/divider);
+        return new GeoPosition(latStop / divider, lonStop / divider);
     }
 
     private int calculateZoomLevel(List<StopModel> stopList) {
@@ -201,6 +201,18 @@ public class MainController {
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();
+                }
+            }
+        });
+
+        realtimeService.setStatisticsBehaviour(new StatisticsBehaviour() {
+            @Override
+            public void updateStatistics(List<FeedEntity> tripEntities) {
+                try {
+                    db.createOrUpdateTripUpdates(tripEntities);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return;
                 }
             }
         });
@@ -309,7 +321,8 @@ public class MainController {
                         GeoPosition geoPosition = calculateBaricentro(stopModels);
                         int zoomLevel = calculateZoomLevel(stopModels);
 
-                        List<GtfsRealtime.VehiclePosition> routePositions = realtimeService.getRoutesVehiclePositions(itemId);
+                        List<GtfsRealtime.VehiclePosition> routePositions = realtimeService
+                                .getRoutesVehiclePositions(itemId);
 
                         // render stops and route lines on the map
                         mainFrame.renderRouteLines(stopModels, routePositions, itemId, geoPosition, zoomLevel);

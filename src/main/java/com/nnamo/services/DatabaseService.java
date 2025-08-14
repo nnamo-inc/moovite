@@ -1,5 +1,8 @@
 package com.nnamo.services;
 
+import com.google.transit.realtime.GtfsRealtime.FeedEntity;
+import com.google.transit.realtime.GtfsRealtime.TripDescriptor;
+import com.google.transit.realtime.GtfsRealtime.TripUpdate;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.field.SqlType;
@@ -59,6 +62,7 @@ public class DatabaseService {
         this.daos.put(UserModel.class, DaoManager.createDao(connection, UserModel.class));
         this.daos.put(FavoriteRouteModel.class, DaoManager.createDao(connection, FavoriteRouteModel.class));
         this.daos.put(FavoriteStopModel.class, DaoManager.createDao(connection, FavoriteStopModel.class));
+        this.daos.put(TripUpdateModel.class, DaoManager.createDao(connection, TripUpdateModel.class));
     }
 
     private void initTables() throws SQLException {
@@ -71,6 +75,7 @@ public class DatabaseService {
         TableUtils.createTableIfNotExists(connection, StopTimeModel.class);
         TableUtils.createTableIfNotExists(connection, FavoriteStopModel.class);
         TableUtils.createTableIfNotExists(connection, FavoriteRouteModel.class);
+        TableUtils.createTableIfNotExists(connection, TripUpdateModel.class);
     }
 
     public void preloadGtfsData(StaticGtfsService gtfs) throws SQLException, IOException, URISyntaxException {
@@ -716,5 +721,57 @@ public class DatabaseService {
                 "ORDER BY st.arrival_time";
 
         return stopDao.queryRaw(rawQuery, stopDao.getRawRowMapper(), tripId).getResults();
+    }
+
+    public List<TripUpdateModel> getRouteTripUpdates(String routeId) throws SQLException {
+        Dao<TripUpdateModel, String> tripUpdateDao = getDao(TripUpdateModel.class);
+
+        String rawQuery = "SELECT t.* FROM trip_updates t " +
+                "JOIN trips tr ON tr.id = t.trip_id " +
+                "JOIN routes r ON r.id = tr.route_id " +
+                "WHERE r.id = ?";
+        return tripUpdateDao.queryRaw(rawQuery, tripUpdateDao.getRawRowMapper(), routeId).getResults();
+    }
+
+    public void createOrUpdateTripUpdates(List<FeedEntity> tripEntities) throws SQLException {
+        if (tripEntities == null) {
+            return;
+        }
+
+        List<TripUpdateModel> updates = new ArrayList<>();
+        Dao<TripModel, String> tripDao = getDao(TripModel.class);
+        for (FeedEntity entity : tripEntities) {
+            TripUpdate tripUpdate = entity.getTripUpdate();
+            TripDescriptor trip = tripUpdate.getTrip();
+            TripModel tripModel = tripDao.queryForId(trip.getTripId());
+            int delay = tripUpdate.getDelay();
+            boolean isDeleted = entity.getIsDeleted();
+
+            if (tripModel == null) {
+                continue;
+            }
+
+            updates.add(new TripUpdateModel(tripModel, delay, isDeleted));
+        }
+        this.createOrUpdate(TripUpdateModel.class, updates);
+    }
+
+    public <ID, MODEL> void createOrUpdate(Class<MODEL> modelClass, List<MODEL> data) {
+        Dao<MODEL, ID> dao = getDao(modelClass);
+        if (dao == null) {
+            System.out.println("Create or update failed: " + modelClass.getName() + " not found in the DAOs");
+            return;
+        }
+
+        try {
+            dao.callBatchTasks(() -> {
+                for (MODEL obj : data) {
+                    dao.createOrUpdate(obj);
+                }
+                return null;
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

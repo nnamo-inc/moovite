@@ -11,6 +11,7 @@ import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.interfaces.RealtimeStatusChangeListener;
 import com.nnamo.models.RealtimeStopUpdate;
 import com.nnamo.models.StopTimeModel;
+import com.nnamo.models.TripUpdateModel;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,16 +24,20 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import org.onebusaway.gtfs.model.Trip;
+
 public class RealtimeGtfsService {
     public static final String ROME_TRIP_FEED_URL = "https://romamobilita.it/sites/default/files/rome_rtgtfs_trip_updates_feed.pb";
     public static final String ROME_POSITIONS_FEED_URL = "https://romamobilita.it/sites/default/files/rome_rtgtfs_vehicle_positions_feed.pb";
     public static final String TEST_FRANCE_TRIP_FEED_URL = "https://proxy.transport.data.gouv.fr/resource/sncf-all-gtfs-rt-trip-updates";
     public static final String TEST_FRANCE_POSITIONS_FEED_URL = "https://proxy.transport.data.gouv.fr/resource/sncf-all-gtfs-rt-trip-updates";
-    public static final Duration POLLING_INTERVAL = Duration.ofSeconds(30);
+    public static final Duration FEED_INTERVAL = Duration.ofSeconds(30);
+    public static final Duration STATISTICS_INTERVAL = Duration.ofSeconds(60 * 5);
     public static final int ALLOWED_DELAY = 5 * 60; // 5 minutes
     public static final int ALLOWED_ADVANCE = 5 * 60; // 5 minutes
 
-    private final Thread backgroundThread;
+    private final Thread feedThread;
+    private final Thread statisticsThread;
     private RealtimeStatus realtimeStatus = RealtimeStatus.ONLINE;
     private RealtimeStatusChangeListener statusChangeListener; // Listener for when status changes automatically (and
                                                                // not by pressing button in mainframe)
@@ -47,13 +52,13 @@ public class RealtimeGtfsService {
     private HashMap<String, List<RealtimeStopUpdate>> stopsMap = new HashMap<>();
 
     private final List<FeedUpdateListener> feedUpdateListeners = new ArrayList<>();
-    private final List<FeedStopLinesListener> feedStopLinesListeners = new ArrayList<>();
+    private StatisticsBehaviour statisticsBehaviour;
 
     public RealtimeGtfsService() throws URISyntaxException, IOException {
         this.tripFeedUrl = new URI(ROME_TRIP_FEED_URL).toURL();
         this.positionsFeedUrl = new URI(ROME_POSITIONS_FEED_URL).toURL();
 
-        this.backgroundThread = new Thread(() -> {
+        this.feedThread = new Thread(() -> {
             try {
                 while (true) {
                     try {
@@ -71,7 +76,7 @@ public class RealtimeGtfsService {
                             this.statusChangeListener.onChange(RealtimeStatus.OFFLINE);
                         }
                     } finally {
-                        Thread.sleep(POLLING_INTERVAL);
+                        Thread.sleep(FEED_INTERVAL);
                     }
                 }
             } catch (InterruptedException e) {
@@ -79,18 +84,51 @@ public class RealtimeGtfsService {
                 Thread.currentThread().interrupt(); // Restore interrupted status
             }
         });
+        feedThread.setName("RealtimeGtfsService-BackgroundThread");
+        feedThread.setDaemon(true); // Set as a daemon thread to not block JVM exit
+
+        // Thread that updates every STATISTICS_INTERVAL the history of trips in the
+        // database
+        this.statisticsThread = new Thread(() -> {
+            try {
+                while (true) {
+                    if (realtimeStatus == RealtimeStatus.ONLINE && statisticsBehaviour != null
+                            && tripEntityList != null) {
+                        statisticsBehaviour.updateStatistics(tripEntityList);
+                        System.out.println("Updated trips' history");
+                    }
+                    Thread.sleep(STATISTICS_INTERVAL);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                Thread.currentThread().interrupt(); // Restore interrupted status
+            }
+        });
+        statisticsThread.setName("Statistics-BackgroundThread");
+        statisticsThread.setDaemon(true); // Set as a daemon thread to not block JVM exit
     }
 
-    public void startBackgroundThread() {
-        if (backgroundThread == null) {
+    public void startFeedThread() {
+        if (feedThread == null) {
             System.out.println("Couldn't start Realtime Thread");
             return;
         }
-        backgroundThread.setName("RealtimeGtfsService-BackgroundThread");
-        backgroundThread.setDaemon(true); // Set as a daemon thread to not block JVM exit
-        backgroundThread.start();
+        feedThread.start();
         this.realtimeStatus = RealtimeStatus.ONLINE;
         System.out.println("Starting background thread for RealtimeGtfsService");
+    }
+
+    public void startStatisticsThread() {
+        if (statisticsThread.isAlive()) {
+            return;
+        }
+
+        if (statisticsThread == null) {
+            System.out.println("Couldn't start Statistics Thread");
+            return;
+        }
+        statisticsThread.start();
+        System.out.println("Starting background thread for updating statistics in database");
     }
 
     public synchronized void updateFeed() throws IOException {
@@ -140,6 +178,7 @@ public class RealtimeGtfsService {
         }
         System.out.println(positionEntityList.size() + " vehicle position entities");
 
+        startStatisticsThread(); // Statistics thread starts after first feed update
         notifyFeedUpdateListeners();
     }
 
@@ -165,6 +204,10 @@ public class RealtimeGtfsService {
         return this.realtimeStatus;
     }
 
+    public void setStatisticsBehaviour(StatisticsBehaviour behaviour) {
+        this.statisticsBehaviour = behaviour;
+    }
+
     public synchronized void addListener(FeedUpdateListener listener) {
         feedUpdateListeners.add(listener);
     }
@@ -173,35 +216,9 @@ public class RealtimeGtfsService {
         feedUpdateListeners.remove(listener);
     }
 
-    public synchronized void addListener(FeedStopLinesListener listener) {
-        feedStopLinesListeners.add(listener);
-    }
-
-    public synchronized void removeListener(FeedStopLinesListener listener) {
-        feedStopLinesListeners.remove(listener);
-    }
-
     private void notifyFeedUpdateListeners() {
         for (FeedUpdateListener listener : feedUpdateListeners) {
             listener.onFeedUpdated(tripEntityList);
-        }
-    }
-
-    private void notifyNewStopLineListeners(GtfsRealtime.FeedEntity entity) {
-        for (FeedStopLinesListener listener : feedStopLinesListeners) {
-            listener.onNewStopLine(entity);
-        }
-    }
-
-    private void notifyStopLineRemovedListeners(String tripLineId) {
-        for (FeedStopLinesListener listener : feedStopLinesListeners) {
-            listener.onStopLineRemoved(tripLineId);
-        }
-    }
-
-    private void notifyStopLineUpdatedListeners(GtfsRealtime.FeedEntity entity) {
-        for (FeedStopLinesListener listener : feedStopLinesListeners) {
-            listener.onStopLineUpdated(entity);
         }
     }
 
