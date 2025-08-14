@@ -134,6 +134,7 @@ public class MapPanel extends JPanel {
         stopPainter.repaint();
         positionPainter.repaint();
         this.stopsCompoundPainter.setPainters(this.stopsPaintersList);
+        updateOverlayPainter();
     }
 
     public void repaintView(boolean isLive) {
@@ -148,6 +149,12 @@ public class MapPanel extends JPanel {
         System.out.println("Updated compound painter");
         this.currentZoomLimit = (painter == stopsCompoundPainter) ? stopsZoomLimit : routeZoomLimit;
         this.currentPainter = painter;
+
+        if (painter == routeCompoundPainter) {
+            this.resetRouteButton.setVisible(true);
+        } else {
+            this.resetRouteButton.setVisible(false);
+        }
     }
 
     public void removeRoutePainting() {
@@ -171,7 +178,6 @@ public class MapPanel extends JPanel {
         this.stopPainter.setWaypoints(waypoints);
         this.stops = stops; // Save stops in order to reset painting after route painting
 
-        this.resetRouteButton.setVisible(false);
         updateCurrentCompoundPainter(this.stopsCompoundPainter);
         removeRoutePainting();
         repaintView();
@@ -195,8 +201,8 @@ public class MapPanel extends JPanel {
         this.routePaintersList.add(routePainter); // Adds updated route painter to the list
         this.routeCompoundPainter.setPainters(routePaintersList);
 
-        this.resetRouteButton.setVisible(true);
         updateCurrentCompoundPainter(this.routeCompoundPainter);
+        updateOverlayPainter();
         repaintView();
     }
 
@@ -218,6 +224,7 @@ public class MapPanel extends JPanel {
                     "Adding realtime vehicle position at " + position.getLatitude() + " " + position.getLongitude());
         }
         this.positionPainter.setWaypoints(waypoints);
+        updateCurrentCompoundPainter(this.routeCompoundPainter);
         repaintView();
     }
 

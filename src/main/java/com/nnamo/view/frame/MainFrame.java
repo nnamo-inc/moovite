@@ -164,6 +164,10 @@ public class MainFrame extends JFrame {
         this.preferBar.updatePreferButton(itemId, isFav, dataType);
     }
 
+    public void removeRoutePainting() {
+        this.mapPanel.removeRoutePainting();
+    }
+
     // GETTERS AND SETTERS //
     public MapPanel getMapPanel() {
         return mapPanel;

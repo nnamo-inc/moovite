@@ -31,7 +31,6 @@ public class RoutePainter implements Painter<JXMapViewer> {
     @Override
     public void paint(Graphics2D g, JXMapViewer map, int width, int height) {
         if (stops == null || stops.size() < 2) {
-            System.out.println("Not enough stops to draw route lines");
             return;
         }
 
