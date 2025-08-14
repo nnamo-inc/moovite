@@ -332,7 +332,7 @@ public class MainController {
                         int zoomLevel = calculateZoomLevel(stopModels);
 
                         List<GtfsRealtime.VehiclePosition> routePositions = realtimeService
-                                .getRoutesVehiclePositions(itemId);
+                                .getRoutesVehiclePositions(itemId, direction);
 
                         // render stops and route lines on the map
                         mainFrame.renderRouteLines(stopModels, routePositions, itemId, geoPosition, zoomLevel);

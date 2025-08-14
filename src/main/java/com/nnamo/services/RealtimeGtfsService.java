@@ -1,18 +1,16 @@
 package com.nnamo.services;
 
-import com.google.transit.realtime.GtfsRealtime;
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.google.transit.realtime.GtfsRealtime.FeedMessage;
 import com.google.transit.realtime.GtfsRealtime.TripDescriptor;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate;
 import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate;
+import com.nnamo.enums.Direction;
 import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.interfaces.RealtimeStatusChangeListener;
 import com.nnamo.models.RealtimeStopUpdate;
 import com.nnamo.models.StopTimeModel;
-import com.nnamo.models.TripUpdateModel;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -23,8 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-
-import org.onebusaway.gtfs.model.Trip;
 
 public class RealtimeGtfsService {
     public static final String ROME_TRIP_FEED_URL = "https://romamobilita.it/sites/default/files/rome_rtgtfs_trip_updates_feed.pb";
@@ -262,6 +258,25 @@ public class RealtimeGtfsService {
             return new ArrayList<>();
         }
         return routePositions;
+    }
+
+    public synchronized List<VehiclePosition> getRoutesVehiclePositions(String routeId, Direction requestedDirection) {
+        List<VehiclePosition> positions = getRoutesVehiclePositions(routeId);
+
+        List<VehiclePosition> directedRoutePositions = new ArrayList<>();
+        for (VehiclePosition position : positions) {
+            String tripId = position.getTrip().getTripId();
+            FeedEntity tripEntity = tripsMap.get(tripId);
+            TripUpdate tripUpdate = tripEntity.getTripUpdate();
+            TripDescriptor trip = tripUpdate.getTrip();
+
+            Direction tripDirection = Direction.getDirection(trip.getDirectionId());
+            if (tripDirection == requestedDirection) {
+                directedRoutePositions.add(position);
+            }
+        }
+
+        return directedRoutePositions;
     }
 
     public synchronized List<VehiclePosition> getAllVehiclePositions() {
