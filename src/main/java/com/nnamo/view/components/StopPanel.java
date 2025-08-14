@@ -101,7 +101,7 @@ public class StopPanel extends JPanel {
         mainPanel.setBorder(titledBorder);
 
         this.tableService = new CustomTable(
-                new ColumnName[] { LINEA, CODICE, TIPO, CAPOLINEA, DIREZIONE },
+                new ColumnName[] { LINEA, CODICE, TIPO, CAPOLINEA, DIREZIONE, DELAY },
                 new ColumnName[] { DIREZIONE },
                 ROUTE);
         tableService.setSearchColumns(LINEA);
@@ -188,21 +188,8 @@ public class StopPanel extends JPanel {
         }
     }
 
-    public void updateStopRoutes(List<StopTimeModel> stopTimes) {
+    public void updateStopRoutes(List<List<String>> uniqueRoutes) {
         tableService.clear();
-        HashSet<List<String>> uniqueRoutes = new HashSet<>();
-
-        for (StopTimeModel stopTime : stopTimes) {
-            TripModel trip = stopTime.getTrip();
-            RouteModel route = trip.getRoute();
-            uniqueRoutes.add(Arrays.asList(new String[] {
-                    route.getLongName() != null ? route.getLongName() : route.getShortName(),
-                    route.getId(),
-                    route.getType().toString(),
-                    trip.getHeadsign(),
-                    trip.getDirection().name()
-            }));
-        }
 
         for (List<String> routeData : uniqueRoutes) {
             tableService.addRow(routeData.toArray());

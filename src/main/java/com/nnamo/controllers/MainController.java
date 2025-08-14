@@ -21,8 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
 
 import static com.nnamo.enums.DataType.*;
@@ -110,7 +109,34 @@ public class MainController {
         mainFrame.updateStopPanelInfo(stop.getId(), stop.getName());
         mainFrame.updateStopPanelTimes(stopTimes, realtimeUpdates);
         mainFrame.updateStopPanelVisibility(true);
-        mainFrame.updateStopPanelRoutes(db.getStopTimes(stop.getId()));
+
+        HashSet<String> uniqueRouteIds = new HashSet<>();
+        List<List<String>> uniqueRoutes = new ArrayList<>();
+
+        for (StopTimeModel stopTime : stopTimes) {
+            if (stopTime.getTrip() == null || stopTime.getTrip().getRoute() == null) {
+                continue; // Skip if trip or route is null
+            }
+            if (!uniqueRouteIds.add(stopTime.getTrip().getRoute().getId())) {
+                continue; // Skip if route ID is already processed
+            }
+
+            TripModel trip = stopTime.getTrip();
+            RouteModel route = trip.getRoute();
+
+            uniqueRoutes.add(Arrays.asList(new String[] {
+                    route.getLongName() != null ? route.getLongName() : route.getShortName(),
+                    route.getId(),
+                    route.getType().toString(),
+                    trip.getHeadsign(),
+                    trip.getDirection().name(),
+                    String.valueOf(db.getAverageDelayForRoute(route.getId()))
+            }));
+        }
+
+        System.out.println("Unique routes found: " + uniqueRoutes.size());
+
+        mainFrame.updateStopPanelRoutes(uniqueRoutes);
     }
 
     private void updatePreferButton(String itemId, boolean isFav, DataType dataType) {
@@ -204,11 +230,11 @@ public class MainController {
             }
         });
 
-        realtimeService.setStatisticsBehaviour(new StatisticsBehaviour() {
+        realtimeService.setStatisticsBehavior(new StatisticsBehaviour() {
             @Override
             public void updateStatistics(List<FeedEntity> tripEntities) {
                 try {
-                    db.createOrUpdateTripUpdates(tripEntities);
+                    db.createTripUpdateDelays(tripEntities);
                 } catch (SQLException e) {
                     e.printStackTrace();
                     return;

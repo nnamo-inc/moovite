@@ -106,8 +106,8 @@ public class MainFrame extends JFrame {
         this.stopPanel.updateStopTimes(stopTimes, realtimeUpdates);
     }
 
-    public void updateStopPanelRoutes(List<StopTimeModel> stopTimes) {
-        this.stopPanel.updateStopRoutes(stopTimes);
+    public void updateStopPanelRoutes(List<List<String>> uniqueRoutes) {
+        this.stopPanel.updateStopRoutes(uniqueRoutes);
     }
 
     public void updateStopPanelVisibility(boolean visible) {

@@ -2,29 +2,45 @@ package com.nnamo.models;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import com.nnamo.models.TripModel;
 
-@DatabaseTable(tableName = "trip_updates")
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+
+@DatabaseTable(tableName = "trip_updates_delays")
 public class TripUpdateModel {
 
     @DatabaseField(generatedId = true)
     private int id;
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true)
-    private TripModel trip;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, index = true)
+    private RouteModel route;
 
     @DatabaseField
-    private int averageDelay;
+    private Date createdAt;
 
     @DatabaseField
-    private boolean skipped;
+    private int delay;
 
     public TripUpdateModel() {
     }
 
-    public TripUpdateModel(TripModel trip, int averageDelay, boolean skipped) {
-        this.trip = trip;
-        this.averageDelay = averageDelay;
-        this.skipped = skipped;
+    public TripUpdateModel(RouteModel route, LocalDateTime createdAt, int delay) {
+        this.route = route;
+        this.createdAt = Date.from(createdAt.atZone(ZoneId.systemDefault()).toInstant());
+        this.delay = delay;
     }
 
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
+    public int getDelay() {
+        return delay;
+    }
 }

@@ -10,7 +10,8 @@ public enum ColumnName {
     POSTIDISPONIBILI("Posti Disponibili"),
     NOME("Nome"),
     CODICE("Codice"),
-    TIPO("Tipo");
+    TIPO("Tipo"),
+    DELAY("Delay");
 
     String name;
 

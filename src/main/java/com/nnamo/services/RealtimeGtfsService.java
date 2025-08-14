@@ -1,5 +1,6 @@
 package com.nnamo.services;
 
+import com.google.transit.realtime.GtfsRealtime;
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.google.transit.realtime.GtfsRealtime.FeedMessage;
 import com.google.transit.realtime.GtfsRealtime.TripDescriptor;
@@ -11,6 +12,7 @@ import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.interfaces.RealtimeStatusChangeListener;
 import com.nnamo.models.RealtimeStopUpdate;
 import com.nnamo.models.StopTimeModel;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -22,13 +24,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import org.onebusaway.gtfs.model.Trip;
+
 public class RealtimeGtfsService {
     public static final String ROME_TRIP_FEED_URL = "https://romamobilita.it/sites/default/files/rome_rtgtfs_trip_updates_feed.pb";
     public static final String ROME_POSITIONS_FEED_URL = "https://romamobilita.it/sites/default/files/rome_rtgtfs_vehicle_positions_feed.pb";
     public static final String TEST_FRANCE_TRIP_FEED_URL = "https://proxy.transport.data.gouv.fr/resource/sncf-all-gtfs-rt-trip-updates";
     public static final String TEST_FRANCE_POSITIONS_FEED_URL = "https://proxy.transport.data.gouv.fr/resource/sncf-all-gtfs-rt-trip-updates";
     public static final Duration FEED_INTERVAL = Duration.ofSeconds(30);
-    public static final Duration STATISTICS_INTERVAL = Duration.ofSeconds(60 * 5);
+    public static final Duration STATISTICS_INTERVAL = Duration.ofMinutes(5);
     public static final int ALLOWED_DELAY = 5 * 60; // 5 minutes
     public static final int ALLOWED_ADVANCE = 5 * 60; // 5 minutes
 
@@ -205,8 +209,8 @@ public class RealtimeGtfsService {
         return this.realtimeStatus;
     }
 
-    public void setStatisticsBehaviour(StatisticsBehaviour behaviour) {
-        this.statisticsBehaviour = behaviour;
+    public void setStatisticsBehavior(StatisticsBehaviour behavior) {
+        this.statisticsBehaviour = behavior;
     }
 
     public synchronized void addListener(FeedUpdateListener listener) {

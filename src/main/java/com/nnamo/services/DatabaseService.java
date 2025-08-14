@@ -30,6 +30,7 @@ import org.sqlite.Function;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -732,6 +733,27 @@ public class DatabaseService {
         return stopDao.queryRaw(rawQuery, stopDao.getRawRowMapper(), tripId).getResults();
     }
 
+    public int getAverageDelayForRoute(String routeId) throws SQLException {
+        Dao<TripUpdateModel, String> tripUpdateDao = getDao(TripUpdateModel.class);
+
+        // First check if there are any records for this route
+        long count = tripUpdateDao.queryRawValue(
+                "SELECT COUNT(*) FROM trip_updates_delays WHERE route_id = ? AND delay IS NOT NULL",
+                routeId
+        );
+
+        if (count == 0) {
+            return 0; // No delays found
+        }
+
+        long avgDelay = tripUpdateDao.queryRawValue(
+                "SELECT AVG(delay) FROM trip_updates_delays WHERE route_id = ? AND delay IS NOT NULL",
+                routeId
+        );
+
+        return (int) avgDelay;
+    }
+
     public List<TripUpdateModel> getRouteTripUpdates(String routeId) throws SQLException {
         Dao<TripUpdateModel, String> tripUpdateDao = getDao(TripUpdateModel.class);
 
@@ -742,30 +764,33 @@ public class DatabaseService {
         return tripUpdateDao.queryRaw(rawQuery, tripUpdateDao.getRawRowMapper(), routeId).getResults();
     }
 
-    public void createOrUpdateTripUpdates(List<FeedEntity> tripEntities) throws SQLException {
+    public void createTripUpdateDelays(List<FeedEntity> tripEntities) throws SQLException {
         if (tripEntities == null) {
             return;
         }
 
+        LocalDateTime now = LocalDateTime.now();
+
         List<TripUpdateModel> updates = new ArrayList<>();
-        Dao<TripModel, String> tripDao = getDao(TripModel.class);
+        Dao<RouteModel, String> routeDao = getDao(RouteModel.class);
+
         for (FeedEntity entity : tripEntities) {
             TripUpdate tripUpdate = entity.getTripUpdate();
             TripDescriptor trip = tripUpdate.getTrip();
-            TripModel tripModel = tripDao.queryForId(trip.getTripId());
+            RouteModel routeModel = routeDao.queryForId(trip.getRouteId());
             int delay = tripUpdate.getDelay();
             boolean isDeleted = entity.getIsDeleted();
 
-            if (tripModel == null) {
+            if (routeModel == null) {
                 continue;
             }
 
-            updates.add(new TripUpdateModel(tripModel, delay, isDeleted));
+            updates.add(new TripUpdateModel(routeModel, now, delay));
         }
-        this.createOrUpdate(TripUpdateModel.class, updates);
+        this.batchCreate(TripUpdateModel.class, updates);
     }
 
-    public <ID, MODEL> void createOrUpdate(Class<MODEL> modelClass, List<MODEL> data) {
+    public <ID, MODEL> void batchCreateOrUpdate(Class<MODEL> modelClass, List<MODEL> data) {
         Dao<MODEL, ID> dao = getDao(modelClass);
         if (dao == null) {
             System.out.println("Create or update failed: " + modelClass.getName() + " not found in the DAOs");
@@ -776,6 +801,25 @@ public class DatabaseService {
             dao.callBatchTasks(() -> {
                 for (MODEL obj : data) {
                     dao.createOrUpdate(obj);
+                }
+                return null;
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public <ID, MODEL> void batchCreate(Class<MODEL> modelClass, List<MODEL> data) {
+        Dao<MODEL, ID> dao = getDao(modelClass);
+        if (dao == null) {
+            System.out.println("Create or update failed: " + modelClass.getName() + " not found in the DAOs");
+            return;
+        }
+
+        try {
+            dao.callBatchTasks(() -> {
+                for (MODEL obj : data) {
+                    dao.create(obj);
                 }
                 return null;
             });
