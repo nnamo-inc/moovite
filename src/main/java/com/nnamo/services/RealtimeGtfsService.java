@@ -45,7 +45,10 @@ public class RealtimeGtfsService {
     private final URL positionsFeedUrl;
 
     private List<FeedEntity> positionEntityList;
-    private HashMap<String, List<VehiclePosition>> routesPositionsMap = new HashMap<>();
+    private HashMap<String, List<VehiclePosition>> routesPositionsMap = new HashMap<>(); // Maps Route ID with all its
+                                                                                         // vehicle positions
+    private HashMap<String, VehiclePosition> tripsPositionMap = new HashMap<>(); // Maps a Trip ID with its
+                                                                                 // vehicle position
 
     private List<FeedEntity> tripEntityList;
     private HashMap<String, FeedEntity> tripsMap = new HashMap<>();
@@ -170,10 +173,12 @@ public class RealtimeGtfsService {
 
         this.positionEntityList = positionFeed.getEntityList();
         for (FeedEntity entity : positionEntityList) {
+            String tripId = entity.getVehicle().getTrip().getTripId();
             String routeId = entity.getVehicle().getTrip().getRouteId();
             if (routeId.isEmpty()) {
                 continue;
             }
+            tripsPositionMap.put(tripId, entity.getVehicle());
             routesPositionsMap.computeIfAbsent(routeId, x -> new ArrayList<>()).add(entity.getVehicle());
         }
         System.out.println(positionEntityList.size() + " vehicle position entities");
@@ -247,7 +252,7 @@ public class RealtimeGtfsService {
     }
 
     public synchronized VehiclePosition getTripVehiclePosition(String tripId) {
-        return this.tripsMap.get(tripId).getVehicle();
+        return this.tripsPositionMap.get(tripId);
     }
 
     public synchronized List<VehiclePosition> getRoutesVehiclePositions(String routeId) {
