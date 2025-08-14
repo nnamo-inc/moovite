@@ -2,6 +2,7 @@ package com.nnamo.controllers;
 
 import com.google.transit.realtime.GtfsRealtime;
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
+import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.nnamo.enums.*;
 import com.nnamo.interfaces.*;
 import com.nnamo.models.*;
@@ -330,6 +331,8 @@ public class MainController {
                         StopModel stop = db.getStopById(itemId);
                         GeoPosition geoPosition = new GeoPosition(stop.getLatitude(), stop.getLongitude());
                         mainFrame.setMapPanelMapPosition(geoPosition, 1);
+                        updateStopPanel(stop, db.getNextStopTimes(itemId, getCurrentTime(), getCurrentDate()),
+                                realtimeService.getStopUpdatesById(itemId));
                         yield db.isFavoriteStop(sessionUser.getId(), itemId);
                     }
                     case ROUTE -> {
@@ -372,6 +375,27 @@ public class MainController {
             }
         };
         mainFrame.setGenericTableRowClickBehaviour(genericTableRowClickBehaviour);
+
+        TableRowClickBehaviour busPositionTableRowClickBehaviour = new TableRowClickBehaviour() {
+            @Override
+            public void onRowClick(Object rowData, ColumnName[] columnNames, DataType dataType)
+                    throws SQLException, IOException {
+                List<ColumnName> columnsList = Arrays.asList(columnNames);
+                String tripId = (String) ((List<Object>) rowData).get(
+                        columnsList.indexOf(ColumnName.TRIP));
+                VehiclePosition position = realtimeService.getTripVehiclePosition(tripId);
+                if (position != null) {
+                    GeoPosition busPosition = new GeoPosition(
+                            position.getPosition().getLatitude(),
+                            position.getPosition().getLongitude());
+                    mainFrame.setMapPanelMapPosition(busPosition, 1);
+                    mainFrame.removeRoutePainting();
+                    mainFrame.renderVehiclePositions(Arrays.asList(new VehiclePosition[] { position }));
+                }
+
+            }
+        };
+        mainFrame.getStopPanel().getTimeTable().setRowClickBehaviour(busPositionTableRowClickBehaviour);
     }
 
     private void handleClickWaypointBehaviour() {

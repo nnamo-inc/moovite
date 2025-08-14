@@ -11,6 +11,7 @@ public enum ColumnName {
     NOME("Nome"),
     CODICE("Codice"),
     TIPO("Tipo"),
+    TRIP("Trip"),
     DELAY("Delay");
 
     String name;
