@@ -5,7 +5,6 @@ import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.nnamo.enums.*;
 import com.nnamo.interfaces.*;
 import com.nnamo.models.*;
-import com.nnamo.view.customcomponents.*;
 import com.nnamo.view.frame.MainFrame;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.FeedUpdateListener;
@@ -22,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -223,6 +221,11 @@ public class MainController {
             @Override
             public void onSwitch(RealtimeStatus newStatus) {
                 realtimeService.setRealtimeStatus(newStatus);
+                if (newStatus == RealtimeStatus.OFFLINE) {
+                    JOptionPane.showMessageDialog(null, "Couldn't connect to realtime feed. Switching to offline...",
+                            "Switching to offline...",
+                            JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
     }
