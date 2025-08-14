@@ -27,6 +27,7 @@ public class SearchPanel extends JPanel {
             STOP);
     CustomTable tableRoute = new CustomTable(
             new ColumnName[] { CODICE, TIPO, CAPOLINEA, DIREZIONE },
+            new ColumnName[] { DIREZIONE },
             ROUTE);
 
     // CONSTRUCTOR //

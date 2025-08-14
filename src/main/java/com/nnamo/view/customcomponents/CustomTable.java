@@ -73,8 +73,6 @@ public class CustomTable extends JPanel {
     // Constructor that supports hidden columns
     public CustomTable(ColumnName[] tableColumns, ColumnName[] hiddenColumns, DataType dataType) {
         this(tableColumns, dataType);
-/*        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        table.getTableHeader().setReorderingAllowed(false);*/
 
         for (ColumnName columnName : hiddenColumns) {
             int colIndex = Arrays.asList(tableColumns).indexOf(columnName);

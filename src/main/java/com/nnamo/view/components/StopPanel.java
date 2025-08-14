@@ -5,18 +5,16 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 import com.nnamo.enums.ColumnName;
-import com.nnamo.interfaces.FavoriteBehaviour;
 import com.nnamo.interfaces.TableCheckIsFavBehaviour;
 import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.TripModel;
 import com.nnamo.models.RealtimeStopUpdate;
+import com.nnamo.models.RouteDirection;
 import com.nnamo.view.customcomponents.CustomGbc;
 import com.nnamo.view.customcomponents.CustomInfoBar;
 import com.nnamo.view.customcomponents.CustomTable;
-import com.nnamo.view.customcomponents.CustomPreferButton;
-
 import java.awt.*;
 import java.time.LocalTime;
 import java.util.*;
@@ -64,15 +62,6 @@ public class StopPanel extends JPanel {
                         .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
                         .setInsets(2, 5, 2, 5));
 
-        /*
-         * // Buttons prefer
-         * JPanel PanelPrefer = newPanelPrefer();
-         * add(PanelPrefer,
-         * new CustomGbc().setPosition(2, 1).setAnchor(GridBagConstraints.EAST)
-         * .setFill(GridBagConstraints.BOTH).setWeight(0.1, 0.1)
-         * .setInsets(2, 5, 2, 5));
-         */
-
         setVisible(false);
     }
 
@@ -111,8 +100,11 @@ public class StopPanel extends JPanel {
         TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Tabella Linee");
         mainPanel.setBorder(titledBorder);
 
-        this.tableService = new CustomTable(new ColumnName[] { LINEA, DIREZIONE, TIPO }, ROUTE);
-        tableService.setSearchColumns(LINEA, DIREZIONE);
+        this.tableService = new CustomTable(
+                new ColumnName[] { LINEA, CODICE, TIPO, CAPOLINEA, DIREZIONE },
+                new ColumnName[] { DIREZIONE },
+                ROUTE);
+        tableService.setSearchColumns(LINEA);
         // Table
         mainPanel.add(tableService, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER)
                 .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
@@ -202,15 +194,18 @@ public class StopPanel extends JPanel {
 
         for (StopTimeModel stopTime : stopTimes) {
             TripModel trip = stopTime.getTrip();
-            trip.getDirection();
             RouteModel route = trip.getRoute();
-            List<String> routeInfo = Arrays.asList(route.getShortName(), trip.getHeadsign(),
-                    route.getType().toString());
-            uniqueRoutes.add(routeInfo);
+            uniqueRoutes.add(Arrays.asList(new String[] {
+                    route.getLongName() != null ? route.getLongName() : route.getShortName(),
+                    route.getId(),
+                    route.getType().toString(),
+                    trip.getHeadsign(),
+                    trip.getDirection().name()
+            }));
         }
 
-        for (List<String> routeInfo : uniqueRoutes) {
-            tableService.addRow(routeInfo.toArray());
+        for (List<String> routeData : uniqueRoutes) {
+            tableService.addRow(routeData.toArray());
         }
     }
 
