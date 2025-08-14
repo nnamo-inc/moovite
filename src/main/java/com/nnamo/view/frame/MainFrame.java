@@ -17,6 +17,7 @@ import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.RealtimeStopUpdate;
+import com.nnamo.models.RouteDirection;
 import com.nnamo.view.components.*;
 import org.jxmapviewer.viewer.GeoPosition;
 
@@ -46,7 +47,7 @@ public class MainFrame extends JFrame {
 
         // 1. Pannello che contiene PreferBar + Mappa + StopPanel
         JPanel rightPanel = new JPanel(new BorderLayout());
-        rightPanel.add(preferBar, BorderLayout.SOUTH);  // PreferBar sopra la mappa
+        rightPanel.add(preferBar, BorderLayout.SOUTH); // PreferBar sopra la mappa
 
         // 2. Split verticale tra mappa e stop panel
         splitMapStop = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mapPanel, stopPanel);
@@ -77,7 +78,8 @@ public class MainFrame extends JFrame {
         mapPanel.renderStops(stops);
     }
 
-    public void renderRouteLines(List<StopModel> stopModels, List<VehiclePosition> routePositions, String routeId, GeoPosition geoPosition, int zoomLevel) {
+    public void renderRouteLines(List<StopModel> stopModels, List<VehiclePosition> routePositions, String routeId,
+            GeoPosition geoPosition, int zoomLevel) {
         mapPanel.renderStopsRoute(stopModels);
         mapPanel.renderVehiclePositions(routePositions);
         mapPanel.repaintView();
@@ -146,7 +148,7 @@ public class MainFrame extends JFrame {
         leftPanel.updateModularPanel(panel, isVisible);
     }
 
-    public void initLeftPanelPreferPanelPreferTable(List<StopModel> stops, List<RouteModel> routes) {
+    public void initLeftPanelPreferPanelPreferTable(List<StopModel> stops, List<RouteDirection> routes) {
         leftPanel.initPreferPanelPreferTable(stops, routes);
     }
 
@@ -154,13 +156,14 @@ public class MainFrame extends JFrame {
         leftPanel.updateFavStopTable(stop, updateMode);
     }
 
-    public void updateFavRouteTable(RouteModel route, UpdateMode updateMode) {
+    public void updateFavRouteTable(List<RouteDirection> route, UpdateMode updateMode) {
         leftPanel.updateFavRouteTable(route, updateMode);
     }
 
     public void updatePreferButton(String itemId, boolean isFav, DataType dataType) {
         this.preferBar.updatePreferButton(itemId, isFav, dataType);
     }
+
     // GETTERS AND SETTERS //
     public MapPanel getMapPanel() {
         return mapPanel;

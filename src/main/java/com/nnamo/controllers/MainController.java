@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -241,7 +242,10 @@ public class MainController {
                         }
                         case ROUTE: {
                             db.addFavRoute(sessionUser.getId(), itemId);
-                            mainFrame.updateFavRouteTable(db.getRouteById(itemId), UpdateMode.ADD);
+                            RouteModel route = db.getRouteById(itemId);
+                            List<RouteModel> routeList = Arrays.asList(new RouteModel[] { route });
+                            List<RouteDirection> directionRoutes = db.getDirectionedRoutes(routeList);
+                            mainFrame.updateFavRouteTable(directionRoutes, UpdateMode.ADD);
                             mainFrame.updatePreferButton(itemId, true, DataType.ROUTE);
                             System.out.println(db.getFavoriteRoutes(sessionUser.getId()).stream().count());
                             break;
@@ -265,8 +269,11 @@ public class MainController {
                             break;
                         }
                         case ROUTE: {
+                            RouteModel route = db.getRouteById(itemId);
+                            List<RouteModel> routeList = Arrays.asList(new RouteModel[] { route });
+                            List<RouteDirection> directionRoutes = db.getDirectionedRoutes(routeList);
                             db.removeFavRoute(sessionUser.getId(), itemId);
-                            mainFrame.updateFavRouteTable(db.getRouteById(itemId), UpdateMode.REMOVE);
+                            mainFrame.updateFavRouteTable(directionRoutes, UpdateMode.REMOVE);
                             mainFrame.updatePreferButton(itemId, false, dataType);
                             System.out.println(db.getFavoriteRoutes(sessionUser.getId()).stream().count());
                             break;
@@ -422,7 +429,7 @@ public class MainController {
                     try {
                         mainFrame.initLeftPanelPreferPanelPreferTable(
                                 db.getFavoriteStops(sessionUser.getId()),
-                                db.getFavoriteRoutes(sessionUser.getId()));
+                                db.getFavoriteDirectionRoutes(sessionUser.getId()));
                         loaded = true;
                     } catch (SQLException e) {
                         throw new RuntimeException(e);

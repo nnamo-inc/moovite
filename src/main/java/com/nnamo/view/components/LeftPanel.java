@@ -9,6 +9,7 @@ import java.util.Objects;
 import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.enums.UpdateMode;
 import com.nnamo.interfaces.*;
+import com.nnamo.models.RouteDirection;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
 
@@ -24,7 +25,8 @@ public class LeftPanel extends JPanel {
             put(searchPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/search_small.png"))));
             put(preferPanel,
                     new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/favorite_small.png"))));
-            put(statsPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/statistics_small.png"))));
+            put(statsPanel,
+                    new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/statistics_small.png"))));
             put(settingsPanel,
                     new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/setting_small.png"))));
         }
@@ -59,11 +61,11 @@ public class LeftPanel extends JPanel {
         preferPanel.updateFavStopTable(stop, updateMode);
     }
 
-    public void updateFavRouteTable(RouteModel route, UpdateMode updateMode) {
+    public void updateFavRouteTable(List<RouteDirection> route, UpdateMode updateMode) {
         preferPanel.updateFavRouteTable(route, updateMode);
     }
 
-    public void initPreferPanelPreferTable(List<StopModel> stops, List<RouteModel> routes) {
+    public void initPreferPanelPreferTable(List<StopModel> stops, List<RouteDirection> routes) {
         preferPanel.initPreferTable(stops, routes);
     }
 
@@ -80,7 +82,9 @@ public class LeftPanel extends JPanel {
         return preferPanel;
     }
 
-    public StatisticsPanel getStatisticsPanel() { return statsPanel; }
+    public StatisticsPanel getStatisticsPanel() {
+        return statsPanel;
+    }
 
     public void setRealtimeStatus(RealtimeStatus status) {
         this.settingsPanel.setRealtimeStatus(status);
@@ -97,7 +101,6 @@ public class LeftPanel extends JPanel {
         searchPanel.setGenericTableRowClickBehaviour(listener);
         preferPanel.setGenericTableRowClickBehaviour(listener);
     }
-
 
     // Stop panel behaviour //
     public void setButtonPanelGeneralBehaviour(ButtonPanelBehaviour listener) {

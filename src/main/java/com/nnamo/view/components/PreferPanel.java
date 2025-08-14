@@ -4,6 +4,7 @@ import com.nnamo.enums.ColumnName;
 import com.nnamo.enums.UpdateMode;
 import com.nnamo.interfaces.TableCheckIsFavBehaviour;
 import com.nnamo.interfaces.TableRowClickBehaviour;
+import com.nnamo.models.RouteDirection;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
 import com.nnamo.view.customcomponents.CustomTable;
@@ -25,7 +26,7 @@ public class PreferPanel extends JPanel {
 
     JPanel routeContainer = new JPanel(new GridBagLayout());
     CustomTable routeTable = new CustomTable(
-            new ColumnName[] { LINEA, CODICE, TIPO, DIREZIONE },
+            new ColumnName[] { LINEA, CODICE, TIPO, CAPOLINEA, DIREZIONE },
             new ColumnName[] { DIREZIONE },
             ROUTE);
 
@@ -76,13 +77,11 @@ public class PreferPanel extends JPanel {
         this.routeTable.setTableCheckIsFavBehaviour(listener);
     }
 
-    public void initPreferTable(List<StopModel> stops, List<RouteModel> routes) {
+    public void initPreferTable(List<StopModel> stops, List<RouteDirection> directedRoutes) {
         for (StopModel stop : stops) {
             updateFavStopTable(stop, UpdateMode.ADD);
         }
-        for (RouteModel route : routes) {
-            updateFavRouteTable(route, UpdateMode.ADD);
-        }
+        updateFavRouteTable(directedRoutes, UpdateMode.ADD);
     }
 
     public void updateFavStopTable(StopModel stop, UpdateMode updateMode) {
@@ -96,18 +95,23 @@ public class PreferPanel extends JPanel {
         }
     }
 
-    public void updateFavRouteTable(RouteModel route, UpdateMode updateMode) {
-        switch (updateMode) {
-            case ADD:
-                routeTable.addRow(new Object[] {
-                        route.getLongName() != null ? route.getLongName() : route.getShortName(),
-                        route.getId(),
-                        route.getType(),
-                });
-                break;
-            case REMOVE:
-                routeTable.removeRow(route.getId());
-                break;
+    public void updateFavRouteTable(List<RouteDirection> directedRoutes, UpdateMode updateMode) {
+        for (RouteDirection route : directedRoutes) {
+            switch (updateMode) {
+                case ADD:
+                    routeTable.addRow(new Object[] {
+                            route.getLongName() != null ? route.getLongName() : route.getShortName(),
+                            route.getId(),
+                            route.getType(),
+                            route.getDirectionName(),
+                            route.getDirection().name(),
+
+                    });
+                    break;
+                case REMOVE:
+                    routeTable.removeRow(route.getId());
+                    break;
+            }
         }
     }
 

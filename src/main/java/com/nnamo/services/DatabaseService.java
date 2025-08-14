@@ -431,7 +431,11 @@ public class DatabaseService {
                 new SelectArg(SqlType.STRING, searchTerm));
 
         List<RouteModel> routes = queryBuilder.query();
+        return getDirectionedRoutes(routes);
+    }
 
+    // Returns routes for both directions
+    public List<RouteDirection> getDirectionedRoutes(List<RouteModel> routes) throws SQLException {
         // Add routes for both directions
         List<RouteDirection> result = new ArrayList<>();
         for (RouteModel route : routes) {
@@ -673,6 +677,11 @@ public class DatabaseService {
             routes.add(favorite.getRoute());
         }
         return routes;
+    }
+
+    public List<RouteDirection> getFavoriteDirectionRoutes(int userId) throws SQLException {
+        List<RouteModel> routes = getFavoriteRoutes(userId);
+        return getDirectionedRoutes(routes);
     }
 
     public boolean isFavouriteRoute(int userId, String routeId) throws SQLException {
