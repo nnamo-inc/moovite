@@ -105,7 +105,14 @@ public class StatisticsPanel extends JPanel {
         // add chart to the panel
         JPanel chartPanel = new JPanel(new BorderLayout());
         chartPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        chartPanel.add(new org.jfree.chart.ChartPanel(chart), BorderLayout.CENTER);
+
+        // Create ChartPanel with tooltips enabled
+        org.jfree.chart.ChartPanel jfreeChartPanel = new org.jfree.chart.ChartPanel(chart);
+        jfreeChartPanel.setMouseWheelEnabled(true);
+        jfreeChartPanel.setDomainZoomable(true);
+        jfreeChartPanel.setRangeZoomable(true);
+
+        chartPanel.add(jfreeChartPanel, BorderLayout.CENTER);
         add(chartPanel, new CustomGbc().setPosition(0, 2)
                 .setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 0.5)
@@ -268,7 +275,8 @@ public class StatisticsPanel extends JPanel {
     }
 
     private static XYLineAndShapeRenderer getXyLineAndShapeRenderer(TimeSeriesCollection dataset) {
-        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(true, false);
+        // Enable both lines and shapes (dots) - true, true
+        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(true, true);
 
         // Define bright colors for each series
         Color[] brightColors = {
@@ -286,6 +294,8 @@ public class StatisticsPanel extends JPanel {
         for (int i = 0; i < dataset.getSeriesCount(); i++) {
             renderer.setSeriesStroke(i, new BasicStroke(3.0f)); // Thick line (3.0f width)
             renderer.setSeriesPaint(i, brightColors[i % brightColors.length]);
+            // Set shape size for the dots
+            renderer.setSeriesShape(i, new java.awt.geom.Ellipse2D.Double(-3, -3, 6, 6));
         }
         return renderer;
     }
