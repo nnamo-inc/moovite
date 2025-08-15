@@ -1,6 +1,7 @@
 package com.nnamo.view.customcomponents.statistic;
 
 import com.google.transit.realtime.GtfsRealtime;
+import com.nnamo.enums.RealtimeMetricType;
 
 import java.awt.*;
 import java.util.List;
@@ -24,6 +25,11 @@ public class StatisticStoppedBus extends StatisticUnit {
             }
         }
         setValue(String.valueOf(busCount));
+        saveMetricToDatabase(busCount);
         repaint(); // Refresh the display
+    }
+
+    public RealtimeMetricType getMetricType() {
+        return RealtimeMetricType.STOPPED_BUS;
     }
 }

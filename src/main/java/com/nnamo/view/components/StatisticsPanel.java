@@ -1,5 +1,6 @@
 package com.nnamo.view.components;
 
+import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
 import com.nnamo.view.customcomponents.*;
 import com.nnamo.view.customcomponents.statistic.*;
@@ -7,6 +8,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.chart.ui.RectangleInsets;
+import org.jspecify.annotations.NonNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -198,6 +200,12 @@ public class StatisticsPanel extends JPanel {
 
         for (StatisticUnit tile : statisticTiles) {
             realtimeGtfsService.addListener(tile);
+        }
+    }
+
+    public void setupDatabaseService(@NonNull DatabaseService databaseService) {
+        for (StatisticUnit tile : statisticTiles) {
+            tile.setDatabaseService(databaseService);
         }
     }
 }

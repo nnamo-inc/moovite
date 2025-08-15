@@ -1,6 +1,7 @@
 package com.nnamo.view.customcomponents.statistic;
 
 import com.google.transit.realtime.GtfsRealtime;
+import com.nnamo.enums.RealtimeMetricType;
 
 import java.awt.*;
 import java.time.Duration;
@@ -30,6 +31,11 @@ public class StatisticPunctualBus extends StatisticUnit {
             }
         }
         setValue(String.valueOf(busCount));
+        saveMetricToDatabase(busCount);
         repaint(); // Refresh the display
+    }
+
+    public RealtimeMetricType getMetricType() {
+        return RealtimeMetricType.PUNCTUAL_BUS;
     }
 }

@@ -1,8 +1,11 @@
 package com.nnamo.view.customcomponents.statistic;
 
 import com.google.transit.realtime.GtfsRealtime;
+import com.nnamo.enums.RealtimeMetricType;
 import com.nnamo.interfaces.StatisticInterface;
+import com.nnamo.services.DatabaseService;
 import com.nnamo.services.FeedUpdateListener;
+import org.jspecify.annotations.NonNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,6 +16,8 @@ public abstract class StatisticUnit extends JLabel implements StatisticInterface
     private String value;
     private String unit;
     private final int CORNER_RADIUS = 15;
+
+    private DatabaseService databaseService;
 
     public StatisticUnit(String name, String unit, Color color) {
         super();
@@ -85,6 +90,25 @@ public abstract class StatisticUnit extends JLabel implements StatisticInterface
         this.value = value;
         this.setText("<html><div style='text-align: center; font-weight: bold;'>" + name + "<br><span style='font-size: 18px; font-weight: 900;'>" + value + "</span> <span style='font-size: 12px; font-weight: 600;'>" + unit + "</span></div></html>");
     }
+
+    public final void setDatabaseService(@NonNull DatabaseService databaseService) {
+        this.databaseService = databaseService;
+    }
+    public DatabaseService getDatabaseService() {
+        return databaseService;
+    }
+
+    protected void saveMetricToDatabase(int value) {
+        if (databaseService != null) {
+            try {
+                databaseService.saveMetric(getMetricType(), value);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public abstract RealtimeMetricType getMetricType();
 
     public abstract void onFeedUpdated(List<GtfsRealtime.FeedEntity> entities);
 }

@@ -55,6 +55,7 @@ public class MainController {
 
         mainFrame.getSearchPanel().addSearchListener(this::searchQueryListener);
         mainFrame.getLeftPanel().getStatisticsPanel().setupListeners(realtimeService);
+        mainFrame.getLeftPanel().getStatisticsPanel().setupDatabaseService(db);
 
         // Login and Session Fetching
         userController.addSessionListener(new SessionListener() { // [!] Listener must be implemented before run()

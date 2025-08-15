@@ -13,6 +13,7 @@ import com.j256.ormlite.stmt.SelectArg;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.table.TableUtils;
 import com.nnamo.enums.Direction;
+import com.nnamo.enums.RealtimeMetricType;
 import com.nnamo.enums.RouteType;
 import com.nnamo.models.*;
 import com.nnamo.utils.FuzzyMatch;
@@ -64,6 +65,7 @@ public class DatabaseService {
         this.daos.put(FavoriteRouteModel.class, DaoManager.createDao(connection, FavoriteRouteModel.class));
         this.daos.put(FavoriteStopModel.class, DaoManager.createDao(connection, FavoriteStopModel.class));
         this.daos.put(TripUpdateModel.class, DaoManager.createDao(connection, TripUpdateModel.class));
+        this.daos.put(RealtimeMetricModel.class, DaoManager.createDao(connection, RealtimeMetricModel.class));
     }
 
     private void initTables() throws SQLException {
@@ -77,6 +79,7 @@ public class DatabaseService {
         TableUtils.createTableIfNotExists(connection, FavoriteStopModel.class);
         TableUtils.createTableIfNotExists(connection, FavoriteRouteModel.class);
         TableUtils.createTableIfNotExists(connection, TripUpdateModel.class);
+        TableUtils.createTableIfNotExists(connection, RealtimeMetricModel.class);
     }
 
     public void preloadGtfsData(StaticGtfsService gtfs) throws SQLException, IOException, URISyntaxException {
@@ -788,6 +791,21 @@ public class DatabaseService {
             updates.add(new TripUpdateModel(routeModel, now, delay));
         }
         this.batchCreate(TripUpdateModel.class, updates);
+    }
+
+    public void saveMetric(RealtimeMetricType type, int value) throws SQLException {
+        Dao<RealtimeMetricModel, String> metricDao = getDao(RealtimeMetricModel.class);
+        RealtimeMetricModel metric = new RealtimeMetricModel(type, value, LocalDateTime.now());
+        metricDao.create(metric);
+    }
+
+    public List<RealtimeMetricModel> getMetrics(RealtimeMetricType type) throws SQLException {
+        Dao<RealtimeMetricModel, String> metricDao = getDao(RealtimeMetricModel.class);
+        return metricDao.queryBuilder()
+                .orderBy("created_at", false) // Order by created_at descending
+                .where()
+                .eq("type", type)
+                .query();
     }
 
     public <ID, MODEL> void batchCreateOrUpdate(Class<MODEL> modelClass, List<MODEL> data) {
