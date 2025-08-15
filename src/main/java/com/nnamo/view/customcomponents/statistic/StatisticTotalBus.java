@@ -20,8 +20,9 @@ public class StatisticTotalBus extends StatisticUnit {
             }
         }
         setValue(String.valueOf(busCount));
-        saveMetricToDatabase(busCount);
         repaint(); // Refresh the display
+        saveMetricToDatabase(busCount);
+        notifyStatisticUpdateListeners(busCount);
     }
 
     public RealtimeMetricType getMetricType() {

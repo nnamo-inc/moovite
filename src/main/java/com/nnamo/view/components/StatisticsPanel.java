@@ -1,5 +1,7 @@
 package com.nnamo.view.components;
 
+import com.nnamo.enums.RealtimeMetricType;
+import com.nnamo.models.RealtimeMetricModel;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
 import com.nnamo.view.customcomponents.*;
@@ -8,6 +10,11 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.chart.ui.RectangleInsets;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.time.Second;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 import org.jspecify.annotations.NonNull;
 
 import javax.swing.*;
@@ -23,12 +30,15 @@ public class StatisticsPanel extends JPanel {
     private static final int TILE_HEIGHT = 80;
     private static final int GAP = 10;
 
+    private DatabaseService databaseService;
+
     private StatisticTotalBus statBusTile = new StatisticTotalBus();
     private StatisticEarlyBus statEarlyBusTile = new StatisticEarlyBus();
     private StatisticLateBus statLateBusTile = new StatisticLateBus();
     private StatisticPunctualBus statPunctualBusTile = new StatisticPunctualBus();
     private StatisticStoppedBus statStoppedBusTile = new StatisticStoppedBus();
     private StatisticDetourBus statDetourBusTile = new StatisticDetourBus();
+    private JFreeChart chart;
 
     public StatisticsPanel() {
         super();
@@ -74,7 +84,7 @@ public class StatisticsPanel extends JPanel {
         this.addStatisticTile(statStoppedBusTile);
         this.addStatisticTile(statDetourBusTile);
 
-        JFreeChart chart = ChartFactory.createTimeSeriesChart(
+        this.chart = ChartFactory.createTimeSeriesChart(
                 "Historical Data",
                 "Date",
                 "Count",
@@ -203,9 +213,80 @@ public class StatisticsPanel extends JPanel {
         }
     }
 
+    private void setupMetricsListener(@NonNull StatisticUpdateListener listener) {
+        for (StatisticUnit tile : statisticTiles) {
+            tile.addStatisticUpdateListener(listener);
+        }
+    }
+
     public void setupDatabaseService(@NonNull DatabaseService databaseService) {
+        this.databaseService = databaseService;
+
         for (StatisticUnit tile : statisticTiles) {
             tile.setDatabaseService(databaseService);
         }
+
+        // get metrics from the db and paint the chart
+        try {
+            TimeSeriesCollection dataset = new TimeSeriesCollection();
+
+            for (RealtimeMetricType type : RealtimeMetricType.values()) {
+                String name = type.name().toLowerCase();
+                TimeSeries series = new TimeSeries(name);
+                java.util.List<RealtimeMetricModel> metrics = databaseService.getMetrics(type);
+                for (RealtimeMetricModel metric : metrics) {
+                    series.add(new Second(metric.getCreatedAt()), metric.getValue());
+                }
+                dataset.addSeries(series);
+            }
+
+            chart.getXYPlot().setDataset(dataset);
+
+            // Customize the renderer for thicker and brighter lines for each series
+            XYPlot plot = chart.getXYPlot();
+            XYLineAndShapeRenderer renderer = getXyLineAndShapeRenderer(dataset);
+
+            plot.setRenderer(renderer);
+
+            setupMetricsListener(
+                (type, value) -> {
+                    // Update the chart with the new value
+                    TimeSeries series = dataset.getSeries(type.name().toLowerCase());
+                    if (series != null) {
+                        series.addOrUpdate(new Second(), value);
+                    } else {
+                        series = new TimeSeries(type.name().toLowerCase());
+                        series.add(new Second(), value);
+                        dataset.addSeries(series);
+                    }
+                    chart.fireChartChanged(); // Refresh the chart
+                }
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static XYLineAndShapeRenderer getXyLineAndShapeRenderer(TimeSeriesCollection dataset) {
+        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(true, false);
+
+        // Define bright colors for each series
+        Color[] brightColors = {
+            new Color(255, 69, 0),    // Red-Orange
+            new Color(0, 191, 255),   // Deep Sky Blue
+            new Color(50, 205, 50),   // Lime Green
+            new Color(255, 20, 147),  // Deep Pink
+            new Color(255, 215, 0),   // Gold
+            new Color(138, 43, 226),  // Blue Violet
+            new Color(255, 140, 0),   // Dark Orange
+            new Color(0, 255, 127)    // Spring Green
+        };
+
+        // Apply thick strokes and bright colors to each series
+        for (int i = 0; i < dataset.getSeriesCount(); i++) {
+            renderer.setSeriesStroke(i, new BasicStroke(3.0f)); // Thick line (3.0f width)
+            renderer.setSeriesPaint(i, brightColors[i % brightColors.length]);
+        }
+        return renderer;
     }
 }

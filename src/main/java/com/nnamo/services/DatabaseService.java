@@ -802,7 +802,7 @@ public class DatabaseService {
     public List<RealtimeMetricModel> getMetrics(RealtimeMetricType type) throws SQLException {
         Dao<RealtimeMetricModel, String> metricDao = getDao(RealtimeMetricModel.class);
         return metricDao.queryBuilder()
-                .orderBy("created_at", false) // Order by created_at descending
+                .orderBy("createdAt", false) // Order by created_at descending
                 .where()
                 .eq("type", type)
                 .query();

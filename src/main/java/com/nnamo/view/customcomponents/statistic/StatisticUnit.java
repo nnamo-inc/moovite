@@ -18,6 +18,7 @@ public abstract class StatisticUnit extends JLabel implements StatisticInterface
     private final int CORNER_RADIUS = 15;
 
     private DatabaseService databaseService;
+    private final List<StatisticUpdateListener> listeners = new java.util.ArrayList<>();
 
     public StatisticUnit(String name, String unit, Color color) {
         super();
@@ -111,4 +112,14 @@ public abstract class StatisticUnit extends JLabel implements StatisticInterface
     public abstract RealtimeMetricType getMetricType();
 
     public abstract void onFeedUpdated(List<GtfsRealtime.FeedEntity> entities);
+
+    public void addStatisticUpdateListener(StatisticUpdateListener listener) {
+        listeners.add(listener);
+    }
+
+    public void notifyStatisticUpdateListeners(int value) {
+        for (StatisticUpdateListener listener : listeners) {
+            listener.onStatisticUpdated(this.getMetricType(), value);
+        }
+    }
 }
