@@ -26,8 +26,8 @@ import java.util.Vector;
 public class CustomTable extends JPanel {
 
     JTable table;
-    JButton resetSortingButton = new JButton("Reset Sorting");
-    CustomSearchBar customSearchBar = new CustomSearchBar();
+    JButton resetButton = new JButton("Reset Sorting");
+    CustomSearchBar searchBar = new CustomSearchBar();
 
     JScrollPane scrollPane;
     ColumnName[] tableColumns;
@@ -61,8 +61,8 @@ public class CustomTable extends JPanel {
         ListSelectionModel selectionModel = table.getSelectionModel();
         selectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        resetSortingButton.setBackground(CustomColor.RED);
-        add(resetSortingButton, BorderLayout.SOUTH);
+        resetButton.setBackground(CustomColor.RED);
+        add(resetButton, BorderLayout.SOUTH);
 
         checkSearchable();
         initDefaultComparator();
@@ -84,15 +84,7 @@ public class CustomTable extends JPanel {
         }
     }
 
-    public CustomTable(ColumnName[] tableColumns, ColumnName[] hiddenColumns, ColumnName[] columnSelect,
-            DataType dataType) {
-    }
-
     // METHODS //
-    public void clear() {
-        model.setRowCount(0);
-    }
-
     public void addRow(Object[] rowData) {
         model.addRow(rowData);
     }
@@ -106,15 +98,19 @@ public class CustomTable extends JPanel {
         }
     }
 
+    public void clear() {
+        model.setRowCount(0);
+    }
+
     private void checkSearchable() {
         if (isSearchable) {
-            add(customSearchBar, BorderLayout.NORTH);
+            add(searchBar, BorderLayout.NORTH);
         } else {
-            customSearchBar.setVisible(false);
+            searchBar.setVisible(false);
         }
     };
-
-    ////////////// COMPLETAMENTE FATTO CON AI //////////////
+    
+    ////////////// AI STUFF! //////////////
     private void initDefaultComparator() {
         Comparator<Object> comparator = (o1, o2) -> {
             String s1 = o1 == null ? "" : o1.toString().trim();
@@ -203,17 +199,37 @@ public class CustomTable extends JPanel {
             sorter.setComparator(i, comparator);
         }
     }
-
     // LISTENERS METHODS //
+
+    // BEHAVIOURS METHODS //
     public void initListeners() {
 
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+//        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+//            @Override
+//            public void valueChanged(ListSelectionEvent e) {
+//                if (!e.getValueIsAdjusting() && tableRowClickBehaviour != null) {
+//                    System.out.println("Row selection changed");
+//                    int selectedRow = table.getSelectedRow();
+//                    if (selectedRow != -1) {
+//                        int modelRow = table.convertRowIndexToModel(selectedRow);
+//                        rowData = (Vector<Object>) model.getDataVector().get(modelRow);
+//                        try {
+//                            tableRowClickBehaviour.onRowClick(rowData, tableColumns, dataType);
+//                        } catch (SQLException | IOException ex) {
+//                            throw new RuntimeException(ex);
+//                        }
+//                    }
+//                } else {
+//                    System.out.println("Row selection not changed or click behaviour not set");
+//                }
+//            }
+//        });
+
+        table.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting() && tableRowClickBehaviour != null) {
-                    System.out.println("Row selection changed");
-                    int selectedRow = table.getSelectedRow();
-                    if (selectedRow != -1) {
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                int selectedRow = table.getSelectedRow();
+                    if (selectedRow != -1 && tableRowClickBehaviour != null) {
                         int modelRow = table.convertRowIndexToModel(selectedRow);
                         rowData = (Vector<Object>) model.getDataVector().get(modelRow);
                         try {
@@ -222,13 +238,10 @@ public class CustomTable extends JPanel {
                             throw new RuntimeException(ex);
                         }
                     }
-                } else {
-                    System.out.println("Row selection not changed or click behaviour not set");
                 }
-            }
         });
 
-        resetSortingButton.addActionListener(new ActionListener() {
+        resetButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
                 sorter.setSortKeys(null);
@@ -237,10 +250,10 @@ public class CustomTable extends JPanel {
 
         if (isSearchable) {
 
-            customSearchBar.getField().addKeyListener(new KeyAdapter() {
+            searchBar.getField().addKeyListener(new KeyAdapter() {
                 @Override
                 public void keyReleased(KeyEvent e) {
-                    String searchText = customSearchBar.getFieldText().trim();
+                    String searchText = searchBar.getFieldText().trim();
                     if (searchText.isEmpty()) {
                         sorter.setRowFilter(null);
                     } else {
@@ -259,19 +272,27 @@ public class CustomTable extends JPanel {
                 }
             });
 
-            customSearchBar.getButton().addActionListener(new ActionListener() {
+            searchBar.getButton().addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    customSearchBar.setField("");
+                    searchBar.setField("");
                     sorter.setRowFilter(null);
                 }
             });
         }
     }
 
-    // LISTENERS METHODS //
     public void setRowClickBehaviour(TableRowClickBehaviour tableRowClickBehaviour) {
         this.tableRowClickBehaviour = tableRowClickBehaviour;
+    }
+
+    public void setTableCheckIsFavBehaviour(TableCheckIsFavBehaviour tableCheckIsFavBehaviour) {
+        this.tableCheckIsFavBehaviour = tableCheckIsFavBehaviour;
+    }
+
+    // GETTERS AND SETTERS //
+    public void setIsSearchable(boolean isSearchable) {
+        searchBar.setVisible(isSearchable);
     }
 
     public void setSearchColumns(ColumnName... columns) {
@@ -285,24 +306,7 @@ public class CustomTable extends JPanel {
         }
     }
 
-    public void setTableCheckIsFavBehaviour(TableCheckIsFavBehaviour tableCheckIsFavBehaviour) {
-        this.tableCheckIsFavBehaviour = tableCheckIsFavBehaviour;
-    }
-
-    // GETTERS AND SETTERS //
-    public void setIsSearchable(boolean isSearchable) {
-        customSearchBar.setVisible(isSearchable);
-    }
-
     public JTable getTable() {
         return table;
-    }
-
-    public DefaultTableModel getModel() {
-        return model;
-    }
-
-    public TableRowSorter getRowSorter() {
-        return sorter;
     }
 }
