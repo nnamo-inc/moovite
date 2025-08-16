@@ -22,13 +22,13 @@ import com.nnamo.view.components.*;
 import org.jxmapviewer.viewer.GeoPosition;
 
 public class MainFrame extends JFrame {
-    MapPanel mapPanel = new MapPanel();
-    StopPanel stopPanel = new StopPanel();
-    LeftPanel leftPanel = new LeftPanel();
-    PreferBar preferBar = new PreferBar();
+    private MapPanel mapPanel = new MapPanel();
+    private StopPanel stopPanel = new StopPanel();
+    private LeftPanel leftPanel = new LeftPanel();
+    private PreferBar preferBar = new PreferBar();
 
-    JSplitPane splitMapStop;
-    JSplitPane splitLeftMap;
+    private JSplitPane splitMapStop;
+    private JSplitPane splitLeftMap;
 
     public MainFrame() throws IOException {
         super("Moovite Map View");
