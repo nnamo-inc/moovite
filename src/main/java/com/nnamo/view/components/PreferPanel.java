@@ -145,4 +145,12 @@ public class PreferPanel extends JPanel {
         this.routeTable.setRowClickBehaviour(behaviour);
     }
 
+    public CustomTable getStopTable() {
+        return stopTable;
+    }
+
+    public CustomTable getRouteTable() {
+        return routeTable;
+    }
+
 }

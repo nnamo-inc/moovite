@@ -676,87 +676,61 @@ public class DatabaseService {
         return getFavoriteStops(user.getId());
     }
 
-    public boolean hasFavoriteStop(int userId) throws SQLException {
-        return getFavoriteStops(userId).size() >= 1;
+    public List<StopModel> getFavoriteStopsByName(int userId, String searchTerm, RouteType routeType) throws SQLException {
+        Dao<StopModel, String> stopDao = getDao(StopModel.class);
+        double scoreThresholdPercentage = 60;
+
+        String rawQuery = "SELECT s.* FROM stops s " +
+                "JOIN favorite_stops fs ON s.id = fs.stop_id " +
+                "WHERE fs.user_id = ? AND (" +
+                "s.id = ? OR " +
+                "s.id LIKE ? OR " +
+                "s.name LIKE ? OR " +
+                "FUZZY_SCORE(s.name, ?) > ?) " +
+                "ORDER BY FUZZY_SCORE(s.name, ?) DESC";
+
+        return stopDao.queryRaw(rawQuery, stopDao.getRawRowMapper(),
+                String.valueOf(userId), searchTerm, "%" + searchTerm + "%", "%" + searchTerm + "%",
+                searchTerm, String.valueOf(scoreThresholdPercentage), searchTerm).getResults();
     }
 
-    public boolean hasFavoriteStop(UserModel user) throws SQLException {
-        return hasFavoriteStop(user.getId());
-    }
-
-    public boolean isFavoriteStop(int userId, String stopId) throws SQLException {
-        Dao<FavoriteStopModel, String> favoriteStopDao = getDao(FavoriteStopModel.class);
-        var favorites = favoriteStopDao
-                .queryBuilder()
-                .where()
-                .eq("user_id", userId)
-                .and()
-                .eq("stop_id", stopId)
-                .query();
-
-        return !favorites.isEmpty();
-    }
-
-    public void addFavRoute(int userId, String routeId) throws SQLException {
-        Dao<FavoriteRouteModel, String> favoriteRouteDao = getDao(FavoriteRouteModel.class);
-        Dao<UserModel, Integer> userDao = getDao(UserModel.class);
+    public List<RouteDirection> getFavoriteRoutesByName(int userId, String searchTerm, RouteType routeType) throws SQLException {
         Dao<RouteModel, String> routeDao = getDao(RouteModel.class);
+        double scoreThresholdPercentage = 60;
 
-        UserModel user = userDao.queryForId(userId);
-        RouteModel route = routeDao.queryForId(routeId);
+        String rawQuery = "SELECT r.* FROM routes r " +
+                "JOIN favorite_routes fr ON r.id = fr.route_id " +
+                "WHERE fr.user_id = ? AND (" +
+                "r.id = ? OR " +
+                "r.id LIKE ? OR " +
+                "r.longname LIKE ? OR " +
+                "r.shortname LIKE ? OR " +
+                "FUZZY_SCORE(r.longname, ?) > ? OR " +
+                "FUZZY_SCORE(r.shortname, ?) > ?)";
 
-        if (user == null || route == null) {
-            return;
+        String orderBy = " ORDER BY CASE " +
+                "WHEN FUZZY_SCORE(r.shortname, ?) > FUZZY_SCORE(r.longname, ?) THEN FUZZY_SCORE(r.shortname, ?) " +
+                "ELSE FUZZY_SCORE(r.longname, ?) END DESC";
+
+        if (routeType != RouteType.ALL) {
+            rawQuery += " AND r.type = ?" + orderBy;
+            List<RouteModel> routes = routeDao.queryRaw(rawQuery, routeDao.getRawRowMapper(),
+                    String.valueOf(userId), searchTerm, "%" + searchTerm + "%", "%" + searchTerm + "%",
+                    "%" + searchTerm + "%", searchTerm, String.valueOf(scoreThresholdPercentage),
+                    searchTerm, String.valueOf(scoreThresholdPercentage), routeType.name(),
+                    searchTerm, searchTerm, searchTerm, searchTerm).getResults();
+            return getDirectionedRoutes(routes);
+        } else {
+            rawQuery += orderBy;
+            List<RouteModel> routes = routeDao.queryRaw(rawQuery, routeDao.getRawRowMapper(),
+                    String.valueOf(userId), searchTerm, "%" + searchTerm + "%", "%" + searchTerm + "%",
+                    "%" + searchTerm + "%", searchTerm, String.valueOf(scoreThresholdPercentage),
+                    searchTerm, String.valueOf(scoreThresholdPercentage),
+                    searchTerm, searchTerm, searchTerm, searchTerm).getResults();
+            return getDirectionedRoutes(routes);
         }
-
-        favoriteRouteDao.create(new FavoriteRouteModel(user, route));
     }
 
-    public void removeFavRoute(int userId, String routeId) throws SQLException {
-        Dao<FavoriteRouteModel, String> favoriteRouteDao = getDao(FavoriteRouteModel.class);
-
-        var deleteBuilder = favoriteRouteDao.deleteBuilder();
-        deleteBuilder
-                .where()
-                .eq("user_id", userId)
-                .and()
-                .eq("route_id", routeId);
-        deleteBuilder.delete();
-    }
-
-    public List<RouteModel> getFavoriteRoutes(int userId) throws SQLException {
-        Dao<FavoriteRouteModel, String> favoriteRouteDao = getDao(FavoriteRouteModel.class);
-
-        var favorites = favoriteRouteDao
-                .queryBuilder()
-                .where()
-                .eq("user_id", userId)
-                .query();
-
-        List<RouteModel> routes = new ArrayList<>();
-        for (FavoriteRouteModel favorite : favorites) {
-            routes.add(favorite.getRoute());
-        }
-        return routes;
-    }
-
-    public List<RouteDirection> getFavoriteDirectionRoutes(int userId) throws SQLException {
-        List<RouteModel> routes = getFavoriteRoutes(userId);
-        return getDirectionedRoutes(routes);
-    }
-
-    public boolean isFavouriteRoute(int userId, String routeId) throws SQLException {
-        Dao<FavoriteRouteModel, String> favoriteLineDao = getDao(FavoriteRouteModel.class);
-        var favorites = favoriteLineDao
-                .queryBuilder()
-                .where()
-                .eq("user_id", userId)
-                .and()
-                .eq("route_id", routeId)
-                .query();
-
-        return !favorites.isEmpty();
-    }
 
     public RouteModel getRouteById(String id) throws SQLException {
         Dao<RouteModel, String> routeDao = getDao(RouteModel.class);
@@ -899,5 +873,79 @@ public class DatabaseService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean isFavoriteStop(int userId, String stopId) throws SQLException {
+        Dao<FavoriteStopModel, String> favoriteStopDao = getDao(FavoriteStopModel.class);
+        var favorites = favoriteStopDao
+                .queryBuilder()
+                .where()
+                .eq("user_id", userId)
+                .and()
+                .eq("stop_id", stopId)
+                .query();
+
+        return !favorites.isEmpty();
+    }
+
+    public void addFavRoute(int userId, String routeId) throws SQLException {
+        Dao<FavoriteRouteModel, String> favoriteRouteDao = getDao(FavoriteRouteModel.class);
+        Dao<UserModel, Integer> userDao = getDao(UserModel.class);
+        Dao<RouteModel, String> routeDao = getDao(RouteModel.class);
+
+        UserModel user = userDao.queryForId(userId);
+        RouteModel route = routeDao.queryForId(routeId);
+
+        if (user == null || route == null) {
+            return;
+        }
+
+        favoriteRouteDao.create(new FavoriteRouteModel(user, route));
+    }
+
+    public void removeFavRoute(int userId, String routeId) throws SQLException {
+        Dao<FavoriteRouteModel, String> favoriteRouteDao = getDao(FavoriteRouteModel.class);
+
+        var deleteBuilder = favoriteRouteDao.deleteBuilder();
+        deleteBuilder
+                .where()
+                .eq("user_id", userId)
+                .and()
+                .eq("route_id", routeId);
+        deleteBuilder.delete();
+    }
+
+    public List<RouteModel> getFavoriteRoutes(int userId) throws SQLException {
+        Dao<FavoriteRouteModel, String> favoriteRouteDao = getDao(FavoriteRouteModel.class);
+
+        var favorites = favoriteRouteDao
+                .queryBuilder()
+                .where()
+                .eq("user_id", userId)
+                .query();
+
+        List<RouteModel> routes = new ArrayList<>();
+        for (FavoriteRouteModel favorite : favorites) {
+            routes.add(favorite.getRoute());
+        }
+        return routes;
+    }
+
+    public List<RouteDirection> getFavoriteDirectionRoutes(int userId) throws SQLException {
+        List<RouteModel> routes = getFavoriteRoutes(userId);
+        return getDirectionedRoutes(routes);
+    }
+
+    public boolean isFavouriteRoute(int userId, String routeId) throws SQLException {
+        Dao<FavoriteRouteModel, String> favoriteRouteDao = getDao(FavoriteRouteModel.class);
+        var favorites = favoriteRouteDao
+                .queryBuilder()
+                .where()
+                .eq("user_id", userId)
+                .and()
+                .eq("route_id", routeId)
+                .query();
+
+        return !favorites.isEmpty();
     }
 }
