@@ -529,17 +529,24 @@ public class DatabaseService {
 
         // Realtime trips are not filtered since some of those trips do not respect
         // service days
-        for (RealtimeStopUpdate tripUpdate : tripUpdates) {
-            String tripId = tripUpdate.getTripId();
-            StopTimeModel stopTime = stopTimeDao
-                    .queryBuilder()
-                    .where()
-                    .eq("trip_id", tripId)
-                    .queryForFirst();
-            if (stopTime != null && stopTimesMap.get(tripId) == null) {
-                System.out.println("Adding trip's " + tripId + " stoptime");
-                filteredStopTimes.add(stopTime);
-            }
+        try {
+            stopTimeDao.callBatchTasks(() -> {
+                for (RealtimeStopUpdate tripUpdate : tripUpdates) {
+                    String tripId = tripUpdate.getTripId();
+                    StopTimeModel stopTime = stopTimeDao
+                            .queryBuilder()
+                            .where()
+                            .eq("trip_id", tripId)
+                            .queryForFirst();
+                    if (stopTime != null && stopTimesMap.get(tripId) == null) {
+                        System.out.println("Adding trip's " + tripId + " stoptime");
+                        filteredStopTimes.add(stopTime);
+                    }
+                }
+                return null;
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return filteredStopTimes;
