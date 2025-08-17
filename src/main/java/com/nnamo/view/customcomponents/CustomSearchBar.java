@@ -11,20 +11,31 @@ import java.util.ArrayList;
 
 public class CustomSearchBar extends JPanel {
 
-    private final JTextField field = new JTextField(20);
-    private final JLabel label = new JLabel("Search:");
-    private final JButton button = new JButton("X");
-    private final ArrayList<SearchBarListener> listeners = new ArrayList<>();
+    private final GridBagLayout layout;
+    private ButtonGroup buttonGroup;
+    private ArrayList<JRadioButton> radioButtons;
+    private final JTextField field;
+    private final JLabel label;
+    private final JButton button;
+    private final ArrayList<SearchBarListener> listeners;
 
     // CONSTRUCTOR //
     public CustomSearchBar() {
         super();
-        setLayout(new GridBagLayout());
-        add(label, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.WEST).setWeight(0, 1.0).setInsets(5, 5, 5, 5));
-        add(field, new CustomGbc().setPosition(1, 0).setFill(GridBagConstraints.HORIZONTAL).setWeight(1.0, 0.0).setWeight(1.0, 1.0).setInsets(5, 5, 5, 5));
+        layout = new GridBagLayout();
+        setLayout(layout);
+        label = new JLabel("Search:");
+        add(label, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.WEST)
+                .setWeight(0.0, 1.0).setInsets(5, 5, 5, 5));
+        field = new JTextField(20);
+        add(field, new CustomGbc().setPosition(2, 0).setFill(GridBagConstraints.HORIZONTAL)
+                .setWeight(1.0, 0.0).setWeight(1.0, 1.0).setInsets(5, 5, 5, 5));
+        button = new JButton("X");
         button.setBackground(CustomColor.RED);
-        add(button, new CustomGbc().setPosition(2, 0).setAnchor(GridBagConstraints.EAST).setWeight(0, 0.0).setInsets(5, 5, 5, 5));
+        add(button, new CustomGbc().setPosition(3, 0).setAnchor(GridBagConstraints.EAST)
+                .setWeight(0.0, 0.0).setInsets(5, 5, 5, 5));
 
+        listeners = new ArrayList<>();
         field.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -39,6 +50,25 @@ public class CustomSearchBar extends JPanel {
                 notifyListeners("");
             }
         });
+    }
+
+    public CustomSearchBar(ArrayList<JRadioButton> radioButtons) {
+        this();
+        this.radioButtons = radioButtons;
+        JPanel radioButtonPanel = new JPanel();
+        radioButtonPanel.setLayout(new BoxLayout(radioButtonPanel, BoxLayout.X_AXIS));
+
+        this.buttonGroup = new ButtonGroup();
+        for (JRadioButton rb : radioButtons) {
+            buttonGroup.add(rb);
+            radioButtonPanel.add(rb);
+        }
+
+        JScrollPane scrollPane = new JScrollPane(radioButtonPanel);
+        scrollPane.setMinimumSize(new Dimension(Integer.MAX_VALUE, 40));
+
+        add(scrollPane, new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL)
+                .setWeight(1.0, 1.0).setWidth(4).setInsets(5, 5, 5, 5));
     }
 
     // LISTENER HANDLE //
@@ -57,12 +87,12 @@ public class CustomSearchBar extends JPanel {
     }
 
     // GETTERS AND SETTERS //
-    public void setField(String field) {
-        this.field.setText(field);
-    }
-
     public JTextField getField() {
         return field;
+    }
+
+    public void setField(String field) {
+        this.field.setText(field);
     }
 
     public String getFieldText() {

@@ -14,6 +14,7 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.nnamo.enums.ColumnName.*;
@@ -21,14 +22,9 @@ import static com.nnamo.enums.DataType.*;
 
 public class SearchPanel extends JPanel {
 
-    CustomSearchBar customSearchBar = new CustomSearchBar();
-    CustomTable tableStop = new CustomTable(
-            new ColumnName[] { CODICE, NOME },
-            STOP);
-    CustomTable tableRoute = new CustomTable(
-            new ColumnName[] { CODICE, TIPO, CAPOLINEA, DIREZIONE },
-            new ColumnName[] { DIREZIONE },
-            ROUTE);
+    CustomSearchBar customSearchBar;
+    CustomTable tableStop;
+    CustomTable tableRoute;
 
     // CONSTRUCTOR //
     public SearchPanel() {
@@ -43,10 +39,18 @@ public class SearchPanel extends JPanel {
                 .setInsets(5, 5, 5, 5));
 
         // search bar
+        ArrayList<JRadioButton> buttons = new ArrayList<>();
+        buttons.add(new JRadioButton("Stops"));
+        buttons.add(new JRadioButton("Routes"));
+        buttons.add(new JRadioButton("Example 1"));
+        buttons.add(new JRadioButton("Example 2"));
+
+        customSearchBar = new CustomSearchBar(buttons);
         add(customSearchBar,
                 new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL).setInsets(5, 5, 5, 5));
 
         // border for table stop and table stop
+        tableStop = new CustomTable(new ColumnName[] { CODICE, NOME }, STOP);
         TitledBorder tableStopBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Fermate");
         tableStop.setBorder(
                 BorderFactory.createCompoundBorder(tableStopBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
@@ -56,6 +60,7 @@ public class SearchPanel extends JPanel {
                 .setInsets(2, 5, 2, 5));
 
         // border for table route and table route
+        tableRoute = new CustomTable(new ColumnName[] { CODICE, TIPO, CAPOLINEA, DIREZIONE }, new ColumnName[] { DIREZIONE }, ROUTE);
         TitledBorder tableRouteBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Linee");
         tableRoute.setBorder(
                 BorderFactory.createCompoundBorder(tableRouteBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));

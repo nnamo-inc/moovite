@@ -96,6 +96,7 @@ public class MainController {
         // return; // Exit if the search text is empty
         // }
 
+
         var searchPanel = mainFrame.getSearchPanel();
         try {
             var stops = db.getStopsByName(searchText);
