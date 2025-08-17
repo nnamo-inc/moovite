@@ -41,6 +41,7 @@ public class MainController {
         mainFrame.renderStops(db.getAllStops());
 
         mainFrame.getSearchPanel().addSearchListener(this::searchQueryListener);
+        mainFrame.getLeftPanel().getPreferPanel().addSearchListener(this::searchQueryListener);
         mainFrame.getLeftPanel().getStatisticsPanel().setupListeners(realtimeService);
         mainFrame.getLeftPanel().getStatisticsPanel().setupDatabaseService(db);
 

@@ -2,11 +2,13 @@ package com.nnamo.view.components;
 
 import com.nnamo.enums.ColumnName;
 import com.nnamo.enums.UpdateMode;
+import com.nnamo.interfaces.SearchBarListener;
 import com.nnamo.interfaces.TableCheckIsFavBehaviour;
 import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.models.RouteDirection;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
+import com.nnamo.view.customcomponents.CustomSearchBar;
 import com.nnamo.view.customcomponents.CustomTable;
 import com.nnamo.view.customcomponents.CustomGbc;
 
@@ -14,21 +16,22 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.nnamo.enums.ColumnName.*;
 import static com.nnamo.enums.DataType.*;
+import static com.nnamo.enums.VehicleType.*;
 
 public class PreferPanel extends JPanel {
 
-    JPanel stopContainer = new JPanel(new GridBagLayout());
-    CustomTable stopTable = new CustomTable(new ColumnName[] { NOME, CODICE }, STOP);
+    CustomSearchBar customSearchBar;
 
-    JPanel routeContainer = new JPanel(new GridBagLayout());
-    CustomTable routeTable = new CustomTable(
-            new ColumnName[] { LINEA, CODICE, TIPO, CAPOLINEA, DIREZIONE },
-            new ColumnName[] { DIREZIONE },
-            ROUTE);
+    JPanel stopContainer;
+    CustomTable stopTable;
+
+    JPanel routeContainer;
+    CustomTable routeTable;
 
     // CONSTRUCTOR //
     public PreferPanel() {
@@ -42,31 +45,47 @@ public class PreferPanel extends JPanel {
                 .setAnchor(GridBagConstraints.NORTH)
                 .setInsets(5, 5, 5, 5));
 
-        // Table Stop
+        // Search Bar
+        ArrayList<JRadioButton> buttons = new ArrayList<>();
+        buttons.add(new JRadioButton(BUS.toString()));
+        buttons.add(new JRadioButton(TRAM.toString()));
+        customSearchBar = new CustomSearchBar(buttons);
+        add(customSearchBar,
+                new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL).setInsets(5, 5, 5, 5));
+
+        // Stop Table
+        stopContainer = new JPanel(new GridBagLayout());
         TitledBorder tableStopBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Fermate");
         stopContainer.setBorder(
                 BorderFactory.createCompoundBorder(tableStopBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
+
+        stopTable = new CustomTable(new ColumnName[] { NOME, CODICE }, STOP);
         stopTable.setSearchColumns(NOME, CODICE);
         stopContainer.add(stopTable, new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
-        routeTable.setSearchColumns(LINEA, CODICE);
-        add(stopContainer, new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.BOTH)
+        add(stopContainer, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
 
-        // Table Route
+        // Route Table
+        routeContainer = new JPanel(new GridBagLayout());
         TitledBorder tableRouteBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Linee");
-        routeContainer.setBorder(BorderFactory.createCompoundBorder(
-                tableRouteBorder,
-                BorderFactory.createEmptyBorder(2, 5, 2, 5)));
+        routeContainer.setBorder(BorderFactory.createCompoundBorder(tableRouteBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
+
+        routeTable = new CustomTable(new ColumnName[] { LINEA, CODICE, TIPO, CAPOLINEA, DIREZIONE }, new ColumnName[] { DIREZIONE }, ROUTE);
+        routeTable.setSearchColumns(LINEA, CODICE);
         routeContainer.add(routeTable, new CustomGbc().setPosition(0, 4).setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
-        add(routeContainer, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.BOTH)
+        add(routeContainer, new CustomGbc().setPosition(0, 3).setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
 
         setVisible(false);
     }
 
     // LISTENERS METHODS //
+    public void addSearchListener(SearchBarListener listener) {
+        this.customSearchBar.addSearchListener(listener);
+    }
+
     public void setGenericTableRowClickBehaviour(TableRowClickBehaviour listener) {
         this.stopTable.setRowClickBehaviour(listener);
         this.routeTable.setRowClickBehaviour(listener);

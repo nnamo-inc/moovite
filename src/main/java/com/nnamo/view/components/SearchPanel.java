@@ -19,6 +19,7 @@ import java.util.List;
 
 import static com.nnamo.enums.ColumnName.*;
 import static com.nnamo.enums.DataType.*;
+import static com.nnamo.enums.VehicleType.*;
 
 public class SearchPanel extends JPanel {
 
@@ -34,16 +35,13 @@ public class SearchPanel extends JPanel {
 
         JLabel titleLabel = new JLabel("Search");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        add(titleLabel, new CustomGbc().setPosition(0, 0)
-                .setAnchor(GridBagConstraints.NORTH)
+        add(titleLabel, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.NORTH)
                 .setInsets(5, 5, 5, 5));
 
         // search bar
         ArrayList<JRadioButton> buttons = new ArrayList<>();
-        buttons.add(new JRadioButton("Stops"));
-        buttons.add(new JRadioButton("Routes"));
-        buttons.add(new JRadioButton("Example 1"));
-        buttons.add(new JRadioButton("Example 2"));
+        buttons.add(new JRadioButton(BUS.toString()));
+        buttons.add(new JRadioButton(TRAM.toString()));
 
         customSearchBar = new CustomSearchBar(buttons);
         add(customSearchBar,
