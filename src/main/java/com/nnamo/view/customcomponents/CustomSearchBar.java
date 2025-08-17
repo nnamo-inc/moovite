@@ -63,6 +63,13 @@ public class CustomSearchBar extends JPanel {
         for (JRadioButton rb : radioButtons) {
             buttonGroup.add(rb);
             radioButtonPanel.add(rb);
+            // on button click notify listeners
+            rb.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    notifyListeners(field.getText());
+                }
+            });
         }
 
         JScrollPane scrollPane = new JScrollPane(radioButtonPanel);
