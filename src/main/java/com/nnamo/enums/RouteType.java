@@ -1,25 +1,32 @@
 package com.nnamo.enums;
 
 public enum RouteType {
-    TRAM("Tram"),
-    METRO("Metro"),
-    RAIL("Rail"),
     BUS("Bus"),
-    FERRY("Ferry"),
-    CABLE_TRAM("Cable Tram"),
-    AERIAL_LIFT("Aerial Lift"),
-    FUNICULAR("Funicular"),
-    TROLLEYBUS("Trolleybus"),
-    MONORAIL("Monorail");
+    TRAM("Tram"),
+    METRO("Metro");
 
-    private String name;
+    private String value;
 
-    RouteType(String name) {
-        this.name = name;
+    RouteType(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public static RouteType fromString(String value) {
+        for (RouteType type : RouteType.values()) {
+            if (type.value.equalsIgnoreCase(value)) {
+                return type;
+            }
+        }
+        throw new IllegalArgumentException("No enum constant for value: " + value);
     }
 
     @Override
     public String toString() {
-        return this.name;
+        return this.value;
     }
+
 }

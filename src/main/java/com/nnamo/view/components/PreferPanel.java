@@ -2,7 +2,7 @@ package com.nnamo.view.components;
 
 import com.nnamo.enums.ColumnName;
 import com.nnamo.enums.UpdateMode;
-import com.nnamo.enums.VehicleType;
+import com.nnamo.enums.RouteType;
 import com.nnamo.interfaces.SearchBarListener;
 import com.nnamo.interfaces.TableCheckIsFavBehaviour;
 import com.nnamo.interfaces.TableRowClickBehaviour;
@@ -22,7 +22,6 @@ import java.util.List;
 
 import static com.nnamo.enums.ColumnName.*;
 import static com.nnamo.enums.DataType.*;
-import static com.nnamo.enums.VehicleType.*;
 
 public class PreferPanel extends JPanel {
 
@@ -48,9 +47,9 @@ public class PreferPanel extends JPanel {
 
         // Search Bar
         ArrayList<JRadioButton> buttons = new ArrayList<>();
-        for (VehicleType type : VehicleType.values()) {
+        for (RouteType type : RouteType.values()) {
             JRadioButton button = new JRadioButton(type.getValue());
-            button.setSelected(type == VehicleType.BUS); // Default selected type
+            button.setSelected(type == RouteType.BUS); // Default selected type
             buttons.add(button);
         }
         customSearchBar = new CustomSearchBar(buttons);

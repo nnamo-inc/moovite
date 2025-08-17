@@ -401,7 +401,7 @@ public class DatabaseService {
         return queryBuilder.query();
     }
 
-    public List<RouteDirection> getRoutesByName(String searchTerm) throws SQLException {
+    public List<RouteDirection> getRoutesByName(String searchTerm, RouteType routeType) throws SQLException {
         Dao<RouteModel, String> routeDao = getDao(RouteModel.class);
         double scoreThresholdPercentage = 60;
 
@@ -425,6 +425,9 @@ public class DatabaseService {
                         "FUZZY_SCORE(shortname, ?) > ?",
                         new SelectArg(SqlType.STRING, searchTerm),
                         new SelectArg(SqlType.DOUBLE, scoreThresholdPercentage));
+
+        where.and().
+                eq("type", new SelectArg(SqlType.UNKNOWN, routeType));
 
         queryBuilder.orderByRaw(
                 "CASE " +

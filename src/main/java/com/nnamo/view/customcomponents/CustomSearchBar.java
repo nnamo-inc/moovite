@@ -1,5 +1,6 @@
 package com.nnamo.view.customcomponents;
 
+import com.nnamo.enums.RouteType;
 import com.nnamo.interfaces.SearchBarListener;
 import com.nnamo.utils.CustomColor;
 
@@ -82,8 +83,17 @@ public class CustomSearchBar extends JPanel {
 
     private void notifyListeners(String searchText) {
         for (SearchBarListener listener : listeners) {
-            listener.onSearch(searchText);
+            listener.onSearch(searchText, getSelectedRouteType());
         }
+    }
+
+    RouteType getSelectedRouteType() {
+        for (JRadioButton rb : radioButtons) {
+            if (rb.isSelected()) {
+                return RouteType.fromString(rb.getText());
+            }
+        }
+        return RouteType.BUS; // Default type if none selected
     }
 
     // GETTERS AND SETTERS //

@@ -84,14 +84,14 @@ public class MainController {
         mainFrame.setRealtimeStatus(RealtimeStatus.ONLINE); // Changing realtime status notifies the observer method,
 
         // Mostra tutte le fermate allo startup del programma.
-        this.searchQueryListener("");
+        this.searchQueryListener("", RouteType.BUS);
     }
 
     public void setLocalMapCache(File cacheDir) {
         mainFrame.setLocalMapCache(cacheDir);
     }
 
-    public void searchQueryListener(String searchText) {
+    public void searchQueryListener(String searchText, RouteType routeType) {
         // if (searchText == null || searchText.isEmpty()) {
         // mainFrame.getSearchPanel().updateView(new ArrayList<>());
         // return; // Exit if the search text is empty
@@ -101,7 +101,7 @@ public class MainController {
         var searchPanel = mainFrame.getSearchPanel();
         try {
             var stops = db.getStopsByName(searchText);
-            var routes = db.getRoutesByName(searchText);
+            var routes = db.getRoutesByName(searchText, routeType);
             searchPanel.updateView(stops, routes);
         } catch (SQLException e) {
             e.printStackTrace();
