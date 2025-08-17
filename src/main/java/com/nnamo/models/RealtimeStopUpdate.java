@@ -7,6 +7,7 @@ import java.time.ZoneOffset;
 
 import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate;
+import com.nnamo.utils.Utils;
 
 public class RealtimeStopUpdate {
     private final String tripId;
@@ -45,12 +46,11 @@ public class RealtimeStopUpdate {
     }
 
     public int getArrivalTime() {
-        long posixTime = timeUpdate.getArrival().getTime();
-        LocalDateTime dateTime = Instant
-                .ofEpochSecond(posixTime, 0)
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
-        return dateTime.toLocalTime().toSecondOfDay();
+        return Utils.posixToSecondsOfDay(timeUpdate.getArrival().getTime());
+    }
+
+    public int getDepartureTime() {
+        return Utils.posixToSecondsOfDay(timeUpdate.getDeparture().getTime());
     }
 
     public long getUpdateDelay() {

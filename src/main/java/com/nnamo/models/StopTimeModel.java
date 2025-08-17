@@ -3,6 +3,7 @@ package com.nnamo.models;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import com.nnamo.utils.Utils;
 
 @DatabaseTable(tableName = "stop_times")
 public class StopTimeModel {
@@ -16,11 +17,11 @@ public class StopTimeModel {
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private TripModel trip;
 
-    @DatabaseField(canBeNull = true)
-    private int arrival_time; // Seconds after midnight
+    @DatabaseField(columnName = "arrival_time", canBeNull = true)
+    private int arrivalTime; // Seconds after midnight
 
-    @DatabaseField(canBeNull = true)
-    private int departure_time; // Seconds after midnight
+    @DatabaseField(columnName = "departure_time", canBeNull = true)
+    private int departureTime; // Seconds after midnight
 
     public StopTimeModel() { // Empty constructor required by OrmLite
     }
@@ -28,8 +29,8 @@ public class StopTimeModel {
     public StopTimeModel(TripModel trip, StopModel stop, int arrival_time, int departure_time) {
         this.trip = trip;
         this.stop = stop;
-        this.arrival_time = arrival_time;
-        this.departure_time = departure_time;
+        this.arrivalTime = arrival_time;
+        this.departureTime = departure_time;
     }
 
     public int getId() {
@@ -45,19 +46,19 @@ public class StopTimeModel {
     }
 
     public int getArrivalTime() {
-        return arrival_time;
+        return arrivalTime;
     }
 
     public String getArrivalTimeAsStr() {
-        return String.format("%02d:%02d", arrival_time / 3600, (arrival_time % 3600) / 60);
+        return Utils.secondsOfDayToString(arrivalTime);
     }
 
     public int getDepartureTime() {
-        return departure_time;
+        return departureTime;
     }
 
     public String getDepartureTimeAsStr() {
-        return String.format("%02d:%02d", departure_time / 3600, (departure_time % 3600) / 60);
+        return Utils.secondsOfDayToString(departureTime);
     }
 
     @Override

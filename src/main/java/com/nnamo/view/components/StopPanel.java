@@ -166,6 +166,15 @@ public class StopPanel extends JPanel {
         tableRows.sort((row1, row2) -> {
             Object min1 = row1[4];
             Object min2 = row2[4];
+
+            // Handle "N/A" values - put them at the end
+            if ("N/A".equals(min1) && "N/A".equals(min2))
+                return 0;
+            if ("N/A".equals(min1))
+                return 1;
+            if ("N/A".equals(min2))
+                return -1;
+
             return Integer.compare((Integer) min1, (Integer) min2);
         });
 
