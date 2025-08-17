@@ -11,8 +11,9 @@ import java.util.ArrayList;
 
 public class CustomSwitchBar extends JPanel {
 
+    // ATTRIBUTES //
     private final JLabel label;
-    private final JButton button = new JButton("Toggle");
+    private JButton button;
     private final ArrayList<SwitchBarListener> listeners = new ArrayList<>();
 
     private RealtimeStatus status;
@@ -29,20 +30,15 @@ public class CustomSwitchBar extends JPanel {
     // METHODS //
     private void handleLayout() {
         setLayout(new GridBagLayout());
+        // Label
         add(label, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER).setWeight(1.0, 1.0)
                 .setInsets(2, 5, 2, 5));
+
+        // Button
+        button = new JButton("Toggle");;
         button.setMinimumSize(new Dimension(50, Integer.MAX_VALUE));
         add(button, new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL).setWeight(1.0, 1.0)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
-    }
-
-    private void handleActionListeners() {
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                toggleStatus();
-            }
-        });
     }
 
     public void toggleStatus() {
@@ -66,7 +62,16 @@ public class CustomSwitchBar extends JPanel {
         notifyListeners(status);
     }
 
-    // LISTENER HANDLE //
+    // BEHAVIOUR METHODS //
+    private void handleActionListeners() {
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                toggleStatus();
+            }
+        });
+    }
+
     private void notifyListeners(RealtimeStatus status) {
         for (SwitchBarListener listener : listeners) {
             listener.onSwitch(status);

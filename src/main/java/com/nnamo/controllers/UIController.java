@@ -64,7 +64,7 @@ public class UIController {
 
     public void setupTableBehavior() {
         mainFrame.setGenericTableRowClickBehaviour(createTableRowClickBehaviour());
-        mainFrame.getStopPanel().getTimeTable().setRowClickBehaviour(createRouteClickBehaviour());
+        mainFrame.getStopPanel().getTimeTable().setTableRowClickBehaviour(createRouteClickBehaviour());
     }
 
     public void setupFavoriteBehavior() {

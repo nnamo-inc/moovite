@@ -34,11 +34,12 @@ import java.util.List;
 import java.util.Set;
 
 public class MapPanel extends JPanel {
+
+    // ATTRIBUTES //
     private JXMapViewer map = new JXMapViewer();
-    private GeoPosition romePosition = new GeoPosition(41.902782, 12.496366);
+    private final GeoPosition ROMEPOSITION = new GeoPosition(41.902782, 12.496366);
     private DefaultTileFactory tileFactory;
 
-    // Waypoint painter and Map Painter
     private List<Painter<JXMapViewer>> stopsPaintersList;
     private List<Painter<JXMapViewer>> routePaintersList;
 
@@ -55,13 +56,12 @@ public class MapPanel extends JPanel {
     private ZoomBehaviour zoomBehaviour;
 
     private int currentZoomLimit; // Default zoom level
-    private final int stopsZoomLimit = 4;
-    private final int routeZoomLimit = 8;
+    private final int STOPSZOOMLIMIT = 4;
+    private final int ROUTESZOOMLIMIT = 8;
 
-    private JButton resetRouteButton = new JButton("Reset");
+    private JButton resetRouteButton;
     private List<StopModel> stops;
 
-    // Listener for waypoint clicks (Anonymous inner class in MapController)
     private WaypointBehaviour waypointBehaviour;
 
     public MapPanel() throws IOException {
@@ -69,10 +69,11 @@ public class MapPanel extends JPanel {
         tileFactory = new DefaultTileFactory(info);
         map.setTileFactory(tileFactory);
 
-        // Use 8 threads in parallel to load the tiles
-        tileFactory.setThreadPoolSize(8);
+        tileFactory.setThreadPoolSize(8); // Use 8 threads in parallel to load the tiles
 
-        map.setAddressLocation(this.romePosition);
+        map.setAddressLocation(this.ROMEPOSITION);
+        map.setZoom(7);
+
 
         // Rendering of stops and vehicle positions icons on the map
         this.stopPainter = new StopPainter(this.map);
@@ -92,7 +93,6 @@ public class MapPanel extends JPanel {
         setLayout(new BorderLayout());
         add(map, BorderLayout.CENTER);
 
-        // General Zoom Behaviour
         zoomBehaviour = (new ZoomBehaviour() {
             @Override
             public void onZoomChange(int zoomLevel) {
@@ -100,10 +100,28 @@ public class MapPanel extends JPanel {
                 repaintView();
             }
         });
-        setZoom(7);
 
-        this.resetRouteButton.setVisible(false); // Hidden by default
-        this.resetRouteButton.addActionListener(new ActionListener() {
+        resetRouteButton = new JButton("Reset");
+        this.resetRouteButton.setVisible(false);
+
+        add(resetRouteButton, BorderLayout.SOUTH);
+        initListeners();
+    }
+
+    // BEHAVIOUR METHODS //
+    private void initListeners() {
+        PanMouseInputListener mouseClick = new PanMouseInputListener(map);
+        this.map.addMouseListener(mouseClick);
+        this.map.addMouseMotionListener(mouseClick);
+        this.map.addMouseWheelListener(new ZoomMouseWheelListenerCursor(map) {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                super.mouseWheelMoved(e);
+                zoomBehaviour.onZoomChange(map.getZoom());
+            }
+        });
+
+        resetRouteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (stops != null)
@@ -112,10 +130,27 @@ public class MapPanel extends JPanel {
                 repaintView();
             }
         });
-        add(resetRouteButton, BorderLayout.SOUTH);
 
-        handleMouseListeners();
-        clickOnWaypoint();
+        this.map.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (waypointBehaviour != null && map.getZoom() <= currentZoomLimit) {
+                    try {
+                        GeoPosition geo = map.convertPointToGeoPosition(new Point(e.getX(), e.getY()));
+                        waypointBehaviour.onWaypointClick(geo, true);
+                    } catch (SQLException | IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                } else {
+                    try {
+                        waypointBehaviour.onWaypointClick(null, true);
+                    } catch (SQLException | IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+        });
+
     }
 
     // METHODS //
@@ -137,17 +172,9 @@ public class MapPanel extends JPanel {
         updateOverlayPainter();
     }
 
-    public void repaintView(boolean isLive) {
-        super.repaint();
-        routeStopPainter.repaint();
-        stopPainter.repaint();
-        positionPainter.repaint();
-        this.stopsCompoundPainter.setPainters(this.stopsPaintersList);
-    }
-
     private void updateCurrentCompoundPainter(CompoundPainter<JXMapViewer> painter) {
         System.out.println("Updated compound painter");
-        this.currentZoomLimit = (painter == stopsCompoundPainter) ? stopsZoomLimit : routeZoomLimit;
+        this.currentZoomLimit = (painter == stopsCompoundPainter) ? STOPSZOOMLIMIT : ROUTESZOOMLIMIT;
         this.currentPainter = painter;
 
         if (painter == routeCompoundPainter) {
@@ -206,15 +233,6 @@ public class MapPanel extends JPanel {
         repaintView();
     }
 
-    public String getCurrentRouteId() {
-        return this.currentRouteId;
-    }
-
-    public void setCurrentRouteId(String routeId) {
-        System.out.println("Updated current route id to " + routeId);
-        this.currentRouteId = routeId;
-    }
-
     public void renderVehiclePositions(List<VehiclePosition> positions) {
         Set<Waypoint> waypoints = new HashSet<Waypoint>();
         for (VehiclePosition vehiclePosition : positions) {
@@ -228,7 +246,6 @@ public class MapPanel extends JPanel {
         repaintView();
     }
 
-    // Easily create painters list
     @SafeVarargs
     private List<Painter<JXMapViewer>> createPaintersList(Painter<JXMapViewer>... painters) {
         List<Painter<JXMapViewer>> paintersList = new ArrayList<Painter<JXMapViewer>>();
@@ -238,56 +255,27 @@ public class MapPanel extends JPanel {
         return paintersList;
     }
 
-    // Set the map to be draggable and zoomable with mouse and wheel listeners
-    private void handleMouseListeners() throws IOException {
-        PanMouseInputListener mouseClick = new PanMouseInputListener(map);
-        this.map.addMouseListener(mouseClick);
-        this.map.addMouseMotionListener(mouseClick);
-        this.map.addMouseWheelListener(new ZoomMouseWheelListenerCursor(map) {
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                super.mouseWheelMoved(e);
-                zoomBehaviour.onZoomChange(map.getZoom());
-            }
-        });
-    }
-
-    private void clickOnWaypoint() {
-        // Add a personalized mouse listener to the map with an anonymous inner class
-        // to handle clicks on waypoints only if the zoom level is less than 4
-        this.map.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (waypointBehaviour != null && map.getZoom() <= currentZoomLimit) {
-                    try {
-                        GeoPosition geo = map.convertPointToGeoPosition(new Point(e.getX(), e.getY()));
-                        waypointBehaviour.onWaypointClick(geo, true);
-                    } catch (SQLException | IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                } else {
-                    try {
-                        waypointBehaviour.onWaypointClick(null, true);
-                    } catch (SQLException | IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                }
-            }
-        });
-    }
-
-    public void setMapPanelMapPosition(GeoPosition geoPosition, int zoomLevel) {
-        this.map.setAddressLocation(geoPosition);
-        this.setZoom(zoomLevel);
-    }
-
     // GETTERS AND SETTERS //
+    public String getCurrentRouteId() {
+        return this.currentRouteId;
+    }
+
+    public void setCurrentRouteId(String routeId) {
+        System.out.println("Updated current route id to " + routeId);
+        this.currentRouteId = routeId;
+    }
+
     public JXMapViewer getMap() {
         return map;
     }
 
     public StopPainter getStopPainter() {
         return this.stopPainter;
+    }
+
+    public void setMapPanelMapPosition(GeoPosition geoPosition, int zoomLevel) {
+        this.map.setAddressLocation(geoPosition);
+        this.setZoom(zoomLevel);
     }
 
     public void setClickWaypointBehaviour(WaypointBehaviour waypointBehaviour) {
@@ -299,14 +287,6 @@ public class MapPanel extends JPanel {
         if (zoomBehaviour != null) {
             zoomBehaviour.onZoomChange(zoomLevel);
         }
-    }
-
-    public void increaseZoom(int offset) {
-        this.setZoom(map.getZoom() + offset);
-    }
-
-    public void decreaseZoom(int offset) {
-        this.setZoom(map.getZoom() - offset);
     }
 
     public void setLocalMapCache(File cacheDir) {

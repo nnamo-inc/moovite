@@ -4,10 +4,8 @@ import com.nnamo.enums.ColumnName;
 import com.nnamo.enums.UpdateMode;
 import com.nnamo.enums.RouteType;
 import com.nnamo.interfaces.SearchBarListener;
-import com.nnamo.interfaces.TableCheckIsFavBehaviour;
 import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.models.RouteDirection;
-import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
 import com.nnamo.view.customcomponents.CustomSearchBar;
 import com.nnamo.view.customcomponents.CustomTable;
@@ -25,12 +23,9 @@ import static com.nnamo.enums.DataType.*;
 
 public class PreferPanel extends JPanel {
 
-    CustomSearchBar customSearchBar;
-
-    JPanel stopContainer;
+    // ATTRIBUTES //
+    CustomSearchBar searchBar;
     CustomTable stopTable;
-
-    JPanel routeContainer;
     CustomTable routeTable;
 
     // CONSTRUCTOR //
@@ -39,11 +34,11 @@ public class PreferPanel extends JPanel {
         setLayout(new GridBagLayout());
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        JLabel titleLabel = new JLabel("Favorites");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        add(titleLabel, new CustomGbc().setPosition(0, 0)
-                .setAnchor(GridBagConstraints.NORTH)
-                .setInsets(5, 5, 5, 5));
+        // Title Label
+        createTitleBar();
+
+        // Search Bar
+        createSearchBar();
 
         // Search Bar
         ArrayList<JRadioButton> buttons = new ArrayList<>();
@@ -52,51 +47,51 @@ public class PreferPanel extends JPanel {
             button.setSelected(type == RouteType.ALL); // Default selected type
             buttons.add(button);
         }
-        customSearchBar = new CustomSearchBar(buttons);
-        add(customSearchBar,
+        searchBar = new CustomSearchBar(buttons);
+        add(searchBar,
                 new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL).setInsets(5, 5, 5, 5));
 
         // Stop Table
-        stopContainer = new JPanel(new GridBagLayout());
+        stopTable = new CustomTable(new ColumnName[] { NOME, CODICE },
+                STOP);
         TitledBorder tableStopBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Fermate");
-        stopContainer.setBorder(
+        stopTable.setBorder(
                 BorderFactory.createCompoundBorder(tableStopBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
-
-        stopTable = new CustomTable(new ColumnName[] { NOME, CODICE }, STOP);
-        stopTable.setSearchColumns(NOME, CODICE);
-        stopContainer.add(stopTable, new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.BOTH)
-                .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
-        add(stopContainer, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.BOTH)
+        add(stopTable, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
 
         // Route Table
-        routeContainer = new JPanel(new GridBagLayout());
+        routeTable = new CustomTable(new ColumnName[] { LINEA, CODICE, TIPO, CAPOLINEA, DIREZIONE },
+                new ColumnName[] { DIREZIONE },
+                ROUTE);
         TitledBorder tableRouteBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Linee");
-        routeContainer.setBorder(BorderFactory.createCompoundBorder(tableRouteBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
-
-        routeTable = new CustomTable(new ColumnName[] { LINEA, CODICE, TIPO, CAPOLINEA, DIREZIONE }, new ColumnName[] { DIREZIONE }, ROUTE);
-        routeTable.setSearchColumns(LINEA, CODICE);
-        routeContainer.add(routeTable, new CustomGbc().setPosition(0, 4).setFill(GridBagConstraints.BOTH)
-                .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
-        add(routeContainer, new CustomGbc().setPosition(0, 3).setFill(GridBagConstraints.BOTH)
+        routeTable.setBorder(BorderFactory.createCompoundBorder(tableRouteBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
+        add(routeTable, new CustomGbc().setPosition(0, 3).setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
 
         setVisible(false);
     }
 
-    // LISTENERS METHODS //
-    public void addSearchListener(SearchBarListener listener) {
-        this.customSearchBar.addSearchListener(listener);
+    // METHODS //
+    private void createTitleBar() {
+        JLabel titleLabel = new JLabel("Favorites");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        add(titleLabel, new CustomGbc().setPosition(0, 0)
+                .setAnchor(GridBagConstraints.NORTH)
+                .setInsets(5, 5, 5, 5));
     }
 
-    public void setGenericTableRowClickBehaviour(TableRowClickBehaviour listener) {
-        this.stopTable.setRowClickBehaviour(listener);
-        this.routeTable.setRowClickBehaviour(listener);
-    }
+    private void createSearchBar() {
+        ArrayList<JRadioButton> buttons = new ArrayList<>();
+        for (RouteType type : RouteType.values()) {
+            JRadioButton button = new JRadioButton(type.getValue());
+            button.setSelected(type == RouteType.ALL); // Default selected type
+            buttons.add(button);
+        }
+        searchBar = new CustomSearchBar(buttons);
 
-    public void setTableCheckIsFavBehaviour(TableCheckIsFavBehaviour listener) {
-        this.stopTable.setTableCheckIsFavBehaviour(listener);
-        this.routeTable.setTableCheckIsFavBehaviour(listener);
+        searchBar = new CustomSearchBar(buttons);
+        add(searchBar, new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL).setInsets(5, 5, 5, 5));
     }
 
     public void initPreferTable(List<StopModel> stops, List<RouteDirection> directedRoutes) {
@@ -137,14 +132,17 @@ public class PreferPanel extends JPanel {
         }
     }
 
-    public void setFavStopRowClickBehaviour(TableRowClickBehaviour behaviour) {
-        this.stopTable.setRowClickBehaviour(behaviour);
+    // BEHAVIOUR METHODS //
+    public void addSearchListener(SearchBarListener listener) {
+        this.searchBar.addSearchListener(listener);
     }
 
-    public void setFavRouteRowClickBehaviour(TableRowClickBehaviour behaviour) {
-        this.routeTable.setRowClickBehaviour(behaviour);
+    public void setTableRowClickBehaviour(TableRowClickBehaviour listener) {
+        this.stopTable.setTableRowClickBehaviour(listener);
+        this.routeTable.setTableRowClickBehaviour(listener);
     }
 
+    // GETTERS AND SETTERS //
     public CustomTable getStopTable() {
         return stopTable;
     }

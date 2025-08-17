@@ -7,8 +7,6 @@ import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.utils.CustomColor;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
@@ -26,17 +24,17 @@ import java.util.Vector;
 public class CustomTable extends JPanel {
 
     JTable table;
-    JButton resetButton = new JButton("Reset Sorting");
-    CustomSearchBar searchBar = new CustomSearchBar();
+    JButton resetButton;
+    CustomSearchBar searchBar;
 
     JScrollPane scrollPane;
     ColumnName[] tableColumns;
     DataType dataType;
-    ArrayList<ColumnName> searchColumns = new ArrayList<>();
+    ArrayList<ColumnName> searchColumns;
     DefaultTableModel model;
     TableRowSorter sorter;
     Vector<Object> rowData;
-    boolean isSearchable = true;
+    private boolean isSearchable = true;
 
     TableRowClickBehaviour tableRowClickBehaviour;
     TableCheckIsFavBehaviour tableCheckIsFavBehaviour;
@@ -61,16 +59,34 @@ public class CustomTable extends JPanel {
         ListSelectionModel selectionModel = table.getSelectionModel();
         selectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
+        resetButton = new JButton("Reset Sorting");
         resetButton.setBackground(CustomColor.RED);
         add(resetButton, BorderLayout.SOUTH);
 
-        checkSearchable();
         initDefaultComparator();
+        isSearchable = false;
         initListeners();
-
     }
 
-    // Constructor that supports hidden columns
+    public CustomTable(ColumnName[] tableColumns, ColumnName[] hiddenColumns, ColumnName[] searchColumn, DataType dataType) {
+        this(tableColumns, dataType);
+
+        searchBar = new CustomSearchBar();
+        searchColumns = new ArrayList<>();
+        setSearchColumns(searchColumn);
+        searchBar.setVisible(true);
+        add(searchBar, BorderLayout.NORTH);
+
+        for (ColumnName columnName : hiddenColumns) {
+            int colIndex = Arrays.asList(tableColumns).indexOf(columnName);
+            var column = table.getColumnModel().getColumn(colIndex);
+            if (column != null) {
+                table.removeColumn(column);
+                System.out.println((String) column.getHeaderValue());
+            }
+        }
+    }
+
     public CustomTable(ColumnName[] tableColumns, ColumnName[] hiddenColumns, DataType dataType) {
         this(tableColumns, dataType);
 
@@ -101,14 +117,6 @@ public class CustomTable extends JPanel {
     public void clear() {
         model.setRowCount(0);
     }
-
-    private void checkSearchable() {
-        if (isSearchable) {
-            add(searchBar, BorderLayout.NORTH);
-        } else {
-            searchBar.setVisible(false);
-        }
-    };
     
     ////////////// AI STUFF! //////////////
     private void initDefaultComparator() {
@@ -199,31 +207,9 @@ public class CustomTable extends JPanel {
             sorter.setComparator(i, comparator);
         }
     }
-    // LISTENERS METHODS //
 
     // BEHAVIOURS METHODS //
     public void initListeners() {
-
-//        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-//            @Override
-//            public void valueChanged(ListSelectionEvent e) {
-//                if (!e.getValueIsAdjusting() && tableRowClickBehaviour != null) {
-//                    System.out.println("Row selection changed");
-//                    int selectedRow = table.getSelectedRow();
-//                    if (selectedRow != -1) {
-//                        int modelRow = table.convertRowIndexToModel(selectedRow);
-//                        rowData = (Vector<Object>) model.getDataVector().get(modelRow);
-//                        try {
-//                            tableRowClickBehaviour.onRowClick(rowData, tableColumns, dataType);
-//                        } catch (SQLException | IOException ex) {
-//                            throw new RuntimeException(ex);
-//                        }
-//                    }
-//                } else {
-//                    System.out.println("Row selection not changed or click behaviour not set");
-//                }
-//            }
-//        });
 
         table.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -282,7 +268,7 @@ public class CustomTable extends JPanel {
         }
     }
 
-    public void setRowClickBehaviour(TableRowClickBehaviour tableRowClickBehaviour) {
+    public void setTableRowClickBehaviour(TableRowClickBehaviour tableRowClickBehaviour) {
         this.tableRowClickBehaviour = tableRowClickBehaviour;
     }
 

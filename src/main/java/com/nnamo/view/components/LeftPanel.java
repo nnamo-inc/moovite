@@ -10,35 +10,45 @@ import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.enums.UpdateMode;
 import com.nnamo.interfaces.*;
 import com.nnamo.models.RouteDirection;
-import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
 
 public class LeftPanel extends JPanel {
-    private JPanel modularPanel = new JPanel(new BorderLayout());
-    private SearchPanel searchPanel = new SearchPanel();
-    private PreferPanel preferPanel = new PreferPanel();
-    private StatisticsPanel statsPanel = new StatisticsPanel();
-    private SettingsPanel settingsPanel = new SettingsPanel();
 
-    ButtonPanel buttonPanel = new ButtonPanel(new LinkedHashMap<>() {
-        {
-            put(searchPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/search_small.png"))));
-            put(preferPanel,
-                    new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/favorite_small.png"))));
-            put(statsPanel,
-                    new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/statistics_small.png"))));
-            put(settingsPanel,
-                    new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/setting_small.png"))));
-        }
-    });
+    // ATTRIBUTES //
+    private SearchPanel searchPanel;
+    private PreferPanel preferPanel;
+    private StatisticsPanel statsPanel;
+    private SettingsPanel settingsPanel;
+
+    private JPanel modularPanel;
+    private ButtonPanel buttonPanel;
 
     // CONSTRUCTOR //
     public LeftPanel() {
         setLayout(new BorderLayout());
 
+        buttonPanel = new ButtonPanel(new LinkedHashMap<>() {
+            {
+                searchPanel = new SearchPanel();
+                put(searchPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/search_small.png"))));
+
+                preferPanel = new PreferPanel();
+                put(preferPanel,
+                        new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/favorite_small.png"))));
+
+                statsPanel = new StatisticsPanel();
+                put(statsPanel,
+                        new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/statistics_small.png"))));
+
+                settingsPanel = new SettingsPanel();
+                put(settingsPanel,
+                        new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/setting_small.png"))));
+            }
+        });
+
+        modularPanel = new JPanel(new BorderLayout());
         add(modularPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.WEST);
-
     }
 
     // METHODS //
@@ -46,27 +56,18 @@ public class LeftPanel extends JPanel {
         for (Component comp : modularPanel.getComponents()) {
             comp.setVisible(false);
         }
+
         modularPanel.removeAll();
+
         if (isVisible) {
             modularPanel.add(panel, BorderLayout.CENTER);
             panel.setVisible(true);
         } else {
             panel.setVisible(false);
         }
+
         modularPanel.revalidate();
         modularPanel.repaint();
-    }
-
-    public void updateFavStopTable(StopModel stop, UpdateMode updateMode) {
-        preferPanel.updateFavStopTable(stop, updateMode);
-    }
-
-    public void updateFavRouteTable(List<RouteDirection> route, UpdateMode updateMode) {
-        preferPanel.updateFavRouteTable(route, updateMode);
-    }
-
-    public void initPreferPanelPreferTable(List<StopModel> stops, List<RouteDirection> routes) {
-        preferPanel.initPreferTable(stops, routes);
     }
 
     // GETTERS AND SETTERS //
@@ -90,19 +91,12 @@ public class LeftPanel extends JPanel {
         this.settingsPanel.setRealtimeStatus(status);
     }
 
-    // BEHAVIOUR //
-
-    public void setTableCheckIsFavBehaviour(TableCheckIsFavBehaviour listener) {
-        this.searchPanel.setTableCheckIsFavBehaviour(listener);
-        this.preferPanel.setTableCheckIsFavBehaviour(listener);
+    // BEHAVIOURS METHODS //
+    public void setTableRowClickBehaviour(TableRowClickBehaviour listener) {
+        searchPanel.setTableRowClickBehaviour(listener);
+        preferPanel.setTableRowClickBehaviour(listener);
     }
 
-    public void setGenericTableRowClickBehaviour(TableRowClickBehaviour listener) {
-        searchPanel.setGenericTableRowClickBehaviour(listener);
-        preferPanel.setGenericTableRowClickBehaviour(listener);
-    }
-
-    // Stop panel behaviour //
     public void setButtonPanelGeneralBehaviour(ButtonPanelBehaviour listener) {
         this.buttonPanel.setButtonPanelBehaviour(listener);
     }
@@ -111,30 +105,25 @@ public class LeftPanel extends JPanel {
         this.buttonPanel.setButtonPanelBehaviour(listener);
     }
 
-    // Search panel behaviour //
-    public void setSearchStopRowClickBehaviour(TableRowClickBehaviour listener) {
-        this.searchPanel.setSearchStopRowClickBehaviour(listener);
-    }
-
-    public void setSearchRouteRowClickBehaviour(TableRowClickBehaviour listener) {
-        this.searchPanel.setSearchRouteRowClickBehaviour(listener);
-    }
-
-    // Prefer panel behaviour //
-    public void setFavStopRowClickBehaviour(TableRowClickBehaviour behaviour) {
-        this.preferPanel.setFavStopRowClickBehaviour(behaviour);
-    }
-
-    public void setFavRouteRowClickBehaviour(TableRowClickBehaviour behaviour) {
-        this.preferPanel.setFavRouteRowClickBehaviour(behaviour);
+    public void setLogoutBehaviour(LogoutBehaviour behaviour) {
+        settingsPanel.setLogoutBehaviour(behaviour);
     }
 
     public void setRealtimeSwitchListener(SwitchBarListener listener) {
         this.settingsPanel.setRealtimeSwitchListener(listener);
     }
 
-    public void setLogoutBehaviour(LogoutBehaviour behaviour) {
-        settingsPanel.setLogoutBehaviour(behaviour);
+    // TRANSIT METHODS //
+    public void updateFavStopTable(StopModel stop, UpdateMode updateMode) {
+        preferPanel.updateFavStopTable(stop, updateMode);
+    }
+
+    public void updateFavRouteTable(List<RouteDirection> route, UpdateMode updateMode) {
+        preferPanel.updateFavRouteTable(route, updateMode);
+    }
+
+    public void initPreferPanelPreferTable(List<StopModel> stops, List<RouteDirection> routes) {
+        preferPanel.initPreferTable(stops, routes);
     }
 
 }

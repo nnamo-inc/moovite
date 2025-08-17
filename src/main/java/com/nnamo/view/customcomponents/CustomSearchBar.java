@@ -12,49 +12,51 @@ import java.util.ArrayList;
 
 public class CustomSearchBar extends JPanel {
 
+    // ATTRIBUTES //
     private final GridBagLayout layout;
     private ButtonGroup buttonGroup;
     private ArrayList<JRadioButton> radioButtons;
     private final JTextField field;
     private final JLabel label;
     private final JButton button;
-    private final ArrayList<SearchBarListener> listeners;
+    private ArrayList<SearchBarListener> listeners;
 
     // CONSTRUCTOR //
     public CustomSearchBar() {
         super();
+        // Set layout
         layout = new GridBagLayout();
         setLayout(layout);
+
+        // Title Label
         label = new JLabel("Search:");
         add(label, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.WEST)
                 .setWeight(0.0, 1.0).setInsets(5, 5, 5, 5));
+
+        // Search Field
         field = new JTextField(20);
         add(field, new CustomGbc().setPosition(2, 0).setFill(GridBagConstraints.HORIZONTAL)
                 .setWeight(1.0, 0.0).setWeight(1.0, 1.0).setInsets(5, 5, 5, 5));
+
+        // Clear Button
         button = new JButton("X");
         button.setBackground(CustomColor.RED);
         add(button, new CustomGbc().setPosition(3, 0).setAnchor(GridBagConstraints.EAST)
                 .setWeight(0.0, 0.0).setInsets(5, 5, 5, 5));
 
-        listeners = new ArrayList<>();
-        field.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                notifyListeners(field.getText());
-            }
-        });
-
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                field.setText("");
-                notifyListeners("");
-            }
-        });
+        initListener();
     }
 
     public CustomSearchBar(ArrayList<JRadioButton> radioButtons) {
         this();
+
+        ArrayList<JRadioButton> buttons = new ArrayList<>();
+        for (RouteType type : RouteType.values()) {
+            JRadioButton button = new JRadioButton(type.getValue());
+            button.setSelected(type == RouteType.ALL); // Default selected type
+            buttons.add(button);
+        }
+
         this.radioButtons = radioButtons;
         JPanel radioButtonPanel = new JPanel();
         radioButtonPanel.setLayout(new BoxLayout(radioButtonPanel, BoxLayout.X_AXIS));
@@ -79,7 +81,35 @@ public class CustomSearchBar extends JPanel {
                 .setWeight(1.0, 1.0).setWidth(4).setInsets(5, 5, 5, 5));
     }
 
-    // LISTENER HANDLE //
+    // METHODS //
+    private RouteType getSelectedRouteType() {
+        for (JRadioButton rb : radioButtons) {
+            if (rb.isSelected()) {
+                return RouteType.fromString(rb.getText());
+            }
+        }
+        return RouteType.ALL; // Default type if none selected
+    }
+
+    // METHODS BEHAVIOUR //
+    public void initListener() {
+        listeners = new ArrayList<>();
+        field.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                notifyListeners(field.getText());
+            }
+        });
+
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                field.setText("");
+                notifyListeners("");
+            }
+        });
+    }
+
     public void addSearchListener(SearchBarListener listener) {
         listeners.add(listener);
     }
@@ -93,16 +123,6 @@ public class CustomSearchBar extends JPanel {
             listener.onSearch(searchText, getSelectedRouteType());
         }
     }
-
-    RouteType getSelectedRouteType() {
-        for (JRadioButton rb : radioButtons) {
-            if (rb.isSelected()) {
-                return RouteType.fromString(rb.getText());
-            }
-        }
-        return RouteType.ALL; // Default type if none selected
-    }
-
     // GETTERS AND SETTERS //
     public JTextField getField() {
         return field;

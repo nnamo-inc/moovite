@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 
 public class CustomPreferButton extends JButton {
 
+    // ATTRIBUTES //
     boolean favorite = false;
     FavoriteBehaviour favoriteBehaviour;
     String itemId;
@@ -19,30 +20,9 @@ public class CustomPreferButton extends JButton {
     // CONSTRUCTOR //
     public CustomPreferButton() {
         super();
-        this.itemName = itemName;
-
         setText("<html></p><p>Clicca su una riga</p><p>della tabella per</p><p>attivare il bottone</p></html>");
         setBackground(CustomColor.GREEN);
-
-        addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                if (favorite) {
-                    favoriteBehaviour.removeFavorite(itemId, mode);
-                    // Aggiorna UI solo se l'operazione ha successo
-                    favorite = false;
-                    setText("<html><p>Aggiungi</p><p>" + itemName + "</p><p>ai Preferiti</p></html>");
-                    setBackground(CustomColor.GREEN);
-                } else {
-                    favoriteBehaviour.addFavorite(itemId, mode);
-                    // Aggiorna UI solo se l'operazione ha successo
-                    favorite = true;
-                    setText("<html><p>Rimuovi</p><p>" + itemName + "</p><p>dai Preferiti</p></html>");
-                    setBackground(CustomColor.RED);
-                }
-            }
-        });
-
+        initListener();
     }
 
     // METHODS //
@@ -57,7 +37,31 @@ public class CustomPreferButton extends JButton {
             setBackground(CustomColor.GREEN);
         }
     }
-    // BEHAVIOUR LISTENER //
+
+    // BEHAVIOUR METHODS //
+
+    private void initListener() {
+        addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+
+                if (favorite) {
+                    favoriteBehaviour.removeFavorite(itemId, mode);
+                    favorite = false;
+                    setText("<html><p>Aggiungi</p><p>" + itemName + "</p><p>ai Preferiti</p></html>");
+                    setBackground(CustomColor.GREEN);
+
+                } else {
+                    favoriteBehaviour.addFavorite(itemId, mode);
+                    favorite = true;
+                    setText("<html><p>Rimuovi</p><p>" + itemName + "</p><p>dai Preferiti</p></html>");
+                    setBackground(CustomColor.RED);
+                }
+
+            }
+        });
+
+    }
 
     public void setFavBehaviour(FavoriteBehaviour behaviour) {
         if (behaviour != null) {
@@ -66,7 +70,6 @@ public class CustomPreferButton extends JButton {
     }
 
     // GETTERS AND SETTERS //
-
     public void setDataType(DataType mode) {
         this.mode = mode;
     }

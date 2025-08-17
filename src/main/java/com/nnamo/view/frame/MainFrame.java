@@ -13,7 +13,6 @@ import com.nnamo.enums.DataType;
 import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.enums.UpdateMode;
 import com.nnamo.interfaces.*;
-import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.RealtimeStopUpdate;
@@ -208,7 +207,7 @@ public class MainFrame extends JFrame {
 
     // Left Panel Behaviour //
     public void setGenericTableRowClickBehaviour(TableRowClickBehaviour listener) {
-        this.leftPanel.setGenericTableRowClickBehaviour(listener);
+        this.leftPanel.setTableRowClickBehaviour(listener);
         this.stopPanel.setGenericTableRowClickBehaviour(listener);
     }
 

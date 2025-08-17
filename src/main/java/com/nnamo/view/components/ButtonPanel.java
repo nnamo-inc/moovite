@@ -10,8 +10,10 @@ import java.util.HashMap;
 
 public class ButtonPanel extends JPanel {
 
+    // ATTRIBUTES //
     private final ArrayList <CustomButtonPanel> buttons = new ArrayList<>();
 
+    // CONSTRUCTOR //
     public ButtonPanel(HashMap<JPanel, Icon> panels) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -31,6 +33,7 @@ public class ButtonPanel extends JPanel {
         }
     }
 
+    // BEHAVIOUR METHODS //
     public void setButtonPanelBehaviour(ButtonPanelBehaviour listener) {
         for (CustomButtonPanel button : buttons) {
             button.setButtonPanelBehaviour(listener);

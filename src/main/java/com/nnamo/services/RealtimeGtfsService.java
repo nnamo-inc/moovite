@@ -29,8 +29,6 @@ import org.onebusaway.gtfs.model.Trip;
 public class RealtimeGtfsService {
     public static final String ROME_TRIP_FEED_URL = "https://romamobilita.it/sites/default/files/rome_rtgtfs_trip_updates_feed.pb";
     public static final String ROME_POSITIONS_FEED_URL = "https://romamobilita.it/sites/default/files/rome_rtgtfs_vehicle_positions_feed.pb";
-    public static final String TEST_FRANCE_TRIP_FEED_URL = "https://proxy.transport.data.gouv.fr/resource/sncf-all-gtfs-rt-trip-updates";
-    public static final String TEST_FRANCE_POSITIONS_FEED_URL = "https://proxy.transport.data.gouv.fr/resource/sncf-all-gtfs-rt-trip-updates";
     public static final Duration FEED_INTERVAL = Duration.ofSeconds(30);
     public static final Duration STATISTICS_INTERVAL = Duration.ofMinutes(5);
     public static final int ALLOWED_DELAY = 5 * 60; // 5 minutes
@@ -39,16 +37,13 @@ public class RealtimeGtfsService {
     private final Thread feedThread;
     private final Thread statisticsThread;
     private RealtimeStatus realtimeStatus = RealtimeStatus.ONLINE;
-    private RealtimeStatusChangeListener statusChangeListener; // Listener for when status changes automatically (and
-                                                               // not by pressing button in mainframe)
+    private RealtimeStatusChangeListener statusChangeListener; // Listener for when status changes automatically (and not by pressing button in mainframe)
     private final URL tripFeedUrl;
     private final URL positionsFeedUrl;
 
     private List<FeedEntity> positionEntityList;
-    private HashMap<String, List<VehiclePosition>> routesPositionsMap = new HashMap<>(); // Maps Route ID with all its
-                                                                                         // vehicle positions
-    private HashMap<String, VehiclePosition> tripsPositionMap = new HashMap<>(); // Maps a Trip ID with its
-                                                                                 // vehicle position
+    private HashMap<String, List<VehiclePosition>> routesPositionsMap = new HashMap<>(); // Maps Route ID with all its vehicle positions
+    private HashMap<String, VehiclePosition> tripsPositionMap = new HashMap<>(); // Maps a Trip ID with its vehicle position
 
     private List<FeedEntity> tripEntityList;
     private HashMap<String, FeedEntity> tripsMap = new HashMap<>();

@@ -11,7 +11,6 @@ import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.TripModel;
 import com.nnamo.models.RealtimeStopUpdate;
-import com.nnamo.models.RouteDirection;
 import com.nnamo.view.customcomponents.CustomGbc;
 import com.nnamo.view.customcomponents.CustomInfoBar;
 import com.nnamo.view.customcomponents.CustomTable;
@@ -89,7 +88,6 @@ public class StopPanel extends JPanel {
         this.tableTime = new CustomTable(
                 new ColumnName[] { LINEA, DIREZIONE, ORARIO, STATO, MINUTIRIMAMENTI, POSTIDISPONIBILI, TIPO, TRIP },
                 ROUTE);
-        tableTime.setSearchColumns(LINEA, DIREZIONE, ORARIO);
         // Table
         mainPanel.add(tableTime, new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.CENTER)
                 .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
@@ -104,8 +102,8 @@ public class StopPanel extends JPanel {
         this.tableService = new CustomTable(
                 new ColumnName[] { LINEA, CODICE, TIPO, CAPOLINEA, DIREZIONE, DELAY },
                 new ColumnName[] { DIREZIONE },
+                new ColumnName[] { LINEA },
                 ROUTE);
-        tableService.setSearchColumns(LINEA);
         // Table
         mainPanel.add(tableService, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER)
                 .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
@@ -216,19 +214,19 @@ public class StopPanel extends JPanel {
 
     // LISTENERS METHODS //
     public void setGenericTableRowClickBehaviour(TableRowClickBehaviour listener) {
-        this.tableService.setRowClickBehaviour(listener);
-        this.tableTime.setRowClickBehaviour(listener);
+        this.tableService.setTableRowClickBehaviour(listener);
+        this.tableTime.setTableRowClickBehaviour(listener);
     }
 
     public void setStopInfoRowClickBehaviour(TableRowClickBehaviour tableRowClickBehaviour) {
         if (tableRowClickBehaviour != null) {
-            this.tableService.setRowClickBehaviour(tableRowClickBehaviour);
+            this.tableService.setTableRowClickBehaviour(tableRowClickBehaviour);
         }
     }
 
     public void setStopRouteRowClickBehaviour(TableRowClickBehaviour tableRowClickBehaviour) {
         if (tableRowClickBehaviour != null) {
-            this.tableTime.setRowClickBehaviour(tableRowClickBehaviour);
+            this.tableTime.setTableRowClickBehaviour(tableRowClickBehaviour);
         }
     }
 
