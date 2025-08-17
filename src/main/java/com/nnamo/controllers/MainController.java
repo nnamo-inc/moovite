@@ -51,7 +51,8 @@ public class MainController {
                 try {
                     sessionUser = db.getUserById(userId);
                     mapController.setSessionUser(sessionUser);
-                    uiController.setSessionUser(sessionUser);
+                    uiController.setUser(sessionUser);
+                    realtimeController.setUser(sessionUser);
                     mainFrame.open();
                 } catch (SQLException e) {
                     e.printStackTrace();

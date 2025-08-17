@@ -2,8 +2,10 @@ package com.nnamo.controllers;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -34,7 +36,7 @@ public class UIController {
     private final DatabaseService db;
     private final RealtimeGtfsService realtimeService;
     private final MainFrame mainFrame;
-    private UserModel sessionUser;
+    private UserModel user;
     private boolean loaded;
 
     public UIController(DatabaseService db, MainFrame mainFrame, RealtimeGtfsService realtimeService) {
@@ -50,14 +52,14 @@ public class UIController {
     }
 
     public void run(UserModel sessionUser) {
-        this.setSessionUser(sessionUser);
+        this.setUser(sessionUser);
         setupTableBehavior();
         setupFavoriteBehavior();
         setupButtonPanelBehaviours();
     }
 
-    public void setSessionUser(UserModel sessionUser) {
-        this.sessionUser = sessionUser;
+    public void setUser(UserModel sessionUser) {
+        this.user = sessionUser;
     }
 
     public void setupTableBehavior() {
@@ -94,10 +96,8 @@ public class UIController {
                         StopModel stop = db.getStopById(itemId);
                         GeoPosition geoPosition = new GeoPosition(stop.getLatitude(), stop.getLongitude());
                         mainFrame.setMapPanelMapPosition(geoPosition, 1);
-                        updateStopPanel(stop,
-                                db.getNextStopTimes(itemId, Utils.getCurrentTime(), Utils.getCurrentDate()),
-                                realtimeService.getStopUpdatesById(itemId));
-                        yield db.isFavoriteStop(sessionUser.getId(), itemId);
+                        handleStopSelection(stop, user);
+                        yield db.isFavoriteStop(user.getId(), itemId);
                     }
                     case ROUTE -> {
                         Direction direction = Direction.OUTBOUND;
@@ -130,7 +130,7 @@ public class UIController {
                         // render stops and route lines on the map
                         mainFrame.renderRouteLines(stopModels, routePositions, itemId, geoPosition, zoomLevel);
 
-                        yield db.isFavouriteRoute(sessionUser.getId(), itemId);
+                        yield db.isFavouriteRoute(user.getId(), itemId);
                     }
                 };
                 updatePreferButton(itemId, isFav, dataType);
@@ -170,20 +170,20 @@ public class UIController {
                 try {
                     switch (dataType) {
                         case STOP: {
-                            db.addFavStop(sessionUser.getId(), itemId);
+                            db.addFavStop(user.getId(), itemId);
                             mainFrame.updateFavStopTable(db.getStopById(itemId), UpdateMode.ADD);
                             mainFrame.updatePreferButton(itemId, true, DataType.STOP);
-                            System.out.println(db.getFavoriteStops(sessionUser.getId()).stream().count());
+                            System.out.println(db.getFavoriteStops(user.getId()).stream().count());
                             break;
                         }
                         case ROUTE: {
-                            db.addFavRoute(sessionUser.getId(), itemId);
+                            db.addFavRoute(user.getId(), itemId);
                             RouteModel route = db.getRouteById(itemId);
                             List<RouteModel> routeList = Arrays.asList(new RouteModel[] { route });
                             List<RouteDirection> directionRoutes = db.getDirectionedRoutes(routeList);
                             mainFrame.updateFavRouteTable(directionRoutes, UpdateMode.ADD);
                             mainFrame.updatePreferButton(itemId, true, DataType.ROUTE);
-                            System.out.println(db.getFavoriteRoutes(sessionUser.getId()).stream().count());
+                            System.out.println(db.getFavoriteRoutes(user.getId()).stream().count());
                             break;
                         }
                     }
@@ -198,20 +198,20 @@ public class UIController {
                 try {
                     switch (dataType) {
                         case STOP: {
-                            db.removeFavStop(sessionUser.getId(), itemId);
+                            db.removeFavStop(user.getId(), itemId);
                             mainFrame.updateFavStopTable(db.getStopById(itemId), UpdateMode.REMOVE);
                             mainFrame.updatePreferButton(itemId, false, dataType);
-                            System.out.println(db.getFavoriteStops(sessionUser.getId()).stream().count());
+                            System.out.println(db.getFavoriteStops(user.getId()).stream().count());
                             break;
                         }
                         case ROUTE: {
                             RouteModel route = db.getRouteById(itemId);
                             List<RouteModel> routeList = Arrays.asList(new RouteModel[] { route });
                             List<RouteDirection> directionRoutes = db.getDirectionedRoutes(routeList);
-                            db.removeFavRoute(sessionUser.getId(), itemId);
+                            db.removeFavRoute(user.getId(), itemId);
                             mainFrame.updateFavRouteTable(directionRoutes, UpdateMode.REMOVE);
                             mainFrame.updatePreferButton(itemId, false, dataType);
-                            System.out.println(db.getFavoriteRoutes(sessionUser.getId()).stream().count());
+                            System.out.println(db.getFavoriteRoutes(user.getId()).stream().count());
                             break;
                         }
                     }
@@ -246,8 +246,8 @@ public class UIController {
                 if (!loaded) {
                     try {
                         mainFrame.initLeftPanelPreferPanelPreferTable(
-                                db.getFavoriteStops(sessionUser.getId()),
-                                db.getFavoriteDirectionRoutes(sessionUser.getId()));
+                                db.getFavoriteStops(user.getId()),
+                                db.getFavoriteDirectionRoutes(user.getId()));
                         loaded = true;
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
@@ -256,6 +256,24 @@ public class UIController {
                 baseButtonPanelBehaviour.onButtonPanelClick(panel); // TODO: not sure, but maybe need to refactor this
             };
         };
+    }
+
+    public static void handleStopSelection(StopModel stop, UserModel user, RealtimeGtfsService realtimeService,
+            MainFrame mainFrame, DatabaseService db) throws IOException, SQLException {
+
+        Date currentDate = Utils.getCurrentDate();
+        LocalTime currentTime = Utils.getCurrentTime();
+        List<RealtimeStopUpdate> realtimeUpdates = realtimeService.getStopUpdatesById(stop.getId());
+        List<StopTimeModel> stopTimes = db.getNextStopTimes(stop.getId(), currentTime,
+                currentDate, realtimeUpdates);
+        UIController.updateStopPanel(stop, stopTimes, realtimeUpdates, mainFrame, db);
+        UIController.updatePreferButton(stop.getId(), db.isFavoriteStop(user.getId(), stop.getId()),
+                DataType.STOP, mainFrame);
+        mainFrame.updatePreferBarVisibility(true);
+    }
+
+    private void handleStopSelection(StopModel stop, UserModel user) throws IOException, SQLException {
+        UIController.handleStopSelection(stop, user, this.realtimeService, this.mainFrame, this.db);
     }
 
     private void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes,

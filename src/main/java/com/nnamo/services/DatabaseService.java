@@ -3,6 +3,7 @@ package com.nnamo.services;
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.google.transit.realtime.GtfsRealtime.TripDescriptor;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate;
+import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.field.SqlType;
@@ -502,8 +503,52 @@ public class DatabaseService {
                 .query();
     }
 
-    public List<StopTimeModel> getNextStopTimes(String stopId, LocalTime time, Date date) throws SQLException {
+    public List<StopTimeModel> getNextStopTimes(String stopId, LocalTime time, Date date,
+            List<RealtimeStopUpdate> tripUpdates)
+            throws SQLException {
+        Dao<StopTimeModel, String> stopTimeDao = getDao(StopTimeModel.class);
         var stopTimes = getNextStopTimes(stopId, time);
+        ArrayList<StopTimeModel> filteredStopTimes = new ArrayList<>();
+
+        for (StopTimeModel stopTime : stopTimes) {
+            for (ServiceModel service : getTripServices(stopTime.getTrip())) {
+                boolean isServiceToday = (service.getExceptionType() == ServiceModel.ExceptionType.ADDED
+                        && DateUtils.isSameDay(service.getDate(), date));
+
+                if (isServiceToday) {
+                    filteredStopTimes.add(stopTime);
+                    break;
+                }
+            }
+        }
+
+        HashMap<String, StopTimeModel> stopTimesMap = new HashMap<>();
+        for (StopTimeModel stopTime : stopTimes) {
+            stopTimesMap.put(stopTime.getTrip().getId(), stopTime);
+        }
+
+        // Realtime trips are not filtered since some of those trips do not respect
+        // service days
+        for (RealtimeStopUpdate tripUpdate : tripUpdates) {
+            String tripId = tripUpdate.getTripId();
+            StopTimeModel stopTime = stopTimeDao
+                    .queryBuilder()
+                    .where()
+                    .eq("trip_id", tripId)
+                    .queryForFirst();
+            if (stopTime != null && stopTimesMap.get(tripId) == null) {
+                System.out.println("Adding trip's " + tripId + " stoptime");
+                filteredStopTimes.add(stopTime);
+            }
+        }
+
+        return filteredStopTimes;
+    }
+
+    // Filter next stop times by service date
+    public List<StopTimeModel> getNextStopTimes(String stopId, LocalTime time, Date date)
+            throws SQLException {
+        List<StopTimeModel> stopTimes = getNextStopTimes(stopId, time);
         ArrayList<StopTimeModel> filteredStopTimes = new ArrayList<>();
 
         for (StopTimeModel stopTime : stopTimes) {
@@ -742,8 +787,7 @@ public class DatabaseService {
         // First check if there are any records for this route
         long count = tripUpdateDao.queryRawValue(
                 "SELECT COUNT(*) FROM trip_updates_delays WHERE route_id = ? AND delay IS NOT NULL",
-                routeId
-        );
+                routeId);
 
         if (count == 0) {
             return 0; // No delays found
@@ -751,8 +795,7 @@ public class DatabaseService {
 
         long avgDelay = tripUpdateDao.queryRawValue(
                 "SELECT AVG(delay) FROM trip_updates_delays WHERE route_id = ? AND delay IS NOT NULL",
-                routeId
-        );
+                routeId);
 
         return (int) avgDelay;
     }

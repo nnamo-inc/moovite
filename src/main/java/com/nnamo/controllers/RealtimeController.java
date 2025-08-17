@@ -12,6 +12,7 @@ import com.nnamo.services.StatisticsBehaviour;
 import com.nnamo.utils.Utils;
 import com.nnamo.view.frame.MainFrame;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class RealtimeController {
     private final DatabaseService db;
     private final MainFrame mainFrame;
     private RealtimeGtfsService realtimeService;
+    private UserModel sessionUser;
 
     public RealtimeController(DatabaseService db, MainFrame mainFrame, RealtimeGtfsService realtimeService) {
         this.db = db;
@@ -46,14 +48,15 @@ public class RealtimeController {
             @Override
             public void onFeedUpdated(List<FeedEntity> entities) {
                 try {
-
                     // Updates stop panel details
                     String stopId = mainFrame.getCurrentStopId();
                     if (stopId != null && !stopId.isEmpty()) {
+                        StopModel stop = db.getStopById(stopId);
                         List<StopTimeModel> stopTimes = db.getNextStopTimes(stopId, Utils.getCurrentTime(),
                                 Utils.getCurrentDate());
                         List<RealtimeStopUpdate> realtimeUpdates = realtimeService.getStopUpdatesById(stopId);
                         mainFrame.updateStopPanelTimes(stopTimes, realtimeUpdates);
+                        UIController.handleStopSelection(stop, sessionUser, realtimeService, mainFrame, db);
                         System.out.println("Updated realtime details on feed update on stop " + stopId);
                     }
 
@@ -64,7 +67,7 @@ public class RealtimeController {
                         mainFrame.renderVehiclePositions(positions); // Update vehicle positions
                         System.out.println("Updated realtime vehicle positions on feed update on route " + routeId);
                     }
-                } catch (SQLException e) {
+                } catch (SQLException | IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -94,5 +97,9 @@ public class RealtimeController {
                 }
             }
         });
+    }
+
+    public void setUser(UserModel sessionUser) {
+        this.sessionUser = sessionUser;
     }
 }

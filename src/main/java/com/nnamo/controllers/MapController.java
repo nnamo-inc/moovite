@@ -143,16 +143,7 @@ public class MapController {
                             int alpha = new Color(argb, true).getAlpha();
                             // Check alpha
                             if (alpha > 0) {
-                                Date currentDate = Utils.getCurrentDate();
-                                LocalTime currentTime = Utils.getCurrentTime();
-                                List<StopTimeModel> stopTimes = db.getNextStopTimes(stop.getId(), currentTime,
-                                        currentDate);
-                                List<RealtimeStopUpdate> realtimeUpdates = realtimeService
-                                        .getStopUpdatesById(stop.getId());
-                                updateStopPanel(stop, stopTimes, realtimeUpdates);
-                                updatePreferButton(stop.getId(), db.isFavoriteStop(sessionUser.getId(), stop.getId()),
-                                        DataType.STOP);
-                                mainFrame.updatePreferBarVisibility(true);
+                                UIController.handleStopSelection(stop, sessionUser, realtimeService, mainFrame, db);
                                 return;
                             }
                         }
