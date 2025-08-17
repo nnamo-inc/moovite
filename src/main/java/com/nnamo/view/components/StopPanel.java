@@ -87,7 +87,8 @@ public class StopPanel extends JPanel {
     private JPanel newRouteTimePanel() {
         JPanel mainPanel = new JPanel(new GridBagLayout());
         this.tableTime = new CustomTable(
-                new ColumnName[] { LINEA, DIREZIONE, ORARIO, STATO, MINUTIRIMAMENTI, POSTIDISPONIBILI, TIPO, TRIP }, ROUTE);
+                new ColumnName[] { LINEA, DIREZIONE, ORARIO, STATO, MINUTIRIMAMENTI, POSTIDISPONIBILI, TIPO, TRIP },
+                ROUTE);
         tableTime.setSearchColumns(LINEA, DIREZIONE, ORARIO);
         // Table
         mainPanel.add(tableTime, new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.CENTER)
@@ -111,30 +112,6 @@ public class StopPanel extends JPanel {
         return mainPanel;
     }
 
-    /*
-     * private JPanel newPanelPrefer() {
-     * 
-     * JPanel panelPrefer = new JPanel(new GridBagLayout());
-     * TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray,
-     * 2), "Preferiti");
-     * panelPrefer.setBorder(titledBorder);
-     * 
-     * Dimension minButtonSize = new Dimension(100, Integer.MAX_VALUE);
-     * favoriteStopButton.setMinimumSize(minButtonSize);
-     * favoriteRouteButton.setMinimumSize(minButtonSize);
-     * // button prefer
-     * panelPrefer.add(favoriteStopButton, new CustomGbc().setPosition(0, 0)
-     * .setInsets(2, 5, 2, 5).setAnchor(GridBagConstraints.CENTER)
-     * .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0));
-     * 
-     * favoriteRouteButton.setEnabled(false);
-     * panelPrefer.add(favoriteRouteButton, new CustomGbc().setPosition(0, 1)
-     * .setInsets(2, 5, 2, 5).setAnchor(GridBagConstraints.CENTER)
-     * .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0));
-     * return panelPrefer;
-     * }
-     */
-
     // METHODS //
     public void updateStopTimes(List<StopTimeModel> stopTimes, List<RealtimeStopUpdate> realtimeUpdates) {
         tableTime.clear();
@@ -144,6 +121,8 @@ public class StopPanel extends JPanel {
             System.out.println("Adding realtime update for trip ID: " + update.getTripId());
             realtimeTrips.put(update.getTripId(), update);
         }
+
+        List<Object[]> tableRows = new ArrayList<>();
 
         for (StopTimeModel stopTime : stopTimes) {
             TripModel trip = stopTime.getTrip(); // Corsa
@@ -171,7 +150,7 @@ public class StopPanel extends JPanel {
                 occupancyStatus = timeUpdate.getVehiclePosition().getOccupancyStatus().name();
             }
 
-            tableTime.addRow(new Object[] {
+            tableRows.add(new Object[] {
                     route.getShortName(),
                     trip.getHeadsign(),
                     stopTime.getArrivalTimeAsStr(),
@@ -180,12 +159,19 @@ public class StopPanel extends JPanel {
                     occupancyStatus,
                     route.getType().toString(),
                     trip.getId()
-                    // TODO: add "String vehicleId =
-                    // timeUpdate.getVehiclePosition().getVehicle().getId(); // ID del veicolo
-                    // fisico"
-                    // inside an invisile column to get the vehicle ID for row clicking and zooming
-                    // on the map!
             });
+        }
+
+        // Sort by remaining minutes (column index 4)
+        tableRows.sort((row1, row2) -> {
+            Object min1 = row1[4];
+            Object min2 = row2[4];
+            return Integer.compare((Integer) min1, (Integer) min2);
+        });
+
+        // Add sorted rows to table
+        for (Object[] row : tableRows) {
+            tableTime.addRow(row);
         }
     }
 
