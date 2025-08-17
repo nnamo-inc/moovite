@@ -308,7 +308,7 @@ public class UIController {
                     route.getType().toString(),
                     trip.getHeadsign(),
                     trip.getDirection().name(),
-                    String.valueOf(db.getAverageDelayForRoute(route.getId()))
+                    RealtimeGtfsService.getRouteQuality(db.getAverageDelayForRoute(route.getId())).toString()
             }));
         }
 

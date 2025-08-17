@@ -100,7 +100,7 @@ public class StopPanel extends JPanel {
         mainPanel.setBorder(titledBorder);
 
         this.tableService = new CustomTable(
-                new ColumnName[] { LINEA, CODICE, TIPO, CAPOLINEA, DIREZIONE, DELAY },
+                new ColumnName[] { LINEA, CODICE, TIPO, CAPOLINEA, DIREZIONE, INFORMAZIONI },
                 new ColumnName[] { DIREZIONE },
                 new ColumnName[] { LINEA },
                 ROUTE);

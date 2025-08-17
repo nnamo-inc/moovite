@@ -9,6 +9,7 @@ import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate;
 import com.nnamo.enums.Direction;
 import com.nnamo.enums.RealtimeStatus;
+import com.nnamo.enums.RouteQuality;
 import com.nnamo.interfaces.RealtimeStatusChangeListener;
 import com.nnamo.models.RealtimeStopUpdate;
 import com.nnamo.models.StopTimeModel;
@@ -24,8 +25,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import org.onebusaway.gtfs.model.Trip;
-
 public class RealtimeGtfsService {
     public static final String ROME_TRIP_FEED_URL = "https://romamobilita.it/sites/default/files/rome_rtgtfs_trip_updates_feed.pb";
     public static final String ROME_POSITIONS_FEED_URL = "https://romamobilita.it/sites/default/files/rome_rtgtfs_vehicle_positions_feed.pb";
@@ -37,13 +36,16 @@ public class RealtimeGtfsService {
     private final Thread feedThread;
     private final Thread statisticsThread;
     private RealtimeStatus realtimeStatus = RealtimeStatus.ONLINE;
-    private RealtimeStatusChangeListener statusChangeListener; // Listener for when status changes automatically (and not by pressing button in mainframe)
+    private RealtimeStatusChangeListener statusChangeListener; // Listener for when status changes automatically (and
+                                                               // not by pressing button in mainframe)
     private final URL tripFeedUrl;
     private final URL positionsFeedUrl;
 
     private List<FeedEntity> positionEntityList;
-    private HashMap<String, List<VehiclePosition>> routesPositionsMap = new HashMap<>(); // Maps Route ID with all its vehicle positions
-    private HashMap<String, VehiclePosition> tripsPositionMap = new HashMap<>(); // Maps a Trip ID with its vehicle position
+    private HashMap<String, List<VehiclePosition>> routesPositionsMap = new HashMap<>(); // Maps Route ID with all its
+                                                                                         // vehicle positions
+    private HashMap<String, VehiclePosition> tripsPositionMap = new HashMap<>(); // Maps a Trip ID with its vehicle
+                                                                                 // position
 
     private List<FeedEntity> tripEntityList;
     private HashMap<String, FeedEntity> tripsMap = new HashMap<>();
@@ -174,7 +176,8 @@ public class RealtimeGtfsService {
                 continue;
             }
             tripsPositionMap.put(tripId, entity.getVehicle());
-//            System.out.println(getTripVehiclePosition(tripId) + " vehicle position for trip " + tripId);
+            // System.out.println(getTripVehiclePosition(tripId) + " vehicle position for
+            // trip " + tripId);
             routesPositionsMap.computeIfAbsent(routeId, x -> new ArrayList<>()).add(entity.getVehicle());
         }
         System.out.println(positionEntityList.size() + " vehicle position entities");
@@ -199,6 +202,22 @@ public class RealtimeGtfsService {
                 }
                 break;
         }
+    }
+
+    public static RouteQuality getRouteQuality(int delay) {
+        boolean onTime = (delay >= 0 && delay <= ALLOWED_DELAY) || (delay <= 0 && -delay <= ALLOWED_ADVANCE);
+        boolean delayed = delay > 0 && delay >= ALLOWED_DELAY;
+        boolean advance = delay < 0 && -delay >= ALLOWED_DELAY;
+
+        if (onTime) {
+            return RouteQuality.OFTEN_ON_TIME;
+        } else if (delayed) {
+            return RouteQuality.OFTEN_DELAYED;
+        } else if (advance) {
+            return RouteQuality.OFTEN_EARLY;
+        }
+
+        return RouteQuality.INVALID;
     }
 
     public RealtimeStatus getRealtimeStatus() {
