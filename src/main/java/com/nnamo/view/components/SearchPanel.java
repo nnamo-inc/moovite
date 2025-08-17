@@ -1,6 +1,7 @@
 package com.nnamo.view.components;
 
 import com.nnamo.enums.ColumnName;
+import com.nnamo.enums.VehicleType;
 import com.nnamo.interfaces.SearchBarListener;
 import com.nnamo.interfaces.TableCheckIsFavBehaviour;
 import com.nnamo.interfaces.TableRowClickBehaviour;
@@ -40,8 +41,11 @@ public class SearchPanel extends JPanel {
 
         // search bar
         ArrayList<JRadioButton> buttons = new ArrayList<>();
-        buttons.add(new JRadioButton(BUS.toString()));
-        buttons.add(new JRadioButton(TRAM.toString()));
+        for (VehicleType type : VehicleType.values()) {
+            JRadioButton button = new JRadioButton(type.getValue());
+            button.setSelected(type == VehicleType.BUS); // Default selected type
+            buttons.add(button);
+        }
 
         customSearchBar = new CustomSearchBar(buttons);
         add(customSearchBar,

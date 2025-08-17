@@ -3,14 +3,16 @@ package com.nnamo.enums;
 public enum VehicleType {
     BUS("Bus"),
     TRAM("Tram"),
-    METRO("Metro"),
-    TRENO("Treno"),
-    COTRAL("Cotral");
+    METRO("Metro");
 
     private String value;
 
     VehicleType(String value) {
         this.value = value;
+    }
+
+    public String getValue() {
+        return value;
     }
 
     @Override
