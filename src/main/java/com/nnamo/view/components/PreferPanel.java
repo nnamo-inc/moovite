@@ -40,34 +40,11 @@ public class PreferPanel extends JPanel {
         // Search Bar
         createSearchBar();
 
-        // Search Bar
-        ArrayList<JRadioButton> buttons = new ArrayList<>();
-        for (RouteType type : RouteType.values()) {
-            JRadioButton button = new JRadioButton(type.getValue());
-            button.setSelected(type == RouteType.ALL); // Default selected type
-            buttons.add(button);
-        }
-        searchBar = new CustomSearchBar(buttons);
-        add(searchBar,
-                new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL).setInsets(5, 5, 5, 5));
-
         // Stop Table
-        stopTable = new CustomTable(new ColumnName[] { NOME, CODICE },
-                STOP);
-        TitledBorder tableStopBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Fermate");
-        stopTable.setBorder(
-                BorderFactory.createCompoundBorder(tableStopBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
-        add(stopTable, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.BOTH)
-                .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
+        createStopTable();
 
         // Route Table
-        routeTable = new CustomTable(new ColumnName[] { LINEA, CODICE, TIPO, CAPOLINEA, DIREZIONE },
-                new ColumnName[] { DIREZIONE },
-                ROUTE);
-        TitledBorder tableRouteBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Linee");
-        routeTable.setBorder(BorderFactory.createCompoundBorder(tableRouteBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
-        add(routeTable, new CustomGbc().setPosition(0, 3).setFill(GridBagConstraints.BOTH)
-                .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
+        createRouteTable();
 
         setVisible(false);
     }
@@ -92,6 +69,27 @@ public class PreferPanel extends JPanel {
 
         searchBar = new CustomSearchBar(buttons);
         add(searchBar, new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL).setInsets(5, 5, 5, 5));
+    }
+
+    private void createStopTable() {
+        stopTable = new CustomTable(new ColumnName[] { NOME, CODICE },
+                STOP);
+        TitledBorder tableStopBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Fermate");
+        stopTable.setBorder(
+                BorderFactory.createCompoundBorder(tableStopBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
+        add(stopTable, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.BOTH)
+                .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
+    }
+
+    private void createRouteTable() {
+        routeTable = new CustomTable(new ColumnName[] { LINEA, CODICE, TIPO, CAPOLINEA, DIREZIONE },
+                new ColumnName[] { DIREZIONE },
+                ROUTE);
+        TitledBorder tableRouteBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Linee");
+        routeTable.setBorder(BorderFactory.createCompoundBorder(tableRouteBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
+        add(routeTable, new CustomGbc().setPosition(0, 3).setFill(GridBagConstraints.BOTH)
+                .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
+
     }
 
     public void initPreferTable(List<StopModel> stops, List<RouteDirection> directedRoutes) {

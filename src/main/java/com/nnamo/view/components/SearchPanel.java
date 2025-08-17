@@ -33,12 +33,30 @@ public class SearchPanel extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         // Title Label
+        createTitleBar();
+
+        // search bar
+        createSearchBar();
+
+        // border for table stop and table stop
+        createStopTable();
+
+        // border for table route and table route
+        createRouteTable();
+
+        setVisible(false);
+    }
+
+    // METHODS //
+    private void createTitleBar() {
         JLabel titleLabel = new JLabel("Search");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         add(titleLabel, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.NORTH)
                 .setInsets(5, 5, 5, 5));
 
-        // search bar
+    }
+
+    private void createSearchBar() {
         ArrayList<JRadioButton> buttons = new ArrayList<>();
         for (RouteType type : RouteType.values()) {
             JRadioButton button = new JRadioButton(type.getValue());
@@ -49,28 +67,24 @@ public class SearchPanel extends JPanel {
         searchBar = new CustomSearchBar(buttons);
         add(searchBar,
                 new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL).setInsets(5, 5, 5, 5));
+    }
 
-        // border for table stop and table stop
+    private void createStopTable() {
         stopTable = new CustomTable(new ColumnName[] { CODICE, NOME }, STOP);
         TitledBorder tableStopBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Fermate");
         stopTable.setBorder(
                 BorderFactory.createCompoundBorder(tableStopBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
         add(stopTable, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
                 .setInsets(2, 5, 2, 5));
+    }
 
-        // border for table route and table route
+    private void createRouteTable() {
         tableRoute = new CustomTable(new ColumnName[] { CODICE, TIPO, CAPOLINEA, DIREZIONE }, new ColumnName[] { DIREZIONE }, ROUTE);
         TitledBorder tableRouteBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Linee");
         tableRoute.setBorder(
                 BorderFactory.createCompoundBorder(tableRouteBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
         add(tableRoute, new CustomGbc().setPosition(0, 3).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
                 .setInsets(2, 5, 2, 5));
-
-        setVisible(false);
-    }
-
-    public void addSearchListener(SearchBarListener listener) {
-        searchBar.addSearchListener(listener);
     }
 
     public void updateView(List<StopModel> stopModels, List<RouteDirection> routeModels) {
@@ -90,6 +104,11 @@ public class SearchPanel extends JPanel {
                     route.getDirection().name(),
             });
         }
+    }
+
+    // METHODS BEHAVIOUR //
+    public void addSearchListener(SearchBarListener listener) {
+        searchBar.addSearchListener(listener);
     }
 
     public void setTableRowClickBehaviour(TableRowClickBehaviour listener) {
