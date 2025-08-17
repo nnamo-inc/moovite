@@ -1,6 +1,7 @@
 package com.nnamo.enums;
 
 public enum RouteType {
+    ALL("All"),
     BUS("Bus"),
     TRAM("Tram"),
     METRO("Metro");

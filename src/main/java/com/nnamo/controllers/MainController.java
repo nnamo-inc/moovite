@@ -84,7 +84,7 @@ public class MainController {
         mainFrame.setRealtimeStatus(RealtimeStatus.ONLINE); // Changing realtime status notifies the observer method,
 
         // Mostra tutte le fermate allo startup del programma.
-        this.searchQueryListener("", RouteType.BUS);
+        this.searchQueryListener("", RouteType.ALL);
     }
 
     public void setLocalMapCache(File cacheDir) {

@@ -426,8 +426,10 @@ public class DatabaseService {
                         new SelectArg(SqlType.STRING, searchTerm),
                         new SelectArg(SqlType.DOUBLE, scoreThresholdPercentage));
 
-        where.and().
-                eq("type", new SelectArg(SqlType.UNKNOWN, routeType));
+        if (routeType != RouteType.ALL) {
+            where.and().
+                    eq("type", new SelectArg(SqlType.UNKNOWN, routeType));
+        }
 
         queryBuilder.orderByRaw(
                 "CASE " +

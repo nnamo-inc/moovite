@@ -42,7 +42,7 @@ public class SearchPanel extends JPanel {
         ArrayList<JRadioButton> buttons = new ArrayList<>();
         for (RouteType type : RouteType.values()) {
             JRadioButton button = new JRadioButton(type.getValue());
-            button.setSelected(type == RouteType.BUS); // Default selected type
+            button.setSelected(type == RouteType.ALL); // Default selected type
             buttons.add(button);
         }
 

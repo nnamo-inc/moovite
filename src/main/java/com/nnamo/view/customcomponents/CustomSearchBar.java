@@ -93,7 +93,7 @@ public class CustomSearchBar extends JPanel {
                 return RouteType.fromString(rb.getText());
             }
         }
-        return RouteType.BUS; // Default type if none selected
+        return RouteType.ALL; // Default type if none selected
     }
 
     // GETTERS AND SETTERS //
