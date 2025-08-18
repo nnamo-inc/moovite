@@ -39,7 +39,6 @@ public class SettingsPanel extends JPanel {
         add(logout, new CustomGbc().setPosition(0, 2).setAnchor(GridBagConstraints.NORTH).setWeight(1.0, 0.0)
                 .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 5, 2, 5));
 
-        // filler
         add(Box.createVerticalGlue(), new CustomGbc().setPosition(0, 3).setWeight(1.0, 1.0)
                 .setFill(GridBagConstraints.VERTICAL));
 

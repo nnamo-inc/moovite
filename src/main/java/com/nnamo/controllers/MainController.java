@@ -38,12 +38,12 @@ public class MainController {
     // METHODS //
     public void run() throws InterruptedException, SQLException, IOException {
 
-        mainFrame.renderStops(db.getAllStops());
+        SearchBarListener searchQueryListener = createSearchPanelQueryBehavior();
 
-        mainFrame.getSearchPanel().addSearchListener(this::searchQueryListener);
-        mainFrame.getLeftPanel().getPreferPanel().addSearchListener(this::preferSearchQueryListener);
-        mainFrame.getLeftPanel().getStatisticsPanel().setupListeners(realtimeService);
-        mainFrame.getLeftPanel().getStatisticsPanel().setupDatabaseService(db);
+        mainFrame.renderStops(db.getAllStops());
+        mainFrame.setSearchPanelListener(searchQueryListener);
+        mainFrame.setPreferPanelListener(createPreferPanelQueryBehavior());
+        mainFrame.setupStatisticsPanel(realtimeService, db);
 
         // Login and Session Fetching
         userController.addSessionListener(new SessionListener() { // [!] Listener must be implemented before run()
@@ -84,47 +84,52 @@ public class MainController {
         mainFrame.setRealtimeStatus(RealtimeStatus.ONLINE); // Changing realtime status notifies the observer method,
 
         // Mostra tutte le fermate allo startup del programma.
-        this.searchQueryListener("", RouteType.ALL);
+        searchQueryListener.onSearch("", RouteType.ALL);
     }
 
     public void setLocalMapCache(File cacheDir) {
         mainFrame.setLocalMapCache(cacheDir);
     }
 
-    public void searchQueryListener(String searchText, RouteType routeType) {
-        // if (searchText == null || searchText.isEmpty()) {
-        // mainFrame.getSearchPanel().updateView(new ArrayList<>());
-        // return; // Exit if the search text is empty
-        // }
-
-        var searchPanel = mainFrame.getSearchPanel();
-        try {
-            var stops = db.getStopsByName(searchText);
-            var routes = db.getRoutesByName(searchText, routeType);
-            searchPanel.updateView(stops, routes);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public SearchBarListener createSearchPanelQueryBehavior() {
+        return new SearchBarListener() {
+            @Override
+            public void onSearch(String searchText, RouteType routeType) {
+                var searchPanel = mainFrame.getSearchPanel();
+                try {
+                    var stops = db.getStopsByName(searchText);
+                    var routes = db.getRoutesByName(searchText, routeType);
+                    searchPanel.updateView(stops, routes);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
     }
 
-    public void preferSearchQueryListener(String searchText, RouteType routeType) {
-        if (sessionUser == null) {
-            return;
-        }
+    public SearchBarListener createPreferPanelQueryBehavior() {
+        return new SearchBarListener() {
+            @Override
+            public void onSearch(String searchText, RouteType routeType) {
+                if (sessionUser == null) {
+                    return;
+                }
 
-        var preferPanel = mainFrame.getLeftPanel().getPreferPanel();
-        try {
-            // For favorite stops, we don't filter by route type since stops don't have route types
-            var favoriteStops = db.getFavoriteStopsByName(sessionUser.getId(), searchText, RouteType.ALL);
-            // For favorite routes, we do filter by the selected route type
-            var favoriteRoutes = db.getFavoriteRoutesByName(sessionUser.getId(), searchText, routeType);
+                var preferPanel = mainFrame.getLeftPanel().getPreferPanel();
+                try {
+                    // For favorite stops, we don't filter by route type since stops don't have route types
+                    var favoriteStops = db.getFavoriteStopsByName(sessionUser.getId(), searchText, RouteType.ALL);
+                    // For favorite routes, we do filter by the selected route type
+                    var favoriteRoutes = db.getFavoriteRoutesByName(sessionUser.getId(), searchText, routeType);
 
-            preferPanel.getStopTable().clear();
-            preferPanel.getRouteTable().clear();
+                    preferPanel.getStopTable().clear();
+                    preferPanel.getRouteTable().clear();
 
-            preferPanel.initPreferTable(favoriteStops, favoriteRoutes);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+                    preferPanel.initPreferTable(favoriteStops, favoriteRoutes);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
     }
 }

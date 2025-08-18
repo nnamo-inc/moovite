@@ -11,6 +11,8 @@ import com.nnamo.enums.UpdateMode;
 import com.nnamo.interfaces.*;
 import com.nnamo.models.RouteDirection;
 import com.nnamo.models.StopModel;
+import com.nnamo.services.DatabaseService;
+import com.nnamo.services.RealtimeGtfsService;
 
 public class LeftPanel extends JPanel {
 
@@ -126,4 +128,16 @@ public class LeftPanel extends JPanel {
         preferPanel.initPreferTable(stops, routes);
     }
 
+    public void setSearchPanelListener(SearchBarListener listener) {
+        searchPanel.addSearchListener(listener);
+    }
+
+    public void setPreferPanelListener(SearchBarListener listener) {
+        preferPanel.addSearchListener(listener);
+    }
+
+    public void setupStatisticsPanel(RealtimeGtfsService realtimeService, DatabaseService db) {
+        statsPanel.setupListeners(realtimeService);
+        statsPanel.setupDatabaseService(db);
+    }
 }

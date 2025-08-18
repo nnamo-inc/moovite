@@ -8,6 +8,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Custom JPanel
+ */
 public class CustomLogout extends JPanel {
 
     // ATTRIBUTES //

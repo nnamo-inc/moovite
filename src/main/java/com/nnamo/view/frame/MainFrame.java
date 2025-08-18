@@ -17,6 +17,8 @@ import com.nnamo.models.StopModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.RealtimeStopUpdate;
 import com.nnamo.models.RouteDirection;
+import com.nnamo.services.DatabaseService;
+import com.nnamo.services.RealtimeGtfsService;
 import com.nnamo.view.components.*;
 import org.jxmapviewer.viewer.GeoPosition;
 
@@ -65,6 +67,7 @@ public class MainFrame extends JFrame {
         add(splitLeftMap, BorderLayout.CENTER);
     }
 
+    // METHODS //
     public void open() {
         setVisible(true);
     }
@@ -86,7 +89,7 @@ public class MainFrame extends JFrame {
     }
 
     public void renderRouteLines(List<StopModel> stopModels, List<VehiclePosition> routePositions, String routeId,
-            GeoPosition geoPosition, int zoomLevel) {
+                                 GeoPosition geoPosition, int zoomLevel) {
         mapPanel.renderStopsRoute(stopModels);
         mapPanel.renderVehiclePositions(routePositions);
         mapPanel.repaintView();
@@ -100,7 +103,6 @@ public class MainFrame extends JFrame {
         mapPanel.renderVehiclePositions(positions);
     }
 
-    // METHODS //
     private Dimension getScreenSize() {
         return Toolkit.getDefaultToolkit().getScreenSize();
     }
@@ -155,18 +157,6 @@ public class MainFrame extends JFrame {
         leftPanel.updateModularPanel(panel, isVisible);
     }
 
-    public void initLeftPanelPreferPanelPreferTable(List<StopModel> stops, List<RouteDirection> routes) {
-        leftPanel.initPreferPanelPreferTable(stops, routes);
-    }
-
-    public void updateFavStopTable(StopModel stop, UpdateMode updateMode) {
-        leftPanel.updateFavStopTable(stop, updateMode);
-    }
-
-    public void updateFavRouteTable(List<RouteDirection> route, UpdateMode updateMode) {
-        leftPanel.updateFavRouteTable(route, updateMode);
-    }
-
     public void updatePreferButton(String itemId, boolean isFav, DataType dataType) {
         this.preferBar.updatePreferButton(itemId, isFav, dataType);
     }
@@ -208,12 +198,39 @@ public class MainFrame extends JFrame {
         return this.getMapPanel().getStopPainter().getCurrentIcon();
     }
 
-    // BEHAVIOUR //
+    public void setMapPanelMapPosition(GeoPosition geoPosition, int zoomLevel) {
+        this.mapPanel.setMapPanelMapPosition(geoPosition, zoomLevel);
+    }
+
+    public void setLocalMapCache(File cacheDir) {
+        mapPanel.setLocalMapCache(cacheDir);
+    }
+
+    // TRANSIT METHODS //
+    public void initLeftPanelPreferPanelPreferTable(List<StopModel> stops, List<RouteDirection> routes) {
+        leftPanel.initPreferPanelPreferTable(stops, routes);
+    }
+
+    public void updateFavStopTable(StopModel stop, UpdateMode updateMode) {
+        leftPanel.updateFavStopTable(stop, updateMode);
+    }
+
+    public void updateFavRouteTable(List<RouteDirection> route, UpdateMode updateMode) {
+        leftPanel.updateFavRouteTable(route, updateMode);
+    }
+
     public void setLogoutBehaviour(LogoutBehaviour behaviour) {
         leftPanel.setLogoutBehaviour(behaviour);
     }
 
-    // Left Panel Behaviour //
+    public void setClickWaypointBehaviour(WaypointBehaviour waypointBehaviour) {
+        this.mapPanel.setClickWaypointBehaviour(waypointBehaviour);
+    }
+
+    public void setRealtimeStatus(RealtimeStatus status) {
+        this.leftPanel.setRealtimeStatus(status);
+    }
+
     public void setGenericTableRowClickBehaviour(TableRowClickBehaviour listener) {
         this.leftPanel.setTableRowClickBehaviour(listener);
         this.stopPanel.setGenericTableRowClickBehaviour(listener);
@@ -235,20 +252,15 @@ public class MainFrame extends JFrame {
         this.leftPanel.setRealtimeSwitchListener(listener);
     }
 
-    public void setRealtimeStatus(RealtimeStatus status) {
-        this.leftPanel.setRealtimeStatus(status);
-    }
-    // Waypoint Behaviour //
-
-    public void setClickWaypointBehaviour(WaypointBehaviour waypointBehaviour) {
-        this.mapPanel.setClickWaypointBehaviour(waypointBehaviour);
+    public void setSearchPanelListener(SearchBarListener listener) {
+        this.leftPanel.setSearchPanelListener(listener);
     }
 
-    public void setMapPanelMapPosition(GeoPosition geoPosition, int zoomLevel) {
-        this.mapPanel.setMapPanelMapPosition(geoPosition, zoomLevel);
+    public void setPreferPanelListener(SearchBarListener listener) {
+        this.leftPanel.setPreferPanelListener(listener);
     }
 
-    public void setLocalMapCache(File cacheDir) {
-        mapPanel.setLocalMapCache(cacheDir);
+    public void setupStatisticsPanel(RealtimeGtfsService realtimeService, DatabaseService db) {
+        this.leftPanel.setupStatisticsPanel(realtimeService, db);
     }
 }

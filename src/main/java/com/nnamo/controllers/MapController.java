@@ -98,15 +98,6 @@ public class MapController {
         return zoomLevel;
     }
 
-    private void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes,
-            List<RealtimeStopUpdate> realtimeUpdates) throws SQLException, IOException {
-        UIController.updateStopPanel(stop, stopTimes, realtimeUpdates, this.mainFrame, this.db);
-    }
-
-    private void updatePreferButton(String itemId, boolean isFav, DataType dataType) throws SQLException, IOException {
-        UIController.updatePreferButton(itemId, isFav, dataType, this.mainFrame);
-    }
-
     private void handleStopClick(GeoPosition geo) {
         WaypointBehaviour clickWaypointBehaviour = new WaypointBehaviour() {
             @Override
