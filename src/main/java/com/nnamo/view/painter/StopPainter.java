@@ -13,6 +13,8 @@ import org.jxmapviewer.viewer.Waypoint;
 import org.jxmapviewer.viewer.WaypointPainter;
 import org.jxmapviewer.viewer.WaypointRenderer;
 
+import com.nnamo.view.waypoints.StopWaypoint;
+
 public class StopPainter extends WaypointPainter<Waypoint> {
     private final JXMapViewer map;
     private final HashMap<Sizes, BufferedImage> icons = new HashMap<Sizes, BufferedImage>();
@@ -50,9 +52,13 @@ public class StopPainter extends WaypointPainter<Waypoint> {
     }
 
     public void repaint() {
+        repaint(null);
+    }
+
+    public void repaint(String stopId) {
         int zoom = map.getZoom();
-        currentIcon = icons.get(Sizes.MEDIUM);
         final BufferedImage icon = (zoom <= 1) ? icons.get(Sizes.MEDIUM) : icons.get(Sizes.SMALL);
+        final BufferedImage biggerIcon = (zoom <= 1) ? icons.get(Sizes.LARGE) : icons.get(Sizes.MEDIUM);
         this.currentIcon = icon;
         // Update the waypoint painter with the new icon with an anonymous class
         this.setRenderer(new WaypointRenderer<Waypoint>() {
@@ -61,7 +67,16 @@ public class StopPainter extends WaypointPainter<Waypoint> {
                 Point2D point = viewer.getTileFactory().geoToPixel(waypoint.getPosition(), viewer.getZoom());
                 int x = (int) point.getX() - icon.getWidth() / 2;
                 int y = (int) point.getY() - icon.getHeight();
-                g.drawImage(icon, x, y, null);
+
+                if (waypoint instanceof StopWaypoint) {
+                    StopWaypoint stopWaypoint = (StopWaypoint) waypoint;
+                    String waypointStopId = stopWaypoint.getStopId();
+                    if (stopId != null && waypointStopId != null && waypointStopId.equals(stopId)) {
+                        g.drawImage(biggerIcon, x, y, null);
+                    } else {
+                        g.drawImage(icon, x, y, null);
+                    }
+                }
             }
         });
     }

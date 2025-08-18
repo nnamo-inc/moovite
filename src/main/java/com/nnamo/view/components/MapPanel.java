@@ -8,6 +8,7 @@ import com.nnamo.models.StopModel;
 import com.nnamo.view.painter.PositionPainter;
 import com.nnamo.view.painter.RoutePainter;
 import com.nnamo.view.painter.StopPainter;
+import com.nnamo.view.waypoints.StopWaypoint;
 
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
@@ -48,6 +49,7 @@ public class MapPanel extends JPanel {
     private CompoundPainter<JXMapViewer> routeCompoundPainter;
 
     private String currentRouteId;
+    private String currentStopId;
 
     private RoutePainter routePainter;
     private PositionPainter positionPainter;
@@ -73,7 +75,6 @@ public class MapPanel extends JPanel {
 
         map.setAddressLocation(this.ROMEPOSITION);
         map.setZoom(7);
-
 
         // Rendering of stops and vehicle positions icons on the map
         this.stopPainter = new StopPainter(this.map);
@@ -168,6 +169,10 @@ public class MapPanel extends JPanel {
         routeStopPainter.repaint();
         stopPainter.repaint();
         positionPainter.repaint();
+
+        if (currentStopId != null) {
+            repaintBiggerStop(currentStopId);
+        }
         this.stopsCompoundPainter.setPainters(this.stopsPaintersList);
         updateOverlayPainter();
     }
@@ -200,7 +205,7 @@ public class MapPanel extends JPanel {
         // waypointPainter
         Set<Waypoint> waypoints = new HashSet<Waypoint>();
         for (StopModel stop : stops) {
-            waypoints.add(new DefaultWaypoint(stop.getLatitude(), stop.getLongitude()));
+            waypoints.add(new StopWaypoint(stop.getId(), stop.getLatitude(), stop.getLongitude()));
         }
         this.stopPainter.setWaypoints(waypoints);
         this.stops = stops; // Save stops in order to reset painting after route painting
@@ -208,6 +213,10 @@ public class MapPanel extends JPanel {
         updateCurrentCompoundPainter(this.stopsCompoundPainter);
         removeRoutePainting();
         repaintView();
+    }
+
+    private void repaintBiggerStop(String stopId) {
+        this.stopPainter.repaint(stopId);
     }
 
     public void renderStopsRoute(List<StopModel> stops) {
@@ -263,6 +272,10 @@ public class MapPanel extends JPanel {
     public void setCurrentRouteId(String routeId) {
         System.out.println("Updated current route id to " + routeId);
         this.currentRouteId = routeId;
+    }
+
+    public void setCurrentStopId(String stopId) {
+        this.currentStopId = stopId;
     }
 
     public JXMapViewer getMap() {

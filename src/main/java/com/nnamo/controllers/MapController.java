@@ -151,7 +151,9 @@ public class MapController {
 
                     mainFrame.updateStopPanelVisibility(false);
                     mainFrame.updatePreferBarVisibility(false);
-                    mainFrame.getMapPanel().repaintView();
+                    mainFrame.setCurrentStopId(null); // Current stop id needs to get removed, since no stop is still
+                                                      // seleced
+                    mainFrame.repaintMap();
                 } else {
                     mainFrame.updateStopPanelVisibility(false);
                 }

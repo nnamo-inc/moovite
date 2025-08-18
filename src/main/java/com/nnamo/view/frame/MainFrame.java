@@ -77,6 +77,14 @@ public class MainFrame extends JFrame {
         mapPanel.renderStops(stops);
     }
 
+    public void setCurrentStopId(String stopId) {
+        this.mapPanel.setCurrentStopId(stopId);
+    }
+
+    public void repaintMap() {
+        this.mapPanel.repaintView();
+    }
+
     public void renderRouteLines(List<StopModel> stopModels, List<VehiclePosition> routePositions, String routeId,
             GeoPosition geoPosition, int zoomLevel) {
         mapPanel.renderStopsRoute(stopModels);

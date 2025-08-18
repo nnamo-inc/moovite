@@ -266,6 +266,7 @@ public class UIController {
         List<RealtimeStopUpdate> realtimeUpdates = realtimeService.getStopUpdatesById(stop.getId());
         List<StopTimeModel> stopTimes = db.getNextStopTimes(stop.getId(), currentTime,
                 currentDate, realtimeUpdates);
+        mainFrame.setCurrentStopId(stop.getId());
         UIController.updateStopPanel(stop, stopTimes, realtimeUpdates, mainFrame, db);
         UIController.updatePreferButton(stop.getId(), db.isFavoriteStop(user.getId(), stop.getId()),
                 DataType.STOP, mainFrame);
