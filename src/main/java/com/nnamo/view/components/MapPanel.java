@@ -167,11 +167,12 @@ public class MapPanel extends JPanel {
     public void repaintView() {
         super.repaint();
         routeStopPainter.repaint();
-        stopPainter.repaint();
         positionPainter.repaint();
 
         if (currentStopId != null) {
-            repaintBiggerStop(currentStopId);
+            stopPainter.repaint(currentStopId);
+        } else {
+            stopPainter.repaint();
         }
         this.stopsCompoundPainter.setPainters(this.stopsPaintersList);
         updateOverlayPainter();
@@ -210,13 +211,8 @@ public class MapPanel extends JPanel {
         this.stopPainter.setWaypoints(waypoints);
         this.stops = stops; // Save stops in order to reset painting after route painting
 
-        updateCurrentCompoundPainter(this.stopsCompoundPainter);
         removeRoutePainting();
         repaintView();
-    }
-
-    private void repaintBiggerStop(String stopId) {
-        this.stopPainter.repaint(stopId);
     }
 
     public void renderStopsRoute(List<StopModel> stops) {
