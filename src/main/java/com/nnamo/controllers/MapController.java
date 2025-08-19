@@ -130,8 +130,8 @@ public class MapController {
                     // pixel coordinates
                     // then check if the click position is inside the icon bounds
                     for (StopModel stop : db.getAllStops()) {
-                        GeoPosition stopGeo = new GeoPosition(stop.getLatitude(), stop.getLongitude());
-                        Point2D stopPixel = mainFrame.getMapPanel().getMap().convertGeoPositionToPoint(stopGeo);
+                        GeoPosition stopPosition = new GeoPosition(stop.getLatitude(), stop.getLongitude());
+                        Point2D stopPixel = mainFrame.getMapPanel().getMap().convertGeoPositionToPoint(stopPosition);
                         // Get icon width and height
                         int iconWidth = currentIcon.getWidth();
                         int iconImgHeight = currentIcon.getHeight();
@@ -151,7 +151,8 @@ public class MapController {
                             // Check alpha
                             if (alpha > 0) {
                                 System.out.println("icon clicked");
-                                UIController.handleStopSelection(stop, sessionUser, realtimeService, mainFrame, db);
+                                UIController.handleStopSelection(stop, sessionUser, stopPosition, realtimeService,
+                                        mainFrame, db);
                                 return;
                             }
                         }
@@ -159,8 +160,9 @@ public class MapController {
 
                     mainFrame.updateStopPanelVisibility(false);
                     mainFrame.updatePreferBarVisibility(false);
-                    mainFrame.setCurrentStopId(null); // Current stop id needs to get removed, since no stop is still
-                                                      // seleced
+                    mainFrame.setCurrentStop(null, null); // Current stop id needs to get removed, since no stop is
+                                                          // still
+                    // seleced
                     mainFrame.repaintMap();
                 } else {
                     mainFrame.updateStopPanelVisibility(false);
