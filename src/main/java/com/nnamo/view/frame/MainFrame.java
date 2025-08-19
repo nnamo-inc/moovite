@@ -263,4 +263,16 @@ public class MainFrame extends JFrame {
     public void setupStatisticsPanel(RealtimeGtfsService realtimeService, DatabaseService db) {
         this.leftPanel.setupStatisticsPanel(realtimeService, db);
     }
+
+    public void clearPreferPanelTable() {
+        leftPanel.clearPreferPanelTable();
+    }
+
+    public void initPreferPanelTable(List<StopModel> favoriteStops, List<RouteDirection> favoriteRoutes) {
+        leftPanel.initPreferTable(favoriteStops, favoriteRoutes);
+    }
+
+    public void renderSearchPanel(List<StopModel> stops, List<RouteDirection> routes) {
+        leftPanel.renderSearchPanel(stops, routes);
+    }
 }

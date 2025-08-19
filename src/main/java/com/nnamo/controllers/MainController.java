@@ -95,11 +95,10 @@ public class MainController {
         return new SearchBarListener() {
             @Override
             public void onSearch(String searchText, RouteType routeType) {
-                var searchPanel = mainFrame.getSearchPanel();
                 try {
                     var stops = db.getStopsByName(searchText);
                     var routes = db.getRoutesByName(searchText, routeType);
-                    searchPanel.updateView(stops, routes);
+                    mainFrame.renderSearchPanel(stops, routes);
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -115,17 +114,14 @@ public class MainController {
                     return;
                 }
 
-                var preferPanel = mainFrame.getLeftPanel().getPreferPanel();
                 try {
                     // For favorite stops, we don't filter by route type since stops don't have route types
                     var favoriteStops = db.getFavoriteStopsByName(sessionUser.getId(), searchText, RouteType.ALL);
                     // For favorite routes, we do filter by the selected route type
                     var favoriteRoutes = db.getFavoriteRoutesByName(sessionUser.getId(), searchText, routeType);
 
-                    preferPanel.getStopTable().clear();
-                    preferPanel.getRouteTable().clear();
-
-                    preferPanel.initPreferTable(favoriteStops, favoriteRoutes);
+                    mainFrame.clearPreferPanelTable();
+                    mainFrame.initPreferPanelTable(favoriteStops, favoriteRoutes);
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }

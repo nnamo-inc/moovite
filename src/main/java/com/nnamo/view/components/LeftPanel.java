@@ -140,4 +140,17 @@ public class LeftPanel extends JPanel {
         statsPanel.setupListeners(realtimeService);
         statsPanel.setupDatabaseService(db);
     }
+
+    public void clearPreferPanelTable() {
+        preferPanel.getStopTable().clear();
+        preferPanel.getRouteTable().clear();
+    }
+
+    public void initPreferTable(List<StopModel> favoriteStops, List<RouteDirection> favoriteRoutes) {
+        preferPanel.initPreferTable(favoriteStops, favoriteRoutes);
+    }
+
+    public void renderSearchPanel(List<StopModel> stops, List<RouteDirection> routes) {
+        searchPanel.updateView(stops, routes);
+    }
 }
