@@ -80,8 +80,20 @@ public class MainFrame extends JFrame {
         mapPanel.renderStops(stops);
     }
 
+    public GeoPosition getCurrentStopPosition() {
+        return mapPanel.getCurrentStopPosition();
+    }
+
     public void setCurrentStopId(String stopId) {
         this.mapPanel.setCurrentStopId(stopId);
+    }
+
+    public void setCurrentStopPosition(GeoPosition position) {
+        this.mapPanel.setCurrentStopPosition(position);
+    }
+
+    public void setCurrentStop(String stopId, GeoPosition position) {
+        this.mapPanel.setCurrentStop(stopId, position);
     }
 
     public void repaintMap() {

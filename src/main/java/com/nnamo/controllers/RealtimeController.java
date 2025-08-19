@@ -18,6 +18,8 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import org.jxmapviewer.viewer.GeoPosition;
+
 public class RealtimeController {
     private final DatabaseService db;
     private final MainFrame mainFrame;
@@ -51,9 +53,11 @@ public class RealtimeController {
                     // Updates stop panel details
                     String stopId = mainFrame.getCurrentStopId();
                     if (stopId != null && !stopId.isEmpty()) {
+                        GeoPosition stopPosition = mainFrame.getCurrentStopPosition();
                         int nextHoursRange = 6;
                         StopModel stop = db.getStopById(stopId);
-                        UIController.handleStopSelection(stop, sessionUser, realtimeService, mainFrame, db);
+                        UIController.handleStopSelection(stop, sessionUser, stopPosition, realtimeService, mainFrame,
+                                db);
                         System.out.println("Updated realtime details on feed update on stop " + stopId);
                     }
 

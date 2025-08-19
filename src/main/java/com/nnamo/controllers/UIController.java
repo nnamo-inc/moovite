@@ -93,9 +93,9 @@ public class UIController {
                 boolean isFav = switch (dataType) {
                     case STOP -> {
                         StopModel stop = db.getStopById(itemId);
-                        GeoPosition geoPosition = new GeoPosition(stop.getLatitude(), stop.getLongitude());
-                        mainFrame.setMapPanelMapPosition(geoPosition, 1);
-                        handleStopSelection(stop, user);
+                        GeoPosition stopPosition = new GeoPosition(stop.getLatitude(), stop.getLongitude());
+                        mainFrame.setMapPanelMapPosition(stopPosition, 1);
+                        handleStopSelection(stop, user, stopPosition);
                         yield db.isFavoriteStop(user.getId(), itemId);
                     }
                     case ROUTE -> {
@@ -249,7 +249,8 @@ public class UIController {
         };
     }
 
-    public static void handleStopSelection(StopModel stop, UserModel user, RealtimeGtfsService realtimeService,
+    public static void handleStopSelection(StopModel stop, UserModel user, GeoPosition position,
+            RealtimeGtfsService realtimeService,
             MainFrame mainFrame, DatabaseService db) throws IOException, SQLException {
 
         int nextHoursRange = 6;
@@ -262,12 +263,13 @@ public class UIController {
         UIController.updatePreferButton(stop.getId(), db.isFavoriteStop(user.getId(), stop.getId()),
                 DataType.STOP, mainFrame);
         mainFrame.updatePreferBarVisibility(true);
-        mainFrame.setCurrentStopId(stop.getId());
+        mainFrame.setCurrentStop(stop.getId(), position);
         mainFrame.repaintMap();
     }
 
-    private void handleStopSelection(StopModel stop, UserModel user) throws IOException, SQLException {
-        UIController.handleStopSelection(stop, user, this.realtimeService, this.mainFrame, this.db);
+    private void handleStopSelection(StopModel stop, UserModel user, GeoPosition position)
+            throws IOException, SQLException {
+        UIController.handleStopSelection(stop, user, position, this.realtimeService, this.mainFrame, this.db);
     }
 
     private void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes,

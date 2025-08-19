@@ -50,6 +50,7 @@ public class MapPanel extends JPanel {
 
     private String currentRouteId;
     private String currentStopId;
+    private GeoPosition stopPosition;
 
     private RoutePainter routePainter;
     private PositionPainter positionPainter;
@@ -195,6 +196,12 @@ public class MapPanel extends JPanel {
         if (this.routePainter != null) {
             this.routePaintersList.remove(this.routePainter);
         }
+
+        if (this.stopPosition != null) {
+            map.setAddressLocation(this.stopPosition);
+            map.setZoom(2);
+        }
+
         this.positionPainter.setWaypoints(new HashSet<Waypoint>());
         this.routeStopPainter.setWaypoints(new HashSet<Waypoint>());
         this.currentRouteId = null;
@@ -267,6 +274,10 @@ public class MapPanel extends JPanel {
         return this.currentRouteId;
     }
 
+    public GeoPosition getCurrentStopPosition() {
+        return this.stopPosition;
+    }
+
     public void setCurrentRouteId(String routeId) {
         System.out.println("Updated current route id to " + routeId);
         this.currentRouteId = routeId;
@@ -276,8 +287,21 @@ public class MapPanel extends JPanel {
         return this.currentStopId;
     }
 
+    public void setCurrentStopPosition(double latitude, double longitude) {
+        this.stopPosition = new GeoPosition(latitude, longitude);
+    }
+
+    public void setCurrentStopPosition(GeoPosition position) {
+        this.stopPosition = position;
+    }
+
     public void setCurrentStopId(String stopId) {
         this.currentStopId = stopId;
+    }
+
+    public void setCurrentStop(String stopId, GeoPosition position) {
+        this.setCurrentStopId(stopId);
+        this.setCurrentStopPosition(position);
     }
 
     public JXMapViewer getMap() {
