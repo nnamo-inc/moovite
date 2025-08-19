@@ -220,9 +220,9 @@ public class MapPanel extends JPanel {
     public void renderStopsRoute(List<StopModel> stops) {
         System.out.println("MapPanel.renderStopsRoute() called with " + stops.size() + " stops");
 
-        Set<Waypoint> waypoints = new HashSet<Waypoint>();
+        Set<StopWaypoint> waypoints = new HashSet<StopWaypoint>();
         for (StopModel stop : stops) {
-            waypoints.add(new DefaultWaypoint(stop.getLatitude(), stop.getLongitude()));
+            waypoints.add(new StopWaypoint(stop.getId(), stop.getLatitude(), stop.getLongitude()));
         }
         this.routeStopPainter.setWaypoints(waypoints);
 
