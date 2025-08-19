@@ -1,4 +1,4 @@
-.PHONY: compile run build-and-run clean
+.PHONY: compile run build-and-run clean docs
 
 compile:
 	mvn clean package
@@ -7,6 +7,9 @@ run:
 	java -jar target/moovite-1.0-SNAPSHOT.jar
 
 br: compile run # Build and Run
+
+docs: 
+	mvn clean javadoc:javadoc
 
 clean:
 	mvn clean

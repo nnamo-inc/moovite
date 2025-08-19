@@ -261,11 +261,12 @@ public class UIController {
     public static void handleStopSelection(StopModel stop, UserModel user, RealtimeGtfsService realtimeService,
             MainFrame mainFrame, DatabaseService db) throws IOException, SQLException {
 
+        int nextHoursRange = 6;
         Date currentDate = Utils.getCurrentDate();
         LocalTime currentTime = Utils.getCurrentTime();
         List<RealtimeStopUpdate> realtimeUpdates = realtimeService.getStopUpdatesById(stop.getId());
-        List<StopTimeModel> stopTimes = db.getNextStopTimes(stop.getId(), currentTime,
-                currentDate, realtimeUpdates);
+        List<StopTimeModel> stopTimes = db.getNextStopTimes(stop.getId(), currentTime, nextHoursRange, currentDate,
+                realtimeUpdates);
         mainFrame.setCurrentStopId(stop.getId());
         UIController.updateStopPanel(stop, stopTimes, realtimeUpdates, mainFrame, db);
         UIController.updatePreferButton(stop.getId(), db.isFavoriteStop(user.getId(), stop.getId()),

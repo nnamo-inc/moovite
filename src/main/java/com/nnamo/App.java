@@ -17,6 +17,9 @@ import com.nnamo.utils.UserDataUtils;
 import javax.swing.*;
 
 public class App {
+    /**
+     * Starts the main application, by initializing the available services
+     */
     public static void main(String[] args) throws InterruptedException {
         try {
             DatabaseService db = new DatabaseService();

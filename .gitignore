@@ -1,4 +1,5 @@
 target/
+javadoc/
 data.db*
 dependency-reduced-pom.xml
 assets/gtfs/*.txt
