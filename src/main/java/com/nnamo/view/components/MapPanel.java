@@ -190,7 +190,8 @@ public class MapPanel extends JPanel {
         }
     }
 
-    public void removeRoutePainting() {
+    public void resetAction() {
+        this.resetRouteButton.setVisible(false);
         if (this.routePainter != null) {
             this.routePaintersList.remove(this.routePainter);
         }
@@ -199,6 +200,7 @@ public class MapPanel extends JPanel {
         this.currentRouteId = null;
         updateCurrentCompoundPainter(stopsCompoundPainter);
         updateOverlayPainter();
+        repaintView();
     }
 
     public void renderStops(List<StopModel> stops) {
@@ -211,7 +213,7 @@ public class MapPanel extends JPanel {
         this.stopPainter.setWaypoints(waypoints);
         this.stops = stops; // Save stops in order to reset painting after route painting
 
-        removeRoutePainting();
+        resetAction();
         repaintView();
     }
 
@@ -268,6 +270,10 @@ public class MapPanel extends JPanel {
     public void setCurrentRouteId(String routeId) {
         System.out.println("Updated current route id to " + routeId);
         this.currentRouteId = routeId;
+    }
+
+    public String getCurrentStopId() {
+        return this.currentStopId;
     }
 
     public void setCurrentStopId(String stopId) {

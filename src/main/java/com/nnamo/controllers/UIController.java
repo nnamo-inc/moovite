@@ -13,7 +13,6 @@ import javax.swing.JPanel;
 
 import org.jxmapviewer.viewer.GeoPosition;
 
-import com.google.transit.realtime.GtfsRealtime;
 import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.nnamo.enums.ColumnName;
 import com.nnamo.enums.DataType;
@@ -121,15 +120,7 @@ public class UIController {
                             System.out.println("No stops found for route: " + itemId);
                         }
 
-                        GeoPosition geoPosition = MapController.calculateBaricentro(stopModels);
-                        int zoomLevel = MapController.calculateZoomLevel(stopModels);
-
-                        List<GtfsRealtime.VehiclePosition> routePositions = realtimeService
-                                .getRoutesVehiclePositions(itemId, direction);
-
-                        // render stops and route lines on the map
-                        mainFrame.renderRouteLines(stopModels, routePositions, itemId, geoPosition, zoomLevel);
-
+                        MapController.renderRoutesVehicles(stopModels, realtimeService, mainFrame, itemId, direction);
                         yield db.isFavouriteRoute(user.getId(), itemId);
                     }
                 };
@@ -267,11 +258,12 @@ public class UIController {
         List<RealtimeStopUpdate> realtimeUpdates = realtimeService.getStopUpdatesById(stop.getId());
         List<StopTimeModel> stopTimes = db.getNextStopTimes(stop.getId(), currentTime, nextHoursRange, currentDate,
                 realtimeUpdates);
-        mainFrame.setCurrentStopId(stop.getId());
         UIController.updateStopPanel(stop, stopTimes, realtimeUpdates, mainFrame, db);
         UIController.updatePreferButton(stop.getId(), db.isFavoriteStop(user.getId(), stop.getId()),
                 DataType.STOP, mainFrame);
         mainFrame.updatePreferBarVisibility(true);
+        mainFrame.setCurrentStopId(stop.getId());
+        mainFrame.repaintMap();
     }
 
     private void handleStopSelection(StopModel stop, UserModel user) throws IOException, SQLException {

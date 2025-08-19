@@ -89,7 +89,7 @@ public class MainFrame extends JFrame {
     }
 
     public void renderRouteLines(List<StopModel> stopModels, List<VehiclePosition> routePositions, String routeId,
-                                 GeoPosition geoPosition, int zoomLevel) {
+            GeoPosition geoPosition, int zoomLevel) {
         mapPanel.renderStopsRoute(stopModels);
         mapPanel.renderVehiclePositions(routePositions);
         mapPanel.repaintView();
@@ -162,7 +162,7 @@ public class MainFrame extends JFrame {
     }
 
     public void removeRoutePainting() {
-        this.mapPanel.removeRoutePainting();
+        this.mapPanel.resetAction();
     }
 
     // GETTERS AND SETTERS //
@@ -171,7 +171,7 @@ public class MainFrame extends JFrame {
     }
 
     public String getCurrentStopId() {
-        return stopPanel.getStopId();
+        return mapPanel.getCurrentStopId();
     }
 
     public String getCurrentRouteId() {

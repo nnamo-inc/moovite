@@ -1,11 +1,11 @@
 package com.nnamo.controllers;
 
-import com.nnamo.enums.DataType;
+import com.google.transit.realtime.GtfsRealtime;
+import com.nnamo.enums.Direction;
 import com.nnamo.interfaces.WaypointBehaviour;
 import com.nnamo.models.*;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
-import com.nnamo.utils.Utils;
 import com.nnamo.view.frame.MainFrame;
 
 import java.awt.Color;
@@ -13,8 +13,6 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.LocalTime;
-import java.util.Date;
 import java.util.List;
 
 import org.jxmapviewer.viewer.GeoPosition;
@@ -98,6 +96,24 @@ public class MapController {
         return zoomLevel;
     }
 
+    public static void renderRoutesVehicles(List<StopModel> stopModels, RealtimeGtfsService realtimeService,
+            MainFrame mainFrame, String routeId, Direction direction) {
+        GeoPosition geoPosition = MapController.calculateBaricentro(stopModels);
+        int zoomLevel = MapController.calculateZoomLevel(stopModels);
+
+        List<GtfsRealtime.VehiclePosition> routePositions = realtimeService
+                .getRoutesVehiclePositions(routeId, direction);
+
+        // render stops and route lines on the map
+        mainFrame.renderRouteLines(stopModels, routePositions, routeId, geoPosition, zoomLevel);
+    }
+
+    public static void updateRealtimePositions(String routeId, MainFrame mainFrame,
+            RealtimeGtfsService realtimeService) {
+        var positions = realtimeService.getRoutesVehiclePositions(routeId);
+        mainFrame.renderVehiclePositions(positions); // Update vehicle positions
+    }
+
     private void handleStopClick(GeoPosition geo) {
         WaypointBehaviour clickWaypointBehaviour = new WaypointBehaviour() {
             @Override
@@ -134,6 +150,7 @@ public class MapController {
                             int alpha = new Color(argb, true).getAlpha();
                             // Check alpha
                             if (alpha > 0) {
+                                System.out.println("icon clicked");
                                 UIController.handleStopSelection(stop, sessionUser, realtimeService, mainFrame, db);
                                 return;
                             }

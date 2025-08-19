@@ -51,11 +51,8 @@ public class RealtimeController {
                     // Updates stop panel details
                     String stopId = mainFrame.getCurrentStopId();
                     if (stopId != null && !stopId.isEmpty()) {
+                        int nextHoursRange = 6;
                         StopModel stop = db.getStopById(stopId);
-                        List<StopTimeModel> stopTimes = db.getNextStopTimes(stopId, Utils.getCurrentTime(),
-                                Utils.getCurrentDate());
-                        List<RealtimeStopUpdate> realtimeUpdates = realtimeService.getStopUpdatesById(stopId);
-                        mainFrame.updateStopPanelTimes(stopTimes, realtimeUpdates);
                         UIController.handleStopSelection(stop, sessionUser, realtimeService, mainFrame, db);
                         System.out.println("Updated realtime details on feed update on stop " + stopId);
                     }
@@ -63,8 +60,7 @@ public class RealtimeController {
                     // Updates route vehicle positions
                     String routeId = mainFrame.getCurrentRouteId();
                     if (routeId != null && !routeId.isEmpty()) {
-                        var positions = realtimeService.getRoutesVehiclePositions(routeId);
-                        mainFrame.renderVehiclePositions(positions); // Update vehicle positions
+                        MapController.updateRealtimePositions(routeId, mainFrame, realtimeService);
                         System.out.println("Updated realtime vehicle positions on feed update on route " + routeId);
                     }
                 } catch (SQLException | IOException e) {
