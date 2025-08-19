@@ -21,6 +21,21 @@ import java.util.List;
 import static com.nnamo.enums.ColumnName.*;
 import static com.nnamo.enums.DataType.*;
 
+/**
+ * Custom {@link JPanel} that displays stop and route preferences with two {@link CustomTable},
+ *
+ * @author Riccardo Finocchiaro
+ * @author Samuele Lombardi
+ *
+ * @see JPanel
+ * @see CustomSearchBar
+ * @see CustomTable
+ * @see SearchBarListener
+ * @see TableRowClickBehaviour
+ * @see StopModel
+ * @see RouteDirection
+ * @see UpdateMode
+ */
 public class PreferPanel extends JPanel {
 
     // ATTRIBUTES //
@@ -29,20 +44,24 @@ public class PreferPanel extends JPanel {
     CustomTable routeTable;
 
     // CONSTRUCTOR //
+    /**
+     * Creates a {@link PreferPanel} with a title bar, a {@link CustomSearchBar}
+     * for searching and filtering, and {@link CustomTable} for displaying favorite stops and routes.
+     *
+     * @see JPanel
+     * @see CustomSearchBar
+     * @see CustomTable
+     */
     public PreferPanel() {
         super();
         setLayout(new GridBagLayout());
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
         // Title Label
         createTitleBar();
-
         // Search Bar
         createSearchBar();
-
         // Stop Table
         createStopTable();
-
         // Route Table
         createRouteTable();
 

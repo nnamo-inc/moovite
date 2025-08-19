@@ -19,6 +19,20 @@ import java.util.List;
 import static com.nnamo.enums.ColumnName.*;
 import static com.nnamo.enums.DataType.*;
 
+/**
+ * Custom {@link JPanel} that provides a search interface for stops and routes, featuring a {@link CustomSearchBar} and two {@link CustomTable} components for displaying search results.
+ * Allows setting listeners for search actions and table row clicks via interfaces.
+ *
+ * @author Riccardo Finocchiaro
+ * @author Samuele Lombardi
+ * @author Davide Galilei
+ *
+ * @see JPanel
+ * @see CustomSearchBar
+ * @see CustomTable
+ * @see SearchBarListener
+ * @see TableRowClickBehaviour
+ */
 public class SearchPanel extends JPanel {
 
     // ATTRIBUTES //
@@ -27,21 +41,24 @@ public class SearchPanel extends JPanel {
     CustomTable tableRoute;
 
     // CONSTRUCTOR //
+    /**
+     * Creates a {@link SearchPanel} with a title bar, a {@link CustomSearchBar} for filtering, and {@link CustomTable} for displaying stops and routes.
+     *
+     * @see JPanel
+     * @see CustomSearchBar
+     * @see CustomTable
+     */
     public SearchPanel() {
         super();
         setLayout(new GridBagLayout());
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
-        // Title Label
+        // Title
         createTitleBar();
-
         // search bar
         createSearchBar();
-
-        // border for table stop and table stop
+        // Stop table
         createStopTable();
-
-        // border for table route and table route
+        // Route table
         createRouteTable();
 
         setVisible(false);
@@ -87,6 +104,17 @@ public class SearchPanel extends JPanel {
                 .setInsets(2, 5, 2, 5));
     }
 
+    /**
+     * Updates the tables with the provided lists of {@link StopModel} and {@link RouteDirection}.
+     * Clears previous results and populates the tables with new data.
+     *
+     * @param stopModels the list of stops to display in the stop table
+     * @param routeModels the list of route directions to display in the route table
+     *
+     * @see StopModel
+     * @see RouteDirection
+     * @see CustomTable
+     */
     public void updateView(List<StopModel> stopModels, List<RouteDirection> routeModels) {
         stopTable.clear();
         tableRoute.clear();
@@ -107,10 +135,26 @@ public class SearchPanel extends JPanel {
     }
 
     // METHODS BEHAVIOUR //
+    /**
+     * Adds a {@link SearchBarListener} to the {@link CustomSearchBar} to handle search actions.
+     *
+     * @param listener the implementation of {@link SearchBarListener} to handle search events
+     *
+     * @see SearchBarListener
+     * @see CustomSearchBar
+     */
     public void addSearchListener(SearchBarListener listener) {
         searchBar.addSearchListener(listener);
     }
 
+    /**
+     * Sets the {@link TableRowClickBehaviour} for both the stop and route tables.
+     *
+     * @param listener the implementation of {@link TableRowClickBehaviour} to handle row clicks
+     *
+     * @see TableRowClickBehaviour
+     * @see CustomTable
+     */
     public void setTableRowClickBehaviour(TableRowClickBehaviour listener) {
         stopTable.setTableRowClickBehaviour(listener);
         tableRoute.setTableRowClickBehaviour(listener);

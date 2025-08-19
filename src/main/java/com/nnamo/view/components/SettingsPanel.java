@@ -11,33 +11,45 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 
+/**
+ * Custom {@link JPanel} that provides a settings interface, including online status control and logout functionality.
+ *
+ * @author Riccardo Finocchiaro
+ * @author Samuele Lombardi
+ * @author Davide Galilei
+ *
+ * @see JPanel
+ * @see CustomSwitchBar
+ * @see StatisticsPanel.CustomLogout
+ * @see RealtimeStatus
+ * @see SwitchBarListener
+ * @see LogoutBehaviour
+ */
 public class SettingsPanel extends JPanel {
 
     private CustomSwitchBar switchBar = new CustomSwitchBar();
     private StatisticsPanel.CustomLogout logout = new StatisticsPanel.CustomLogout();
 
     // CONSTRUCTOR //
+    /**
+     * Creates a {@link SettingsPanel} with sections for online status and logout.
+     * Initializes the layout, titles, and custom components for user interaction.
+     *
+     * @see JPanel
+     * @see CustomSwitchBar
+     * @see StatisticsPanel.CustomLogout
+     */
     public SettingsPanel() {
         super();
         setLayout(new GridBagLayout());
-
-        JLabel titleLabel = new JLabel("Settings");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        add(titleLabel, new CustomGbc().setPosition(0, 0)
-                .setAnchor(GridBagConstraints.NORTH)
-                .setInsets(5, 5, 5, 5));
-
-        TitledBorder onlineStatus = new TitledBorder(new LineBorder(Color.lightGray, 2), "Online Status");
-        switchBar.setBorder(
-                BorderFactory.createCompoundBorder(onlineStatus, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
-        add(switchBar, new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.NORTH).setWeight(1.0, 0.0)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 5, 2, 5));
-
-        TitledBorder logOut = new TitledBorder(new LineBorder(Color.lightGray, 2), "Logout");
-        logout.setBorder(BorderFactory.createCompoundBorder(logOut, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
-        add(logout, new CustomGbc().setPosition(0, 2).setAnchor(GridBagConstraints.NORTH).setWeight(1.0, 0.0)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 5, 2, 5));
-
+        setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        // Title
+        createTitleBar();
+        // Switch Bar for online status
+        createSwitchBar();
+        // Logout section
+        createLogout();
+        // Add vertical glue to fill remaining space
         add(Box.createVerticalGlue(), new CustomGbc().setPosition(0, 3).setWeight(1.0, 1.0)
                 .setFill(GridBagConstraints.VERTICAL));
 
@@ -45,15 +57,60 @@ public class SettingsPanel extends JPanel {
     }
 
     // METHODS //
+    private void createTitleBar() {
+        JLabel titleLabel = new JLabel("Settings");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        add(titleLabel, new CustomGbc().setPosition(0, 0)
+                .setAnchor(GridBagConstraints.NORTH)
+                .setInsets(5, 5, 5, 5));
+    }
+
+    private void createSwitchBar() {
+        TitledBorder onlineStatus = new TitledBorder(new LineBorder(Color.lightGray, 2), "Online Status");
+        switchBar.setBorder(BorderFactory.createCompoundBorder(onlineStatus, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
+        add(switchBar, new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.NORTH).setWeight(1.0, 0.0)
+                .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 5, 2, 5));
+    }
+
+    private void createLogout() {
+        TitledBorder logOut = new TitledBorder(new LineBorder(Color.lightGray, 2), "Logout");
+        logout.setBorder(BorderFactory.createCompoundBorder(logOut, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
+        add(logout, new CustomGbc().setPosition(0, 2).setAnchor(GridBagConstraints.NORTH).setWeight(1.0, 0.0)
+                .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 5, 2, 5));
+    }
+    /**
+     * Sets the current {@link RealtimeStatus} for the online status switch bar.
+     *
+     * @param status the {@link RealtimeStatus} to display and control
+     *
+     * @see RealtimeStatus
+     * @see CustomSwitchBar
+     */
     public void setRealtimeStatus(RealtimeStatus status) {
         switchBar.setStatus(status);
     }
 
     // BEHAVIOR //
+    /**
+     * Sets the listener for changes to the real-time status switch.
+     *
+     * @param listener the implementation of {@link SwitchBarListener} to handle switch events
+     *
+     * @see SwitchBarListener
+     * @see CustomSwitchBar
+     */
     public void setRealtimeSwitchListener(SwitchBarListener listener) {
         switchBar.addSwitchListener(listener);
     }
 
+    /**
+     * Sets the behavior to execute when the logout action is triggered.
+     *
+     * @param behaviour the implementation of {@link LogoutBehaviour} to handle logout events
+     *
+     * @see LogoutBehaviour
+     * @see StatisticsPanel.CustomLogout
+     */
     public void setLogoutBehaviour(LogoutBehaviour behaviour) {
         logout.setLogoutBehaviour(behaviour);
     }

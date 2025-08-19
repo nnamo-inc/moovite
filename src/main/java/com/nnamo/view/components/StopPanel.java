@@ -22,6 +22,19 @@ import java.util.List;
 import static com.nnamo.enums.ColumnName.*;
 import static com.nnamo.enums.DataType.*;
 
+/**
+ * Custom {@link JPanel} that displays detailed information about a transit stop,
+ * including stop info, route services, and upcoming departures.*
+ *
+ * @author Riccardo Finocchiaro
+ * @author Samuele Lombardi
+ *
+ * @see JPanel
+ * @see CustomInfoBar
+ * @see CustomTable
+ * @see TableRowClickBehaviour
+ * @see TableCheckIsFavBehaviour
+ */
 public class StopPanel extends JPanel {
     // Stop info components
     private final CustomInfoBar nomeFermata = new CustomInfoBar("Nome fermata: ");
@@ -33,40 +46,35 @@ public class StopPanel extends JPanel {
     // Prefer components
 
     // CONSTRUCTOR //
+    /**
+     * Creates a {@link StopPanel} with {@link CustomInfoBar} for stop information, route services, and upcoming departures.
+     *
+     * @see JPanel
+     * @see CustomInfoBar
+     * @see CustomTable
+     * @see TableRowClickBehaviour
+     * @see TableCheckIsFavBehaviour
+     */
     public StopPanel() {
         super();
         // set the layout, create the border and the gbc, set the background color
         setLayout(new GridBagLayout());
-        setBorder(BorderFactory.createLineBorder(new Color(60, 63, 65), 2));
-        setBackground(new Color(60, 63, 65));
+        setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         // Stop info panel
-        JPanel stopInfoPanel = newStopInfoPanel();
-        add(stopInfoPanel, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER)
-                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.1).setWidth(3)
-                .setInsets(2, 5, 2, 5));
-
+        createStopInfoPanel();
         // Route service panel
-        JPanel routeInfoPanel = newRouteInfoPanel();
-        add(routeInfoPanel, new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.CENTER)
-                .setFill(GridBagConstraints.BOTH).setWeight(0.5, 1.0)
-                .setInsets(2, 5, 2, 5));
-
+        createRouteInfoPanel();
         // Route info panel
-        JPanel routeTimePanel = newRouteTimePanel();
-        TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Tabella corse");
-        routeTimePanel.setBorder(titledBorder);
-        add(routeTimePanel,
-                new CustomGbc().setPosition(1, 1).setAnchor(GridBagConstraints.WEST)
-                        .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0)
-                        .setInsets(2, 5, 2, 5));
+        createRouteTimePanel();
 
         setVisible(false);
     }
 
     // COMPONENT METHODS //
-    private JPanel newStopInfoPanel() {
-        // Panel info stop with border
+    private void createStopInfoPanel() {
+
+        // Info stop with border
         JPanel infoStop = new JPanel(new GridBagLayout());
         TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Informazioni fermata");
         infoStop.setBorder(titledBorder);
@@ -80,37 +88,63 @@ public class StopPanel extends JPanel {
         infoStop.add(idFermata, new CustomGbc().setPosition(1, 0).setAnchor(GridBagConstraints.WEST)
                 .setFill(GridBagConstraints.BOTH).setWeight(0.3, 1.0));
 
-        return infoStop;
+
+        add(infoStop, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER)
+                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.1).setWidth(3)
+                .setInsets(2, 5, 2, 5));
+
     }
 
-    private JPanel newRouteTimePanel() {
-        JPanel mainPanel = new JPanel(new GridBagLayout());
-        this.tableTime = new CustomTable(
-                new ColumnName[] { LINEA, DIREZIONE, ORARIO, STATO, MINUTIRIMAMENTI, POSTIDISPONIBILI, TIPO, TRIP },
-                ROUTE);
-        // Table
-        mainPanel.add(tableTime, new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.CENTER)
-                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
-        return mainPanel;
-    }
+    private void createRouteInfoPanel() {
 
-    private JPanel newRouteInfoPanel() {
-        JPanel mainPanel = new JPanel(new GridBagLayout());
+        // Info route with border
+        JPanel infoRoute = new JPanel(new GridBagLayout());
         TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Tabella Linee");
-        mainPanel.setBorder(titledBorder);
+        infoRoute.setBorder(titledBorder);
 
+        // Table
         this.tableService = new CustomTable(
                 new ColumnName[] { LINEA, CODICE, TIPO, CAPOLINEA, DIREZIONE, INFORMAZIONI },
                 new ColumnName[] { DIREZIONE },
                 new ColumnName[] { LINEA },
                 ROUTE);
-        // Table
-        mainPanel.add(tableService, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER)
+        infoRoute.add(tableService, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER)
                 .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
-        return mainPanel;
+
+        add(infoRoute, new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.CENTER)
+                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
+    }
+
+    private void createRouteTimePanel() {
+
+        // Route time with border
+        JPanel routeTimePanel = new JPanel(new GridBagLayout());
+        TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Tabella corse");
+        routeTimePanel.setBorder(titledBorder);
+
+        // Table
+        this.tableTime = new CustomTable(
+                new ColumnName[] { LINEA, DIREZIONE, ORARIO, STATO, MINUTIRIMAMENTI, POSTIDISPONIBILI, TIPO, TRIP },
+                ROUTE);
+        routeTimePanel.add(tableTime, new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.CENTER)
+                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
+
+        add(routeTimePanel, new CustomGbc().setPosition(1, 1).setAnchor(GridBagConstraints.WEST)
+                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
     }
 
     // METHODS //
+    /**
+     * Updates the departures table with a list of {@link StopTimeModel} and their associated {@link RealtimeStopUpdate} data.
+     * Sorts the {@link CustomTable} by remaining minutes and displays real-time status and occupancy if available.
+     *
+     * @param stopTimes the list of scheduled stop times to display
+     * @param realtimeUpdates the list of real-time updates for the stop times
+     *
+     * @see StopTimeModel
+     * @see RealtimeStopUpdate
+     * @see CustomTable
+     */
     public void updateStopTimes(List<StopTimeModel> stopTimes, List<RealtimeStopUpdate> realtimeUpdates) {
         tableTime.clear();
 
@@ -182,6 +216,13 @@ public class StopPanel extends JPanel {
         }
     }
 
+    /**
+     * Updates the route services table with a list of unique routes serving the stop.
+     *
+     * @param uniqueRoutes a list of route data, where each inner list represents a route's attributes
+     *
+     * @see CustomTable
+     */
     public void updateStopRoutes(List<List<String>> uniqueRoutes) {
         tableService.clear();
 
@@ -190,50 +231,60 @@ public class StopPanel extends JPanel {
         }
     }
 
+    /**
+     * Updates the stop information section with the specified stop ID and name.
+     *
+     * @param id the stop ID to display
+     * @param nome the stop name to display
+     *
+     * @see CustomInfoBar
+     */
     public void updateStopInfo(String id, String nome) {
         this.nomeFermata.setTextField(nome);
         this.idFermata.setTextField(id);
     }
 
+    /**
+     * Makes the {@link StopPanel} visible.
+     *
+     * @see JPanel
+     */
     public void open() {
         setVisible(true);
     }
 
+    /**
+     * Hides the {@link StopPanel}.
+     *
+     * @see JPanel
+     */
     public void close() {
         setVisible(false);
     }
 
     // GETTERS AND SETTERS //
-    public String getStopId() {
-        return idFermata.getTextField();
-    }
-
+    /**
+     * Returns the table displaying upcoming departures.
+     *
+     * @return the {@link CustomTable} for departures
+     *
+     * @see CustomTable
+     */
     public CustomTable getTimeTable() {
         return tableTime;
     }
 
     // LISTENERS METHODS //
+    /**
+     * Sets a generic row click behavior for both the route services and departures tables.
+     *
+     * @param listener the implementation of {@link TableRowClickBehaviour} to handle row clicks
+     *
+     * @see TableRowClickBehaviour
+     * @see CustomTable
+     */
     public void setGenericTableRowClickBehaviour(TableRowClickBehaviour listener) {
         this.tableService.setTableRowClickBehaviour(listener);
         this.tableTime.setTableRowClickBehaviour(listener);
-    }
-
-    public void setStopInfoRowClickBehaviour(TableRowClickBehaviour tableRowClickBehaviour) {
-        if (tableRowClickBehaviour != null) {
-            this.tableService.setTableRowClickBehaviour(tableRowClickBehaviour);
-        }
-    }
-
-    public void setStopRouteRowClickBehaviour(TableRowClickBehaviour tableRowClickBehaviour) {
-        if (tableRowClickBehaviour != null) {
-            this.tableTime.setTableRowClickBehaviour(tableRowClickBehaviour);
-        }
-    }
-
-    public void setTableCheckIsFavBehaviour(TableCheckIsFavBehaviour tableCheckIsFavBehaviour) {
-        if (tableCheckIsFavBehaviour != null) {
-            this.tableService.setTableCheckIsFavBehaviour(tableCheckIsFavBehaviour);
-            this.tableTime.setTableCheckIsFavBehaviour(tableCheckIsFavBehaviour);
-        }
     }
 }

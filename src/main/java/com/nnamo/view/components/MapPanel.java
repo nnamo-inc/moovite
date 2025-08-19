@@ -34,6 +34,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Custom {@link JPanel} that displays an interactive map using {@link JXMapViewer}, supporting the rendering of stops, routes, and real-time vehicle positions.
+ *
+ * @author Riccardo Finocchiaro
+ * @author Samuele Lombardi
+ *
+ * @see JPanel
+ * @see JXMapViewer
+ * @see StopModel
+ * @see VehiclePosition
+ * @see WaypointBehaviour
+ * @see ZoomBehaviour
+ * @see StopPainter
+ * @see RoutePainter
+ * @see PositionPainter
+ */
 public class MapPanel extends JPanel {
 
     // ATTRIBUTES //
@@ -67,6 +83,18 @@ public class MapPanel extends JPanel {
 
     private WaypointBehaviour waypointBehaviour;
 
+    /**
+     * Creates a {@link MapPanel} with an embedded {@link JXMapViewer}, initializing painters for stops, routes, and vehicle positions.
+     * Sets up the map tile factory, default position, zoom, and listeners for user interaction.
+     *
+     * @throws IOException if there is an error initializing the map tile factory
+     *
+     * @see JPanel
+     * @see JXMapViewer
+     * @see StopPainter
+     * @see RoutePainter
+     * @see PositionPainter
+     */
     public MapPanel() throws IOException {
         TileFactoryInfo info = new OSMTileFactoryInfo();
         tileFactory = new DefaultTileFactory(info);
@@ -155,6 +183,15 @@ public class MapPanel extends JPanel {
 
     }
 
+    /**
+     * Sets the behaviour for waypoint clicks, allowing custom actions when a waypoint is clicked.
+     *
+     * @param waypointBehaviour the {@link WaypointBehaviour} to set
+     */
+    public void setClickWaypointBehaviour(WaypointBehaviour waypointBehaviour) {
+        this.waypointBehaviour = waypointBehaviour;
+    }
+
     // METHODS //
     private void updateOverlayPainter() {
         int zoomLevel = map.getZoom();
@@ -165,6 +202,14 @@ public class MapPanel extends JPanel {
         }
     }
 
+    /**
+     * Repaints the map and all overlay painters, updating the display of stops, routes, and vehicle positions.
+     *
+     * @see JXMapViewer
+     * @see StopPainter
+     * @see RoutePainter
+     * @see PositionPainter
+     */
     public void repaintView() {
         super.repaint();
         routeStopPainter.repaint();
@@ -191,6 +236,15 @@ public class MapPanel extends JPanel {
         }
     }
 
+    /**
+     * Resets the map to its default state, clearing route overlays and restoring the stop view.
+     * Hides the reset button and resets the painter overlays.
+     *
+     * @see JXMapViewer
+     * @see StopPainter
+     * @see RoutePainter
+     * @see PositionPainter
+     */
     public void resetAction() {
         this.resetRouteButton.setVisible(false);
         if (this.routePainter != null) {
@@ -210,6 +264,15 @@ public class MapPanel extends JPanel {
         repaintView();
     }
 
+    /**
+     * Renders the provided list of {@link StopModel} as waypoints on the map.
+     * Updates the overlay painter and saves the stops for future resets.
+     *
+     * @param stops the list of stops to display as waypoints
+     *
+     * @see StopModel
+     * @see StopPainter
+     */
     public void renderStops(List<StopModel> stops) {
         // Create a set of waypoints from the list of stops, then set it to the
         // waypointPainter
@@ -224,6 +287,15 @@ public class MapPanel extends JPanel {
         repaintView();
     }
 
+    /**
+     * Renders the provided list of {@link StopModel} as a route on the map, updating the route overlay and painter.
+     *
+     * @param stops the list of stops representing the route to display
+     *
+     * @see StopModel
+     * @see RoutePainter
+     * @see StopPainter
+     */
     public void renderStopsRoute(List<StopModel> stops) {
         System.out.println("MapPanel.renderStopsRoute() called with " + stops.size() + " stops");
 
@@ -247,6 +319,14 @@ public class MapPanel extends JPanel {
         repaintView();
     }
 
+    /**
+     * Renders the provided list of {@link VehiclePosition} as real-time vehicle waypoints on the map.
+     *
+     * @param positions the list of vehicle positions to display
+     *
+     * @see VehiclePosition
+     * @see PositionPainter
+     */
     public void renderVehiclePositions(List<VehiclePosition> positions) {
         Set<Waypoint> waypoints = new HashSet<Waypoint>();
         for (VehiclePosition vehiclePosition : positions) {
@@ -270,57 +350,106 @@ public class MapPanel extends JPanel {
     }
 
     // GETTERS AND SETTERS //
+    /**
+     * Gets the current route ID.
+     *
+     * @return the current route ID
+     */
     public String getCurrentRouteId() {
         return this.currentRouteId;
     }
 
+    /**
+     * Gets the current stop position as a {@link GeoPosition}.
+     *
+     * @return the current stop position
+     */
     public GeoPosition getCurrentStopPosition() {
         return this.stopPosition;
     }
 
+    /**
+     * Sets the current route ID and updates the map view accordingly.
+     *
+     * @param routeId the ID of the current route
+     */
     public void setCurrentRouteId(String routeId) {
         System.out.println("Updated current route id to " + routeId);
         this.currentRouteId = routeId;
     }
 
+    /**
+     * Gets the current stop ID.
+     *
+     * @return the current stop ID
+     */
     public String getCurrentStopId() {
         return this.currentStopId;
     }
 
-    public void setCurrentStopPosition(double latitude, double longitude) {
-        this.stopPosition = new GeoPosition(latitude, longitude);
-    }
-
+    /**
+     * Sets the current stop position on the map.
+     *
+     * @param position the {@link GeoPosition} of the current stop
+     */
     public void setCurrentStopPosition(GeoPosition position) {
         this.stopPosition = position;
     }
 
+    /**
+     * Sets the current stop ID and position, updating the map view accordingly.
+     *
+     * @param stopId the ID of the current stop
+     */
     public void setCurrentStopId(String stopId) {
         this.currentStopId = stopId;
     }
 
+    /**
+     * Sets the current stop ID and position, updating both the ID and position attributes.
+     *
+     * @param stopId the ID of the current stop
+     * @param position the {@link GeoPosition} of the current stop
+     */
     public void setCurrentStop(String stopId, GeoPosition position) {
         this.setCurrentStopId(stopId);
         this.setCurrentStopPosition(position);
     }
 
+    /**
+     * Gets the underlying {@link JXMapViewer} instance used in this panel.
+     *
+     * @return the JXMapViewer instance
+     */
     public JXMapViewer getMap() {
         return map;
     }
 
+    /**
+     * Gets the {@link StopPainter} instance used for rendering stops on the map.
+     *
+     * @return the StopPainter instance
+     */
     public StopPainter getStopPainter() {
         return this.stopPainter;
     }
 
+    /**
+     * Sets the map position and zoom level for the map panel.
+     *
+     * @param geoPosition the {@link GeoPosition} to set as the map center
+     * @param zoomLevel the zoom level to set for the map
+     */
     public void setMapPanelMapPosition(GeoPosition geoPosition, int zoomLevel) {
         this.map.setAddressLocation(geoPosition);
         this.setZoom(zoomLevel);
     }
 
-    public void setClickWaypointBehaviour(WaypointBehaviour waypointBehaviour) {
-        this.waypointBehaviour = waypointBehaviour;
-    }
-
+    /**
+     * Sets the zoom level for the map and notifies the zoom behaviour if set.
+     *
+     * @param zoomLevel the zoom level to set for the map
+     */
     public void setZoom(int zoomLevel) {
         map.setZoom(zoomLevel);
         if (zoomBehaviour != null) {
@@ -328,6 +457,11 @@ public class MapPanel extends JPanel {
         }
     }
 
+    /**
+     * Sets the local cache directory for the map tile factory, allowing offline tile storage.
+     *
+     * @param cacheDir the directory to use for caching map tiles
+     */
     public void setLocalMapCache(File cacheDir) {
         boolean checkForUpdates = false;
         tileFactory.setLocalCache(new FileBasedLocalCache(cacheDir, checkForUpdates));
