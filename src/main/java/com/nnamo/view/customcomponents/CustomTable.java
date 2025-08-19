@@ -21,6 +21,17 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Vector;
 
+/**
+ * Custom {@link JPanel} that provides a {@link JTable} with search functionality and sorting capabilities.
+ * It allows adding, removing, and clearing rows, and supports custom behaviors for row clicks and favorite checks.
+ *
+ * @author Riccardo Finocchiaro
+ * @author Samuele Lombardi
+ *
+ * @see JPanel
+ * @see JTable
+ * @see CustomSearchBar
+ */
 public class CustomTable extends JPanel {
 
     JTable table;
@@ -40,6 +51,18 @@ public class CustomTable extends JPanel {
     TableCheckIsFavBehaviour tableCheckIsFavBehaviour;
 
     // CONSTRUCTOR //
+    /**
+     * Creates a {@link CustomTable} with the specified {@link JTable} {@link ColumnName} and {@link DataType}.
+     * Initializes the {@link JTable} model, sets up the {@link JTable}, and adds a {@link ScrollPane} to scroll all the rows.
+     *
+     * @param tableColumns Array of column names for the table.
+     * @param dataType The data type of the table.
+     *
+     * @see ColumnName
+     * @see DataType
+     * @see JTable
+     * @see ScrollPane
+     */
     public CustomTable(ColumnName[] tableColumns, DataType dataType) {
         super(new BorderLayout());
         this.tableColumns = tableColumns;
@@ -67,7 +90,21 @@ public class CustomTable extends JPanel {
         isSearchable = false;
         initListeners();
     }
-
+    /**
+     * Creates a {@link CustomTable} with the specified table {@link ColumnName}, hidden columns, searchable {@link ColumnName} and {@link DataType}.
+     * Initializes the {@link JTable} model, sets up the {@link JTable}, adds a {@link ScrollPane}
+     * to scroll all the rows and adds a {@link CustomSearchBar} for filtering rows based on the specified search columns.
+     *
+     * @param tableColumns Array of column names for the table.
+     * @param hiddenColumns Array of column names to be hidden in the table.
+     * @param searchColumn Array of column names to be used for searching.
+     * @param dataType The data type of the table.
+     *
+     * @see ColumnName
+     * @see DataType
+     * @see JTable
+     * @see CustomSearchBar
+     */
     public CustomTable(ColumnName[] tableColumns, ColumnName[] hiddenColumns, ColumnName[] searchColumn, DataType dataType) {
         this(tableColumns, dataType);
 
@@ -86,7 +123,19 @@ public class CustomTable extends JPanel {
             }
         }
     }
-
+    /**
+     * Creates a {@link CustomTable} with the specified table {@link ColumnName}, hidden columns and {@link DataType}.
+     * Initializes the {@link JTable} model, sets up the {@link JTable}, adds a {@link ScrollPane}
+     * to scroll all the rows.
+     *
+     * @param tableColumns Array of column names for the table.
+     * @param hiddenColumns Array of column names to be hidden in the table.
+     * @param dataType The data type of the table.
+     *
+     * @see ColumnName
+     * @see DataType
+     * @see JTable
+     */
     public CustomTable(ColumnName[] tableColumns, ColumnName[] hiddenColumns, DataType dataType) {
         this(tableColumns, dataType);
 
@@ -101,19 +150,59 @@ public class CustomTable extends JPanel {
     }
 
     // METHODS //
-    public void addRow(Object[] rowData) {
-        model.addRow(rowData);
-    }
-
-    public void removeRow(String string) {
+    private boolean rowExists(Object[] rowData) {
         for (int i = 0; i < model.getRowCount(); i++) {
-            if (model.getValueAt(i, 1).equals(string)) {
-                model.removeRow(i);
-                break;
+            boolean match = true;
+            for (int j = 0; j < rowData.length; j++) {
+                if (!model.getValueAt(i, j).equals(rowData[j])) {
+                    match = false;
+                    break;
+                }
             }
+            if (match) return true;
+        }
+        return false;
+    }
+    /**
+     * Adds a new row to the {@link JTable} with the specified data.
+     *
+     * @param rowData An array of objects representing the data for the new row.
+     */
+    public void addRow(Object[] rowData) {
+        if (!rowExists(rowData)) {
+            model.addRow(rowData);
+        } else {
+            System.out.println("Row already exists in the table");
+
         }
     }
 
+    /**
+     * Adds a new row to the table with the specified data.
+     * If the row already exists, it will not be added again.
+     *
+     * @param string the string used to check if the row exists.
+     * @param columnName the column name to check for the string.
+     *
+     */
+    public void removeRow(String string, ColumnName columnName) {
+        for (int i = 0; i < model.getRowCount(); i++) {
+            try {
+                int colIndex = Arrays.asList(tableColumns).indexOf(columnName);
+                if (model.getValueAt(i, colIndex).equals(string)) {
+                    model.removeRow(i);
+                    break;
+                }
+            } catch (ArrayIndexOutOfBoundsException e) {
+                System.err.println("Column " + columnName + " not found in table.");
+            }
+        }
+    }
+    /**
+     * Removes all the rows from the {@link JTable}.
+     *
+     * @see JTable
+     */
     public void clear() {
         model.setRowCount(0);
     }
@@ -209,7 +298,7 @@ public class CustomTable extends JPanel {
     }
 
     // BEHAVIOURS METHODS //
-    public void initListeners() {
+    private void initListeners() {
 
         table.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -268,19 +357,35 @@ public class CustomTable extends JPanel {
         }
     }
 
+    /**
+     * Sets the {@link TableCheckIsFavBehaviour} to check if a row is marked as favorite.
+     *
+     * @param tableRowClickBehaviour The behavior to set.
+     *
+     * @see TableCheckIsFavBehaviour
+     */
     public void setTableRowClickBehaviour(TableRowClickBehaviour tableRowClickBehaviour) {
         this.tableRowClickBehaviour = tableRowClickBehaviour;
     }
 
+    /**
+     * Sets the visibility of the search bar.
+     *
+     * @param tableCheckIsFavBehaviour {@code true} to show the search bar, {@code false} to hide it.
+     *
+     * @see CustomSearchBar
+     */
     public void setTableCheckIsFavBehaviour(TableCheckIsFavBehaviour tableCheckIsFavBehaviour) {
         this.tableCheckIsFavBehaviour = tableCheckIsFavBehaviour;
     }
 
     // GETTERS AND SETTERS //
-    public void setIsSearchable(boolean isSearchable) {
-        searchBar.setVisible(isSearchable);
-    }
 
+    /**
+     * Sets the columns to be used for searching in the table.
+     *
+     * @param columns
+     */
     public void setSearchColumns(ColumnName... columns) {
         for (ColumnName column : columns) {
             int index = table.getColumnModel().getColumnIndex(column.toString());
@@ -292,6 +397,13 @@ public class CustomTable extends JPanel {
         }
     }
 
+    /**
+     * Gets the {@link JTable}.
+     *
+     * @return the {@link JTable} instance.
+     *
+     * @see JTable
+     */
     public JTable getTable() {
         return table;
     }

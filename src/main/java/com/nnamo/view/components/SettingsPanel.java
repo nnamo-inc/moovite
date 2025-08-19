@@ -4,7 +4,6 @@ import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.interfaces.LogoutBehaviour;
 import com.nnamo.interfaces.SwitchBarListener;
 import com.nnamo.view.customcomponents.CustomGbc;
-import com.nnamo.view.customcomponents.CustomLogout;
 import com.nnamo.view.customcomponents.CustomSwitchBar;
 
 import javax.swing.*;
@@ -15,7 +14,7 @@ import java.awt.*;
 public class SettingsPanel extends JPanel {
 
     private CustomSwitchBar switchBar = new CustomSwitchBar();
-    private CustomLogout logout = new CustomLogout();
+    private StatisticsPanel.CustomLogout logout = new StatisticsPanel.CustomLogout();
 
     // CONSTRUCTOR //
     public SettingsPanel() {

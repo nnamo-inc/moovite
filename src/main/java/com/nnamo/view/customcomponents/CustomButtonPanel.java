@@ -7,41 +7,40 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Custom JButton that triggers a specific {@link ButtonPanelBehaviour} when clicked.
- * It is designed to work with a JPanel and a ButtonPanelBehaviour interface.
+ * Custom {@link JPanel} that triggers a specific {@link ButtonPanelBehaviour} when clicked.
+ * It is designed to work with a {@link JPanel} and a {@link ButtonPanelBehaviour} interface.
+ *
+ * @author Riccardo Finocchiaro
  *
  * @see JButton
  * @see ButtonPanelBehaviour
  */
 public class CustomButtonPanel extends JButton {
 
-    private JPanel panel;
+    private JPanel PANEL;
     private ButtonPanelBehaviour buttonPanelBehaviour;
 
     /**
-     * Creates a CustomButtonPanel.
+     * Creates a {@link CustomButtonPanel} with a specified name and a {@link JPanel} to interact with.
      *
      * @param nome  the button label that will be displayed on the button
      * @param panel the JPanel the button will interact with
+     *
+     * @see JButton
+     * @see JPanel
      */
     public CustomButtonPanel(String nome, JPanel panel) {
         super(nome);
-        this.panel = panel;
+        this.PANEL = panel;
         initListener();
     }
-    /**
-     * Handle the button click event by executing the behavior defined in the {@link ButtonPanelBehaviour}.
-     *
-     * @return void
-     *
-     * @see ButtonPanelBehaviour
-     */
+
     private void initListener() {
         addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (buttonPanelBehaviour != null) {
-                    buttonPanelBehaviour.onButtonPanelClick(panel);
+                    buttonPanelBehaviour.onButtonPanelClick(PANEL);
                 }
             }
         });

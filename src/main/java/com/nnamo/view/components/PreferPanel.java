@@ -105,7 +105,7 @@ public class PreferPanel extends JPanel {
                 stopTable.addRow(new Object[] { stop.getName(), stop.getId() });
                 break;
             case REMOVE:
-                stopTable.removeRow(stop.getId());
+                stopTable.removeRow(stop.getId(), ColumnName.CODICE);
                 break;
         }
     }
@@ -124,7 +124,7 @@ public class PreferPanel extends JPanel {
                     });
                     break;
                 case REMOVE:
-                    routeTable.removeRow(route.getId());
+                    routeTable.removeRow(route.getId(), ColumnName.CODICE);
                     break;
             }
         }

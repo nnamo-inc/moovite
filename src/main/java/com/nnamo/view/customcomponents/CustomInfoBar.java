@@ -4,9 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Custom JPanel that create a generic information bar with a {@link JLabel} and a {@link JTextField}.
+ * Custom {@link JPanel} that create a generic information bar with a {@link JLabel} and a {@link JTextField}.
  *
  * It can be used to display information when you want a label-text relationship, such as displaying a label with a text field next to it.
+ *
+ * @author Riccardo Finocchiaro
  *
  * @see JPanel
  * @see JLabel

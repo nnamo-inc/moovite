@@ -3,9 +3,11 @@ package com.nnamo.view.customcomponents;
 import java.awt.*;
 
 /**
- *Custom {@link GridBagConstraints} class that provides a more manageble way to set the properties of a {@link GridBagConstraints} object.
+ *Custom {@link GridBagConstraints} class that provides a more manageable way to set the properties of a {@link GridBagConstraints} object.
  *
  * This class allows you to chain method calls to set the properties of the {@link GridBagConstraints} object, making it easier to read and maintain, with a simil Builder Pattern.
+ *
+ * @author Riccardo Finocchiaro
  *
  * @see GridBagConstraints
  */

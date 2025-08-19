@@ -758,7 +758,7 @@ public class DatabaseService {
     /**
      * Get services of a specific trip by ID
      * 
-     * @param tripID The ID of the trip with the services
+     * @param tripId The ID of the trip with the services
      * @author Samuele Lombardi
      * @throws SQLException if query fails
      * @return trip's services
@@ -784,7 +784,7 @@ public class DatabaseService {
      * Creates user from username and password
      * 
      * @param username User's username
-     * @param password User's password
+     * @param passwordHash User's password
      * @author Samuele Lombardi
      * @throws SQLException if query fails
      */
@@ -886,7 +886,7 @@ public class DatabaseService {
      * @param userId The id of the user who has the favorite stops
      * @author Samuele Lombardi
      * @throws SQLException if query fails
-     * @returns list of user's favorite stops
+     * @return list of user's favorite stops
      */
     public List<StopModel> getFavoriteStops(int userId) throws SQLException {
         Dao<FavoriteStopModel, String> favoriteStopDao = getDao(FavoriteStopModel.class);
@@ -910,7 +910,7 @@ public class DatabaseService {
      * @param user The model of the user who has the favorite stops
      * @author Samuele Lombardi
      * @throws SQLException if query fails
-     * @returns list of user's favorite stops
+     * @return list of user's favorite stops
      */
     public List<StopModel> getFavoriteStops(UserModel user) throws SQLException {
         return getFavoriteStops(user.getId());

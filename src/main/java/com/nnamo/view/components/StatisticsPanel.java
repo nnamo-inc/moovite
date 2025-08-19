@@ -1,6 +1,7 @@
 package com.nnamo.view.components;
 
 import com.nnamo.enums.RealtimeMetricType;
+import com.nnamo.interfaces.LogoutBehaviour;
 import com.nnamo.models.RealtimeMetricModel;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
@@ -19,6 +20,8 @@ import org.jspecify.annotations.NonNull;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
@@ -298,5 +301,69 @@ public class StatisticsPanel extends JPanel {
             renderer.setSeriesShape(i, new java.awt.geom.Ellipse2D.Double(-3, -3, 6, 6));
         }
         return renderer;
+    }
+
+    /**
+     * Custom {@link JPanel} that creates a logout button to handle user logout actions using a specified {@link LogoutBehaviour}.
+     *
+     * @see JPanel
+     * @see JButton
+     * @see LogoutBehaviour
+     */
+    public static class CustomLogout extends JPanel {
+
+        // ATTRIBUTES //
+        JButton button;
+        LogoutBehaviour logoutBehaviour;
+
+        // CONSTRUCTOR //
+        /**
+         * Creates a {@link CustomLogout} with a logout {@link JButton}.
+         * The {@link JButton} will trigger the {@link LogoutBehaviour} when clicked.
+         *
+         *  @see JPanel
+         *  @see JButton
+         *  @see LogoutBehaviour
+         */
+        public CustomLogout() {
+            super();
+            setLayout(new GridBagLayout());
+
+            // Button
+            button = new JButton("Logout");
+            add(button, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER).setWeight(1.0, 1.0)
+                    .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 5, 2, 5));
+            initListener();
+        }
+
+        // METHODS BEHAVIOUR //
+        /**
+         * Initializes the {@link ActionListener} for the logout {@link JButton} that trigger the {@link LogoutBehaviour}..
+         *
+         *  @see ActionListener
+         *  @see LogoutBehaviour
+         *  @see JButton
+         */
+        private void initListener() {
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (logoutBehaviour != null) {
+                        logoutBehaviour.onLogout();
+                    }
+                }
+            });
+        }
+
+        /**
+         * Sets the {@link LogoutBehaviour} to be executed when the logout button is clicked.
+         *
+         * @param behaviour the {@link LogoutBehaviour} implementation that defines the logout action.
+         *
+         * @see LogoutBehaviour
+         */
+        public void setLogoutBehaviour(LogoutBehaviour behaviour) {
+            this.logoutBehaviour = behaviour;
+        }
     }
 }
