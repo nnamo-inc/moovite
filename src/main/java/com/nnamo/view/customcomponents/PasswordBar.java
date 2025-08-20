@@ -7,6 +7,8 @@ import java.awt.*;
  * PasswordBar is a custom JPanel that contains a label and a password field.
  * It is used to input passwords in a user interface.
  *
+ * @author Samuele Lombardi
+ *
  * @see JPanel
  * @see JLabel
  * @see JPasswordField

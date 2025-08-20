@@ -47,7 +47,10 @@ public class MapController {
         });
     }
 
-    public static GeoPosition calculateBaricentro(List<StopModel> stopList) {
+    public static GeoPosition calculateBarycenter(List<StopModel> stopList) {
+        if (stopList.isEmpty()) {
+            throw new ArithmeticException("Cannot calculate barycenter for an empty list of stops.");
+        }
         double latStop = 0;
         double lonStop = 0;
         int divider = 0;
@@ -78,27 +81,29 @@ public class MapController {
         double lonDiff = rightPosition - leftPosition;
         double absoluteDiff = Math.max(latDiff, lonDiff);
 
+        System.out.println(absoluteDiff);
+
         if (absoluteDiff > 0.12) {
-            zoomLevel = 7; // zoom molto lontano per route molto estese
+            zoomLevel = 7;
         } else if (absoluteDiff > 0.050) {
-            zoomLevel = 6; // zoom molto lontano per route molto estese
+            zoomLevel = 6;
         } else if (absoluteDiff > 0.030) {
-            zoomLevel = 5; // zoom intermedio
+            zoomLevel = 5;
         } else if (absoluteDiff > 0.013) {
-            zoomLevel = 4; // zoom più vicino per route medie
+            zoomLevel = 4;
         } else if (absoluteDiff > 0.010) {
-            zoomLevel = 3; // zoom più vicino per route piccole
+            zoomLevel = 3;
         } else if (absoluteDiff > 0.009) {
-            zoomLevel = 2; // zoom molto vicino per route piccole
+            zoomLevel = 2;
         } else {
-            zoomLevel = 1; // zoom molto vicino per route piccolissime
+            zoomLevel = 1;
         }
         return zoomLevel;
     }
 
     public static void renderRoutesVehicles(List<StopModel> stopModels, RealtimeGtfsService realtimeService,
             MainFrame mainFrame, String routeId, Direction direction) {
-        GeoPosition geoPosition = MapController.calculateBaricentro(stopModels);
+        GeoPosition geoPosition = MapController.calculateBarycenter(stopModels);
         int zoomLevel = MapController.calculateZoomLevel(stopModels);
 
         List<GtfsRealtime.VehiclePosition> routePositions = realtimeService
