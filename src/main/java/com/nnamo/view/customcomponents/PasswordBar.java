@@ -3,12 +3,26 @@ package com.nnamo.view.customcomponents;
 import javax.swing.*;
 import java.awt.*;
 
-
+/**
+ * PasswordBar is a custom JPanel that contains a label and a password field.
+ * It is used to input passwords in a user interface.
+ *
+ * @see JPanel
+ * @see JLabel
+ * @see JPasswordField
+ */
 public class PasswordBar extends JPanel {
     private final JLabel label;
     private final JPasswordField passwordField;
 
     // CONSTRUCTOR //
+    /**
+     * Constructs a PasswordBar with a label and a password field.
+     *
+     * @see JPanel
+     * @see JLabel
+     * @see JPasswordField
+     */
     public PasswordBar() {
         super();
         label = new JLabel("Password:");
@@ -24,10 +38,20 @@ public class PasswordBar extends JPanel {
     }
 
     // GETTERS AND SETTERS //
+    /**
+     * Returns the label of the password field.
+     *
+     * @return the label of the password field
+     */
     public String getPasswordField() {
         return new String(this.passwordField.getPassword());
     }
 
+    /**
+     * Sets the text of the password field.
+     *
+     * @param text the text to set in the password field
+     */
     public void setText(String text) {
         this.passwordField.setText(text);
     }
