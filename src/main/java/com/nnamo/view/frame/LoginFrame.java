@@ -8,12 +8,24 @@ import com.nnamo.interfaces.LoginBehaviour;
 import com.nnamo.interfaces.RegisterBehaviour;
 import com.nnamo.view.customcomponents.CustomGbc;
 import com.nnamo.view.customcomponents.CustomInfoBar;
+import com.nnamo.view.customcomponents.PasswordBar;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
+/**
+ * Login window {@link JFrame} for user authentication and registration.
+ * Provides fields for username and password, and buttons for login and registration.
+ * Handles user input validation and delegates authentication logic to provided behaviours.
+ *
+ * @see JFrame
+ * @see LoginBehaviour
+ * @see RegisterBehaviour
+ * @see CustomInfoBar
+ * @see PasswordBar
+ */
 public class LoginFrame extends JFrame {
 
     private final CustomInfoBar usernameField = new CustomInfoBar("Username:");
@@ -25,6 +37,13 @@ public class LoginFrame extends JFrame {
     private LoginBehaviour loginBehavior;
     private RegisterBehaviour registerBehavior;
 
+    /**
+     * Constructs the login frame, initializing UI components and layout.
+     * Sets up listeners for login and registration actions.
+     *
+     * @see JFrame
+     * @see CustomInfoBar
+     */
     public LoginFrame() {
         super();
         setLayout(new GridBagLayout());
@@ -52,11 +71,17 @@ public class LoginFrame extends JFrame {
         handleButtonListeners();
     }
 
+    /**
+     * Makes the login frame visible and resets input fields.
+     */
     public void open() {
         resetFields();
         setVisible(true);
     }
 
+    /**
+     * Hides the login frame and resets input fields.
+     */
     public void close() {
         resetFields();
         setVisible(false);
@@ -126,51 +151,34 @@ public class LoginFrame extends JFrame {
         });
     }
 
+    /**
+     * Sets the login behaviour to handle authentication logic.
+     *
+     * @param behaviour the {@link LoginBehaviour} implementation
+     *
+     * @see LoginBehaviour
+     */
     public void setLoginBehaviour(LoginBehaviour behaviour) {
         this.loginBehavior = behaviour;
     }
 
+    /**
+     * Sets the register behaviour to handle user registration logic.
+     *
+     * @param behaviour the {@link RegisterBehaviour} implementation
+     *
+     * @see RegisterBehaviour
+     */
     public void setRegisterBehaviour(RegisterBehaviour behaviour) {
         this.registerBehavior = behaviour;
     }
 
+    /**
+     * Resets the username, password, and info fields to empty.
+     */
     public void resetFields() {
         usernameField.setTextField("");
         passwordField.setText("");
         infoLabel.setText("");
     }
-
-    public void setInfoText(String infoText) {
-        infoLabel.setText(infoText);
-    }
-
-    private class PasswordBar extends JPanel {
-        private final JLabel label;
-        private final JPasswordField passwordField;
-
-        // CONSTRUCTOR //
-        public PasswordBar() {
-            super();
-            label = new JLabel("Password:");
-            label.setHorizontalAlignment(SwingConstants.RIGHT);
-            passwordField = new JPasswordField(20);
-            passwordField.setHorizontalAlignment(JTextField.LEFT);
-            passwordField.setEditable(true);
-            setLayout(new GridBagLayout());
-            add(label, new CustomGbc().setPosition(0, 0).setWeight(0.0, 0.0)
-                    .setInsets(2, 5, 2, 5).setAnchor(GridBagConstraints.EAST));
-            add(passwordField, new CustomGbc().setPosition(1, 0).setWeight(1.0, 1.0)
-                    .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 0, 2, 10).setAnchor(GridBagConstraints.WEST));
-        }
-
-        // GETTERS AND SETTERS //
-        public String getPasswordField() {
-            return new String(this.passwordField.getPassword());
-        }
-
-        public void setText(String text) {
-            this.passwordField.setText(text);
-        }
-    }
-
 }
