@@ -29,9 +29,11 @@ public class CustomSearchBar extends JPanel {
     private ButtonGroup buttonGroup;
     private ArrayList<JRadioButton> radioButtons;
     private JTextField field;
-    private JLabel Label;
+    private JLabel LabelSearch;
+    private JLabel LabelFilter;
     private JButton Button;
     private ArrayList<SearchBarListener> listeners;
+    private CustomTitle title;
 
     // CONSTRUCTOR //
     /**
@@ -50,20 +52,13 @@ public class CustomSearchBar extends JPanel {
         setLayout(new GridBagLayout());
 
         // Title Label
-        Label = new JLabel("Search:");
-        add(Label, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.WEST)
-                .setWeight(0.0, 1.0).setInsets(5, 5, 5, 5));
-
+//        createTitle();
+        // Search Label
+        createSearchLabel();
         // Search Field
-        field = new JTextField(20);
-        add(field, new CustomGbc().setPosition(2, 0).setFill(GridBagConstraints.HORIZONTAL)
-                .setWeight(1.0, 0.0).setWeight(1.0, 1.0).setInsets(5, 5, 5, 5));
-
+        createField();
         // Clear Button
-        Button = new JButton("X");
-        Button.setBackground(CustomColor.RED);
-        add(Button, new CustomGbc().setPosition(3, 0).setAnchor(GridBagConstraints.EAST)
-                .setWeight(0.0, 0.0).setInsets(5, 5, 5, 5));
+        createClearButton();
 
         initListener();
     }
@@ -82,6 +77,40 @@ public class CustomSearchBar extends JPanel {
      */
     public CustomSearchBar(ArrayList<JRadioButton> radioButtons) {
         this();
+        createRadioButtons(radioButtons);
+    }
+
+    // METHODS //
+    private void createTitle() {
+        title = new CustomTitle("Search Bar");
+        add(title, new CustomGbc().setPosition(0, 0).setWidth(4)
+                .setFill(GridBagConstraints.HORIZONTAL).setInsets(5, 5, 5, 5));
+    }
+
+
+    private void createSearchLabel() {
+        LabelSearch = new JLabel("Search:");
+        add(LabelSearch, new CustomGbc().setPosition(0, 1).setWidth(1).setFill(GridBagConstraints.HORIZONTAL)
+                .setAnchor(GridBagConstraints.EAST).setInsets(5, 5, 5, 5));
+    }
+
+    private void createField() {
+        field = new JTextField(20);
+        add(field, new CustomGbc().setPosition(1, 1).setFill(GridBagConstraints.HORIZONTAL)
+                .setWeight(1.0, 0.0).setWeight(1.0, 1.0).setInsets(5, 5, 5, 5));
+    }
+
+    private void createClearButton() {
+        Button = new JButton("X");
+        Button.setBackground(CustomColor.RED);
+        add(Button, new CustomGbc().setPosition(3, 1).setWidth(1)
+                .setFill(GridBagConstraints.NONE).setInsets(5, 5, 5, 5));
+    }
+
+    private void createRadioButtons(ArrayList<JRadioButton> radioButtons) {
+        LabelFilter = new JLabel("<html><p>Filter for</p><p>route: </p></html>: ");
+        add(LabelFilter, new CustomGbc().setPosition(0, 2).setWidth(1).setFill(GridBagConstraints.HORIZONTAL)
+                .setAnchor(GridBagConstraints.WEST).setInsets(5, 5, 5, 5));
 
         ArrayList<JRadioButton> buttons = new ArrayList<>();
         for (RouteType type : RouteType.values()) {
@@ -92,7 +121,7 @@ public class CustomSearchBar extends JPanel {
 
         this.radioButtons = radioButtons;
         JPanel radioButtonPanel = new JPanel();
-        radioButtonPanel.setLayout(new BoxLayout(radioButtonPanel, BoxLayout.X_AXIS));
+        radioButtonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
 
         this.buttonGroup = new ButtonGroup();
         for (JRadioButton rb : radioButtons) {
@@ -110,11 +139,10 @@ public class CustomSearchBar extends JPanel {
         JScrollPane scrollPane = new JScrollPane(radioButtonPanel);
         scrollPane.setMinimumSize(new Dimension(Integer.MAX_VALUE, 40));
 
-        add(scrollPane, new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL)
+        add(scrollPane, new CustomGbc().setPosition(1, 2).setFill(GridBagConstraints.HORIZONTAL).setAnchor(GridBagConstraints.WEST)
                 .setWeight(1.0, 1.0).setWidth(4).setInsets(5, 5, 5, 5));
     }
 
-    // METHODS //
     private RouteType getSelectedRouteType() {
         for (JRadioButton rb : radioButtons) {
             if (rb.isSelected()) {

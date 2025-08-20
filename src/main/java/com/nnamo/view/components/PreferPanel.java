@@ -10,6 +10,7 @@ import com.nnamo.models.StopModel;
 import com.nnamo.view.customcomponents.CustomSearchBar;
 import com.nnamo.view.customcomponents.CustomTable;
 import com.nnamo.view.customcomponents.CustomGbc;
+import com.nnamo.view.customcomponents.CustomTitle;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -39,6 +40,7 @@ import static com.nnamo.enums.DataType.*;
 public class PreferPanel extends JPanel {
 
     // ATTRIBUTES //
+    CustomTitle titleLabel;
     CustomSearchBar searchBar;
     CustomTable stopTable;
     CustomTable routeTable;
@@ -70,8 +72,7 @@ public class PreferPanel extends JPanel {
 
     // METHODS //
     private void createTitleBar() {
-        JLabel titleLabel = new JLabel("Favorites");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel = new CustomTitle("Prefer");
         add(titleLabel, new CustomGbc().setPosition(0, 0)
                 .setAnchor(GridBagConstraints.NORTH)
                 .setInsets(5, 5, 5, 5));

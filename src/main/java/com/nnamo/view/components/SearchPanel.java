@@ -9,6 +9,8 @@ import com.nnamo.models.StopModel;
 import com.nnamo.view.customcomponents.CustomTable;
 import com.nnamo.view.customcomponents.CustomGbc;
 import com.nnamo.view.customcomponents.CustomSearchBar;
+import com.nnamo.view.customcomponents.CustomTitle;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
@@ -36,6 +38,7 @@ import static com.nnamo.enums.DataType.*;
 public class SearchPanel extends JPanel {
 
     // ATTRIBUTES //
+    CustomTitle title;
     CustomSearchBar searchBar;
     CustomTable stopTable;
     CustomTable tableRoute;
@@ -52,6 +55,9 @@ public class SearchPanel extends JPanel {
         super();
         setLayout(new GridBagLayout());
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+
+
         // Title
         createTitleBar();
         // search bar
@@ -66,11 +72,10 @@ public class SearchPanel extends JPanel {
 
     // METHODS //
     private void createTitleBar() {
-        JLabel titleLabel = new JLabel("Search");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        add(titleLabel, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.NORTH)
+        title = new CustomTitle("Search");
+        add(title, new CustomGbc().setPosition(0, 0)
+                .setAnchor(GridBagConstraints.NORTH)
                 .setInsets(5, 5, 5, 5));
-
     }
 
     private void createSearchBar() {
@@ -83,7 +88,8 @@ public class SearchPanel extends JPanel {
 
         searchBar = new CustomSearchBar(buttons);
         add(searchBar,
-                new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL).setInsets(5, 5, 5, 5));
+                new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL)
+                        .setInsets(5, 5, 5, 5));
     }
 
     private void createStopTable() {

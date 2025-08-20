@@ -5,6 +5,7 @@ import com.nnamo.interfaces.LogoutBehaviour;
 import com.nnamo.interfaces.SwitchBarListener;
 import com.nnamo.view.customcomponents.CustomGbc;
 import com.nnamo.view.customcomponents.CustomSwitchBar;
+import com.nnamo.view.customcomponents.CustomTitle;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -29,6 +30,7 @@ public class SettingsPanel extends JPanel {
 
     private CustomSwitchBar switchBar = new CustomSwitchBar();
     private StatisticsPanel.CustomLogout logout = new StatisticsPanel.CustomLogout();
+    private CustomTitle title;
 
     // CONSTRUCTOR //
     /**
@@ -58,9 +60,8 @@ public class SettingsPanel extends JPanel {
 
     // METHODS //
     private void createTitleBar() {
-        JLabel titleLabel = new JLabel("Settings");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        add(titleLabel, new CustomGbc().setPosition(0, 0)
+        title = new CustomTitle("Settings");
+        add(title, new CustomGbc().setPosition(0, 0)
                 .setAnchor(GridBagConstraints.NORTH)
                 .setInsets(5, 5, 5, 5));
     }

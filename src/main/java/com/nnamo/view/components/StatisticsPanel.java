@@ -28,6 +28,7 @@ import java.util.ArrayList;
 
 public class StatisticsPanel extends JPanel {
     private final JPanel tileContainer = new JPanel();
+    private CustomTitle title;
     private final ArrayList<StatisticUnit> statisticTiles = new ArrayList<>();
     private static final int TILE_WIDTH = 120;
     private static final int TILE_HEIGHT = 80;
@@ -48,9 +49,8 @@ public class StatisticsPanel extends JPanel {
         setLayout(new GridBagLayout());
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        JLabel titleLabel = new JLabel("Statistics");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        add(titleLabel, new CustomGbc().setPosition(0, 0)
+        title = new CustomTitle("Statistics");
+        add(title, new CustomGbc().setPosition(0, 0)
                 .setAnchor(GridBagConstraints.NORTH)
                 .setInsets(5, 5, 5, 5));
 
