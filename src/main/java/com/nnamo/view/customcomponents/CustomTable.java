@@ -83,7 +83,12 @@ public class CustomTable extends JPanel {
         selectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         resetButton = new JButton("Reset Sorting");
-        resetButton.setBackground(CustomColor.RED);
+        resetButton.putClientProperty("JButton.buttonType", "roundRect");
+        resetButton.setBackground(CustomColor.RED); // o new Color(128, 0, 0);
+        resetButton.setForeground(Color.WHITE); // testo bianco
+
+        add(resetButton, BorderLayout.SOUTH);
+
         add(resetButton, BorderLayout.SOUTH);
 
         initDefaultComparator();

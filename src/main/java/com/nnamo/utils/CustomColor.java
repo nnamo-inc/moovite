@@ -5,6 +5,8 @@ import java.awt.*;
 public class CustomColor {
     public static final Color RED = new Color(105, 16, 0);
     public static final Color GREEN = new Color(37, 105, 0);
+    public static final Color LIGHTGRAY = new Color(211, 211, 211);
+
 
     public static Color getRandomColor() {
         float hue = (float) Math.random(); // [0, 1]

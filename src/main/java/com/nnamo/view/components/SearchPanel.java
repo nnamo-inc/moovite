@@ -6,10 +6,7 @@ import com.nnamo.interfaces.SearchBarListener;
 import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.models.RouteDirection;
 import com.nnamo.models.StopModel;
-import com.nnamo.view.customcomponents.CustomTable;
-import com.nnamo.view.customcomponents.CustomGbc;
-import com.nnamo.view.customcomponents.CustomSearchBar;
-import com.nnamo.view.customcomponents.CustomTitle;
+import com.nnamo.view.customcomponents.*;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -41,7 +38,7 @@ public class SearchPanel extends JPanel {
     CustomTitle title;
     CustomSearchBar searchBar;
     CustomTable stopTable;
-    CustomTable tableRoute;
+    CustomTable routeTable;
 
     // CONSTRUCTOR //
     /**
@@ -93,20 +90,36 @@ public class SearchPanel extends JPanel {
     }
 
     private void createStopTable() {
+        JPanel stopPanel = new JPanel(new GridBagLayout());
+
+        JLabel stopLabel = new JLabel("Prefer Stops");
+        stopLabel.setFont(new Font("Arial", Font.BOLD, 15));
+        stopPanel.add(stopLabel, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER)
+                .setInsets(2, 5, -3, 5));
+
         stopTable = new CustomTable(new ColumnName[] { CODICE, NOME }, STOP);
-        TitledBorder tableStopBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Fermate");
-        stopTable.setBorder(
-                BorderFactory.createCompoundBorder(tableStopBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
-        add(stopTable, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
+        stopPanel.add(stopTable, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
+                .setInsets(2, 5, 2, 5));
+
+        stopPanel.setBorder(new RoundedTitledBorder(20));
+        add(stopPanel, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
                 .setInsets(2, 5, 2, 5));
     }
 
     private void createRouteTable() {
-        tableRoute = new CustomTable(new ColumnName[] { CODICE, TIPO, CAPOLINEA, DIREZIONE }, new ColumnName[] { DIREZIONE }, ROUTE);
-        TitledBorder tableRouteBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Linee");
-        tableRoute.setBorder(
-                BorderFactory.createCompoundBorder(tableRouteBorder, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
-        add(tableRoute, new CustomGbc().setPosition(0, 3).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
+        JPanel routePanel = new JPanel(new GridBagLayout());
+
+        JLabel routeLabel = new JLabel("Prefer Routes");
+        routeLabel.setFont(new Font("Arial", Font.BOLD, 15));
+        routePanel.add(routeLabel, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER)
+                .setInsets(2, 5, -3, 5));
+
+        routeTable = new CustomTable(new ColumnName[] { CODICE, TIPO, CAPOLINEA, DIREZIONE }, new ColumnName[] { DIREZIONE }, ROUTE);
+        routePanel.add(routeTable, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
+                .setInsets(2, 5, 2, 5));
+
+        routePanel.setBorder(new RoundedTitledBorder(20));
+        add(routePanel, new CustomGbc().setPosition(0, 3).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
                 .setInsets(2, 5, 2, 5));
     }
 
@@ -123,7 +136,7 @@ public class SearchPanel extends JPanel {
      */
     public void updateView(List<StopModel> stopModels, List<RouteDirection> routeModels) {
         stopTable.clear();
-        tableRoute.clear();
+        routeTable.clear();
 
         for (StopModel stop : stopModels) {
             stopTable.addRow(new Object[] { stop.getId(), stop.getName() });
@@ -131,7 +144,7 @@ public class SearchPanel extends JPanel {
 
         for (RouteDirection route : routeModels) {
             String shortName = route.getShortName() != null ? route.getShortName() : "";
-            tableRoute.addRow(new Object[] {
+            routeTable.addRow(new Object[] {
                     shortName,
                     route.getType().name(),
                     route.getDirectionName(),
@@ -163,6 +176,6 @@ public class SearchPanel extends JPanel {
      */
     public void setTableRowClickBehaviour(TableRowClickBehaviour listener) {
         stopTable.setTableRowClickBehaviour(listener);
-        tableRoute.setTableRowClickBehaviour(listener);
+        routeTable.setTableRowClickBehaviour(listener);
     }
 }
