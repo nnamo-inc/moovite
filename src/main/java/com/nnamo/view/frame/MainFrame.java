@@ -69,7 +69,9 @@ public class MainFrame extends JFrame {
     public MainFrame() throws IOException {
         super("Moovite Map View");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(new Dimension(1000, 800));
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+        setMinimumSize(new Dimension(900, 600));
         setLayout(new BorderLayout());
 
         // Icon app
@@ -195,7 +197,7 @@ public class MainFrame extends JFrame {
         mapPanel.renderVehiclePositions(positions);
     }
 
-    private Dimension getScreenSize() {
+    private Dimension getScreenSizes() {
         return Toolkit.getDefaultToolkit().getScreenSize();
     }
 

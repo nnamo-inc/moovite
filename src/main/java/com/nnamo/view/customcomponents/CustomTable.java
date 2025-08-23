@@ -86,13 +86,14 @@ public class CustomTable extends JPanel {
         selectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         this.resetButton = new JButton("Reset Sorting");
-        resetButton.setBackground(CustomColor.RED); // o new Color(128, 0, 0);
-        resetButton.setForeground(Color.WHITE); // testo bianco
+        resetButton.setBackground(CustomColor.RED);
+        resetButton.setForeground(Color.WHITE);
+        resetButton.setOpaque(false);
         add(resetButton, new CustomGbc()
                 .setPosition(0, 3)
                 .setWeight(1.0, 0.0)
                 .setFill(GridBagConstraints.HORIZONTAL)
-                .setInsets(2, 5, 2, 5));
+                .setInsets(-3, 5, 5, 5));
 
         if ( !(builder.searchColumns.length == 0) ) {
             System.out.println("Search columns set to: " + Arrays.toString(searchColumns));

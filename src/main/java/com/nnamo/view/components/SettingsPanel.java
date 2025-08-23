@@ -70,7 +70,7 @@ public class SettingsPanel extends JPanel {
     private void createSwitchBar() {
         JPanel switchPanel = new JPanel();
         switchPanel.setLayout(new GridBagLayout());
-        switchPanel.setBorder(new CustomRoundedBorder(15));
+        switchPanel.setBorder(new CustomRoundedBorder(20, 1.7f));
 
         JLabel routeLabel = new JLabel("Online Status");
         routeLabel.setFont(new CustomFont());
@@ -93,13 +93,13 @@ public class SettingsPanel extends JPanel {
                 .setAnchor(GridBagConstraints.NORTH)
                 .setWeight(1.0, 0.0)
                 .setFill(GridBagConstraints.HORIZONTAL)
-                .setInsets(2, 5, 2, 5));
+                .setInsets(5, 5, 5, 5));
     }
 
     private void createLogout() {
         JPanel logoutPanel = new JPanel();
         logoutPanel.setLayout(new GridBagLayout());
-        logoutPanel.setBorder(new CustomRoundedBorder(15));
+        logoutPanel.setBorder(new CustomRoundedBorder(20, 1.7f));
 
         JLabel logoutLabel = new JLabel("Logout");
         logoutLabel.setFont(new CustomFont());
@@ -123,7 +123,7 @@ public class SettingsPanel extends JPanel {
                 .setAnchor(GridBagConstraints.NORTH)
                 .setWeight(1.0, 0.0)
                 .setFill(GridBagConstraints.HORIZONTAL)
-                .setInsets(2, 5, 2, 5));
+                .setInsets(5, 5, 5, 5));
     }
     /**
      * Sets the current {@link RealtimeStatus} for the online status switch bar.

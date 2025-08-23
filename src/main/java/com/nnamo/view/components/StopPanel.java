@@ -1,7 +1,6 @@
 package com.nnamo.view.components;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 
 import com.nnamo.enums.ColumnName;
 import com.nnamo.enums.RouteType;
@@ -44,9 +43,6 @@ public class StopPanel extends JPanel {
     private CustomTable tableTime;
     // Route service components
     private CustomTable tableService;
-
-    private JPanel infoPanel;
-
     // CONSTRUCTOR //
     /**
      * Creates a {@link StopPanel} with {@link CustomInfoBar} for stop information, route services, and upcoming departures.
@@ -78,9 +74,9 @@ public class StopPanel extends JPanel {
     // COMPONENT METHODS //
 
     private void createStopInfoPanel() {
-        infoPanel = new JPanel(new GridBagLayout());
+        JPanel stopInfoPanel = new JPanel(new GridBagLayout());
         JPanel stopInfo = new JPanel(new GridBagLayout());
-        stopInfo.setBorder(new CustomRoundedBorder(20));
+        stopInfo.setBorder(new CustomRoundedBorder(20, 1.7f));
 
         JLabel infoLabel = new JLabel("Stop Info");
         infoLabel.setFont(new CustomFont());
@@ -89,7 +85,7 @@ public class StopPanel extends JPanel {
                 .setAnchor(GridBagConstraints.NORTH)
                 .setWeight(0.0, 0.0)
                 .setFill(GridBagConstraints.NONE)
-                .setInsets(2, 5, 2, 5));
+                .setInsets(2, 5, -2, 5));
 
 
         stopName = new CustomInfoBar("Stop name: ");
@@ -99,7 +95,7 @@ public class StopPanel extends JPanel {
                 .setAnchor(GridBagConstraints.NORTH)
                 .setWeight(1.0, 0.0)
                 .setFill(GridBagConstraints.HORIZONTAL)
-                .setInsets(2, 5, 2, 5));
+                .setInsets(2, 5, 0, 5));
 
         stopCode = new CustomInfoBar("Stop code: ");
         stopCode.setOpaque(false);
@@ -108,36 +104,35 @@ public class StopPanel extends JPanel {
                 .setAnchor(GridBagConstraints.NORTH)
                 .setWeight(1.0, 0.0)
                 .setFill(GridBagConstraints.HORIZONTAL)
-                .setInsets(2, 5, 2, 5));
+                .setInsets(0, 5, 2, 5));
 
-        infoPanel.add(stopInfo, new CustomGbc()
+        stopInfoPanel.add(stopInfo, new CustomGbc()
                 .setPosition(0, 1)
                 .setAnchor(GridBagConstraints.NORTH)
                 .setWeight(1.0, 0.0)
                 .setFill(GridBagConstraints.HORIZONTAL)
                 .setInsets(2, 5, 2, 5));
 
-        add(infoPanel, new CustomGbc()
+        add(stopInfoPanel, new CustomGbc()
                 .setPosition(0, 1)
                 .setAnchor(GridBagConstraints.NORTH)
-                .setWeight(0.1, 0.1)
-                .setFill(GridBagConstraints.BOTH)
-                .setInsets(2, 5, 2, 5));
+                .setWeight(0.3, 0.0)
+                .setFill(GridBagConstraints.BOTH));
     }
 
-        private void createRouteInfoPanel() {
+    private void createRouteInfoPanel() {
 
-        JPanel infoRouteTable = new JPanel(new GridBagLayout());
-        infoRouteTable.setBorder(new CustomRoundedBorder(20));
+        JPanel routeInfoPanel = new JPanel(new GridBagLayout());
+        routeInfoPanel.setBorder(new CustomRoundedBorder(20, 1.7f));
 
         JLabel infoLabel = new JLabel("Route Info");
         infoLabel.setFont(new CustomFont());
-        infoRouteTable.add(infoLabel, new CustomGbc()
+        routeInfoPanel.add(infoLabel, new CustomGbc()
                 .setPosition(0, 0)
                 .setAnchor(GridBagConstraints.NORTH)
                 .setWeight(1.0, 0.0)
                 .setFill(GridBagConstraints.NONE)
-                .setInsets(2, 5, 2, 5));
+                .setInsets(2, 5, 0, 5));
 
         ArrayList<JRadioButton> buttons = new ArrayList<>();
         for (RouteType type : RouteType.values()) {
@@ -149,32 +144,31 @@ public class StopPanel extends JPanel {
         tableService = new CustomTable.Builder()
                 .setTableColumns(new ColumnName[] {ROUTENAME, CODE, TYPE, TERMINAL, DIRECTION, INFORMATION})
                 .setHiddenColumns(new ColumnName[] {DIRECTION})
-                .setSearchColumns(new ColumnName[] { ROUTENAME, CODE })
+//                .setSearchColumns(new ColumnName[] { ROUTENAME, CODE })
                 .setCustomRadioButtons(buttons)
                 .setDataType(ROUTE)
                 .build();
 //        tableService.getRadioButtonsPanel().setBorder(new EmptyBorder(0, 0, 0, 0));
 //        tableService.getSearchBar().setBorder(new EmptyBorder(0, 0, 0, 0));
 
-        infoRouteTable.add(tableService, new CustomGbc()
+        routeInfoPanel.add(tableService, new CustomGbc()
                 .setPosition(0, 1)
                 .setAnchor(GridBagConstraints.NORTH)
                 .setWeight(1.0, 1.0)
                 .setFill(GridBagConstraints.BOTH)
                 .setInsets(0, 5, 2, 5));
 
-        add(infoRouteTable, new CustomGbc()
+        add(routeInfoPanel, new CustomGbc()
                 .setPosition(0, 2)
                 .setAnchor(GridBagConstraints.CENTER)
                 .setFill(GridBagConstraints.BOTH)
-                .setWeight(1.0, 1.0));
-
-
+                .setWeight(0.3, 1.0)
+                .setInsets(5, 5, 5, 5));
     }
 
     private void createRouteTimePanel() {
         JPanel routeTimePanel = new JPanel(new GridBagLayout());
-        routeTimePanel.setBorder(new CustomRoundedBorder(20));
+        routeTimePanel.setBorder(new CustomRoundedBorder(20, 1.7f));
 
         JLabel timeLabel = new JLabel("Time Routes Arrivals");
         timeLabel.setFont(new CustomFont());
@@ -183,7 +177,7 @@ public class StopPanel extends JPanel {
                 .setAnchor(GridBagConstraints.NORTH)
                 .setWeight(1.0, 0.0)
                 .setFill(GridBagConstraints.NONE)
-                .setInsets(2, 5, 2, 5));
+                .setInsets(2, 5, -3, 5));
 
         tableTime = new CustomTable.Builder()
                 .setTableColumns(new ColumnName[] {ROUTENAME, DIRECTION, TIME, STATE, MINUTESLEFT, AVAILABLESEATS, TYPE, TRIP })
@@ -202,8 +196,9 @@ public class StopPanel extends JPanel {
                 .setPosition(1, 0)
                 .setAnchor(GridBagConstraints.WEST)
                 .setFill(GridBagConstraints.BOTH)
-                .setHeight(4)
-                .setWeight(1.0, 1.0));
+                .setHeight(3)
+                .setWeight(1.0, 1.0)
+                .setInsets(5, 5, 5, 5));
     }
     // METHODS //
     /**

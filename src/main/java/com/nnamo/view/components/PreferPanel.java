@@ -53,6 +53,7 @@ public class PreferPanel extends JPanel {
         super();
         setLayout(new GridBagLayout());
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
         // Title Label
         createTitleBar();
         // Search Bar
@@ -70,12 +71,15 @@ public class PreferPanel extends JPanel {
         titleLabel = new CustomTitle("Prefer");
         add(titleLabel, new CustomGbc().setPosition(0, 0)
                 .setAnchor(GridBagConstraints.NORTH)
-                .setInsets(5, 5, 5, 5));
+                .setInsets(5, 2, 5, 2));
     }
 
     private void createSearchBar() {
         searchBar = new CustomSearchBar();
-        add(searchBar, new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL).setInsets(5, 5, 5, 5));
+        add(searchBar, new CustomGbc()
+                .setPosition(0, 1)
+                .setFill(GridBagConstraints.HORIZONTAL)
+                .setInsets(5, 2, 5, 2));
     }
 
     private void createStopTable() {
@@ -83,21 +87,30 @@ public class PreferPanel extends JPanel {
 
         JLabel stopLabel = new JLabel("Prefer Stops");
         stopLabel.setFont(new CustomFont());
-        stopPanel.add(stopLabel, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER)
+        stopPanel.add(stopLabel, new CustomGbc()
+                .setPosition(0, 0)
+                .setAnchor(GridBagConstraints.CENTER)
                 .setInsets(4, 5, -3, 5));
 
-        stopTable = new CustomTable
-                .Builder()
+        stopTable = new CustomTable.Builder()
                 .setTableColumns(new ColumnName[] {STOPNAME, CODE})
                 .setDataType(STOP)
                 .build();
+        stopTable.setOpaque(false);
 
-        stopPanel.add(stopTable, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
+        stopPanel.add(stopTable, new CustomGbc()
+                .setPosition(0, 2)
+                .setFill(GridBagConstraints.BOTH)
+                .setWeight(1.0, 0.5)
                 .setInsets(2, 5, 2, 5));
 
-        stopPanel.setBorder( new CustomRoundedBorder(20));
-        add(stopPanel, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
-                .setInsets(2, 5, 2, 5));
+
+        stopPanel.setBorder( new CustomRoundedBorder(20, 1.7f));
+        add(stopPanel, new CustomGbc()
+                .setPosition(0, 2)
+                .setFill(GridBagConstraints.BOTH)
+                .setWeight(1.0, 0.5)
+                .setInsets(5, 2, 5, 2));
     }
 
     private void createRouteTable() {
@@ -105,7 +118,9 @@ public class PreferPanel extends JPanel {
 
         JLabel routeLabel = new JLabel("Prefer Routes");
         routeLabel.setFont(new CustomFont());
-        routePanel.add(routeLabel, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER)
+        routePanel.add(routeLabel, new CustomGbc()
+                .setPosition(0, 0)
+                .setAnchor(GridBagConstraints.CENTER)
                 .setInsets(4, 5, -3, 5));
 
         ArrayList<JRadioButton> buttons = new ArrayList<>();
@@ -114,21 +129,26 @@ public class PreferPanel extends JPanel {
             button.setSelected(type == RouteType.ALL); // Default selected type
             buttons.add(button);
         }
-        routeTable = new CustomTable
-                .Builder()
+
+        routeTable = new CustomTable.Builder()
                 .setTableColumns(new ColumnName[] {ROUTENAME, CODE, TYPE, TERMINAL, DIRECTION})
                 .setHiddenColumns(new ColumnName[] {DIRECTION})
                 .setCustomRadioButtons(buttons)
                 .setDataType(ROUTE)
                 .build();
 
-        routePanel.add(routeTable, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
+        routePanel.add(routeTable, new CustomGbc()
+                .setPosition(0, 2)
+                .setFill(GridBagConstraints.BOTH)
+                .setWeight(1.0, 0.5)
                 .setInsets(2, 5, 2, 5));
 
-
-        routePanel.setBorder(new CustomRoundedBorder(20));
-        add(routePanel, new CustomGbc().setPosition(0, 3).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
-                .setInsets(2, 5, 2, 5));
+        routePanel.setBorder(new CustomRoundedBorder(20, 1.7f));
+        add(routePanel, new CustomGbc()
+                .setPosition(0, 3)
+                .setFill(GridBagConstraints.BOTH)
+                .setWeight(1.0, 0.5)
+                .setInsets(5, 5, 5, 5));
 
     }
 

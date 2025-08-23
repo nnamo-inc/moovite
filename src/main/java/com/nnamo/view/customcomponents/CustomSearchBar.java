@@ -59,7 +59,7 @@ public class CustomSearchBar extends JPanel {
         // Clear Button
         createClearButton();
 
-        setBorder(new CustomRoundedBorder(20));
+        setBorder(new CustomRoundedBorder(20, 1.7f));
 
         initListener();
     }

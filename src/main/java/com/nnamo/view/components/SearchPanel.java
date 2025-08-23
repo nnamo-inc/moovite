@@ -52,6 +52,7 @@ public class SearchPanel extends JPanel {
         setLayout(new GridBagLayout());
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
+
         // Title
         createTitleBar();
         // search bar
@@ -69,12 +70,15 @@ public class SearchPanel extends JPanel {
         title = new CustomTitle("Search");
         add(title, new CustomGbc().setPosition(0, 0)
                 .setAnchor(GridBagConstraints.NORTH)
-                .setInsets(5, 5, 5, 5));
+                .setInsets(5, 2, 5, 2));
     }
 
     private void createSearchBar() {
         searchBar = new CustomSearchBar();
-        add(searchBar, new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL).setInsets(5, 5, 5, 5));
+        add(searchBar, new CustomGbc()
+                .setPosition(0, 1)
+                .setFill(GridBagConstraints.HORIZONTAL)
+                .setInsets(5, 2, 5, 2));
     }
 
     private void createStopTable() {
@@ -91,16 +95,20 @@ public class SearchPanel extends JPanel {
                 .setTableColumns(new ColumnName[] {CODE, STOPNAME})
                 .setDataType(STOP)
                 .build();
+        stopTable.setOpaque(false);
 
         stopPanel.add(stopTable, new CustomGbc()
                 .setPosition(0, 2)
                 .setFill(GridBagConstraints.BOTH)
-                .setWeight(1.0, 0.5)
-                .setInsets(2, 5, 2, 5));
+                .setInsets(2, 5, 2, 5)
+                .setWeight(1.0, 0.5));
 
-        stopPanel.setBorder(new CustomRoundedBorder(20));
-        add(stopPanel, new CustomGbc().setPosition(0, 2).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
-                .setInsets(2, 5, 2, 5));
+        stopPanel.setBorder(new CustomRoundedBorder(20, 1.7f));
+        add(stopPanel, new CustomGbc()
+                .setPosition(0, 2)
+                .setFill(GridBagConstraints.BOTH)
+                .setWeight(1.0, 0.5)
+                .setInsets(5, 2, 5, 2));
     }
 
     private void createRouteTable() {
@@ -109,7 +117,9 @@ public class SearchPanel extends JPanel {
 
         JLabel routeLabel = new JLabel("Routes");
         routeLabel.setFont(new CustomFont());
-        routePanel.add(routeLabel, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER)
+        routePanel.add(routeLabel, new CustomGbc()
+                .setPosition(0, 0)
+                .setAnchor(GridBagConstraints.CENTER)
                 .setInsets(4, 5, -3, 5));
 
         ArrayList<JRadioButton> buttons = new ArrayList<>();
@@ -132,9 +142,13 @@ public class SearchPanel extends JPanel {
                 .setWeight(1.0, 0.5)
                 .setInsets(2, 5, 2, 5));
 
-        add(routePanel, new CustomGbc().setPosition(0, 4).setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.5)
-                .setInsets(2, 5, 2, 5));
-        routePanel.setBorder(new CustomRoundedBorder(20));
+        add(routePanel, new CustomGbc()
+                .setPosition(0, 4)
+                .setFill(GridBagConstraints.BOTH)
+                .setWeight(1.0, 0.5)
+                .setInsets(5, 5, 5, 5));
+
+        routePanel.setBorder(new CustomRoundedBorder(20, 1.7f));
     }
 
     /**

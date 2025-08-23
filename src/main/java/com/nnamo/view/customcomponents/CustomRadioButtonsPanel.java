@@ -36,25 +36,21 @@ public class CustomRadioButtonsPanel extends JPanel{
         JScrollPane scrollPane = new JScrollPane(radioButtonPanel);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
         scrollPane.getHorizontalScrollBar().setPreferredSize(new Dimension(5, 6));
-
-
         scrollPane.setWheelScrollingEnabled(true);
 
-
         scrollPane.setMinimumSize(new Dimension(0, 25));
-//        scrollPane.setBorder(new CustomRoundedBorder(20));
-//        scrollPane.setBorder(BorderFactory.createCompoundBorder(new CustomRoundedBorder(20), new EmptyBorder(0, 5, 0, 5)));
         scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
+        scrollPane.setOpaque(false);
 
 
         add(scrollPane, new CustomGbc()
                 .setPosition(1, 0)
                 .setWeight(1.0, 1.0)
                 .setFill(GridBagConstraints.BOTH)
-                .setInsets(0, 5, 0, 0));
+                .setInsets(4, 4, 4, 5));
 
-        setBorder(new CustomRoundedBorder(20));
-
+        setBorder(new CustomRoundedBorder(20, 0.3f));
+        setOpaque(false);
 
     }
 
