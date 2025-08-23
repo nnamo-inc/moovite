@@ -21,6 +21,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Vector;
 
+import static com.nnamo.enums.ColumnName.*;
+
 /**
  * Custom {@link JPanel} that provides a {@link JTable} with search functionality and sorting capabilities.
  * It allows adding, removing, and clearing rows, and supports custom behaviors for row clicks and favorite checks.
@@ -34,39 +36,34 @@ import java.util.Vector;
  */
 public class CustomTable extends JPanel {
 
-    JTable table;
-    JButton resetButton;
-    CustomSearchBar searchBar;
+    private JTable table;
+    private JButton resetButton;
+    private CustomSearchBar searchBar;
 
-    JScrollPane scrollPane;
-    ColumnName[] tableColumns;
-    DataType dataType;
-    ArrayList<ColumnName> searchColumns;
-    DefaultTableModel model;
-    TableRowSorter sorter;
-    Vector<Object> rowData;
-    private boolean isSearchable = true;
+    private JScrollPane scrollPane;
+    private ColumnName[] tableColumns;
+    private ColumnName[] hiddenColumns;
+    private ColumnName[] searchColumns;
+    private DataType dataType;
+    private DefaultTableModel model;
+    private TableRowSorter sorter;
+    private Vector<Object> rowData;
+    private boolean isSearchable;
+    private CustomRadioButtonsPanel radioButtonsPanel;
 
     TableRowClickBehaviour tableRowClickBehaviour;
-    TableCheckIsFavBehaviour tableCheckIsFavBehaviour;
 
     // CONSTRUCTOR //
-    /**
-     * Creates a {@link CustomTable} with the specified {@link JTable} {@link ColumnName} and {@link DataType}.
-     * Initializes the {@link JTable} model, sets up the {@link JTable}, and adds a {@link ScrollPane} to scroll all the rows.
-     *
-     * @param tableColumns Array of column names for the table.
-     * @param dataType The data type of the table.
-     *
-     * @see ColumnName
-     * @see DataType
-     * @see JTable
-     * @see ScrollPane
-     */
-    public CustomTable(ColumnName[] tableColumns, DataType dataType) {
-        super(new BorderLayout());
-        this.tableColumns = tableColumns;
-        this.dataType = dataType;
+    public CustomTable(Builder builder) {
+        super(new GridBagLayout());
+        System.out.println("Building CustomTable with builder: " + builder);
+
+        this.tableColumns = builder.tableColumns;
+        this.dataType = builder.dataType;
+        this.hiddenColumns = builder.hiddenColumns;
+        this.searchColumns = builder.searchColumns;
+        this.radioButtonsPanel = builder.radioButtonsPanel;
+
         this.model = new DefaultTableModel(tableColumns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -74,84 +71,68 @@ public class CustomTable extends JPanel {
             }
         };
         this.table = new JTable(model);
+
         this.scrollPane = new JScrollPane(table);
-        add(scrollPane, BorderLayout.CENTER);
+        add(scrollPane, new CustomGbc()
+                .setPosition(0, 2)
+                .setWeight(1.0, 1.0)
+                .setFill(GridBagConstraints.BOTH)
+                .setInsets(2, 5, 2, 5));
+
         this.sorter = new TableRowSorter(model);
         table.setRowSorter(sorter);
 
         ListSelectionModel selectionModel = table.getSelectionModel();
         selectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        resetButton = new JButton("Reset Sorting");
-        resetButton.putClientProperty("JButton.buttonType", "roundRect");
+        this.resetButton = new JButton("Reset Sorting");
         resetButton.setBackground(CustomColor.RED); // o new Color(128, 0, 0);
         resetButton.setForeground(Color.WHITE); // testo bianco
+        add(resetButton, new CustomGbc()
+                .setPosition(0, 3)
+                .setWeight(1.0, 0.0)
+                .setFill(GridBagConstraints.HORIZONTAL)
+                .setInsets(2, 5, 2, 5));
 
-        add(resetButton, BorderLayout.SOUTH);
+        if ( !(builder.searchColumns.length == 0) ) {
+            System.out.println("Search columns set to: " + Arrays.toString(searchColumns));
 
-        add(resetButton, BorderLayout.SOUTH);
+            searchBar = new CustomSearchBar();
+            setSearchColumns(searchColumns);
+            searchBar.setVisible(true);
+            add(searchBar, new CustomGbc()
+                    .setPosition(0, 0)
+                    .setWeight(1.0, 0.0)
+                    .setFill(GridBagConstraints.BOTH)
+                    .setInsets(2, 5, 2, 5));
+            isSearchable = true;
+        }
+        if ( !(builder.hiddenColumns.length == 0) ) {
+            System.out.println("Hidden columns set to: " + Arrays.toString(hiddenColumns));
+
+            System.out.println("\n" + "\n");
+            System.out.println("table columns: " + Arrays.toString(tableColumns));
+            System.out.println("hidden columns: " + Arrays.toString(hiddenColumns));
+            for (ColumnName columnName : hiddenColumns) {
+                int colIndex = Arrays.asList(tableColumns).indexOf(columnName);
+                System.out.println("Hiding column: " + columnName + " at index " + colIndex);
+                var column = table.getColumnModel().getColumn(colIndex);
+                if (column != null) {
+                    table.removeColumn(column);
+                }
+            }
+        }
+
+        if ( radioButtonsPanel != null ) {
+            add(radioButtonsPanel, new CustomGbc()
+                    .setPosition(0, 1)
+                    .setWeight(1.0, 0.0)
+                    .setFill(GridBagConstraints.HORIZONTAL)
+                    .setInsets(2, 5, 2, 5));
+        }
 
         initDefaultComparator();
-        isSearchable = false;
         initListeners();
-    }
-    /**
-     * Creates a {@link CustomTable} with the specified table {@link ColumnName}, hidden columns, searchable {@link ColumnName} and {@link DataType}.
-     * Initializes the {@link JTable} model, sets up the {@link JTable}, adds a {@link ScrollPane}
-     * to scroll all the rows and adds a {@link CustomSearchBar} for filtering rows based on the specified search columns.
-     *
-     * @param tableColumns Array of column names for the table.
-     * @param hiddenColumns Array of column names to be hidden in the table.
-     * @param searchColumn Array of column names to be used for searching.
-     * @param dataType The data type of the table.
-     *
-     * @see ColumnName
-     * @see DataType
-     * @see JTable
-     * @see CustomSearchBar
-     */
-    public CustomTable(ColumnName[] tableColumns, ColumnName[] hiddenColumns, ColumnName[] searchColumn, DataType dataType) {
-        this(tableColumns, dataType);
-
-        searchBar = new CustomSearchBar();
-        searchColumns = new ArrayList<>();
-        setSearchColumns(searchColumn);
-        searchBar.setVisible(true);
-        add(searchBar, BorderLayout.NORTH);
-
-        for (ColumnName columnName : hiddenColumns) {
-            int colIndex = Arrays.asList(tableColumns).indexOf(columnName);
-            var column = table.getColumnModel().getColumn(colIndex);
-            if (column != null) {
-                table.removeColumn(column);
-                System.out.println((String) column.getHeaderValue());
-            }
-        }
-    }
-    /**
-     * Creates a {@link CustomTable} with the specified table {@link ColumnName}, hidden columns and {@link DataType}.
-     * Initializes the {@link JTable} model, sets up the {@link JTable}, adds a {@link ScrollPane}
-     * to scroll all the rows.
-     *
-     * @param tableColumns Array of column names for the table.
-     * @param hiddenColumns Array of column names to be hidden in the table.
-     * @param dataType The data type of the table.
-     *
-     * @see ColumnName
-     * @see DataType
-     * @see JTable
-     */
-    public CustomTable(ColumnName[] tableColumns, ColumnName[] hiddenColumns, DataType dataType) {
-        this(tableColumns, dataType);
-
-        for (ColumnName columnName : hiddenColumns) {
-            int colIndex = Arrays.asList(tableColumns).indexOf(columnName);
-            var column = table.getColumnModel().getColumn(colIndex);
-            if (column != null) {
-                table.removeColumn(column);
-                System.out.println((String) column.getHeaderValue());
-            }
-        }
     }
 
     // METHODS //
@@ -173,6 +154,7 @@ public class CustomTable extends JPanel {
      *
      * @param rowData An array of objects representing the data for the new row.
      */
+
     public void addRow(Object[] rowData) {
         if (!rowExists(rowData)) {
             model.addRow(rowData);
@@ -203,6 +185,7 @@ public class CustomTable extends JPanel {
             }
         }
     }
+
     /**
      * Removes all the rows from the {@link JTable}.
      *
@@ -333,12 +316,13 @@ public class CustomTable extends JPanel {
             searchBar.getField().addKeyListener(new KeyAdapter() {
                 @Override
                 public void keyReleased(KeyEvent e) {
+                    System.out.println("Key released: " + e.getKeyChar());
                     String searchText = searchBar.getFieldText().trim();
                     if (searchText.isEmpty()) {
                         sorter.setRowFilter(null);
                     } else {
                         ArrayList<RowFilter<DefaultTableModel, Object>> filters = new ArrayList<>();
-                        if (searchColumns.isEmpty()) {
+                        if (searchColumns.length == 0) {
                             filters.add(RowFilter.regexFilter("(?i)" + searchText, 0));
                         } else {
                             for (ColumnName column : searchColumns) {
@@ -360,6 +344,24 @@ public class CustomTable extends JPanel {
                 }
             });
         }
+
+        if ( radioButtonsPanel != null ) {
+            for (JRadioButton radioButton : radioButtonsPanel.getRadioButtons()) {
+                radioButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        String filterText = radioButton.getText();
+                        if (filterText.equals("All")) {
+                            sorter.setRowFilter(null);
+                        } else {
+                            int routeTypeColIndex = table.getColumnModel().getColumnIndex(TYPE.toString()); // replace with your column name
+                            RowFilter<DefaultTableModel, Object> filter = RowFilter.regexFilter("(?i)" + filterText, routeTypeColIndex);
+                            sorter.setRowFilter(filter);
+                        }
+                    }
+                });
+            }
+        }
     }
 
     /**
@@ -372,30 +374,21 @@ public class CustomTable extends JPanel {
     public void setTableRowClickBehaviour(TableRowClickBehaviour tableRowClickBehaviour) {
         this.tableRowClickBehaviour = tableRowClickBehaviour;
     }
-
-    /**
-     * Sets the visibility of the search bar.
-     *
-     * @param tableCheckIsFavBehaviour {@code true} to show the search bar, {@code false} to hide it.
-     *
-     * @see CustomSearchBar
-     */
-    public void setTableCheckIsFavBehaviour(TableCheckIsFavBehaviour tableCheckIsFavBehaviour) {
-        this.tableCheckIsFavBehaviour = tableCheckIsFavBehaviour;
-    }
-
     // GETTERS AND SETTERS //
-
     /**
      * Sets the columns to be used for searching in the table.
      *
      * @param columns
      */
-    public void setSearchColumns(ColumnName... columns) {
+    public void setSearchColumns(ColumnName[] columns) {
+        System.out.println("Setting search columns: " + Arrays.toString(columns));
         for (ColumnName column : columns) {
-            int index = table.getColumnModel().getColumnIndex(column.toString());
+            int index = Arrays.asList(tableColumns).indexOf(column);
+            System.out.println("    Column: " + column + ", Index: " + index);
             if (index >= 0 && index < tableColumns.length) {
-                searchColumns.add(column);
+                ArrayList<ColumnName> temp = new ArrayList<>(Arrays.asList(searchColumns));
+                temp.add(column);
+                searchColumns = temp.toArray(new ColumnName[0]);
             } else {
                 throw new IllegalArgumentException("Column index out of bounds: " + column);
             }
@@ -411,5 +404,57 @@ public class CustomTable extends JPanel {
      */
     public JTable getTable() {
         return table;
+    }
+
+    public CustomRadioButtonsPanel getRadioButtonsPanel() {
+        return radioButtonsPanel;
+    }
+
+    public CustomSearchBar getSearchBar() {
+        return searchBar;
+    }
+
+    public static class Builder {
+
+        ColumnName[] tableColumns = new ColumnName[] {};
+        ColumnName[] hiddenColumns =  new ColumnName[] {};
+        ColumnName[] searchColumns = new ColumnName[] {};
+        CustomRadioButtonsPanel radioButtonsPanel = null;
+        DataType dataType;
+
+        public Builder setTableColumns(ColumnName[] tableColumns) {
+            System.out.println("Setting table columns: " + Arrays.toString(tableColumns));
+            this.tableColumns = tableColumns;
+            return this;
+        }
+
+        public Builder setHiddenColumns(ColumnName[] hiddenColumns) {
+            System.out.println("Setting hidden columns: " + Arrays.toString(hiddenColumns));
+            this.hiddenColumns = hiddenColumns;
+            return this;
+        }
+
+        public Builder setSearchColumns(ColumnName[] searchColumns) {
+            System.out.println("Setting search columns: " + Arrays.toString(searchColumns));
+            this.searchColumns = searchColumns;
+            return this;
+        }
+
+        public Builder setDataType(DataType dataType) {
+            System.out.println("Setting data type: " + dataType);
+            this.dataType = dataType;
+            return this;
+        }
+
+        public Builder setCustomRadioButtons(ArrayList<JRadioButton> radioButtons) {
+            this.radioButtonsPanel = new CustomRadioButtonsPanel(radioButtons, "Route");
+            return this;
+        }
+
+        public CustomTable build() {
+            return new CustomTable(this);
+        }
+
+
     }
 }

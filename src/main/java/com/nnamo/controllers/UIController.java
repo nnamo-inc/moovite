@@ -89,7 +89,7 @@ public class UIController {
                     throws SQLException, IOException {
                 List<ColumnName> columnsList = Arrays.asList(columnNames);
                 String itemId = (String) ((List<Object>) rowData).get(
-                        columnsList.indexOf(ColumnName.CODICE));
+                        columnsList.indexOf(ColumnName.CODE));
                 boolean isFav = switch (dataType) {
                     case STOP -> {
                         StopModel stop = db.getStopById(itemId);
@@ -100,7 +100,7 @@ public class UIController {
                     }
                     case ROUTE -> {
                         Direction direction = Direction.OUTBOUND;
-                        int directionIndex = columnsList.indexOf(ColumnName.DIREZIONE);
+                        int directionIndex = columnsList.indexOf(ColumnName.DIRECTION);
                         if (directionIndex != -1) {
                             String directionName = (String) ((List<Object>) rowData).get(directionIndex);
                             switch (directionName) {

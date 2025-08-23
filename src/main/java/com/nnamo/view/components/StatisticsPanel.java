@@ -7,6 +7,7 @@ import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
 import com.nnamo.view.customcomponents.*;
 import com.nnamo.view.customcomponents.statistic.*;
+import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.title.TextTitle;
@@ -68,7 +69,7 @@ public class StatisticsPanel extends JPanel {
                 .setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 1.0)
                 .setInsets(5, 5, 5, 5));
-
+/*
         // Add component listener to both the panel and the tile container
         ComponentAdapter resizeListener = new ComponentAdapter() {
             @Override
@@ -78,7 +79,7 @@ public class StatisticsPanel extends JPanel {
         };
 
         addComponentListener(resizeListener);
-        tileContainer.addComponentListener(resizeListener);
+        tileContainer.addComponentListener(resizeListener);*/
 
         this.addStatisticTile(statBusTile);
         this.addStatisticTile(statEarlyBusTile);
@@ -96,6 +97,7 @@ public class StatisticsPanel extends JPanel {
                 true, // Tooltips
                 false // URLs
         );
+
         chart.setBackgroundPaint(Color.WHITE);
         chart.setBorderPaint(Color.LIGHT_GRAY);
         chart.setBorderStroke(new BasicStroke(1.0f));
@@ -110,7 +112,7 @@ public class StatisticsPanel extends JPanel {
         chartPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         // Create ChartPanel with tooltips enabled
-        org.jfree.chart.ChartPanel jfreeChartPanel = new org.jfree.chart.ChartPanel(chart);
+        ChartPanel jfreeChartPanel = new org.jfree.chart.ChartPanel(chart);
         jfreeChartPanel.setMouseWheelEnabled(true);
         jfreeChartPanel.setDomainZoomable(true);
         jfreeChartPanel.setRangeZoomable(true);
@@ -122,7 +124,7 @@ public class StatisticsPanel extends JPanel {
                 .setInsets(5, 5, 5, 5));
 
         // Also listen to the scroll pane viewport changes
-        scrollPane.getViewport().addChangeListener(e -> SwingUtilities.invokeLater(() -> relayoutTiles()));
+//        scrollPane.getViewport().addChangeListener(e -> SwingUtilities.invokeLater(() -> relayoutTiles()));
 
         setVisible(false);
     }

@@ -474,7 +474,7 @@ public class DatabaseService {
      * @throws SQLException if query fails
      * @return the list of routes with the approximate match
      */
-    public List<RouteDirection> getRoutesByName(String searchTerm, RouteType routeType) throws SQLException {
+    public List<RouteDirection> getRoutesByName(String searchTerm) throws SQLException {
         Dao<RouteModel, String> routeDao = getDao(RouteModel.class);
         double scoreThresholdPercentage = 60;
 
@@ -499,9 +499,9 @@ public class DatabaseService {
                         new SelectArg(SqlType.STRING, searchTerm),
                         new SelectArg(SqlType.DOUBLE, scoreThresholdPercentage));
 
-        if (routeType != RouteType.ALL) {
-            where.and().eq("type", new SelectArg(SqlType.UNKNOWN, routeType));
-        }
+//        if (routeType != RouteType.ALL) {
+//            where.and().eq("type", new SelectArg(SqlType.UNKNOWN, routeType));
+
 
         queryBuilder.orderByRaw(
                 "CASE " +
@@ -925,7 +925,7 @@ public class DatabaseService {
      * @author Davide Galilei
      * @throws SQLException if query fails
      */
-    public List<StopModel> getFavoriteStopsByName(int userId, String searchTerm, RouteType routeType)
+    public List<StopModel> getFavoriteStopsByName(int userId, String searchTerm)
             throws SQLException {
         Dao<StopModel, String> stopDao = getDao(StopModel.class);
         double scoreThresholdPercentage = 60;
@@ -954,7 +954,7 @@ public class DatabaseService {
      * @author Davide Galilei
      * @throws SQLException if query fails
      */
-    public List<RouteDirection> getFavoriteRoutesByName(int userId, String searchTerm, RouteType routeType)
+    public List<RouteDirection> getFavoriteRoutesByName(int userId, String searchTerm)
             throws SQLException {
         Dao<RouteModel, String> routeDao = getDao(RouteModel.class);
         double scoreThresholdPercentage = 60;
@@ -973,15 +973,15 @@ public class DatabaseService {
                 "WHEN FUZZY_SCORE(r.shortname, ?) > FUZZY_SCORE(r.longname, ?) THEN FUZZY_SCORE(r.shortname, ?) " +
                 "ELSE FUZZY_SCORE(r.longname, ?) END DESC";
 
-        if (routeType != RouteType.ALL) {
-            rawQuery += " AND r.type = ?" + orderBy;
-            List<RouteModel> routes = routeDao.queryRaw(rawQuery, routeDao.getRawRowMapper(),
-                    String.valueOf(userId), searchTerm, "%" + searchTerm + "%", "%" + searchTerm + "%",
-                    "%" + searchTerm + "%", searchTerm, String.valueOf(scoreThresholdPercentage),
-                    searchTerm, String.valueOf(scoreThresholdPercentage), routeType.name(),
-                    searchTerm, searchTerm, searchTerm, searchTerm).getResults();
-            return getDirectionedRoutes(routes);
-        } else {
+//        if (routeType != RouteType.ALL) {
+//            rawQuery += " AND r.type = ?" + orderBy;
+//            List<RouteModel> routes = routeDao.queryRaw(rawQuery, routeDao.getRawRowMapper(),
+//                    String.valueOf(userId), searchTerm, "%" + searchTerm + "%", "%" + searchTerm + "%",
+//                    "%" + searchTerm + "%", searchTerm, String.valueOf(scoreThresholdPercentage),
+//                    searchTerm, String.valueOf(scoreThresholdPercentage), routeType.name(),
+//                    searchTerm, searchTerm, searchTerm, searchTerm).getResults();
+//            return getDirectionedRoutes(routes);
+//        } else {
             rawQuery += orderBy;
             List<RouteModel> routes = routeDao.queryRaw(rawQuery, routeDao.getRawRowMapper(),
                     String.valueOf(userId), searchTerm, "%" + searchTerm + "%", "%" + searchTerm + "%",
@@ -989,7 +989,7 @@ public class DatabaseService {
                     searchTerm, String.valueOf(scoreThresholdPercentage),
                     searchTerm, searchTerm, searchTerm, searchTerm).getResults();
             return getDirectionedRoutes(routes);
-        }
+//        }
     }
 
     /**

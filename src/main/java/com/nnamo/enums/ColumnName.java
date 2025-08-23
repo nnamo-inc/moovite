@@ -1,19 +1,19 @@
 package com.nnamo.enums;
 
 public enum ColumnName {
-    LINEA("Linea"),
-    CAPOLINEA("Capolinea"),
-    DIREZIONE("Direzione"),
-    ORARIO("Orario"),
-    STATO("Stato"),
-    MINUTIRIMAMENTI("Minuti Rimanenti"),
-    POSTIDISPONIBILI("Posti Disponibili"),
-    NOME("Nome"),
-    CODICE("Codice"),
-    TIPO("Tipo"),
+    ROUTENAME("Route name"),
+    TERMINAL("Terminal"),
+    DIRECTION("Direction"),
+    TIME("Time"),
+    STATE("State"),
+    MINUTESLEFT("Minutes left"),
+    AVAILABLESEATS("Available seats"),
+    STOPNAME("Stop name"),
+    CODE("Code"),
+    TYPE("Type"),
     TRIP("Trip"),
     DELAY("Delay"),
-    INFORMAZIONI("Informazioni");
+    INFORMATION("Information");
 
     String name;
 

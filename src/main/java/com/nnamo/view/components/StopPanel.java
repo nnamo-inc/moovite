@@ -1,10 +1,10 @@
 package com.nnamo.view.components;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
-import javax.swing.border.TitledBorder;
+import javax.swing.border.EmptyBorder;
 
 import com.nnamo.enums.ColumnName;
+import com.nnamo.enums.RouteType;
 import com.nnamo.interfaces.TableCheckIsFavBehaviour;
 import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.models.RouteModel;
@@ -13,6 +13,7 @@ import com.nnamo.models.TripModel;
 import com.nnamo.models.RealtimeStopUpdate;
 import com.nnamo.view.customcomponents.CustomGbc;
 import com.nnamo.view.customcomponents.CustomInfoBar;
+import com.nnamo.view.customcomponents.CustomRoundedBorder;
 import com.nnamo.view.customcomponents.CustomTable;
 import java.awt.*;
 import java.time.LocalTime;
@@ -37,13 +38,14 @@ import static com.nnamo.enums.DataType.*;
  */
 public class StopPanel extends JPanel {
     // Stop info components
-    private final CustomInfoBar nomeFermata = new CustomInfoBar("Nome fermata: ");
-    private final CustomInfoBar idFermata = new CustomInfoBar("ID fermata: ");
+    private CustomInfoBar stopName;
+    private CustomInfoBar stopCode;
     // Route info components
     private CustomTable tableTime;
     // Route service components
     private CustomTable tableService;
-    // Prefer components
+
+    private JPanel infoPanel;
 
     // CONSTRUCTOR //
     /**
@@ -61,78 +63,148 @@ public class StopPanel extends JPanel {
         setLayout(new GridBagLayout());
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        // Stop info panel
+
+
+        // Stop info Panel
         createStopInfoPanel();
-        // Route service panel
-        createRouteInfoPanel();
-        // Route info panel
+        // Route Time panel
         createRouteTimePanel();
+        // Route Info panel
+        createRouteInfoPanel();
 
         setVisible(false);
     }
 
     // COMPONENT METHODS //
+
     private void createStopInfoPanel() {
+        infoPanel = new JPanel(new GridBagLayout());
+        JPanel stopInfo = new JPanel(new GridBagLayout());
+        stopInfo.setBorder(new CustomRoundedBorder(20));
 
-        // Info stop with border
-        JPanel infoStop = new JPanel(new GridBagLayout());
-        TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Informazioni fermata");
-        infoStop.setBorder(titledBorder);
-
-        // label name
-        infoStop.add(nomeFermata,
-                new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.WEST)
-                        .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0));
-
-        // text name
-        infoStop.add(idFermata, new CustomGbc().setPosition(1, 0).setAnchor(GridBagConstraints.WEST)
-                .setFill(GridBagConstraints.BOTH).setWeight(0.3, 1.0));
-
-
-        add(infoStop, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER)
-                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 0.1).setWidth(3)
+        JLabel infoLabel = new JLabel("Stop Info");
+        infoLabel.setFont(new CustomFont());
+        stopInfo.add(infoLabel, new CustomGbc()
+                .setPosition(0, 0)
+                .setAnchor(GridBagConstraints.NORTH)
+                .setWeight(0.0, 0.0)
+                .setFill(GridBagConstraints.NONE)
                 .setInsets(2, 5, 2, 5));
 
+
+        stopName = new CustomInfoBar("Stop name: ");
+        stopName.setOpaque(false);
+        stopInfo.add(stopName, new CustomGbc()
+                .setPosition(0, 1)
+                .setAnchor(GridBagConstraints.NORTH)
+                .setWeight(1.0, 0.0)
+                .setFill(GridBagConstraints.HORIZONTAL)
+                .setInsets(2, 5, 2, 5));
+
+        stopCode = new CustomInfoBar("Stop code: ");
+        stopCode.setOpaque(false);
+        stopInfo.add(stopCode, new CustomGbc()
+                .setPosition(0, 2)
+                .setAnchor(GridBagConstraints.NORTH)
+                .setWeight(1.0, 0.0)
+                .setFill(GridBagConstraints.HORIZONTAL)
+                .setInsets(2, 5, 2, 5));
+
+        infoPanel.add(stopInfo, new CustomGbc()
+                .setPosition(0, 1)
+                .setAnchor(GridBagConstraints.NORTH)
+                .setWeight(1.0, 0.0)
+                .setFill(GridBagConstraints.HORIZONTAL)
+                .setInsets(2, 5, 2, 5));
+
+        add(infoPanel, new CustomGbc()
+                .setPosition(0, 1)
+                .setAnchor(GridBagConstraints.NORTH)
+                .setWeight(0.1, 0.1)
+                .setFill(GridBagConstraints.BOTH)
+                .setInsets(2, 5, 2, 5));
     }
 
-    private void createRouteInfoPanel() {
+        private void createRouteInfoPanel() {
 
-        // Info route with border
-        JPanel infoRoute = new JPanel(new GridBagLayout());
-        TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Tabella Linee");
-        infoRoute.setBorder(titledBorder);
+        JPanel infoRouteTable = new JPanel(new GridBagLayout());
+        infoRouteTable.setBorder(new CustomRoundedBorder(20));
 
-        // Table
-        this.tableService = new CustomTable(
-                new ColumnName[] { LINEA, CODICE, TIPO, CAPOLINEA, DIREZIONE, INFORMAZIONI },
-                new ColumnName[] { DIREZIONE },
-                new ColumnName[] { LINEA },
-                ROUTE);
-        infoRoute.add(tableService, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER)
-                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
+        JLabel infoLabel = new JLabel("Route Info");
+        infoLabel.setFont(new CustomFont());
+        infoRouteTable.add(infoLabel, new CustomGbc()
+                .setPosition(0, 0)
+                .setAnchor(GridBagConstraints.NORTH)
+                .setWeight(1.0, 0.0)
+                .setFill(GridBagConstraints.NONE)
+                .setInsets(2, 5, 2, 5));
 
-        add(infoRoute, new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.CENTER)
-                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
+        ArrayList<JRadioButton> buttons = new ArrayList<>();
+        for (RouteType type : RouteType.values()) {
+            JRadioButton button = new JRadioButton(type.getValue());
+            button.setSelected(type == RouteType.ALL); // Default selected type
+            buttons.add(button);
+        }
+
+        tableService = new CustomTable.Builder()
+                .setTableColumns(new ColumnName[] {ROUTENAME, CODE, TYPE, TERMINAL, DIRECTION, INFORMATION})
+                .setHiddenColumns(new ColumnName[] {DIRECTION})
+                .setSearchColumns(new ColumnName[] { ROUTENAME, CODE })
+                .setCustomRadioButtons(buttons)
+                .setDataType(ROUTE)
+                .build();
+//        tableService.getRadioButtonsPanel().setBorder(new EmptyBorder(0, 0, 0, 0));
+//        tableService.getSearchBar().setBorder(new EmptyBorder(0, 0, 0, 0));
+
+        infoRouteTable.add(tableService, new CustomGbc()
+                .setPosition(0, 1)
+                .setAnchor(GridBagConstraints.NORTH)
+                .setWeight(1.0, 1.0)
+                .setFill(GridBagConstraints.BOTH)
+                .setInsets(0, 5, 2, 5));
+
+        add(infoRouteTable, new CustomGbc()
+                .setPosition(0, 2)
+                .setAnchor(GridBagConstraints.CENTER)
+                .setFill(GridBagConstraints.BOTH)
+                .setWeight(1.0, 1.0));
+
+
     }
 
     private void createRouteTimePanel() {
-
-        // Route time with border
         JPanel routeTimePanel = new JPanel(new GridBagLayout());
-        TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.lightGray, 2), "Tabella corse");
-        routeTimePanel.setBorder(titledBorder);
+        routeTimePanel.setBorder(new CustomRoundedBorder(20));
 
-        // Table
-        this.tableTime = new CustomTable(
-                new ColumnName[] { LINEA, DIREZIONE, ORARIO, STATO, MINUTIRIMAMENTI, POSTIDISPONIBILI, TIPO, TRIP },
-                ROUTE);
-        routeTimePanel.add(tableTime, new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.CENTER)
-                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
+        JLabel timeLabel = new JLabel("Time Routes Arrivals");
+        timeLabel.setFont(new CustomFont());
+        routeTimePanel.add(timeLabel, new CustomGbc()
+                .setPosition(0, 0)
+                .setAnchor(GridBagConstraints.NORTH)
+                .setWeight(1.0, 0.0)
+                .setFill(GridBagConstraints.NONE)
+                .setInsets(2, 5, 2, 5));
 
-        add(routeTimePanel, new CustomGbc().setPosition(1, 1).setAnchor(GridBagConstraints.WEST)
-                .setFill(GridBagConstraints.BOTH).setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
+        tableTime = new CustomTable.Builder()
+                .setTableColumns(new ColumnName[] {ROUTENAME, DIRECTION, TIME, STATE, MINUTESLEFT, AVAILABLESEATS, TYPE, TRIP })
+                .setHiddenColumns(new ColumnName[] { TRIP })
+                .setDataType(ROUTE)
+                .build();
+
+        routeTimePanel.add(tableTime, new CustomGbc()
+                .setPosition(0, 1)
+                .setAnchor(GridBagConstraints.NORTH)
+                .setWeight(1.0, 1.0)
+                .setFill(GridBagConstraints.BOTH)
+                .setInsets(2, 5, 2, 5));
+
+        add(routeTimePanel, new CustomGbc()
+                .setPosition(1, 0)
+                .setAnchor(GridBagConstraints.WEST)
+                .setFill(GridBagConstraints.BOTH)
+                .setHeight(4)
+                .setWeight(1.0, 1.0));
     }
-
     // METHODS //
     /**
      * Updates the departures table with a list of {@link StopTimeModel} and their associated {@link RealtimeStopUpdate} data.
@@ -240,8 +312,8 @@ public class StopPanel extends JPanel {
      * @see CustomInfoBar
      */
     public void updateStopInfo(String id, String nome) {
-        this.nomeFermata.setTextField(nome);
-        this.idFermata.setTextField(id);
+        this.stopName.setTextField(nome);
+        this.stopCode.setTextField(id);
     }
 
     /**
@@ -286,5 +358,16 @@ public class StopPanel extends JPanel {
     public void setGenericTableRowClickBehaviour(TableRowClickBehaviour listener) {
         this.tableService.setTableRowClickBehaviour(listener);
         this.tableTime.setTableRowClickBehaviour(listener);
+    }
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Test StopPanel");
+        frame.setLayout(new BorderLayout());
+        StopPanel stopPanel = new StopPanel();
+        stopPanel.setVisible(true);
+        frame.add(stopPanel, BorderLayout.CENTER);
+        frame.setSize(800, 600);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
     }
 }

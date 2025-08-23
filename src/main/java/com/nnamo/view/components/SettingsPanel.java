@@ -4,6 +4,7 @@ import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.interfaces.LogoutBehaviour;
 import com.nnamo.interfaces.SwitchBarListener;
 import com.nnamo.view.customcomponents.CustomGbc;
+import com.nnamo.view.customcomponents.CustomRoundedBorder;
 import com.nnamo.view.customcomponents.CustomSwitchBar;
 import com.nnamo.view.customcomponents.CustomTitle;
 
@@ -28,8 +29,8 @@ import java.awt.*;
  */
 public class SettingsPanel extends JPanel {
 
-    private CustomSwitchBar switchBar = new CustomSwitchBar();
-    private StatisticsPanel.CustomLogout logout = new StatisticsPanel.CustomLogout();
+    private CustomSwitchBar switchBar;
+    private StatisticsPanel.CustomLogout logout;
     private CustomTitle title;
 
     // CONSTRUCTOR //
@@ -67,17 +68,62 @@ public class SettingsPanel extends JPanel {
     }
 
     private void createSwitchBar() {
-        TitledBorder onlineStatus = new TitledBorder(new LineBorder(Color.lightGray, 2), "Online Status");
-        switchBar.setBorder(BorderFactory.createCompoundBorder(onlineStatus, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
-        add(switchBar, new CustomGbc().setPosition(0, 1).setAnchor(GridBagConstraints.NORTH).setWeight(1.0, 0.0)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 5, 2, 5));
+        JPanel switchPanel = new JPanel();
+        switchPanel.setLayout(new GridBagLayout());
+        switchPanel.setBorder(new CustomRoundedBorder(15));
+
+        JLabel routeLabel = new JLabel("Online Status");
+        routeLabel.setFont(new CustomFont());
+        switchPanel.add(routeLabel, new CustomGbc()
+                .setPosition(0, 0)
+                .setAnchor(GridBagConstraints.NORTH)
+                .setWeight(1.0, 0.0)
+                .setFill(GridBagConstraints.NONE)
+                .setInsets(2, 5, 2, 5));
+
+        switchBar = new CustomSwitchBar();
+        switchPanel.add(switchBar, new CustomGbc()
+                .setPosition(0, 1)
+                .setAnchor(GridBagConstraints.NORTH)
+                .setWeight(1.0, 0.0)
+                .setFill(GridBagConstraints.HORIZONTAL)
+                .setInsets(2, 5, 2, 5));
+
+        add(switchPanel, new CustomGbc().setPosition(0, 1)
+                .setAnchor(GridBagConstraints.NORTH)
+                .setWeight(1.0, 0.0)
+                .setFill(GridBagConstraints.HORIZONTAL)
+                .setInsets(2, 5, 2, 5));
     }
 
     private void createLogout() {
-        TitledBorder logOut = new TitledBorder(new LineBorder(Color.lightGray, 2), "Logout");
-        logout.setBorder(BorderFactory.createCompoundBorder(logOut, BorderFactory.createEmptyBorder(2, 5, 2, 5)));
-        add(logout, new CustomGbc().setPosition(0, 2).setAnchor(GridBagConstraints.NORTH).setWeight(1.0, 0.0)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 5, 2, 5));
+        JPanel logoutPanel = new JPanel();
+        logoutPanel.setLayout(new GridBagLayout());
+        logoutPanel.setBorder(new CustomRoundedBorder(15));
+
+        JLabel logoutLabel = new JLabel("Logout");
+        logoutLabel.setFont(new CustomFont());
+        logoutPanel.add(logoutLabel, new CustomGbc()
+                .setPosition(0, 0)
+                .setAnchor(GridBagConstraints.NORTH)
+                .setWeight(1.0, 0.0)
+                .setFill(GridBagConstraints.NONE)
+                .setInsets(2, 5, 2, 5));
+
+        logout = new StatisticsPanel.CustomLogout();
+        logoutPanel.add(logout, new CustomGbc()
+                .setPosition(0, 1)
+                .setAnchor(GridBagConstraints.NORTH)
+                .setWeight(1.0, 0.0)
+                .setFill(GridBagConstraints.HORIZONTAL)
+                .setInsets(2, 5, 2, 5));
+
+        add(logoutPanel, new CustomGbc()
+                .setPosition(0, 3)
+                .setAnchor(GridBagConstraints.NORTH)
+                .setWeight(1.0, 0.0)
+                .setFill(GridBagConstraints.HORIZONTAL)
+                .setInsets(2, 5, 2, 5));
     }
     /**
      * Sets the current {@link RealtimeStatus} for the online status switch bar.

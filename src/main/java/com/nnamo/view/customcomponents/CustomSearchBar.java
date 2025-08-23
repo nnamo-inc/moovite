@@ -5,6 +5,8 @@ import com.nnamo.interfaces.SearchBarListener;
 import com.nnamo.utils.CustomColor;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,7 +35,6 @@ public class CustomSearchBar extends JPanel {
     private JLabel LabelFilter;
     private JButton Button;
     private ArrayList<SearchBarListener> listeners;
-    private CustomTitle title;
 
     // CONSTRUCTOR //
     /**
@@ -51,14 +52,14 @@ public class CustomSearchBar extends JPanel {
         // Set layout
         setLayout(new GridBagLayout());
 
-        // Title Label
-//        createTitle();
         // Search Label
         createSearchLabel();
         // Search Field
         createField();
         // Clear Button
         createClearButton();
+
+        setBorder(new CustomRoundedBorder(20));
 
         initListener();
     }
@@ -80,14 +81,8 @@ public class CustomSearchBar extends JPanel {
         createRadioButtons(radioButtons);
     }
 
+
     // METHODS //
-    private void createTitle() {
-        title = new CustomTitle("Search Bar");
-        add(title, new CustomGbc().setPosition(0, 0).setWidth(4)
-                .setFill(GridBagConstraints.HORIZONTAL).setInsets(5, 5, 5, 5));
-    }
-
-
     private void createSearchLabel() {
         LabelSearch = new JLabel("Search:");
         add(LabelSearch, new CustomGbc().setPosition(0, 1).setWidth(1).setFill(GridBagConstraints.HORIZONTAL)
@@ -96,21 +91,29 @@ public class CustomSearchBar extends JPanel {
 
     private void createField() {
         field = new JTextField(20);
+
+
         add(field, new CustomGbc().setPosition(1, 1).setFill(GridBagConstraints.HORIZONTAL)
-                .setWeight(1.0, 0.0).setWeight(1.0, 1.0).setInsets(5, 5, 5, 5));
+                .setWeight(1.0, 0.0).setInsets(5, 5, 5, 5));
     }
 
     private void createClearButton() {
         Button = new JButton("X");
         Button.setBackground(CustomColor.RED);
-        add(Button, new CustomGbc().setPosition(3, 1).setWidth(1)
+        add(Button, new CustomGbc().setPosition(2, 1).setWidth(1)
                 .setFill(GridBagConstraints.NONE).setInsets(5, 5, 5, 5));
     }
 
     private void createRadioButtons(ArrayList<JRadioButton> radioButtons) {
-        LabelFilter = new JLabel("<html><p>Filter for</p><p>route: </p></html>: ");
-        add(LabelFilter, new CustomGbc().setPosition(0, 2).setWidth(1).setFill(GridBagConstraints.HORIZONTAL)
-                .setAnchor(GridBagConstraints.WEST).setInsets(5, 5, 5, 5));
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
+
+        LabelFilter = new JLabel("<html>Routes<br>filters:</html>");
+        buttonPanel.add(LabelFilter, new CustomGbc()
+                .setPosition(0, 0)
+                .setWeight(0.0, 0.0)
+                .setFill(GridBagConstraints.HORIZONTAL)
+                .setAnchor(GridBagConstraints.WEST)
+                .setInsets(5, 5, 5, 5));
 
         ArrayList<JRadioButton> buttons = new ArrayList<>();
         for (RouteType type : RouteType.values()) {
@@ -118,11 +121,9 @@ public class CustomSearchBar extends JPanel {
             button.setSelected(type == RouteType.ALL); // Default selected type
             buttons.add(button);
         }
-
         this.radioButtons = radioButtons;
         JPanel radioButtonPanel = new JPanel();
         radioButtonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
-
         this.buttonGroup = new ButtonGroup();
         for (JRadioButton rb : radioButtons) {
             buttonGroup.add(rb);
@@ -137,10 +138,21 @@ public class CustomSearchBar extends JPanel {
         }
 
         JScrollPane scrollPane = new JScrollPane(radioButtonPanel);
+        scrollPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         scrollPane.setMinimumSize(new Dimension(Integer.MAX_VALUE, 40));
 
-        add(scrollPane, new CustomGbc().setPosition(1, 2).setFill(GridBagConstraints.HORIZONTAL).setAnchor(GridBagConstraints.WEST)
-                .setWeight(1.0, 1.0).setWidth(4).setInsets(5, 5, 5, 5));
+        buttonPanel.add(scrollPane, new CustomGbc()
+                .setPosition(1, 0)
+                .setWeight(1.0, 0.0).setFill(GridBagConstraints.BOTH)
+                .setFill(GridBagConstraints.HORIZONTAL)
+                .setAnchor(GridBagConstraints.WEST)
+                .setInsets(5, 5, 5, 5));
+
+        add(buttonPanel, new CustomGbc()
+                .setPosition(0, 2)
+                .setFill(GridBagConstraints.HORIZONTAL)
+                .setWeight(1.0, 1.0)
+                .setWidth(4));
     }
 
     private RouteType getSelectedRouteType() {
@@ -191,7 +203,7 @@ public class CustomSearchBar extends JPanel {
 
     private void notifyListeners(String searchText) {
         for (SearchBarListener listener : listeners) {
-            listener.onSearch(searchText, getSelectedRouteType());
+            listener.onSearch(searchText);
         }
     }
     // GETTERS AND SETTERS //

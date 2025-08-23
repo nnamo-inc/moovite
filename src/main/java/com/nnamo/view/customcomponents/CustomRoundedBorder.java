@@ -3,14 +3,12 @@ package com.nnamo.view.customcomponents;
 import com.nnamo.utils.CustomColor;
 
 import javax.swing.border.Border;
-import javax.swing.border.TitledBorder;
-import javax.swing.*;
 import java.awt.*;
 
-public class RoundedTitledBorder implements Border {
+public class CustomRoundedBorder implements Border {
     private int arc;
 
-    public RoundedTitledBorder(int arc) {
+    public CustomRoundedBorder(int arc) {
         super();
         this.arc = arc;
     }
@@ -22,14 +20,14 @@ public class RoundedTitledBorder implements Border {
 
         g2.setColor(CustomColor.LIGHTGRAY);
         g2.setStroke(new BasicStroke(1.7f));
-        g2.drawRoundRect(x+2, y+2, width-5, height-3, arc, arc);
+        g2.drawRoundRect(x + 9, y + 3, width - 18, height - 8, arc, arc);
 
         g2.dispose();
     }
 
     @Override
     public Insets getBorderInsets(Component c) {
-        return new Insets(0, 0, 0, 0);
+        return new Insets(10, 10, 10, 10);
     };
 
     @Override

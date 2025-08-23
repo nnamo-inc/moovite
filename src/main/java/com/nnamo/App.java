@@ -43,11 +43,10 @@ public class App {
             try {
                 UIManager.setLookAndFeel(new FlatDarculaLaf());
                 // https://www.formdev.com/flatlaf/customizing/
-                UIManager.put("Button.arc", 25);
-                UIManager.put("Component.arc", 25);
-                UIManager.put("ProgressBar.arc", 25);
-                UIManager.put("TextComponent.arc", 25);
-                UIManager.put("JButton.buttonType", "roundRect");
+                UIManager.put("Button.arc", 15);
+                UIManager.put("Component.arc", 15);
+                UIManager.put("ProgressBar.arc", 15);
+                UIManager.put("TextComponent.arc", 15);
             } catch (Exception ex) {
                 System.err.println("Failed to initialize LaF");
             }

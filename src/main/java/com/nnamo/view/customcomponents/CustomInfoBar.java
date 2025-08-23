@@ -32,16 +32,21 @@ public class CustomInfoBar extends JPanel {
 
         // Label
         label = new JLabel(labelName);
-        label.setHorizontalAlignment(SwingConstants.RIGHT);
-        add(label, new CustomGbc().setPosition(0, 0).setInsets(2, 5, 2, 5).setAnchor(GridBagConstraints.WEST)
-                .setFill(GridBagConstraints.HORIZONTAL).setWeight(0.1, 0.1));
-
+        label.setOpaque(false);
+        add(label, new CustomGbc()
+                .setPosition(0, 0)
+                .setInsets(0, 0, 0, 0)
+                .setFill(GridBagConstraints.HORIZONTAL)
+                .setWeight(0.0, 1.0));
         // Text Field
         textField = new JTextField(15);
-        textField.setHorizontalAlignment(JTextField.LEFT);
+        textField.setOpaque(false);
         textField.setEditable(false);
-        add(textField, new CustomGbc().setPosition(1, 0).setInsets(2, 5, 2, 5).setAnchor(GridBagConstraints.WEST)
-                .setFill(GridBagConstraints.HORIZONTAL).setWeight(1.0, 1.0));
+        add(textField, new CustomGbc()
+                .setPosition(1, 0)
+                .setInsets(2, 5, 2, 5)
+                .setFill(GridBagConstraints.HORIZONTAL)
+                .setWeight(1.0, 1.0));
     }
 
     // GETTERS AND SETTERS //

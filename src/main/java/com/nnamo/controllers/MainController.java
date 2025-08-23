@@ -84,7 +84,7 @@ public class MainController {
         mainFrame.setRealtimeStatus(RealtimeStatus.ONLINE); // Changing realtime status notifies the observer method,
 
         // Mostra tutte le fermate allo startup del programma.
-        searchQueryListener.onSearch("", RouteType.ALL);
+        searchQueryListener.onSearch("");
     }
 
     public void setLocalMapCache(File cacheDir) {
@@ -94,10 +94,10 @@ public class MainController {
     public SearchBarListener createSearchPanelQueryBehavior() {
         return new SearchBarListener() {
             @Override
-            public void onSearch(String searchText, RouteType routeType) {
+            public void onSearch(String searchText) {
                 try {
                     var stops = db.getStopsByName(searchText);
-                    var routes = db.getRoutesByName(searchText, routeType);
+                    var routes = db.getRoutesByName(searchText);
                     mainFrame.renderSearchPanel(stops, routes);
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -109,16 +109,16 @@ public class MainController {
     public SearchBarListener createPreferPanelQueryBehavior() {
         return new SearchBarListener() {
             @Override
-            public void onSearch(String searchText, RouteType routeType) {
+            public void onSearch(String searchText) {
                 if (sessionUser == null) {
                     return;
                 }
 
                 try {
                     // For favorite stops, we don't filter by route type since stops don't have route types
-                    var favoriteStops = db.getFavoriteStopsByName(sessionUser.getId(), searchText, RouteType.ALL);
+                    var favoriteStops = db.getFavoriteStopsByName(sessionUser.getId(), searchText);
                     // For favorite routes, we do filter by the selected route type
-                    var favoriteRoutes = db.getFavoriteRoutesByName(sessionUser.getId(), searchText, routeType);
+                    var favoriteRoutes = db.getFavoriteRoutesByName(sessionUser.getId(), searchText);
 
                     mainFrame.clearPreferPanelTable();
                     mainFrame.initPreferPanelTable(favoriteStops, favoriteRoutes);
