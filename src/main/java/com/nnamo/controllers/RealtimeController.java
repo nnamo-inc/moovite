@@ -64,7 +64,7 @@ public class RealtimeController {
                     // Updates route vehicle positions
                     String routeId = mainFrame.getCurrentRouteId();
                     if (routeId != null && !routeId.isEmpty()) {
-                        MapController.updateRealtimePositions(routeId, mainFrame, realtimeService);
+                        MapController.updateVehiclePositions(routeId, mainFrame, realtimeService, db);
                         System.out.println("Updated realtime vehicle positions on feed update on route " + routeId);
                     }
                 } catch (SQLException | IOException e) {

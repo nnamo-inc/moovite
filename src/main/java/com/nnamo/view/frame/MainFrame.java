@@ -17,13 +17,15 @@ import com.nnamo.models.StopModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.RealtimeStopUpdate;
 import com.nnamo.models.RouteDirection;
+import com.nnamo.models.StaticVehiclePosition;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
 import com.nnamo.view.components.*;
 import org.jxmapviewer.viewer.GeoPosition;
 
 /**
- * Custom {@link JFrame} that composes and manages the primary UI panels, including the map, stop details, favorites bar, and navigation panels.
+ * Custom {@link JFrame} that composes and manages the primary UI panels,
+ * including the map, stop details, favorites bar, and navigation panels.
  *
  * @author Riccardo Finocchiaro
  * @author Samuele Lombardi
@@ -56,7 +58,8 @@ public class MainFrame extends JFrame {
 
     /**
      * Constructs the main application frame, initializing all UI panels and layout.
-     * Sets up split panes for navigation and content, and configures the application icon.
+     * Sets up split panes for navigation and content, and configures the
+     * application icon.
      *
      * @throws IOException if an error occurs during map panel initialization
      *
@@ -145,7 +148,7 @@ public class MainFrame extends JFrame {
     /**
      * Sets the current stop ID and position in the map panel.
      *
-     * @param stopId the stop ID to set
+     * @param stopId   the stop ID to set
      * @param position the {@link GeoPosition} to set
      *
      * @see GeoPosition
@@ -153,7 +156,6 @@ public class MainFrame extends JFrame {
     public void setCurrentStop(String stopId, GeoPosition position) {
         this.mapPanel.setCurrentStop(stopId, position);
     }
-
 
     /**
      * Repaints the map panel and its overlays.
@@ -163,22 +165,24 @@ public class MainFrame extends JFrame {
     }
 
     /**
-     * Renders route lines and vehicle positions on the map panel, and updates the current route and map position.
+     * Renders route lines and vehicle positions on the map panel, and updates the
+     * current route and map position.
      *
-     * @param stopModels the list of stops representing the route
-     * @param routePositions the list of vehicle positions
-     * @param routeId the route ID to set
-     * @param geoPosition the map position to center on
-     * @param zoomLevel the zoom level to set
+     * @param stopModels        the list of stops representing the route
+     * @param realtimePositions the list of vehicle positions
+     * @param routeId           the route ID to set
+     * @param geoPosition       the map position to center on
+     * @param zoomLevel         the zoom level to set
      *
      * @see StopModel
      * @see VehiclePosition
      * @see GeoPosition
      */
-    public void renderRouteLines(List<StopModel> stopModels, List<VehiclePosition> routePositions, String routeId,
+    public void renderRouteLines(List<StopModel> stopModels, List<VehiclePosition> realtimePositions,
+            List<StaticVehiclePosition> staticPositions, String routeId,
             GeoPosition geoPosition, int zoomLevel) {
         mapPanel.renderStopsRoute(stopModels);
-        mapPanel.renderVehiclePositions(routePositions);
+        mapPanel.renderVehiclePositions(realtimePositions, staticPositions);
         mapPanel.repaintView();
         setCurrentRouteId(routeId);
         if (geoPosition != null) {
@@ -193,8 +197,9 @@ public class MainFrame extends JFrame {
      *
      * @see VehiclePosition
      */
-    public void renderVehiclePositions(List<VehiclePosition> positions) {
-        mapPanel.renderVehiclePositions(positions);
+    public void renderVehiclePositions(List<VehiclePosition> realtimePositions,
+            List<com.nnamo.models.StaticVehiclePosition> staticPositions) {
+        mapPanel.renderVehiclePositions(realtimePositions, staticPositions);
     }
 
     private Dimension getScreenSizes() {
@@ -204,7 +209,7 @@ public class MainFrame extends JFrame {
     /**
      * Updates the stop panel with stop information.
      *
-     * @param id the stop ID
+     * @param id   the stop ID
      * @param nome the stop name
      */
     public void updateStopPanelInfo(String id, String nome) {
@@ -214,7 +219,7 @@ public class MainFrame extends JFrame {
     /**
      * Updates the stop panel with stop times and real-time updates.
      *
-     * @param stopTimes the list of stop times
+     * @param stopTimes       the list of stop times
      * @param realtimeUpdates the list of real-time updates
      *
      * @see StopTimeModel
@@ -285,7 +290,7 @@ public class MainFrame extends JFrame {
     /**
      * Updates the modular panel in the left panel.
      *
-     * @param panel the panel to update
+     * @param panel     the panel to update
      * @param isVisible true to show, false to hide
      */
     public void updateLeftPanelModularPanel(JPanel panel, boolean isVisible) {
@@ -295,8 +300,8 @@ public class MainFrame extends JFrame {
     /**
      * Updates the favorite button in the favorites bar.
      *
-     * @param itemId the item ID
-     * @param isFav true if favorite, false otherwise
+     * @param itemId   the item ID
+     * @param isFav    true if favorite, false otherwise
      * @param dataType the data type (STOP or ROUTE)
      *
      * @see DataType
@@ -371,7 +376,7 @@ public class MainFrame extends JFrame {
      * Sets the map panel's position and zoom level.
      *
      * @param geoPosition the position to center the map on
-     * @param zoomLevel the zoom level to set
+     * @param zoomLevel   the zoom level to set
      *
      * @see GeoPosition
      */
@@ -394,7 +399,7 @@ public class MainFrame extends JFrame {
     /**
      * Initializes the favorites table in the left panel's prefer panel.
      *
-     * @param stops the list of favorite stops
+     * @param stops  the list of favorite stops
      * @param routes the list of favorite routes
      *
      * @see StopModel
@@ -407,7 +412,7 @@ public class MainFrame extends JFrame {
     /**
      * Updates the favorite stops table in the left panel.
      *
-     * @param stop the stop to update
+     * @param stop       the stop to update
      * @param updateMode the update mode (ADD or REMOVE)
      *
      * @see StopModel
@@ -420,7 +425,7 @@ public class MainFrame extends JFrame {
     /**
      * Updates the favorite routes table in the left panel.
      *
-     * @param route the list of routes to update
+     * @param route      the list of routes to update
      * @param updateMode the update mode (ADD or REMOVE)
      *
      * @see RouteDirection
@@ -462,7 +467,6 @@ public class MainFrame extends JFrame {
     public void setRealtimeStatus(RealtimeStatus status) {
         this.leftPanel.setRealtimeStatus(status);
     }
-
 
     /**
      * Sets the generic table row click behavior for the left and stop panels.
@@ -546,7 +550,7 @@ public class MainFrame extends JFrame {
      * Sets up the statistics panel in the left panel with the provided services.
      *
      * @param realtimeService the real-time GTFS service
-     * @param db the database service
+     * @param db              the database service
      *
      * @see RealtimeGtfsService
      * @see DatabaseService
@@ -563,9 +567,10 @@ public class MainFrame extends JFrame {
     }
 
     /**
-     * Initializes the favorites table in the prefer panel with the provided stops and routes.
+     * Initializes the favorites table in the prefer panel with the provided stops
+     * and routes.
      *
-     * @param favoriteStops the list of favorite stops
+     * @param favoriteStops  the list of favorite stops
      * @param favoriteRoutes the list of favorite routes
      *
      * @see StopModel
@@ -578,7 +583,7 @@ public class MainFrame extends JFrame {
     /**
      * Renders the search panel with the provided stops and routes.
      *
-     * @param stops the list of stops to display
+     * @param stops  the list of stops to display
      * @param routes the list of routes to display
      *
      * @see StopModel

@@ -5,8 +5,9 @@ import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.nnamo.interfaces.WaypointBehaviour;
 import com.nnamo.interfaces.ZoomBehaviour;
 import com.nnamo.models.StopModel;
-import com.nnamo.view.painter.PositionPainter;
+import com.nnamo.view.painter.RealtimePositionPainter;
 import com.nnamo.view.painter.RoutePainter;
+import com.nnamo.view.painter.StaticPositionPainter;
 import com.nnamo.view.painter.StopPainter;
 import com.nnamo.view.waypoints.StopWaypoint;
 
@@ -35,7 +36,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Custom {@link JPanel} that displays an interactive map using {@link JXMapViewer}, supporting the rendering of stops, routes, and real-time vehicle positions.
+ * Custom {@link JPanel} that displays an interactive map using
+ * {@link JXMapViewer}, supporting the rendering of stops, routes, and real-time
+ * vehicle positions.
  *
  * @author Riccardo Finocchiaro
  * @author Samuele Lombardi
@@ -48,7 +51,7 @@ import java.util.Set;
  * @see ZoomBehaviour
  * @see StopPainter
  * @see RoutePainter
- * @see PositionPainter
+ * @see RealtimePositionPainter
  */
 public class MapPanel extends JPanel {
 
@@ -69,7 +72,8 @@ public class MapPanel extends JPanel {
     private GeoPosition stopPosition;
 
     private RoutePainter routePainter;
-    private PositionPainter positionPainter;
+    private RealtimePositionPainter realtimePositionPainter;
+    private StaticPositionPainter staticPositionPainter;
     private StopPainter stopPainter;
     private StopPainter routeStopPainter;
     private ZoomBehaviour zoomBehaviour;
@@ -84,8 +88,10 @@ public class MapPanel extends JPanel {
     private WaypointBehaviour waypointBehaviour;
 
     /**
-     * Creates a {@link MapPanel} with an embedded {@link JXMapViewer}, initializing painters for stops, routes, and vehicle positions.
-     * Sets up the map tile factory, default position, zoom, and listeners for user interaction.
+     * Creates a {@link MapPanel} with an embedded {@link JXMapViewer}, initializing
+     * painters for stops, routes, and vehicle positions.
+     * Sets up the map tile factory, default position, zoom, and listeners for user
+     * interaction.
      *
      * @throws IOException if there is an error initializing the map tile factory
      *
@@ -93,7 +99,7 @@ public class MapPanel extends JPanel {
      * @see JXMapViewer
      * @see StopPainter
      * @see RoutePainter
-     * @see PositionPainter
+     * @see RealtimePositionPainter
      */
     public MapPanel() throws IOException {
         TileFactoryInfo info = new OSMTileFactoryInfo();
@@ -109,7 +115,8 @@ public class MapPanel extends JPanel {
         this.stopPainter = new StopPainter(this.map);
         this.routePainter = new RoutePainter();
         this.routeStopPainter = new StopPainter(this.map);
-        this.positionPainter = new PositionPainter(this.map);
+        this.realtimePositionPainter = new RealtimePositionPainter(this.map);
+        this.staticPositionPainter = new StaticPositionPainter(this.map);
 
         this.stopsCompoundPainter = new CompoundPainter<JXMapViewer>();
         this.routeCompoundPainter = new CompoundPainter<JXMapViewer>();
@@ -117,7 +124,8 @@ public class MapPanel extends JPanel {
         this.stopsPaintersList = createPaintersList(stopPainter);
         this.stopsCompoundPainter.setPainters(stopsPaintersList);
 
-        this.routePaintersList = createPaintersList(positionPainter, routeStopPainter, routePainter);
+        this.routePaintersList = createPaintersList(realtimePositionPainter, staticPositionPainter, routeStopPainter,
+                routePainter);
         this.routeCompoundPainter.setPainters(routePaintersList);
 
         setLayout(new BorderLayout());
@@ -184,7 +192,8 @@ public class MapPanel extends JPanel {
     }
 
     /**
-     * Sets the behaviour for waypoint clicks, allowing custom actions when a waypoint is clicked.
+     * Sets the behaviour for waypoint clicks, allowing custom actions when a
+     * waypoint is clicked.
      *
      * @param waypointBehaviour the {@link WaypointBehaviour} to set
      */
@@ -203,17 +212,19 @@ public class MapPanel extends JPanel {
     }
 
     /**
-     * Repaints the map and all overlay painters, updating the display of stops, routes, and vehicle positions.
+     * Repaints the map and all overlay painters, updating the display of stops,
+     * routes, and vehicle positions.
      *
      * @see JXMapViewer
      * @see StopPainter
      * @see RoutePainter
-     * @see PositionPainter
+     * @see RealtimePositionPainter
      */
     public void repaintView() {
         super.repaint();
         routeStopPainter.repaint();
-        positionPainter.repaint();
+        realtimePositionPainter.repaint();
+        staticPositionPainter.repaint();
 
         if (currentStopId != null) {
             stopPainter.repaint(currentStopId);
@@ -237,13 +248,14 @@ public class MapPanel extends JPanel {
     }
 
     /**
-     * Resets the map to its default state, clearing route overlays and restoring the stop view.
+     * Resets the map to its default state, clearing route overlays and restoring
+     * the stop view.
      * Hides the reset button and resets the painter overlays.
      *
      * @see JXMapViewer
      * @see StopPainter
      * @see RoutePainter
-     * @see PositionPainter
+     * @see RealtimePositionPainter
      */
     public void resetAction() {
         this.resetRouteButton.setVisible(false);
@@ -256,7 +268,8 @@ public class MapPanel extends JPanel {
             map.setZoom(2);
         }
 
-        this.positionPainter.setWaypoints(new HashSet<Waypoint>());
+        this.realtimePositionPainter.setWaypoints(new HashSet<Waypoint>());
+        this.staticPositionPainter.setWaypoints(new HashSet<Waypoint>());
         this.routeStopPainter.setWaypoints(new HashSet<Waypoint>());
         this.currentRouteId = null;
         updateCurrentCompoundPainter(stopsCompoundPainter);
@@ -288,7 +301,8 @@ public class MapPanel extends JPanel {
     }
 
     /**
-     * Renders the provided list of {@link StopModel} as a route on the map, updating the route overlay and painter.
+     * Renders the provided list of {@link StopModel} as a route on the map,
+     * updating the route overlay and painter.
      *
      * @param stops the list of stops representing the route to display
      *
@@ -320,22 +334,36 @@ public class MapPanel extends JPanel {
     }
 
     /**
-     * Renders the provided list of {@link VehiclePosition} as real-time vehicle waypoints on the map.
+     * Renders the provided list of {@link VehiclePosition} as real-time vehicle
+     * waypoints on the map.
      *
      * @param positions the list of vehicle positions to display
      *
      * @see VehiclePosition
-     * @see PositionPainter
+     * @see RealtimePositionPainter
      */
-    public void renderVehiclePositions(List<VehiclePosition> positions) {
+    public void renderVehiclePositions(List<VehiclePosition> realtimePositions,
+            List<com.nnamo.models.StaticVehiclePosition> staticPositions) {
         Set<Waypoint> waypoints = new HashSet<Waypoint>();
-        for (VehiclePosition vehiclePosition : positions) {
-            Position position = vehiclePosition.getPosition();
-            waypoints.add(new DefaultWaypoint(position.getLatitude(), position.getLongitude()));
-            System.out.println(
-                    "Adding realtime vehicle position at " + position.getLatitude() + " " + position.getLongitude());
+        if (realtimePositions.isEmpty()) {
+            for (com.nnamo.models.StaticVehiclePosition vehiclePosition : staticPositions) {
+                GeoPosition position = vehiclePosition.getPosition();
+                waypoints.add(new DefaultWaypoint(position.getLatitude(), position.getLongitude()));
+                System.out.println(
+                        "Adding static vehicle position at " + position.getLatitude() + " "
+                                + position.getLongitude());
+            }
+            this.staticPositionPainter.setWaypoints(waypoints);
+        } else {
+            for (VehiclePosition vehiclePosition : realtimePositions) {
+                Position position = vehiclePosition.getPosition();
+                waypoints.add(new DefaultWaypoint(position.getLatitude(), position.getLongitude()));
+                System.out.println(
+                        "Adding realtime vehicle position at " + position.getLatitude() + " "
+                                + position.getLongitude());
+            }
+            this.realtimePositionPainter.setWaypoints(waypoints);
         }
-        this.positionPainter.setWaypoints(waypoints);
         updateCurrentCompoundPainter(this.routeCompoundPainter);
         repaintView();
     }
@@ -406,9 +434,10 @@ public class MapPanel extends JPanel {
     }
 
     /**
-     * Sets the current stop ID and position, updating both the ID and position attributes.
+     * Sets the current stop ID and position, updating both the ID and position
+     * attributes.
      *
-     * @param stopId the ID of the current stop
+     * @param stopId   the ID of the current stop
      * @param position the {@link GeoPosition} of the current stop
      */
     public void setCurrentStop(String stopId, GeoPosition position) {
@@ -438,7 +467,7 @@ public class MapPanel extends JPanel {
      * Sets the map position and zoom level for the map panel.
      *
      * @param geoPosition the {@link GeoPosition} to set as the map center
-     * @param zoomLevel the zoom level to set for the map
+     * @param zoomLevel   the zoom level to set for the map
      */
     public void setMapPanelMapPosition(GeoPosition geoPosition, int zoomLevel) {
         this.map.setAddressLocation(geoPosition);
@@ -458,7 +487,8 @@ public class MapPanel extends JPanel {
     }
 
     /**
-     * Sets the local cache directory for the map tile factory, allowing offline tile storage.
+     * Sets the local cache directory for the map tile factory, allowing offline
+     * tile storage.
      *
      * @param cacheDir the directory to use for caching map tiles
      */

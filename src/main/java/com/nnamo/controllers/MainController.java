@@ -115,7 +115,8 @@ public class MainController {
                 }
 
                 try {
-                    // For favorite stops, we don't filter by route type since stops don't have route types
+                    // For favorite stops, we don't filter by route type since stops don't have
+                    // route types
                     var favoriteStops = db.getFavoriteStopsByName(sessionUser.getId(), searchText);
                     // For favorite routes, we do filter by the selected route type
                     var favoriteRoutes = db.getFavoriteRoutesByName(sessionUser.getId(), searchText);

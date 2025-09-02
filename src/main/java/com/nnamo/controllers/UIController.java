@@ -120,7 +120,8 @@ public class UIController {
                             System.out.println("No stops found for route: " + itemId);
                         }
 
-                        MapController.renderRoutesVehicles(stopModels, realtimeService, mainFrame, itemId, direction);
+                        MapController.renderRoutesVehicles(stopModels, realtimeService, mainFrame, db, itemId,
+                                direction);
                         yield db.isFavouriteRoute(user.getId(), itemId);
                     }
                 };
@@ -147,7 +148,8 @@ public class UIController {
                             position.getPosition().getLongitude());
                     mainFrame.setMapPanelMapPosition(busPosition, 1);
                     mainFrame.removeRoutePainting();
-                    mainFrame.renderVehiclePositions(Arrays.asList(new VehiclePosition[] { position }));
+                    mainFrame.renderVehiclePositions(Arrays.asList(new VehiclePosition[] { position }),
+                            new ArrayList<>());
                 }
 
             }

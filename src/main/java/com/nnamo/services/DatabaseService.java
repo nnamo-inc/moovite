@@ -499,9 +499,8 @@ public class DatabaseService {
                         new SelectArg(SqlType.STRING, searchTerm),
                         new SelectArg(SqlType.DOUBLE, scoreThresholdPercentage));
 
-//        if (routeType != RouteType.ALL) {
-//            where.and().eq("type", new SelectArg(SqlType.UNKNOWN, routeType));
-
+        // if (routeType != RouteType.ALL) {
+        // where.and().eq("type", new SelectArg(SqlType.UNKNOWN, routeType));
 
         queryBuilder.orderByRaw(
                 "CASE " +
@@ -783,7 +782,7 @@ public class DatabaseService {
     /**
      * Creates user from username and password
      * 
-     * @param username User's username
+     * @param username     User's username
      * @param passwordHash User's password
      * @author Samuele Lombardi
      * @throws SQLException if query fails
@@ -973,23 +972,25 @@ public class DatabaseService {
                 "WHEN FUZZY_SCORE(r.shortname, ?) > FUZZY_SCORE(r.longname, ?) THEN FUZZY_SCORE(r.shortname, ?) " +
                 "ELSE FUZZY_SCORE(r.longname, ?) END DESC";
 
-//        if (routeType != RouteType.ALL) {
-//            rawQuery += " AND r.type = ?" + orderBy;
-//            List<RouteModel> routes = routeDao.queryRaw(rawQuery, routeDao.getRawRowMapper(),
-//                    String.valueOf(userId), searchTerm, "%" + searchTerm + "%", "%" + searchTerm + "%",
-//                    "%" + searchTerm + "%", searchTerm, String.valueOf(scoreThresholdPercentage),
-//                    searchTerm, String.valueOf(scoreThresholdPercentage), routeType.name(),
-//                    searchTerm, searchTerm, searchTerm, searchTerm).getResults();
-//            return getDirectionedRoutes(routes);
-//        } else {
-            rawQuery += orderBy;
-            List<RouteModel> routes = routeDao.queryRaw(rawQuery, routeDao.getRawRowMapper(),
-                    String.valueOf(userId), searchTerm, "%" + searchTerm + "%", "%" + searchTerm + "%",
-                    "%" + searchTerm + "%", searchTerm, String.valueOf(scoreThresholdPercentage),
-                    searchTerm, String.valueOf(scoreThresholdPercentage),
-                    searchTerm, searchTerm, searchTerm, searchTerm).getResults();
-            return getDirectionedRoutes(routes);
-//        }
+        // if (routeType != RouteType.ALL) {
+        // rawQuery += " AND r.type = ?" + orderBy;
+        // List<RouteModel> routes = routeDao.queryRaw(rawQuery,
+        // routeDao.getRawRowMapper(),
+        // String.valueOf(userId), searchTerm, "%" + searchTerm + "%", "%" + searchTerm
+        // + "%",
+        // "%" + searchTerm + "%", searchTerm, String.valueOf(scoreThresholdPercentage),
+        // searchTerm, String.valueOf(scoreThresholdPercentage), routeType.name(),
+        // searchTerm, searchTerm, searchTerm, searchTerm).getResults();
+        // return getDirectionedRoutes(routes);
+        // } else {
+        rawQuery += orderBy;
+        List<RouteModel> routes = routeDao.queryRaw(rawQuery, routeDao.getRawRowMapper(),
+                String.valueOf(userId), searchTerm, "%" + searchTerm + "%", "%" + searchTerm + "%",
+                "%" + searchTerm + "%", searchTerm, String.valueOf(scoreThresholdPercentage),
+                searchTerm, String.valueOf(scoreThresholdPercentage),
+                searchTerm, searchTerm, searchTerm, searchTerm).getResults();
+        return getDirectionedRoutes(routes);
+        // }
     }
 
     /**
@@ -1030,6 +1031,42 @@ public class DatabaseService {
             return null;
         }
         return trips.getFirst();
+    }
+
+    /**
+     * 
+     * 
+     * @param routeId   String route ID
+     * @param direction Direction enum (INBOUND/OUTBOUND)
+     * @author Samuele Lombardi
+     * @throws SQLException if query fails
+     * @return TripModel for the route in the specified direction, or null if not
+     *         found
+     */
+    public StaticVehiclePosition getStaticPosition(String routeId, Direction direction, LocalTime fromTime)
+            throws SQLException {
+        List<StaticVehiclePosition> staticPositions = new ArrayList<>();
+        Dao<TripModel, String> tripDao = getDao(TripModel.class);
+        Dao<StopModel, String> stopDao = getDao(StopModel.class);
+        Dao<StopTimeModel, String> stopTimeDao = getDao(StopTimeModel.class);
+
+        Integer fromSeconds = fromTime.toSecondOfDay();
+        String rawQuery = "SELECT s.* FROM stops s " +
+                "JOIN stop_times st ON s.id = st.stop_id " +
+                "JOIN trips t ON t.id = st.trip_id " +
+                "WHERE t.route_id = '" + routeId + "' AND st.arrival_time >= ? AND t.direction = '" + direction + "' " +
+                "ORDER BY ABS(st.arrival_time - ?) LIMIT 1";
+
+        List<StopModel> stops = stopDao.queryRaw(rawQuery, stopDao.getRawRowMapper(), fromSeconds.toString())
+                .getResults();
+        if (stops.isEmpty()) {
+            return null;
+        }
+
+        StopModel stop = stops.getFirst();
+        return new StaticVehiclePosition(
+                stop.getLatitude(),
+                stop.getLongitude());
     }
 
     /**
