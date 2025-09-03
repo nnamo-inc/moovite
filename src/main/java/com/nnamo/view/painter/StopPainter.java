@@ -33,13 +33,13 @@ public class StopPainter extends WaypointPainter<Waypoint> {
         this.map = map;
 
         icons.put(Sizes.EXTRA_SMALL, ImageIO
-                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/stop_extra_small.png"))));
+                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/stops/stop_extra_small.png"))));
         icons.put(Sizes.SMALL, ImageIO
-                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/stop_small.png"))));
+                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/stops/stop_small.png"))));
         icons.put(Sizes.MEDIUM, ImageIO
-                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/stop_medium.png"))));
+                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/stops/stop_medium.png"))));
         icons.put(Sizes.LARGE, ImageIO
-                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/stop_large.png"))));
+                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/stops/stop_large.png"))));
     }
 
     // GETTERS AND SETTERS OUTER CLASS //
@@ -57,7 +57,7 @@ public class StopPainter extends WaypointPainter<Waypoint> {
 
     public void repaint(String stopId) {
         int zoom = map.getZoom();
-        final BufferedImage icon = (zoom <= 1) ? icons.get(Sizes.MEDIUM) : icons.get(Sizes.SMALL);
+        final BufferedImage icon = (zoom < 1) ? icons.get(Sizes.MEDIUM) : icons.get(Sizes.SMALL);
         final BufferedImage biggerIcon = (zoom <= 1) ? icons.get(Sizes.LARGE) : icons.get(Sizes.MEDIUM);
         this.currentIcon = icon;
         // Update the waypoint painter with the new icon with an anonymous class

@@ -16,7 +16,8 @@ import com.nnamo.services.RealtimeGtfsService;
 
 /**
  * Custom {@link JPanel} that serves as the left panel of the application,
- * containing various sub-panels for searching, preferences, statistics, and settings.
+ * containing various sub-panels for searching, preferences, statistics, and
+ * settings.
  *
  * @author Riccardo Finocchiaro
  * @author Samuele Lombardi
@@ -56,19 +57,23 @@ public class LeftPanel extends JPanel {
         buttonPanel = new ButtonPanel(new LinkedHashMap<>() {
             {
                 searchPanel = new SearchPanel();
-                put(searchPanel, new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/search_small.png"))));
+                put(searchPanel, new ImageIcon(
+                        Objects.requireNonNull(getClass().getResource("/images/panels/search_small.png"))));
 
                 preferPanel = new PreferPanel();
                 put(preferPanel,
-                        new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/favorite_small.png"))));
+                        new ImageIcon(
+                                Objects.requireNonNull(getClass().getResource("/images/panels/favorite_small.png"))));
 
                 statsPanel = new StatisticsPanel();
                 put(statsPanel,
-                        new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/statistics_small.png"))));
+                        new ImageIcon(
+                                Objects.requireNonNull(getClass().getResource("/images/panels/statistics_small.png"))));
 
                 settingsPanel = new SettingsPanel();
                 put(settingsPanel,
-                        new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/setting_small.png"))));
+                        new ImageIcon(
+                                Objects.requireNonNull(getClass().getResource("/images/panels/setting_small.png"))));
             }
         });
 
@@ -181,7 +186,8 @@ public class LeftPanel extends JPanel {
 
     // TRANSIT METHODS //
     /**
-     * Updates the favorite stop table in the prefer panel with the specified stop and update mode.
+     * Updates the favorite stop table in the prefer panel with the specified stop
+     * and update mode.
      *
      * @param stop       The stop to update in the table.
      * @param updateMode The mode of update (ADD or REMOVE).
@@ -191,7 +197,8 @@ public class LeftPanel extends JPanel {
     }
 
     /**
-     * Updates the favorite route table in the prefer panel with the specified route and update mode.
+     * Updates the favorite route table in the prefer panel with the specified route
+     * and update mode.
      *
      * @param route      The route to update in the table.
      * @param updateMode The mode of update (ADD or REMOVE).
@@ -229,7 +236,8 @@ public class LeftPanel extends JPanel {
     }
 
     /**
-     * Sets up the statistics panel with the provided realtime service and database service.
+     * Sets up the statistics panel with the provided realtime service and database
+     * service.
      *
      * @param realtimeService The realtime GTFS service to use for statistics.
      * @param db              The database service to use for statistics.
@@ -248,10 +256,13 @@ public class LeftPanel extends JPanel {
     }
 
     /**
-     * Initializes the prefer panel's table with the provided favorite stops and routes.
+     * Initializes the prefer panel's table with the provided favorite stops and
+     * routes.
      *
-     * @param favoriteStops   The list of favorite stops to initialize in the prefer table.
-     * @param favoriteRoutes  The list of favorite route directions to initialize in the prefer table.
+     * @param favoriteStops  The list of favorite stops to initialize in the prefer
+     *                       table.
+     * @param favoriteRoutes The list of favorite route directions to initialize in
+     *                       the prefer table.
      */
     public void initPreferTable(List<StopModel> favoriteStops, List<RouteDirection> favoriteRoutes) {
         preferPanel.initPreferTable(favoriteStops, favoriteRoutes);

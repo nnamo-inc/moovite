@@ -16,11 +16,13 @@ public class RealtimePositionPainter extends PositionPainter {
         super(map);
 
         this.getIcons().put(IconSize.EXTRA_SMALL, ImageIO
-                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/vehicle_extra_small.png"))));
+                .read(Objects
+                        .requireNonNull(getClass().getResourceAsStream("/images/vehicles/vehicle_extra_small.png"))));
         this.getIcons().put(IconSize.SMALL, ImageIO
-                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/vehicle_small.png"))));
+                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/vehicles/vehicle_small.png"))));
         this.getIcons().put(IconSize.MEDIUM, ImageIO
-                .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/vehicle_flame_medium.png"))));
+                .read(Objects
+                        .requireNonNull(getClass().getResourceAsStream("/images/vehicles/vehicle_flame_medium.png"))));
         // icons.put(Sizes.LARGE, ImageIO
         // .read(Objects.requireNonNull(getClass().getResourceAsStream("/images/vehicle_medium.png"))));
     }
