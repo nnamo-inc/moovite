@@ -35,8 +35,6 @@ public class StatisticsPanel extends JPanel {
     private static final int TILE_HEIGHT = 80;
     private static final int GAP = 10;
 
-    private DatabaseService databaseService;
-
     private StatisticTotalBus statBusTile = new StatisticTotalBus();
     private StatisticEarlyBus statEarlyBusTile = new StatisticEarlyBus();
     private StatisticLateBus statLateBusTile = new StatisticLateBus();
@@ -232,8 +230,6 @@ public class StatisticsPanel extends JPanel {
     }
 
     public void setupDatabaseService(@NonNull DatabaseService databaseService) {
-        this.databaseService = databaseService;
-
         for (StatisticUnit tile : statisticTiles) {
             tile.setDatabaseService(databaseService);
         }
