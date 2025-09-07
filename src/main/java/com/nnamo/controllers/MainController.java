@@ -9,6 +9,9 @@ import com.nnamo.services.RealtimeGtfsService;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainController {
 
@@ -91,13 +94,48 @@ public class MainController {
         mainFrame.setLocalMapCache(cacheDir);
     }
 
+    /**
+     * Creates a {@link SearchBarListener} that handles search queries for the search panel.
+     * It uses caching to store previously fetched results for stops and routes to improve performance on repeated searches.
+     * When a search is performed, it checks the cache first before querying the database.
+     * The results are then rendered in the search panel of the main frame.
+     *
+     * @return a {@link SearchBarListener} for handling search queries in the search panel
+     *
+     * @see SearchBarListener
+     * @see StopModel
+     * @see RouteDirection
+     * @see DatabaseService
+     *
+     * @author Davide Galilei
+     */
     public SearchBarListener createSearchPanelQueryBehavior() {
+        Map<String, List<StopModel>> stopCache = new HashMap<>();
+        Map<String, List<RouteDirection>> routeCache = new HashMap<>();
+
         return new SearchBarListener() {
             @Override
             public void onSearch(String searchText) {
                 try {
-                    var stops = db.getStopsByName(searchText);
-                    var routes = db.getRoutesByName(searchText);
+                    List<StopModel> stops;
+                    List<RouteDirection> routes;
+
+                    if (stopCache.containsKey(searchText)) {
+                        stops = stopCache.get(searchText);
+                        // System.out.println("Cache hit for stops: " + searchText);
+                    } else {
+                        stops = db.getStopsByName(searchText);
+                        stopCache.put(searchText, stops);
+                    }
+
+                    if (routeCache.containsKey(searchText)) {
+                        routes = routeCache.get(searchText);
+                        // System.out.println("Cache hit for routes: " + searchText);
+                    } else {
+                        routes = db.getRoutesByName(searchText);
+                        routeCache.put(searchText, routes);
+                    }
+
                     mainFrame.renderSearchPanel(stops, routes);
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -106,6 +144,21 @@ public class MainController {
         };
     }
 
+    /**
+     * Creates a {@link SearchBarListener} that handles search queries for the prefer panel.
+     * It fetches favorite stops and routes for the logged-in user based on the search text.
+     * The results are then displayed in the prefer panel of the main frame.
+     * This listener does not use caching since favorite items are user-specific and may change frequently.
+     *
+     * @return a {@link SearchBarListener} for handling search queries in the prefer panel
+     *
+     * @see SearchBarListener
+     * @see StopModel
+     * @see RouteDirection
+     * @see DatabaseService
+     *
+     * @author Davide Galilei
+     */
     public SearchBarListener createPreferPanelQueryBehavior() {
         return new SearchBarListener() {
             @Override
