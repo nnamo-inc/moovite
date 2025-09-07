@@ -150,11 +150,9 @@ jobs:
           cp target/moovite-1.0-SNAPSHOT.jar native-binary/moovite/lib/
           
           # Create launcher script
-          cat > native-binary/moovite/bin/moovite << 'EOF'
-#!/bin/bash
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-exec "$DIR/java" -Djava.awt.headless=false -jar "$DIR/../lib/moovite-1.0-SNAPSHOT.jar" "$@"
-EOF
+          echo '#!/bin/bash' > native-binary/moovite/bin/moovite
+          echo 'DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"' >> native-binary/moovite/bin/moovite
+          echo 'exec "$DIR/java" -Djava.awt.headless=false -jar "$DIR/../lib/moovite-1.0-SNAPSHOT.jar" "$@"' >> native-binary/moovite/bin/moovite
           chmod +x native-binary/moovite/bin/moovite
           echo "✅ jlink alternative completed"
           
