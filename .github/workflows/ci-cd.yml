@@ -138,9 +138,16 @@ jobs:
             echo 'DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"' >> native-binary/moovite/bin/moovite
             echo 'exec "$DIR/java" -Djava.awt.headless=false -jar "$DIR/../lib/moovite-1.0-SNAPSHOT.jar" "$@"' >> native-binary/moovite/bin/moovite
             chmod +x native-binary/moovite/bin/moovite
+            # Also create a root-level convenience wrapper
+            echo '#!/bin/bash' > native-binary/moovite/moovite
+            echo 'DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"' >> native-binary/moovite/moovite
+            echo 'exec "$DIR/bin/moovite" "$@"' >> native-binary/moovite/moovite
+            chmod +x native-binary/moovite/moovite
           fi
           echo "Post-jpackage bin contents:"
           ls -la native-binary/moovite/bin/ || true
+          echo "Post-jpackage root contents:"
+          ls -la native-binary/moovite/ || true
         else
           echo "jpackage failed, using jlink alternative..."
           
@@ -168,6 +175,11 @@ jobs:
           echo 'DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"' >> native-binary/moovite/bin/moovite
           echo 'exec "$DIR/java" -Djava.awt.headless=false -jar "$DIR/../lib/moovite-1.0-SNAPSHOT.jar" "$@"' >> native-binary/moovite/bin/moovite
           chmod +x native-binary/moovite/bin/moovite
+          # Root-level convenience wrapper
+          echo '#!/bin/bash' > native-binary/moovite/moovite
+          echo 'DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"' >> native-binary/moovite/moovite
+          echo 'exec "$DIR/bin/moovite" "$@"' >> native-binary/moovite/moovite
+          chmod +x native-binary/moovite/moovite
           echo "✅ jlink alternative completed"
           
           # Verify the launcher was created
@@ -267,6 +279,10 @@ jobs:
           echo 'DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"' >> native-binary/moovite/bin/moovite
           echo 'exec "$DIR/java" -Djava.awt.headless=false -jar "$DIR/../lib/moovite-1.0-SNAPSHOT.jar" "$@"' >> native-binary/moovite/bin/moovite
           chmod +x native-binary/moovite/bin/moovite
+          echo '#!/bin/bash' > native-binary/moovite/moovite
+          echo 'DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"' >> native-binary/moovite/moovite
+          echo 'exec "$DIR/bin/moovite" "$@"' >> native-binary/moovite/moovite
+          chmod +x native-binary/moovite/moovite
           ls -la native-binary/moovite/bin/
         fi
 
@@ -274,29 +290,22 @@ jobs:
           # jlink alternative was used - has custom structure with our launcher script
           echo "✅ Found jlink launcher script and JAR"
           BUNDLE_SIZE=$(du -sm native-binary/moovite | cut -f1)
-          if [ "$BUNDLE_SIZE" -gt 50 ]; then
-            cd native-binary
-            tar -czf ../${{ matrix.binary-name }}.tar.gz moovite/
-            cd ..
-            echo "Created: ${{ matrix.binary-name }}.tar.gz ($(ls -lh ${{ matrix.binary-name }}.tar.gz | awk '{print $5}'))"
-          else
-            cp native-binary/moovite/bin/moovite ${{ matrix.binary-name }}
-            echo "Created: ${{ matrix.binary-name }} ($(ls -lh ${{ matrix.binary-name }} | awk '{print $5}'))"
-          fi
-        elif [ -f "native-binary/moovite/bin/moovite" ]; then
-          # jpackage succeeded - standard jpackage structure
-          echo "Found jpackage executable in bin/"
-          chmod +x native-binary/moovite/bin/moovite
-          BUNDLE_SIZE=$(du -sm native-binary/moovite | cut -f1)
           cd native-binary
           tar -czf ../${{ matrix.binary-name }}.tar.gz moovite/
           cd ..
           echo "Created: ${{ matrix.binary-name }}.tar.gz ($(ls -lh ${{ matrix.binary-name }}.tar.gz | awk '{print $5}'))"
-        elif [ -f "native-binary/moovite/moovite" ]; then
+        elif [ -f "native-binary/moovite/bin/moovite" ]; then
+          # jpackage succeeded - standard jpackage structure
+          echo "Found jpackage executable in bin/"
+          chmod +x native-binary/moovite/bin/moovite
+          cd native-binary
+          tar -czf ../${{ matrix.binary-name }}.tar.gz moovite/
+          cd ..
+          echo "Created: ${{ matrix.binary-name }}.tar.gz ($(ls -lh ${{ matrix.binary-name }}.tar.gz | awk '{print $5}'))"
+  elif [ -f "native-binary/moovite/moovite" ]; then
           # jpackage succeeded and created executable in root
           echo "Found jpackage executable in root"
           chmod +x native-binary/moovite/moovite
-          BUNDLE_SIZE=$(du -sm native-binary/moovite | cut -f1)
           cd native-binary
           tar -czf ../${{ matrix.binary-name }}.tar.gz moovite/
           cd ..
