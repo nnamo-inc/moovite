@@ -4,15 +4,19 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import com.nnamo.enums.RealtimeMetricType;
 import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.enums.UpdateMode;
 import com.nnamo.interfaces.*;
+import com.nnamo.models.RealtimeMetricModel;
 import com.nnamo.models.RouteDirection;
 import com.nnamo.models.StopModel;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
+import com.nnamo.view.customcomponents.statistic.MetricCollector;
 
 /**
  * Custom {@link JPanel} that serves as the left panel of the application,
@@ -240,11 +244,13 @@ public class LeftPanel extends JPanel {
      * service.
      *
      * @param realtimeService The realtime GTFS service to use for statistics.
-     * @param db              The database service to use for statistics.
+     * @param metricsMap      A map of realtime metric types to their corresponding metric models.
+     * @param collector       The metric collector to gather and process metrics.
      */
-    public void setupStatisticsPanel(RealtimeGtfsService realtimeService, DatabaseService db) {
+    public void setupStatisticsPanel(RealtimeGtfsService realtimeService, Map<RealtimeMetricType, List<RealtimeMetricModel>> metricsMap, MetricCollector collector) {
         statsPanel.setupListeners(realtimeService);
-        statsPanel.setupDatabaseService(db);
+        statsPanel.updateView(metricsMap);
+        statsPanel.setMetricCollector(collector);
     }
 
     /**

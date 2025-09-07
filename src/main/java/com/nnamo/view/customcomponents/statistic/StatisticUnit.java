@@ -29,8 +29,8 @@ public abstract class StatisticUnit extends JLabel implements StatisticInterface
     private String unit;
     private final int CORNER_RADIUS = 15;
 
-    private DatabaseService databaseService;
     private final List<StatisticUpdateListener> listeners = new java.util.ArrayList<>();
+    private MetricCollector metricCollector;
 
     public StatisticUnit(String name, String unit, Color color) {
         super();
@@ -108,26 +108,21 @@ public abstract class StatisticUnit extends JLabel implements StatisticInterface
         this.setText("<html><div style='text-align: center; font-weight: bold;'>" + name + "<br><span style='font-size: 18px; font-weight: 900;'>" + value + "</span> <span style='font-size: 12px; font-weight: 600;'>" + unit + "</span></div></html>");
     }
 
-    public final void setDatabaseService(@NonNull DatabaseService databaseService) {
-        this.databaseService = databaseService;
-    }
-    public DatabaseService getDatabaseService() {
-        return databaseService;
-    }
-
-    protected void saveMetricToDatabase(int value) {
-        if (databaseService != null) {
-            try {
-                databaseService.saveMetric(getMetricType(), value);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     public abstract RealtimeMetricType getMetricType();
 
-    public abstract void onFeedUpdated(List<GtfsRealtime.FeedEntity> entities);
+    public abstract int computeMetric(List<GtfsRealtime.FeedEntity> entities);
+
+    public final void onFeedUpdated(List<GtfsRealtime.FeedEntity> entities) {
+        int metric = computeMetric(entities);
+        setValue(String.valueOf(metric));
+        repaint(); // Refresh the display
+        notifyStatisticUpdateListeners(metric);
+
+        // Update the database with the new metric value
+        if (metricCollector != null) {
+            metricCollector.onProducedMetric(getMetricType(), metric);
+        }
+    }
 
     public void addStatisticUpdateListener(StatisticUpdateListener listener) {
         listeners.add(listener);
@@ -137,5 +132,9 @@ public abstract class StatisticUnit extends JLabel implements StatisticInterface
         for (StatisticUpdateListener listener : listeners) {
             listener.onStatisticUpdated(this.getMetricType(), value);
         }
+    }
+
+    public void setMetricCollector(MetricCollector collector) {
+        this.metricCollector = collector;
     }
 }

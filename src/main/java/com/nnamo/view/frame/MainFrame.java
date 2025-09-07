@@ -5,22 +5,21 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.*;
 
 import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.nnamo.enums.DataType;
+import com.nnamo.enums.RealtimeMetricType;
 import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.enums.UpdateMode;
 import com.nnamo.interfaces.*;
-import com.nnamo.models.StopModel;
-import com.nnamo.models.StopTimeModel;
-import com.nnamo.models.RealtimeStopUpdate;
-import com.nnamo.models.RouteDirection;
-import com.nnamo.models.StaticVehiclePosition;
+import com.nnamo.models.*;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
 import com.nnamo.view.components.*;
+import com.nnamo.view.customcomponents.statistic.MetricCollector;
 import org.jxmapviewer.viewer.GeoPosition;
 
 /**
@@ -550,13 +549,14 @@ public class MainFrame extends JFrame {
      * Sets up the statistics panel in the left panel with the provided services.
      *
      * @param realtimeService the real-time GTFS service
-     * @param db              the database service
+     * @param metricsMap      the map of real-time metrics
+     * @param collector       the metrics collector
      *
      * @see RealtimeGtfsService
      * @see DatabaseService
      */
-    public void setupStatisticsPanel(RealtimeGtfsService realtimeService, DatabaseService db) {
-        this.leftPanel.setupStatisticsPanel(realtimeService, db);
+    public void setupStatisticsPanel(RealtimeGtfsService realtimeService, Map<RealtimeMetricType, List<RealtimeMetricModel>> metricsMap, MetricCollector collector) {
+        this.leftPanel.setupStatisticsPanel(realtimeService, metricsMap, collector);
     }
 
     /**

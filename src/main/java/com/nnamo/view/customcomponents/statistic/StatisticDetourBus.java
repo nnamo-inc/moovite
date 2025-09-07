@@ -23,7 +23,7 @@ public class StatisticDetourBus extends StatisticUnit {
     }
 
     @Override
-    public void onFeedUpdated(List<GtfsRealtime.FeedEntity> entities) {
+    public int computeMetric(List<GtfsRealtime.FeedEntity> entities) {
         int busCount = 0;
         for (GtfsRealtime.FeedEntity entity : entities) {
             if (!entity.hasAlert()) continue;
@@ -35,10 +35,7 @@ public class StatisticDetourBus extends StatisticUnit {
                 busCount++;
             }
         }
-        setValue(String.valueOf(busCount));
-        repaint(); // Refresh the display
-        saveMetricToDatabase(busCount);
-        notifyStatisticUpdateListeners(busCount);
+        return busCount;
     }
 
     public RealtimeMetricType getMetricType() {

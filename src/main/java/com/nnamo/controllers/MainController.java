@@ -3,6 +3,7 @@ package com.nnamo.controllers;
 import com.nnamo.enums.*;
 import com.nnamo.interfaces.*;
 import com.nnamo.models.*;
+import com.nnamo.view.customcomponents.statistic.MetricCollector;
 import com.nnamo.view.frame.MainFrame;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
@@ -26,7 +27,7 @@ import java.util.Map;
  * @see MainFrame
  * @see DatabaseService
  * @see RealtimeGtfsService
- * 
+ *
  * @author Samuele Lombardi
  * @author Riccardo Finocchiaro
  * @author Davide Galilei
@@ -64,7 +65,16 @@ public class MainController {
         mainFrame.renderStops(db.getAllStops());
         mainFrame.setSearchPanelListener(searchQueryListener);
         mainFrame.setPreferPanelListener(createPreferPanelQueryBehavior());
-        mainFrame.setupStatisticsPanel(realtimeService, db);
+        mainFrame.setupStatisticsPanel(realtimeService, db.getAllMetrics(), new MetricCollector() {
+            @Override
+            public void onProducedMetric(RealtimeMetricType type, int value) {
+                try {
+                    db.saveMetric(type, value);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         // Login and Session Fetching
         userController.addSessionListener(new SessionListener() { // [!] Listener must be implemented before run()

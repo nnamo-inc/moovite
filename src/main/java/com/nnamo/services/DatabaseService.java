@@ -35,10 +35,7 @@ import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 /**
@@ -1379,5 +1376,25 @@ public class DatabaseService {
                 .query();
 
         return !favorites.isEmpty();
+    }
+
+    /**
+     * Get all realtime metrics grouped by type
+     *
+     * @author Davide Galilei
+     * @throws SQLException if query fails
+     * @return Map of RealtimeMetricType to list of RealtimeMetricModel
+     */
+    public Map<RealtimeMetricType, List<RealtimeMetricModel>> getAllMetrics() throws SQLException {
+        Dao<RealtimeMetricModel, String> metricDao = getDao(RealtimeMetricModel.class);
+        var allMetrics = metricDao.queryBuilder()
+                .orderBy("createdAt", false) // Order by created_at descending
+                .query();
+        Map<RealtimeMetricType, List<RealtimeMetricModel>> metricsMap = new HashMap<>();
+
+        for (RealtimeMetricModel metric : allMetrics) {
+            metricsMap.computeIfAbsent(metric.getType(), k -> new ArrayList<>()).add(metric);
+        }
+        return metricsMap;
     }
 }

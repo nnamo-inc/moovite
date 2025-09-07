@@ -23,17 +23,14 @@ public class StatisticTotalBus extends StatisticUnit {
     }
 
     @Override
-    public void onFeedUpdated(List<GtfsRealtime.FeedEntity> entities) {
+    public int computeMetric(List<GtfsRealtime.FeedEntity> entities) {
         int busCount = 0;
         for (GtfsRealtime.FeedEntity entity : entities) {
             if (entity.hasTripUpdate() && entity.getTripUpdate().getVehicle() != null) {
                 busCount++;
             }
         }
-        setValue(String.valueOf(busCount));
-        repaint(); // Refresh the display
-        saveMetricToDatabase(busCount);
-        notifyStatisticUpdateListeners(busCount);
+        return busCount;
     }
 
     public RealtimeMetricType getMetricType() {

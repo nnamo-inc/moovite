@@ -1,9 +1,7 @@
 package com.nnamo.view.components;
 
 import com.nnamo.enums.RealtimeMetricType;
-import com.nnamo.interfaces.LogoutBehaviour;
 import com.nnamo.models.RealtimeMetricModel;
-import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
 import com.nnamo.view.customcomponents.*;
 import com.nnamo.view.customcomponents.statistic.*;
@@ -21,11 +19,9 @@ import org.jspecify.annotations.NonNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class StatisticsPanel extends JPanel {
     private final JPanel tileContainer = new JPanel();
@@ -237,28 +233,22 @@ public class StatisticsPanel extends JPanel {
     }
 
     /**
-     * Sets up the database service for all statistic tiles and initializes the {@link JFreeChart} chart with historical data.
-     * It retrieves metrics from the database and populates the chart. It also sets up a listener to update the chart in real-time.
+     * Sets up the data for all statistic tiles and initializes the {@link JFreeChart} chart with historical data.
+     * It populates the chart. It also sets up a listener to update the chart in real-time.
      *
-     * @param databaseService the {@link DatabaseService} to be used for retrieving metrics.
-     *
-     * @see DatabaseService
+     * @param metricsMap a map containing lists of {@link RealtimeMetricModel} for each {@link RealtimeMetricType}
      *
      * @author Davide Galilei
      */
-    public void setupDatabaseService(@NonNull DatabaseService databaseService) {
-        for (StatisticUnit tile : statisticTiles) {
-            tile.setDatabaseService(databaseService);
-        }
-
+    public void updateView(Map<RealtimeMetricType, List<RealtimeMetricModel>> metricsMap) {
         // get metrics from the db and paint the chart
         try {
             TimeSeriesCollection dataset = new TimeSeriesCollection();
 
-            for (RealtimeMetricType type : RealtimeMetricType.values()) {
+            for (RealtimeMetricType type : metricsMap.keySet()) {
                 String name = type.name().toLowerCase();
                 TimeSeries series = new TimeSeries(name);
-                java.util.List<RealtimeMetricModel> metrics = databaseService.getMetrics(type);
+                List<RealtimeMetricModel> metrics = metricsMap.get(type);
                 for (RealtimeMetricModel metric : metrics) {
                     series.add(new Second(metric.getCreatedAt()), metric.getValue());
                 }
@@ -328,5 +318,14 @@ public class StatisticsPanel extends JPanel {
             renderer.setSeriesShape(i, new java.awt.geom.Ellipse2D.Double(-3, -3, 6, 6));
         }
         return renderer;
+    }
+
+    public void setMetricCollector(MetricCollector collector) {
+        statBusTile.setMetricCollector(collector);
+        statEarlyBusTile.setMetricCollector(collector);
+        statLateBusTile.setMetricCollector(collector);
+        statPunctualBusTile.setMetricCollector(collector);
+        statStoppedBusTile.setMetricCollector(collector);
+        statDetourBusTile.setMetricCollector(collector);
     }
 }
