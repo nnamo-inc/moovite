@@ -302,7 +302,7 @@ jobs:
           tar -czf ../${{ matrix.binary-name }}.tar.gz moovite/
           cd ..
           echo "Created: ${{ matrix.binary-name }}.tar.gz ($(ls -lh ${{ matrix.binary-name }}.tar.gz | awk '{print $5}'))"
-  elif [ -f "native-binary/moovite/moovite" ]; then
+        elif [ -f "native-binary/moovite/moovite" ]; then
           # jpackage succeeded and created executable in root
           echo "Found jpackage executable in root"
           chmod +x native-binary/moovite/moovite
