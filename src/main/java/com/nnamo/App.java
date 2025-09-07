@@ -16,6 +16,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
 
+/**
+ * Program entry point. Initializes the database, GTFS services, and main controller.
+ *
+ * @author Samuele Lombardi
+ * @author Riccardo Finocchiaro
+ * @author Davide Galilei
+ * @see DatabaseService
+ * @see StaticGtfsService
+ * @see RealtimeGtfsService
+ * @see MainController
+ */
 public class App {
     /**
      * Starts the main application, by initializing the available services
