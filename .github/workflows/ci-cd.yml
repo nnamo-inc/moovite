@@ -151,12 +151,24 @@ jobs:
           
           # Create launcher script
           cat > native-binary/moovite/bin/moovite << 'EOF'
-        #!/bin/bash
-        DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-        exec "$DIR/java" -Djava.awt.headless=false -jar "$DIR/../lib/moovite-1.0-SNAPSHOT.jar" "$@"
-        EOF
+#!/bin/bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+exec "$DIR/java" -Djava.awt.headless=false -jar "$DIR/../lib/moovite-1.0-SNAPSHOT.jar" "$@"
+EOF
           chmod +x native-binary/moovite/bin/moovite
           echo "✅ jlink alternative completed"
+          
+          # Verify the launcher was created
+          if [ -f "native-binary/moovite/bin/moovite" ]; then
+            echo "✅ Launcher script created successfully"
+            ls -la native-binary/moovite/bin/moovite
+            echo "Script content:"
+            head -5 native-binary/moovite/bin/moovite
+          else
+            echo "❌ ERROR: Launcher script was not created!"
+            echo "Contents of bin directory:"
+            ls -la native-binary/moovite/bin/
+          fi
         fi
 
     - name: Create native binary (Windows)
@@ -231,10 +243,12 @@ jobs:
         # Check what was actually created
         echo "Checking Linux binary structure..."
         ls -la native-binary/moovite/
+        echo "Contents of bin directory:"
+        ls -la native-binary/moovite/bin/
         
         if [ -f "native-binary/moovite/bin/moovite" ] && [ -f "native-binary/moovite/lib/moovite-1.0-SNAPSHOT.jar" ]; then
           # jlink alternative was used - has custom structure with our launcher script
-          echo "Found jlink launcher script"
+          echo "✅ Found jlink launcher script and JAR"
           BUNDLE_SIZE=$(du -sm native-binary/moovite | cut -f1)
           if [ "$BUNDLE_SIZE" -gt 50 ]; then
             cd native-binary
@@ -264,7 +278,19 @@ jobs:
           cd ..
           echo "Created: ${{ matrix.binary-name }}.tar.gz ($(ls -lh ${{ matrix.binary-name }}.tar.gz | awk '{print $5}'))"
         else
-          echo "No executable found"
+          echo "❌ ERROR: No executable found!"
+          echo "Checking for launcher script: native-binary/moovite/bin/moovite"
+          if [ -f "native-binary/moovite/bin/moovite" ]; then
+            echo "  ✅ Launcher script exists"
+          else
+            echo "  ❌ Launcher script missing"
+          fi
+          echo "Checking for JAR: native-binary/moovite/lib/moovite-1.0-SNAPSHOT.jar"
+          if [ -f "native-binary/moovite/lib/moovite-1.0-SNAPSHOT.jar" ]; then
+            echo "  ✅ JAR exists"
+          else
+            echo "  ❌ JAR missing"
+          fi
           echo "Contents of native-binary/moovite/:"
           ls -la native-binary/moovite/
           echo "Contents of native-binary/moovite/bin/ (if exists):"
