@@ -120,6 +120,13 @@ jobs:
           --java-options '-Djava.awt.headless=false' \
           --runtime-image $JAVA_HOME; then
           echo "✅ jpackage succeeded"
+          # Make sure the executable is executable
+          if [ -f "native-binary/moovite/bin/moovite" ]; then
+            chmod +x native-binary/moovite/bin/moovite
+          fi
+          if [ -f "native-binary/moovite/moovite" ]; then
+            chmod +x native-binary/moovite/moovite
+          fi
         else
           echo "jpackage failed, using jlink alternative..."
           
@@ -221,7 +228,13 @@ jobs:
     - name: Package binary (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: |
-        if [ -f "native-binary/moovite/bin/moovite" ]; then
+        # Check what was actually created
+        echo "Checking Linux binary structure..."
+        ls -la native-binary/moovite/
+        
+        if [ -f "native-binary/moovite/bin/moovite" ] && [ -f "native-binary/moovite/lib/moovite-1.0-SNAPSHOT.jar" ]; then
+          # jlink alternative was used - has custom structure with our launcher script
+          echo "Found jlink launcher script"
           BUNDLE_SIZE=$(du -sm native-binary/moovite | cut -f1)
           if [ "$BUNDLE_SIZE" -gt 50 ]; then
             cd native-binary
@@ -232,8 +245,30 @@ jobs:
             cp native-binary/moovite/bin/moovite ${{ matrix.binary-name }}
             echo "Created: ${{ matrix.binary-name }} ($(ls -lh ${{ matrix.binary-name }} | awk '{print $5}'))"
           fi
+        elif [ -f "native-binary/moovite/bin/moovite" ]; then
+          # jpackage succeeded - standard jpackage structure
+          echo "Found jpackage executable in bin/"
+          chmod +x native-binary/moovite/bin/moovite
+          BUNDLE_SIZE=$(du -sm native-binary/moovite | cut -f1)
+          cd native-binary
+          tar -czf ../${{ matrix.binary-name }}.tar.gz moovite/
+          cd ..
+          echo "Created: ${{ matrix.binary-name }}.tar.gz ($(ls -lh ${{ matrix.binary-name }}.tar.gz | awk '{print $5}'))"
+        elif [ -f "native-binary/moovite/moovite" ]; then
+          # jpackage succeeded and created executable in root
+          echo "Found jpackage executable in root"
+          chmod +x native-binary/moovite/moovite
+          BUNDLE_SIZE=$(du -sm native-binary/moovite | cut -f1)
+          cd native-binary
+          tar -czf ../${{ matrix.binary-name }}.tar.gz moovite/
+          cd ..
+          echo "Created: ${{ matrix.binary-name }}.tar.gz ($(ls -lh ${{ matrix.binary-name }}.tar.gz | awk '{print $5}'))"
         else
           echo "No executable found"
+          echo "Contents of native-binary/moovite/:"
+          ls -la native-binary/moovite/
+          echo "Contents of native-binary/moovite/bin/ (if exists):"
+          ls -la native-binary/moovite/bin/ || echo "bin directory does not exist"
           exit 1
         fi
         
