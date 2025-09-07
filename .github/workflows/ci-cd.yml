@@ -381,17 +381,17 @@ jobs:
         name: "Development Snapshot (${{ steps.vars.outputs.short_sha }})"
         body: |
           🚀 **Development Snapshot Build**
-          
+
           This is an automatic build from the latest commit on the main branch.
-          
+
           **Commit:** ${{ github.sha }}  
           **Date:** ${{ github.event.head_commit.timestamp }}
-          
+
           ⚠️ **This is a development build** - use at your own risk!
         files: |
-          build-artifacts/target/*.jar
-          moovite-linux/moovite-linux
-          moovite-windows.exe/moovite-windows.exe
+          build-artifacts/*.jar
+          moovite-linux/*
+          moovite-windows.exe/*
         draft: false
         prerelease: true
       env:
