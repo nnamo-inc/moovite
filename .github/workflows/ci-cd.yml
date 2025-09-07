@@ -86,13 +86,27 @@ jobs:
     - name: Package JAR
       run: mvn clean package
 
+    - name: Verify JAR exists (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        ls -la target/
+        ls -la target/*.jar
+
+    - name: Verify JAR exists (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
+      run: |
+        Get-ChildItem target
+        Get-ChildItem target/*.jar
+
     - name: Install jpackage dependencies (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt-get update
         sudo apt-get install -y fakeroot
 
-    - name: Create native binary
+    - name: Create native binary (Linux)
+      if: matrix.os == 'ubuntu-latest'
       run: |
         jpackage \
           --input target \
@@ -102,6 +116,28 @@ jobs:
           --app-version 1.0 \
           --type app-image \
           --dest native-binary
+
+    - name: Create native binary (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        jpackage --input target --main-jar moovite-1.0-SNAPSHOT.jar --main-class com.nnamo.App --name moovite --app-version 1.0 --type app-image --dest native-binary
+
+    - name: Debug native binary structure (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        echo "Contents of native-binary directory:"
+        ls -la native-binary/
+        echo "Contents of moovite app:"
+        ls -la native-binary/moovite/
+
+    - name: Debug native binary structure (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
+      run: |
+        Write-Output "Contents of native-binary directory:"
+        Get-ChildItem native-binary
+        Write-Output "Contents of moovite app:"
+        Get-ChildItem native-binary/moovite
         
     - name: Rename binary (Linux)
       if: matrix.os == 'ubuntu-latest'
@@ -111,9 +147,10 @@ jobs:
         
     - name: Rename binary (Windows)
       if: matrix.os == 'windows-latest'
+      shell: pwsh
       run: |
         cd native-binary/moovite
-        move moovite.exe ../../${{ matrix.binary-name }}
+        Move-Item moovite.exe ../../${{ matrix.binary-name }}
 
     - name: Upload native binary
       uses: actions/upload-artifact@v4
