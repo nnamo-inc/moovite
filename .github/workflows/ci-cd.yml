@@ -127,6 +127,20 @@ jobs:
           if [ -f "native-binary/moovite/moovite" ]; then
             chmod +x native-binary/moovite/moovite
           fi
+          # Ensure the application JAR is present alongside the runtime (for our fallback launcher)
+          if [ -d "native-binary/moovite/lib" ]; then
+            cp -f target/moovite-1.0-SNAPSHOT.jar native-binary/moovite/lib/ || true
+          fi
+          # If jpackage did not create a launcher, add our own portable one
+          if [ ! -f "native-binary/moovite/bin/moovite" ] && [ -d "native-binary/moovite/bin" ]; then
+            echo "Creating fallback launcher script (jpackage produced no launcher)"
+            echo '#!/bin/bash' > native-binary/moovite/bin/moovite
+            echo 'DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"' >> native-binary/moovite/bin/moovite
+            echo 'exec "$DIR/java" -Djava.awt.headless=false -jar "$DIR/../lib/moovite-1.0-SNAPSHOT.jar" "$@"' >> native-binary/moovite/bin/moovite
+            chmod +x native-binary/moovite/bin/moovite
+          fi
+          echo "Post-jpackage bin contents:"
+          ls -la native-binary/moovite/bin/ || true
         else
           echo "jpackage failed, using jlink alternative..."
           
@@ -165,7 +179,9 @@ jobs:
           else
             echo "❌ ERROR: Launcher script was not created!"
             echo "Contents of bin directory:"
-            ls -la native-binary/moovite/bin/
+            ls -la native-binary/moovite/bin/ || true
+            echo "Tree of bin:" || true
+            find native-binary/moovite/bin -maxdepth 1 -type f -printf "%f\n" || true
           fi
         fi
 
@@ -244,6 +260,16 @@ jobs:
         echo "Contents of bin directory:"
         ls -la native-binary/moovite/bin/
         
+        # If launcher missing but jar exists, create a final safety wrapper now
+        if [ ! -f "native-binary/moovite/bin/moovite" ] && [ -f "native-binary/moovite/lib/moovite-1.0-SNAPSHOT.jar" ] && [ -f "native-binary/moovite/bin/java" ]; then
+          echo "Creating safety wrapper launcher at packaging stage"
+          echo '#!/bin/bash' > native-binary/moovite/bin/moovite
+          echo 'DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"' >> native-binary/moovite/bin/moovite
+          echo 'exec "$DIR/java" -Djava.awt.headless=false -jar "$DIR/../lib/moovite-1.0-SNAPSHOT.jar" "$@"' >> native-binary/moovite/bin/moovite
+          chmod +x native-binary/moovite/bin/moovite
+          ls -la native-binary/moovite/bin/
+        fi
+
         if [ -f "native-binary/moovite/bin/moovite" ] && [ -f "native-binary/moovite/lib/moovite-1.0-SNAPSHOT.jar" ]; then
           # jlink alternative was used - has custom structure with our launcher script
           echo "✅ Found jlink launcher script and JAR"
