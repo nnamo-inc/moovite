@@ -35,11 +35,31 @@ The app processes GTFS (General Transit Feed Specification) data every 30 second
 
 ### Download and run
 Get the latest release from the [releases page](https://github.com/nnamo-inc/moovite/releases):
-- **Windows**: Download `moovite-windows.exe` and run it
-- **Linux**: Download `moovite-linux`, make it executable, and run it
+- **Windows**: Download `moovite-windows.exe.zip`, extract it, and run `moovite.exe` *(no Java required)*
+- **Linux**: Download `moovite-linux.tar.gz`, extract it, and run `./moovite` *(no Java required)*
 - **Any platform**: Download the `.jar` file and run `java -jar moovite-1.0-SNAPSHOT.jar`
 
-*Requires Java 21+ for the JAR version*
+*The Windows and Linux packages include a complete Java runtime. Only the JAR version requires Java 21+ to be installed.*
+
+#### Linux usage
+```bash
+# Extract and run
+tar -xzf moovite-linux.tar.gz
+cd moovite
+./moovite
+```
+
+**If nothing happens:**
+```bash
+# Install GUI libraries if needed (Fedora/RHEL)
+sudo dnf install libX11 libXext libXrender libXtst
+
+# Install GUI libraries (Ubuntu/Debian)
+sudo apt install libx11-6 libxext6 libxrender1 libxtst6
+```
+
+#### Windows usage
+Extract the zip file, then double-click moovite.exe.
 
 ### Build from source
 ```bash
