@@ -196,6 +196,23 @@ public class CustomTable extends JPanel {
         model.setRowCount(0);
     }
 
+    public void addAllRows(Object[][] rowsData) {
+        Vector<Vector<Object>> dataVector = new Vector<>();
+        for (Object[] rowData : rowsData) {
+            if (!rowExists(rowData)) {
+                Vector<Object> row = new Vector<>();
+                for (Object data : rowData) {
+                    row.add(data);
+                }
+                dataVector.add(row);
+            }
+        }
+        for (Vector<Object> row : dataVector) {
+            model.getDataVector().add(row);
+        }
+        model.fireTableDataChanged();
+    }
+
     /// /////////// AI STUFF! //////////////
     private void initDefaultComparator() {
         Comparator<Object> comparator = (o1, o2) -> {

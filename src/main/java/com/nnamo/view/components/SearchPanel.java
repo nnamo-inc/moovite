@@ -166,19 +166,26 @@ public class SearchPanel extends JPanel {
         stopTable.clear();
         routeTable.clear();
 
-        for (StopModel stop : stopModels) {
-            stopTable.addRow(new Object[]{stop.getId(), stop.getName()});
+        Object[][] stopData = new Object[stopModels.size()][2];
+        for (int i = 0; i < stopModels.size(); i++) {
+            StopModel stop = stopModels.get(i);
+            stopData[i] = new Object[]{stop.getId(), stop.getName()};
         }
 
-        for (RouteDirection route : routeModels) {
+        Object[][] routeData = new Object[routeModels.size()][4];
+        for (int i = 0; i < routeModels.size(); i++) {
+            RouteDirection route = routeModels.get(i);
             String shortName = route.getShortName() != null ? route.getShortName() : "";
-            routeTable.addRow(new Object[]{
+            routeData[i] = new Object[]{
                     shortName,
                     route.getType().name(),
                     route.getDirectionName(),
                     route.getDirection().name(),
-            });
+            };
         }
+
+        stopTable.addAllRows(stopData);
+        routeTable.addAllRows(routeData);
     }
 
     // METHODS BEHAVIOUR //

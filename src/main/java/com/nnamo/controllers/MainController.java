@@ -153,7 +153,6 @@ public class MainController {
 
                     if (stopCache.containsKey(searchText)) {
                         stops = stopCache.get(searchText);
-                        // System.out.println("Cache hit for stops: " + searchText);
                     } else {
                         stops = db.getStopsByName(searchText);
                         stopCache.put(searchText, stops);
@@ -161,7 +160,6 @@ public class MainController {
 
                     if (routeCache.containsKey(searchText)) {
                         routes = routeCache.get(searchText);
-                        // System.out.println("Cache hit for routes: " + searchText);
                     } else {
                         routes = db.getRoutesByName(searchText);
                         routeCache.put(searchText, routes);
