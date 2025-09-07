@@ -186,7 +186,9 @@ public class MainFrame extends JFrame {
     /**
      * Renders the provided vehicle positions on the map panel.
      *
-     * @param positions the list of vehicle positions to display
+     * @param realtimePositions the list of real-time vehicle positions to display
+     * @param staticPositions   the list of static vehicle positions to display if no
+     *                          real-time data is available
      * @see VehiclePosition
      */
     public void renderVehiclePositions(List<VehiclePosition> realtimePositions,

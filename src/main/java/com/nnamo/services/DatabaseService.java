@@ -459,7 +459,6 @@ public class DatabaseService {
      * match a pattern approximately
      *
      * @param searchTerm The search term for the route
-     * @param routeType  The type of the route (bus, tram, etc.)
      * @return the list of routes with the approximate match
      * @throws SQLException if query fails
      * @author Davide Galilei
@@ -910,7 +909,6 @@ public class DatabaseService {
      *
      * @param userId     The id of the user adding the favorite stop
      * @param searchTerm Fuzzy pattern to search the stops
-     * @param routeType  The type of the route (bus, tram, etc.)
      * @throws SQLException if query fails
      * @author Davide Galilei
      */
@@ -938,7 +936,6 @@ public class DatabaseService {
      *
      * @param userId     The id of the user adding the favorite stop
      * @param searchTerm Fuzzy pattern to search the stops
-     * @param routeType  The type of the stop. "Which routes does it serve?" (bus,
      *                   tram, etc.)
      * @throws SQLException if query fails
      * @author Davide Galilei

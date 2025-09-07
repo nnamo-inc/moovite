@@ -322,7 +322,8 @@ public class MapPanel extends JPanel {
      * Renders the provided list of {@link VehiclePosition} as real-time vehicle
      * waypoints on the map.
      *
-     * @param positions the list of vehicle positions to display
+     * @param realtimePositions the list of vehicle positions to display
+     * @param staticPositions   the list of static vehicle positions to display if no
      * @see VehiclePosition
      * @see RealtimePositionPainter
      */

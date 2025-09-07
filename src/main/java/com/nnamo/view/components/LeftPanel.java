@@ -133,11 +133,6 @@ public class LeftPanel extends JPanel {
         return this.buttonPanel;
     }
 
-    /**
-     * Returns the {@link PreferPanel} instance contained in this LeftPanel.
-     *
-     * @return The PreferPanel instance.
-     */
     public void setRealtimeStatus(RealtimeStatus status) {
         this.settingsPanel.setRealtimeStatus(status);
     }
