@@ -156,16 +156,22 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
         # Try jpackage first
-        $jpackageSuccess = $true
+        $jpackageSuccess = $false
         try {
-            & jpackage --input target --main-jar moovite-1.0-SNAPSHOT.jar --main-class com.nnamo.App --name moovite --app-version 1.0 --type app-image --dest native-binary --java-options "-Djava.awt.headless=false" --runtime-image "$env:JAVA_HOME"
-            Write-Output "✅ jpackage succeeded"
+            $result = & jpackage --input target --main-jar moovite-1.0-SNAPSHOT.jar --main-class com.nnamo.App --name moovite --app-version 1.0 --type app-image --dest native-binary --java-options "-Djava.awt.headless=false" --runtime-image "$env:JAVA_HOME" 2>&1
+            if ($LASTEXITCODE -eq 0 -and (Test-Path "native-binary\moovite\moovite.exe")) {
+                $jpackageSuccess = $true
+                Write-Output "✅ jpackage succeeded"
+            } else {
+                Write-Output "jpackage failed with exit code: $LASTEXITCODE"
+                Write-Output $result
+            }
         } catch {
-            $jpackageSuccess = $false
-            Write-Output "jpackage failed, using jlink alternative..."
+            Write-Output "jpackage failed with exception: $_"
         }
         
         if (-not $jpackageSuccess) {
+            Write-Output "Using jlink alternative..."
             # Create custom runtime with jlink
             & jlink --module-path "$env:JAVA_HOME\jmods" --add-modules java.base,java.desktop,java.sql,java.net.http,java.logging,java.xml --output runtime --strip-debug --no-man-pages --no-header-files
             
@@ -201,8 +207,16 @@ jobs:
       run: |
         echo "Bundle created successfully"
         Get-ChildItem -Path native-binary/moovite/ -Recurse | Measure-Object -Property Length -Sum | ForEach-Object { "Total size: $($_.Sum / 1MB) MB" }
-        Get-ChildItem -Path native-binary/moovite/bin/ -Force | Select-Object -First 5
-        Get-ChildItem -Path native-binary/moovite/lib/ -Force | Select-Object -First 5
+        echo "Directory structure:"
+        Get-ChildItem -Path native-binary/moovite/ -Recurse | Select-Object -First 10
+        if (Test-Path "native-binary/moovite/bin/") {
+          echo "Contents of bin directory:"
+          Get-ChildItem -Path native-binary/moovite/bin/ -Force | Select-Object -First 5
+        }
+        if (Test-Path "native-binary/moovite/lib/") {
+          echo "Contents of lib directory:"
+          Get-ChildItem -Path native-binary/moovite/lib/ -Force | Select-Object -First 5
+        }
         
     - name: Package binary (Linux)
       if: matrix.os == 'ubuntu-latest'
@@ -228,6 +242,7 @@ jobs:
       shell: pwsh
       run: |
         if (Test-Path "native-binary/moovite/moovite.exe") {
+            # jpackage succeeded
             $bundleSize = (Get-ChildItem "native-binary/moovite" -Recurse | Measure-Object -Property Length -Sum).Sum / 1MB
             if ($bundleSize -gt 50) {
                 Compress-Archive -Path "native-binary/moovite/*" -DestinationPath "${{ matrix.binary-name }}.zip"
@@ -238,8 +253,16 @@ jobs:
                 $size = [math]::Round((Get-ChildItem "${{ matrix.binary-name }}").Length / 1KB, 1)
                 Write-Output "Created: ${{ matrix.binary-name }} ($size KB)"
             }
+        } elseif (Test-Path "native-binary/moovite/bin/moovite.bat") {
+            # jlink alternative was used
+            $bundleSize = (Get-ChildItem "native-binary/moovite" -Recurse | Measure-Object -Property Length -Sum).Sum / 1MB
+            Compress-Archive -Path "native-binary/moovite/*" -DestinationPath "${{ matrix.binary-name }}.zip"
+            $size = [math]::Round((Get-ChildItem "${{ matrix.binary-name }}.zip").Length / 1MB, 1)
+            Write-Output "Created: ${{ matrix.binary-name }}.zip ($size MB)"
         } else {
             Write-Output "No executable found"
+            Write-Output "Directory contents:"
+            Get-ChildItem "native-binary/moovite" -Recurse
             exit 1
         }
 
