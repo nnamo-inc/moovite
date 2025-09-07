@@ -43,7 +43,7 @@ Get the latest release from the [releases page](https://github.com/nnamo-inc/moo
 
 #### Linux usage
 ```bash
-# Extract and run
+# Extract and run the launcher
 tar -xzf moovite-linux.tar.gz
 cd moovite
 ./moovite
