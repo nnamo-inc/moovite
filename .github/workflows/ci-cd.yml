@@ -103,12 +103,19 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt-get update
-        sudo apt-get install -y fakeroot
+        sudo apt-get install -y fakeroot binutils
 
     - name: Create native binary (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: |
-        jpackage \
+        echo "Java version:"
+        java --version
+        echo "Available modules:"
+        java --list-modules | head -10
+        echo "Creating jpackage bundle..."
+        
+        # Try jpackage first
+        if jpackage \
           --input target \
           --main-jar moovite-1.0-SNAPSHOT.jar \
           --main-class com.nnamo.App \
@@ -116,12 +123,82 @@ jobs:
           --app-version 1.0 \
           --type app-image \
           --dest native-binary \
-          --java-options '-Djava.awt.headless=false'
+          --java-options '-Djava.awt.headless=false' \
+          --runtime-image $JAVA_HOME \
+          --verbose; then
+          echo "✅ jpackage succeeded"
+        else
+          echo "❌ jpackage failed, trying alternative approach..."
+          
+          # Create custom runtime with jlink
+          jlink \
+            --module-path $JAVA_HOME/jmods \
+            --add-modules java.base,java.desktop,java.sql,java.net.http,java.logging,java.xml \
+            --output runtime \
+            --strip-debug \
+            --no-man-pages \
+            --no-header-files
+          
+          # Create app directory structure
+          mkdir -p native-binary/moovite/bin
+          mkdir -p native-binary/moovite/lib
+          
+          # Copy runtime
+          cp -r runtime/* native-binary/moovite/
+          
+          # Copy JAR
+          cp target/moovite-1.0-SNAPSHOT.jar native-binary/moovite/lib/
+          
+          # Create launcher script
+          cat > native-binary/moovite/bin/moovite << 'EOF'
+        #!/bin/bash
+        DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+        "$DIR/../bin/java" -Djava.awt.headless=false -jar "$DIR/../lib/moovite-1.0-SNAPSHOT.jar" "$@"
+        EOF
+          chmod +x native-binary/moovite/bin/moovite
+          echo "✅ Alternative runtime created"
+        fi
 
     - name: Create native binary (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        jpackage --input target --main-jar moovite-1.0-SNAPSHOT.jar --main-class com.nnamo.App --name moovite --app-version 1.0 --type app-image --dest native-binary --java-options "-Djava.awt.headless=false"
+        Write-Output "Java version:"
+        java --version
+        Write-Output "Available modules:"
+        java --list-modules | Select-Object -First 10
+        Write-Output "Creating jpackage bundle..."
+        
+        # Try jpackage first
+        $jpackageSuccess = $true
+        try {
+            & jpackage --input target --main-jar moovite-1.0-SNAPSHOT.jar --main-class com.nnamo.App --name moovite --app-version 1.0 --type app-image --dest native-binary --java-options "-Djava.awt.headless=false" --runtime-image "$env:JAVA_HOME" --verbose
+        } catch {
+            $jpackageSuccess = $false
+            Write-Output "❌ jpackage failed, trying alternative approach..."
+        }
+        
+        if (-not $jpackageSuccess) {
+            # Create custom runtime with jlink
+            & jlink --module-path "$env:JAVA_HOME\jmods" --add-modules java.base,java.desktop,java.sql,java.net.http,java.logging,java.xml --output runtime --strip-debug --no-man-pages --no-header-files
+            
+            # Create app directory structure
+            New-Item -ItemType Directory -Force -Path "native-binary\moovite\bin"
+            New-Item -ItemType Directory -Force -Path "native-binary\moovite\lib"
+            
+            # Copy runtime
+            Copy-Item -Recurse -Force "runtime\*" "native-binary\moovite\"
+            
+            # Copy JAR
+            Copy-Item "target\moovite-1.0-SNAPSHOT.jar" "native-binary\moovite\lib\"
+            
+            # Create launcher script
+            @"
+        @echo off
+        set DIR=%~dp0
+        "%DIR%..\bin\java.exe" -Djava.awt.headless=false -jar "%DIR%..\lib\moovite-1.0-SNAPSHOT.jar" %*
+        "@ | Out-File -FilePath "native-binary\moovite\moovite.exe" -Encoding ASCII
+            Write-Output "✅ Alternative runtime created"
+        }
 
     - name: Debug native binary structure (Linux)
       if: matrix.os == 'ubuntu-latest'
@@ -130,6 +207,19 @@ jobs:
         ls -la native-binary/
         echo "Contents of moovite app:"
         ls -la native-binary/moovite/
+        echo "Contents of moovite/bin:"
+        ls -la native-binary/moovite/bin/ || echo "No bin directory"
+        echo "Contents of moovite/lib:"
+        ls -la native-binary/moovite/lib/ || echo "No lib directory"
+        echo "Total size of bundle:"
+        du -sh native-binary/moovite/
+        echo "File details of main executable:"
+        file native-binary/moovite/bin/moovite || file native-binary/moovite/moovite || echo "Executable not found"
+        echo "Size of executable:"
+        ls -lh native-binary/moovite/bin/moovite || ls -lh native-binary/moovite/moovite || echo "No executable found"
+        echo "Checking for bundled JVM:"
+        find native-binary/moovite -name "java" -type f || echo "No java executable found in bundle"
+        find native-binary/moovite -name "*.so" | head -5 || echo "No shared libraries found"
 
     - name: Debug native binary structure (Windows)
       if: matrix.os == 'windows-latest'
@@ -139,19 +229,69 @@ jobs:
         Get-ChildItem native-binary
         Write-Output "Contents of moovite app:"
         Get-ChildItem native-binary/moovite
+        Write-Output "Total size of bundle:"
+        Get-ChildItem native-binary/moovite -Recurse | Measure-Object -Property Length -Sum
+        Write-Output "Checking for bundled JVM:"
+        Get-ChildItem native-binary/moovite -Recurse -Filter "java.exe" -ErrorAction SilentlyContinue
+        Get-ChildItem native-binary/moovite -Recurse -Filter "*.dll" | Select-Object -First 5
         
     - name: Rename binary (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: |
-        cd native-binary/moovite/bin
-        mv moovite ../../../${{ matrix.binary-name }}
+        echo "Looking for Linux executable..."
+        if [ -f "native-binary/moovite/bin/moovite" ]; then
+          echo "Found executable in bin directory"
+          ls -lh native-binary/moovite/bin/moovite
+          cp native-binary/moovite/bin/moovite ${{ matrix.binary-name }}
+          echo "Copied binary, final size:"
+          ls -lh ${{ matrix.binary-name }}
+        elif [ -f "native-binary/moovite/moovite" ]; then
+          echo "Found executable in root directory"
+          ls -lh native-binary/moovite/moovite
+          cp native-binary/moovite/moovite ${{ matrix.binary-name }}
+          echo "Copied binary, final size:"
+          ls -lh ${{ matrix.binary-name }}
+        else
+          echo "❌ No executable found! jpackage likely failed."
+          echo "Creating fallback wrapper script..."
+          cat > ${{ matrix.binary-name }} << 'EOF'
+        #!/bin/bash
+        echo "Error: Native binary creation failed."
+        echo "Please download the JAR version instead and run:"
+        echo "java -jar moovite-1.0-SNAPSHOT.jar"
+        exit 1
+        EOF
+          chmod +x ${{ matrix.binary-name }}
+        fi
         
     - name: Rename binary (Windows)
       if: matrix.os == 'windows-latest'
       shell: pwsh
       run: |
-        cd native-binary/moovite
-        Move-Item moovite.exe ../../${{ matrix.binary-name }}
+        Write-Output "Looking for Windows executable..."
+        if (Test-Path "native-binary/moovite/moovite.exe") {
+            Write-Output "Found executable in root directory"
+            Get-ChildItem "native-binary/moovite/moovite.exe" | Format-Table Name, Length
+            Copy-Item "native-binary/moovite/moovite.exe" "${{ matrix.binary-name }}"
+            Write-Output "Copied binary, final size:"
+            Get-ChildItem "${{ matrix.binary-name }}" | Format-Table Name, Length
+        } elseif (Test-Path "native-binary/moovite/bin/moovite.exe") {
+            Write-Output "Found executable in bin directory"
+            Get-ChildItem "native-binary/moovite/bin/moovite.exe" | Format-Table Name, Length
+            Copy-Item "native-binary/moovite/bin/moovite.exe" "${{ matrix.binary-name }}"
+            Write-Output "Copied binary, final size:"
+            Get-ChildItem "${{ matrix.binary-name }}" | Format-Table Name, Length
+        } else {
+            Write-Output "❌ No executable found! jpackage likely failed."
+            Write-Output "Creating fallback batch script..."
+            @"
+        @echo off
+        echo Error: Native binary creation failed.
+        echo Please download the JAR version instead and run:
+        echo java -jar moovite-1.0-SNAPSHOT.jar
+        pause
+        "@ | Out-File -FilePath "${{ matrix.binary-name }}" -Encoding ASCII
+        }
 
     - name: Upload native binary
       uses: actions/upload-artifact@v4
