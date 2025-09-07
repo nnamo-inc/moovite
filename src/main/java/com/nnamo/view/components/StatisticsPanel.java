@@ -20,6 +20,8 @@ import org.jspecify.annotations.NonNull;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -64,17 +66,16 @@ public class StatisticsPanel extends JPanel {
                 .setFill(GridBagConstraints.BOTH)
                 .setWeight(1.0, 1.0)
                 .setInsets(5, 5, 5, 5));
-/*
+
         // Add component listener to both the panel and the tile container
         ComponentAdapter resizeListener = new ComponentAdapter() {
-            @Override
             public void componentResized(ComponentEvent e) {
                 SwingUtilities.invokeLater(() -> relayoutTiles());
             }
         };
 
         addComponentListener(resizeListener);
-        tileContainer.addComponentListener(resizeListener);*/
+        tileContainer.addComponentListener(resizeListener);
 
         this.addStatisticTile(statBusTile);
         this.addStatisticTile(statEarlyBusTile);
@@ -119,7 +120,7 @@ public class StatisticsPanel extends JPanel {
                 .setInsets(5, 5, 5, 5));
 
         // Also listen to the scroll pane viewport changes
-//        scrollPane.getViewport().addChangeListener(e -> SwingUtilities.invokeLater(() -> relayoutTiles()));
+        scrollPane.getViewport().addChangeListener(e -> SwingUtilities.invokeLater(() -> relayoutTiles()));
 
         setVisible(false);
     }
