@@ -1,18 +1,20 @@
 package com.nnamo.view.customcomponents;
 
 import com.nnamo.enums.DataType;
-import com.nnamo.enums.ResetType;
 import com.nnamo.interfaces.FavoriteBehaviour;
 import com.nnamo.utils.CustomColor;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.Objects;
 
 /**
  * Custom {@link JButton} that allows users to add or remove items from their favorites.
  * It updates its text and background color based on the favorite status of the item.
  *
  * @author Riccardo Finocchiaro
+ * @author Davide Galilei
  *
  * @see JButton
  */
@@ -25,6 +27,9 @@ public class CustomPreferButton extends JButton {
     private String itemName;
     private DataType mode;
 
+    private final ImageIcon favoriteIcon;
+    private final ImageIcon unfavoriteIcon;
+
     // CONSTRUCTOR //
     /**
      * Creates a {@link CustomPreferButton} with a default text and background {@link CustomColor}.
@@ -36,9 +41,27 @@ public class CustomPreferButton extends JButton {
      */
     public CustomPreferButton() {
         super();
-        setText("<html></p><p>Clicca su una riga</p><p>della tabella per</p><p>attivare il bottone</p></html>");
+
+        ImageIcon originalFavoriteIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/panels/favorite_large.png")));
+        ImageIcon originalUnfavoriteIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/panels/unfavorite_large.png")));
+
+        favoriteIcon = scaleIcon(originalFavoriteIcon, 32, 32);
+        unfavoriteIcon = scaleIcon(originalUnfavoriteIcon, 32, 32);
+
+        setText("Clicca su una riga della tabella per attivare il bottone");
+        setIcon(null);
+        setHorizontalTextPosition(SwingConstants.RIGHT);
+        setIconTextGap(10);
         setBackground(CustomColor.GREEN);
+        setFont(getFont().deriveFont(Font.PLAIN, 14f));
+        setPreferredSize(new Dimension(getPreferredSize().width, 50));
         initListener();
+    }
+
+    private ImageIcon scaleIcon(ImageIcon originalIcon, int width, int height) {
+        Image img = originalIcon.getImage();
+        Image scaledImg = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        return new ImageIcon(scaledImg);
     }
 
     // METHODS //
@@ -56,10 +79,12 @@ public class CustomPreferButton extends JButton {
         setEnabled(true);
         this.favorite = isFavorite;
         if (isFavorite) {
-            setText("<html><p>Rimuovi</p><p>" + itemName + "</p><p>dai Preferiti</p></html>");
+            setText("Rimuovi " + itemName + " dai Preferiti");
+            setIcon(favoriteIcon);
             setBackground(CustomColor.RED);
         } else {
-            setText("<html><p>Aggiungi</p><p>" + itemName + "</p><p>ai Preferiti</p></html>");
+            setText("Aggiungi " + itemName + " ai Preferiti");
+            setIcon(unfavoriteIcon);
             setBackground(CustomColor.GREEN);
         }
     }
@@ -73,13 +98,15 @@ public class CustomPreferButton extends JButton {
                 if (favorite) {
                     favoriteBehaviour.removeFavorite(itemId, mode);
                     favorite = false;
-                    setText("<html><p>Aggiungi</p><p>" + itemName + "</p><p>ai Preferiti</p></html>");
+                    setText("Aggiungi " + itemName + " ai Preferiti");
+                    setIcon(unfavoriteIcon);
                     setBackground(CustomColor.GREEN);
 
                 } else {
                     favoriteBehaviour.addFavorite(itemId, mode);
                     favorite = true;
-                    setText("<html><p>Rimuovi</p><p>" + itemName + "</p><p>dai Preferiti</p></html>");
+                    setText("Rimuovi " + itemName + " dai Preferiti");
+                    setIcon(favoriteIcon);
                     setBackground(CustomColor.RED);
                 }
 
@@ -102,7 +129,6 @@ public class CustomPreferButton extends JButton {
         }
     }
 
-    // GETTERS AND SETTERS //
     /**
      * Sets the data type for the item associated with this {@link JButton}.
      *
