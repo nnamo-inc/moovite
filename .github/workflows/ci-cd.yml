@@ -1,0 +1,246 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Cache Maven dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+
+    - name: Compile project
+      run: mvn clean compile
+
+    - name: Run tests
+      run: mvn test
+
+    - name: Package JAR
+      run: mvn package
+
+    - name: Generate Javadoc
+      run: mvn javadoc:javadoc
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifacts
+        path: |
+          target/*.jar
+          target/reports/apidocs/
+
+  create-native-binaries:
+    needs: build
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            binary-name: moovite-linux
+            jlink-options: --strip-debug --no-man-pages --no-header-files
+          - os: windows-latest
+            binary-name: moovite-windows.exe
+            jlink-options: --strip-debug --no-man-pages --no-header-files
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Cache Maven dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+
+    - name: Package JAR
+      run: mvn clean package
+
+    - name: Install jpackage dependencies (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y fakeroot
+
+    - name: Create native binary
+      run: |
+        jpackage \
+          --input target \
+          --main-jar moovite-1.0-SNAPSHOT.jar \
+          --main-class com.nnamo.App \
+          --name moovite \
+          --app-version 1.0 \
+          --type app-image \
+          --dest native-binary
+        
+    - name: Rename binary (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        cd native-binary/moovite/bin
+        mv moovite ../../../${{ matrix.binary-name }}
+        
+    - name: Rename binary (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        cd native-binary/moovite
+        move moovite.exe ../../${{ matrix.binary-name }}
+
+    - name: Upload native binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.binary-name }}
+        path: ${{ matrix.binary-name }}
+
+  deploy-javadoc:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Cache Maven dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+
+    - name: Generate Javadoc
+      run: mvn clean javadoc:javadoc
+
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+
+    - name: Upload to GitHub Pages
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: target/reports/apidocs
+
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+
+  create-release:
+    needs: [build, create-native-binaries]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          build-artifacts/target/*.jar
+          moovite-linux/moovite-linux
+          moovite-windows.exe/moovite-windows.exe
+        generate_release_notes: true
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  create-snapshot-release:
+    needs: [build, create-native-binaries]
+    if: github.ref == 'refs/heads/main' && !startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+
+    - name: Get short SHA
+      id: vars
+      run: echo "short_sha=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
+    - name: Delete existing snapshot release
+      run: |
+        gh release delete snapshot --yes || true
+        git push origin :refs/tags/snapshot || true
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create/Update Snapshot Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: snapshot
+        name: "Development Snapshot (${{ steps.vars.outputs.short_sha }})"
+        body: |
+          🚀 **Development Snapshot Build**
+          
+          This is an automatic build from the latest commit on the main branch.
+          
+          **Commit:** ${{ github.sha }}  
+          **Date:** ${{ github.event.head_commit.timestamp }}
+          
+          ⚠️ **This is a development build** - use at your own risk!
+        files: |
+          build-artifacts/target/*.jar
+          moovite-linux/moovite-linux
+          moovite-windows.exe/moovite-windows.exe
+        draft: false
+        prerelease: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -156,7 +156,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>org.nnamo.App</mainClass> <!-- replace with your actual class -->
+              <mainClass>com.nnamo.App</mainClass> <!-- replace with your actual class -->
             </manifest>
           </archive>
         </configuration>
