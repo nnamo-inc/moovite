@@ -115,12 +115,13 @@ jobs:
           --name moovite \
           --app-version 1.0 \
           --type app-image \
-          --dest native-binary
+          --dest native-binary \
+          --java-options '-Djava.awt.headless=false'
 
     - name: Create native binary (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        jpackage --input target --main-jar moovite-1.0-SNAPSHOT.jar --main-class com.nnamo.App --name moovite --app-version 1.0 --type app-image --dest native-binary
+        jpackage --input target --main-jar moovite-1.0-SNAPSHOT.jar --main-class com.nnamo.App --name moovite --app-version 1.0 --type app-image --dest native-binary --java-options "-Djava.awt.headless=false"
 
     - name: Debug native binary structure (Linux)
       if: matrix.os == 'ubuntu-latest'
