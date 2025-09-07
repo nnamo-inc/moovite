@@ -6,8 +6,6 @@ import com.nnamo.enums.DataType;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import javax.swing.table.TableColumn;
-
 public interface TableRowClickBehaviour {
 
     void onRowClick(Object rowData, ColumnName[] tableColumns, DataType dataType)

@@ -3,12 +3,11 @@ package com.nnamo.view.customcomponents;
 import java.awt.*;
 
 /**
- *Custom {@link GridBagConstraints} class that provides a more manageable way to set the properties of a {@link GridBagConstraints} object.
- *
+ * Custom {@link GridBagConstraints} class that provides a more manageable way to set the properties of a {@link GridBagConstraints} object.
+ * <p>
  * This class allows you to chain method calls to set the properties of the {@link GridBagConstraints} object, making it easier to read and maintain, with a simil Builder Pattern.
  *
  * @author Riccardo Finocchiaro
- *
  * @see GridBagConstraints
  */
 public class CustomGbc extends GridBagConstraints {
@@ -18,9 +17,7 @@ public class CustomGbc extends GridBagConstraints {
      * set the anchor of the {@link GridBagConstraints} object.
      *
      * @param anchor the anchor value to set
-     *
      * @return CustomGbc
-     *
      * @see GridBagConstraints
      */
     public CustomGbc setAnchor(int anchor) {
@@ -32,9 +29,7 @@ public class CustomGbc extends GridBagConstraints {
      * set the fill of the {@link GridBagConstraints} object.
      *
      * @param fill the fill value to set
-     *
      * @return CustomGbc
-     *
      * @see GridBagConstraints
      */
     public CustomGbc setFill(int fill) {
@@ -46,9 +41,7 @@ public class CustomGbc extends GridBagConstraints {
      * set the height of the {@link GridBagConstraints} object.
      *
      * @param height the height value to set
-     *
      * @return CustomGbc
-     *
      * @see GridBagConstraints
      */
     public CustomGbc setHeight(int height) {
@@ -60,9 +53,7 @@ public class CustomGbc extends GridBagConstraints {
      * set the width of the {@link GridBagConstraints} object.
      *
      * @param width the width value to set
-     *
      * @return CustomGbc
-     *
      * @see GridBagConstraints
      */
     public CustomGbc setWidth(int width) {
@@ -75,9 +66,7 @@ public class CustomGbc extends GridBagConstraints {
      *
      * @param x the x value to set
      * @param y the y value to set
-     *
      * @return CustomGbc
-     *
      * @see GridBagConstraints
      */
     public CustomGbc setPosition(int x, int y) {
@@ -89,13 +78,11 @@ public class CustomGbc extends GridBagConstraints {
     /**
      * set the insets of the {@link GridBagConstraints} object.
      *
-     * @param top the top inset value
-     * @param left the left inset value
+     * @param top    the top inset value
+     * @param left   the left inset value
      * @param bottom the bottom inset value
-     * @param right the right inset value
-     *
+     * @param right  the right inset value
      * @return CustomGbc
-     *
      * @see GridBagConstraints
      */
     public CustomGbc setInsets(int top, int left, int bottom, int right) {
@@ -108,9 +95,7 @@ public class CustomGbc extends GridBagConstraints {
      *
      * @param ipadx the horizontal internal padding
      * @param ipady the vertical internal padding
-     *
      * @return CustomGbc
-     *
      * @see GridBagConstraints
      */
     public CustomGbc setIpad(int ipadx, int ipady) {
@@ -124,9 +109,7 @@ public class CustomGbc extends GridBagConstraints {
      *
      * @param weightX the weight in the x direction
      * @param weightY the weight in the y direction
-     *
      * @return CustomGbc
-     *
      * @see GridBagConstraints
      */
     public CustomGbc setWeight(double weightX, double weightY) {

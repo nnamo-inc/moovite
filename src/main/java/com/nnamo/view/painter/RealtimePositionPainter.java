@@ -1,25 +1,20 @@
 package com.nnamo.view.painter;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Objects;
-
-import javax.imageio.ImageIO;
-
+import com.nnamo.enums.IconSize;
 import org.jxmapviewer.JXMapViewer;
 
-import com.nnamo.enums.IconSize;
+import javax.imageio.ImageIO;
+import java.io.IOException;
+import java.util.Objects;
 
 /**
  * A specialized {@link PositionPainter} for rendering real-time vehicle positions on a map.
  * This class extends the base functionality to include specific icons for vehicles.
  *
+ * @author Samuele Lombardi
  * @see PositionPainter
  * @see JXMapViewer
  * @see IconSize
- *
- * @author Samuele Lombardi
  */
 public class RealtimePositionPainter extends PositionPainter {
     public RealtimePositionPainter(JXMapViewer map) throws IOException {

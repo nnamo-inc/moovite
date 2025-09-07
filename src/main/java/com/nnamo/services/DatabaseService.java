@@ -3,7 +3,6 @@ package com.nnamo.services;
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.google.transit.realtime.GtfsRealtime.TripDescriptor;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate;
-import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.field.SqlType;
@@ -18,16 +17,9 @@ import com.nnamo.enums.RealtimeMetricType;
 import com.nnamo.enums.RouteType;
 import com.nnamo.models.*;
 import com.nnamo.utils.FuzzyMatch;
-import com.nnamo.utils.Utils;
-
 import org.apache.commons.lang3.time.DateUtils;
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
-import org.onebusaway.gtfs.model.Agency;
-import org.onebusaway.gtfs.model.Route;
-import org.onebusaway.gtfs.model.ServiceCalendarDate;
-import org.onebusaway.gtfs.model.Stop;
-import org.onebusaway.gtfs.model.StopTime;
-import org.onebusaway.gtfs.model.Trip;
+import org.onebusaway.gtfs.model.*;
 import org.sqlite.Function;
 
 import java.io.IOException;
@@ -103,7 +95,7 @@ public class DatabaseService {
 
     /**
      * Loads static GTFS data in the database
-     * 
+     *
      * @param gtfs StaticGtfsService the GTFS service
      * @throws SQLException       if query to the connection goes wrong
      * @throws IOException        if static gtfs data can be loaded
@@ -127,7 +119,7 @@ public class DatabaseService {
 
     /**
      * Checks if database needs caching
-     * 
+     *
      * @throws SQLException if query to the connection goes wrong
      */
     public boolean needsCaching() throws SQLException {
@@ -395,10 +387,10 @@ public class DatabaseService {
     /**
      * Returns a Model's DAO (Database Access Object) by providing the Class of the
      * model
-     * 
-     * @author Samuele Lombardi
+     *
      * @param modelClass the Class of the model to return
      * @return Dao if the model's dao exists, null otherwise
+     * @author Samuele Lombardi
      */
     @SuppressWarnings("unchecked")
     public <T, ID> Dao<T, ID> getDao(Class<T> modelClass) {
@@ -407,9 +399,9 @@ public class DatabaseService {
 
     /**
      * Returns every stop instance from the database
-     * 
-     * @author Samuele Lombardi
+     *
      * @return stop models (empty list if no stop found)
+     * @author Samuele Lombardi
      */
     public List<StopModel> getAllStops() throws SQLException {
         Dao<StopModel, String> stopDao = getDao(StopModel.class);
@@ -418,10 +410,10 @@ public class DatabaseService {
 
     /**
      * Returns a stop by its ID
-     * 
+     *
      * @param id String
-     * @author Samuele Lombardi
      * @return StopModel
+     * @author Samuele Lombardi
      */
     public StopModel getStopById(String id) throws SQLException {
         Dao<StopModel, String> stopDao = getDao(StopModel.class);
@@ -431,11 +423,11 @@ public class DatabaseService {
     /**
      * Fuzzy search stops by its name. Fuzzy finding means finding strings that
      * match a pattern approximately
-     * 
+     *
      * @param searchTerm String
-     * @author Davide Galilei
-     * @throws SQLException if query fails
      * @return the list of models with the approximate match
+     * @throws SQLException if query fails
+     * @author Davide Galilei
      */
     public List<StopModel> getStopsByName(String searchTerm) throws SQLException {
         Dao<StopModel, String> stopDao = getDao(StopModel.class);
@@ -465,12 +457,12 @@ public class DatabaseService {
     /**
      * Fuzzy search routes by its name. Fuzzy finding means finding strings that
      * match a pattern approximately
-     * 
+     *
      * @param searchTerm The search term for the route
      * @param routeType  The type of the route (bus, tram, etc.)
-     * @author Davide Galilei
-     * @throws SQLException if query fails
      * @return the list of routes with the approximate match
+     * @throws SQLException if query fails
+     * @author Davide Galilei
      */
     public List<RouteDirection> getRoutesByName(String searchTerm) throws SQLException {
         Dao<RouteModel, String> routeDao = getDao(RouteModel.class);
@@ -519,11 +511,11 @@ public class DatabaseService {
      * provided routes but for each directions. It is pretty useful in order to
      * display
      * routes' trips based on the direction (OUTGOING, INGOING)
-     * 
+     *
      * @param routes The routes which we want for each direction
-     * @author Samuele Lombardi
-     * @throws SQLException if query fails
      * @return the list of directioned routes
+     * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public List<RouteDirection> getDirectionedRoutes(List<RouteModel> routes) throws SQLException {
         // Add routes for both directions
@@ -548,11 +540,11 @@ public class DatabaseService {
 
     /**
      * Gets the unique routes that go through a specific stop
-     * 
+     *
      * @param stopId The ID of the stop
-     * @author Samuele Lombardi
-     * @throws SQLException if query fails
      * @return the list of routes that go through that stop
+     * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     // Gets the routes that go through a stop
     public List<RouteModel> getStopRoutes(String stopId) throws SQLException {
@@ -566,11 +558,11 @@ public class DatabaseService {
 
     /**
      * Gets the stop times for a specific stop
-     * 
+     *
      * @param stopId The ID of the stop
-     * @author Samuele Lombardi
-     * @throws SQLException if query fails
      * @return the list of ALL stoptimes for that stop
+     * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public List<StopTimeModel> getStopTimes(String stopId) throws SQLException {
         Dao<StopTimeModel, String> stopTimeDao = getDao(StopTimeModel.class);
@@ -588,13 +580,13 @@ public class DatabaseService {
     /**
      * Gets the next 6 hours stop times for a specific stop based on the time
      * provided
-     * 
+     *
      * @param stopId The ID of the stop
      * @param time   the time from when we want the stop times to start
-     * @author Samuele Lombardi
-     * @throws SQLException if query fails
      * @return the list of next 6 hours (based on the time provided) stoptimes for
-     *         that stop
+     * that stop
+     * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public List<StopTimeModel> getNextStopTimes(String stopId, LocalTime time) throws SQLException {
         return getNextStopTimes(stopId, time, 6);
@@ -603,14 +595,14 @@ public class DatabaseService {
     /**
      * Gets the next X hours stop times for a specific stop based on the time
      * provided
-     * 
+     *
      * @param stopId The ID of the stop
      * @param time   the time from when we want the stop times to start
      * @param hours  the hours range from the time provided
-     * @author Samuele Lombardi
-     * @throws SQLException if query fails
      * @return the list of next X hours (based on the time provided) stoptimes for
-     *         that stop
+     * that stop
+     * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public List<StopTimeModel> getNextStopTimes(String stopId, LocalTime time, int hours) throws SQLException {
         Dao<StopTimeModel, String> stopTimeDao = getDao(StopTimeModel.class);
@@ -634,16 +626,16 @@ public class DatabaseService {
      * Gets the next X hours stop times for a specific stop based on the time
      * provided and the date provided. This returns only the stop times for trips
      * that run on the provided day.
-     * 
+     *
      * @param stopId The ID of the stop
      * @param time   the time from when we want the stop times to start
      * @param hours  the hours range from the time provided
      * @param date   the date of the returned stop times
-     * @author Samuele Lombardi
-     * @throws SQLException if query fails
      * @return the list of next X hours (based on the time and date provided)
-     *         stoptimes for
-     *         that stop
+     * stoptimes for
+     * that stop
+     * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public List<StopTimeModel> getNextStopTimes(String stopId, LocalTime time, Date date, int hours)
             throws SQLException {
@@ -669,20 +661,20 @@ public class DatabaseService {
      * provided and the date provided. This returns only the stop times for trips
      * that run on the provided day. It also provides the static stop times of
      * realtime trips
-     * 
+     *
      * @param stopId      The ID of the stop
      * @param time        the time from when we want the stop times to start
      * @param hours       the hours range from the time provided
      * @param date        the date of the returned stop times
      * @param tripUpdates the trip updates for that stop
-     * @author Samuele Lombardi
-     * @throws SQLException if query fails
      * @return the list of next X hours (based on the time and date provided + the
-     *         realtime trips) stoptimes for
-     *         that stop
+     * realtime trips) stoptimes for
+     * that stop
+     * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public List<StopTimeModel> getNextStopTimes(String stopId, LocalTime time, int hours, Date date,
-            List<RealtimeStopUpdate> tripUpdates)
+                                                List<RealtimeStopUpdate> tripUpdates)
             throws SQLException {
         Dao<StopTimeModel, String> stopTimeDao = getDao(StopTimeModel.class);
         List<StopTimeModel> filteredStopTimes = getNextStopTimes(stopId, time, date, hours);
@@ -711,8 +703,8 @@ public class DatabaseService {
         // Adds stop times of valid realtime stops
         for (StopTimeModel stopTime : realtimeStopModels) {
             if (stopTimesMap.get(stopTime.getTrip().getId()) == null) { // Checks if the realtime stoptime is already
-                                                                        // present
-                System.out.println("");
+                // present
+                System.out.println();
                 filteredStopTimes.add(stopTime);
             }
         }
@@ -722,11 +714,11 @@ public class DatabaseService {
 
     /**
      * Get services by ID
-     * 
+     *
      * @param serviceId The id of the services to get
-     * @author Samuele Lombardi
-     * @throws SQLException if query fails
      * @return services with that ID
+     * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public List<ServiceModel> getServicesById(String serviceId) throws SQLException {
         Dao<ServiceModel, String> serviceDao = getDao(ServiceModel.class);
@@ -739,11 +731,11 @@ public class DatabaseService {
 
     /**
      * Get services of a specific trip by model
-     * 
+     *
      * @param trip The model trip with the services
-     * @author Samuele Lombardi
-     * @throws SQLException if query fails
      * @return trip's services
+     * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public List<ServiceModel> getTripServices(TripModel trip) throws SQLException {
         if (trip == null) {
@@ -754,11 +746,11 @@ public class DatabaseService {
 
     /**
      * Get services of a specific trip by ID
-     * 
+     *
      * @param tripId The ID of the trip with the services
-     * @author Samuele Lombardi
-     * @throws SQLException if query fails
      * @return trip's services
+     * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public List<ServiceModel> getTripServices(String tripId) throws SQLException {
         Dao<TripModel, String> tripDao = getDao(TripModel.class);
@@ -768,10 +760,10 @@ public class DatabaseService {
 
     /**
      * Creates user from model
-     * 
+     *
      * @param user User model
-     * @author Samuele Lombardi
      * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public void addUser(UserModel user) throws SQLException {
         getDao(UserModel.class).createIfNotExists(user);
@@ -779,11 +771,11 @@ public class DatabaseService {
 
     /**
      * Creates user from username and password
-     * 
+     *
      * @param username     User's username
      * @param passwordHash User's password
-     * @author Samuele Lombardi
      * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public void addUser(String username, String passwordHash) throws SQLException {
         getDao(UserModel.class)
@@ -792,11 +784,11 @@ public class DatabaseService {
 
     /**
      * Get user by the username
-     * 
+     *
      * @param username User's username
-     * @author Samuele Lombardi
-     * @throws SQLException if query fails
      * @return the user with the provided name, or null if doesn't exist
+     * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public UserModel getUserByName(String username) throws SQLException {
         var users = getDao(UserModel.class).queryForEq("username", username);
@@ -808,11 +800,11 @@ public class DatabaseService {
 
     /**
      * Get user by ID
-     * 
+     *
      * @param id User's id
-     * @author Samuele Lombardi
-     * @throws SQLException if query fails
      * @return the user with the provided ID, or null if doesn't exist
+     * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public UserModel getUserById(int id) throws SQLException {
         return getDao(UserModel.class).queryForId(id);
@@ -820,11 +812,11 @@ public class DatabaseService {
 
     /**
      * Add favorite stop to a user's favorite stops list
-     * 
+     *
      * @param userId The id of the user adding the favorite stop
      * @param stopId The id of the favorite stop
-     * @author Samuele Lombardi
      * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public void addFavStop(int userId, String stopId) throws SQLException {
         Dao<FavoriteStopModel, String> favoriteStopDao = getDao(FavoriteStopModel.class);
@@ -843,11 +835,11 @@ public class DatabaseService {
 
     /**
      * Add favorite stop to a user's favorite stops list
-     * 
+     *
      * @param user User model
      * @param stop Stop model
-     * @author Samuele Lombardi
      * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public void addFavStop(UserModel user, StopModel stop) throws SQLException {
         Dao<FavoriteStopModel, String> favoriteStopDao = getDao(FavoriteStopModel.class);
@@ -859,11 +851,11 @@ public class DatabaseService {
 
     /**
      * Remove favorite stop from a user's favorite stops list
-     * 
+     *
      * @param userId The id of the user adding the favorite stop
      * @param stopId The id of the favorite stop
-     * @author Samuele Lombardi
      * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public void removeFavStop(int userId, String stopId) throws SQLException {
         Dao<FavoriteStopModel, String> favoriteStopDao = getDao(FavoriteStopModel.class);
@@ -879,11 +871,11 @@ public class DatabaseService {
 
     /**
      * Get user's favorite stops
-     * 
+     *
      * @param userId The id of the user who has the favorite stops
-     * @author Samuele Lombardi
-     * @throws SQLException if query fails
      * @return list of user's favorite stops
+     * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public List<StopModel> getFavoriteStops(int userId) throws SQLException {
         Dao<FavoriteStopModel, String> favoriteStopDao = getDao(FavoriteStopModel.class);
@@ -903,11 +895,11 @@ public class DatabaseService {
 
     /**
      * Get user's favorite stops
-     * 
+     *
      * @param user The model of the user who has the favorite stops
-     * @author Samuele Lombardi
-     * @throws SQLException if query fails
      * @return list of user's favorite stops
+     * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public List<StopModel> getFavoriteStops(UserModel user) throws SQLException {
         return getFavoriteStops(user.getId());
@@ -915,12 +907,12 @@ public class DatabaseService {
 
     /**
      * Get user's favorite stops. Fuzzy search
-     * 
+     *
      * @param userId     The id of the user adding the favorite stop
      * @param searchTerm Fuzzy pattern to search the stops
      * @param routeType  The type of the route (bus, tram, etc.)
-     * @author Davide Galilei
      * @throws SQLException if query fails
+     * @author Davide Galilei
      */
     public List<StopModel> getFavoriteStopsByName(int userId, String searchTerm)
             throws SQLException {
@@ -943,13 +935,13 @@ public class DatabaseService {
 
     /**
      * Get user's favorite routes. Fuzzy search
-     * 
+     *
      * @param userId     The id of the user adding the favorite stop
      * @param searchTerm Fuzzy pattern to search the stops
      * @param routeType  The type of the stop. "Which routes does it serve?" (bus,
      *                   tram, etc.)
-     * @author Davide Galilei
      * @throws SQLException if query fails
+     * @author Davide Galilei
      */
     public List<RouteDirection> getFavoriteRoutesByName(int userId, String searchTerm)
             throws SQLException {
@@ -993,11 +985,11 @@ public class DatabaseService {
 
     /**
      * Get route by ID
-     * 
+     *
      * @param id route ID
-     * @author Samuele Lombardi
-     * @throws SQLException if query fails
      * @return RouteModel with the specified ID, or null if not found
+     * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public RouteModel getRouteById(String id) throws SQLException {
         Dao<RouteModel, String> routeDao = getDao(RouteModel.class);
@@ -1006,19 +998,19 @@ public class DatabaseService {
 
     /**
      * Get a trip for a specific route and direction
-     * 
+     *
      * @param routeId   String route ID
      * @param direction Direction enum (INBOUND/OUTBOUND)
-     * @author Samuele Lombardi
-     * @throws SQLException if query fails
      * @return TripModel for the route in the specified direction, or null if not
-     *         found
+     * found
+     * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public TripModel getDirectionTrip(String routeId, Direction direction) throws SQLException {
         Dao<TripModel, String> tripDao = getDao(TripModel.class);
         List<TripModel> trips = tripDao.queryBuilder()
                 .distinct()
-                .limit(1l)
+                .limit(1L)
                 .where()
                 .eq("route_id", routeId)
                 .and()
@@ -1032,14 +1024,14 @@ public class DatabaseService {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param routeId   String route ID
      * @param direction Direction enum (INBOUND/OUTBOUND)
-     * @author Samuele Lombardi
-     * @throws SQLException if query fails
      * @return TripModel for the route in the specified direction, or null if not
-     *         found
+     * found
+     * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public StaticVehiclePosition getStaticPosition(String routeId, Direction direction, LocalTime fromTime)
             throws SQLException {
@@ -1069,12 +1061,12 @@ public class DatabaseService {
 
     /**
      * Get ordered stops for a route in a specific direction
-     * 
+     *
      * @param routeId   String route ID
      * @param direction Direction enum (INBOUND/OUTBOUND)
-     * @author Davide Galilei
-     * @throws SQLException if query fails
      * @return List of stops ordered by arrival time for the route
+     * @throws SQLException if query fails
+     * @author Davide Galilei
      */
     public List<StopModel> getOrderedStopsForRoute(String routeId, Direction direction) throws SQLException {
         Dao<StopModel, String> stopDao = getDao(StopModel.class);
@@ -1091,11 +1083,11 @@ public class DatabaseService {
 
     /**
      * Calculate average delay for a route based on trip updates
-     * 
+     *
      * @param routeId String route ID
-     * @author Davide Galilei
-     * @throws SQLException if query fails
      * @return average delay in seconds, or 0 if no delays found
+     * @throws SQLException if query fails
+     * @author Davide Galilei
      */
     public int getAverageDelayForRoute(String routeId) throws SQLException {
         Dao<TripUpdateModel, String> tripUpdateDao = getDao(TripUpdateModel.class);
@@ -1118,11 +1110,11 @@ public class DatabaseService {
 
     /**
      * Get trip updates for a specific route
-     * 
+     *
      * @param routeId String route ID
-     * @author Samuele Lombardi
-     * @throws SQLException if query fails
      * @return List of trip updates for the route
+     * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public List<TripUpdateModel> getRouteTripUpdates(String routeId) throws SQLException {
         Dao<TripUpdateModel, String> tripUpdateDao = getDao(TripUpdateModel.class);
@@ -1136,10 +1128,10 @@ public class DatabaseService {
 
     /**
      * Create trip update delays from GTFS realtime feed entities
-     * 
+     *
      * @param tripEntities List of GTFS realtime feed entities
-     * @author Samuele Lombardi
      * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public void createTripUpdateDelays(List<FeedEntity> tripEntities) throws SQLException {
         if (tripEntities == null) {
@@ -1169,11 +1161,11 @@ public class DatabaseService {
 
     /**
      * Save a realtime metric to the database
-     * 
+     *
      * @param type  RealtimeMetricType the type of metric
      * @param value int the metric value
-     * @author Davide Galilei
      * @throws SQLException if query fails
+     * @author Davide Galilei
      */
     public void saveMetric(RealtimeMetricType type, int value) throws SQLException {
         Dao<RealtimeMetricModel, String> metricDao = getDao(RealtimeMetricModel.class);
@@ -1183,11 +1175,11 @@ public class DatabaseService {
 
     /**
      * Get metrics of a specific type
-     * 
+     *
      * @param type RealtimeMetricType the type of metric to retrieve
-     * @author Davide Galilei
-     * @throws SQLException if query fails
      * @return List of metrics ordered by creation date (newest first)
+     * @throws SQLException if query fails
+     * @author Davide Galilei
      */
     public List<RealtimeMetricModel> getMetrics(RealtimeMetricType type) throws SQLException {
         Dao<RealtimeMetricModel, String> metricDao = getDao(RealtimeMetricModel.class);
@@ -1200,7 +1192,7 @@ public class DatabaseService {
 
     /**
      * Batch create or update multiple models
-     * 
+     *
      * @param <ID>       ID type
      * @param <MODEL>    Model type
      * @param modelClass Class of the model
@@ -1228,7 +1220,7 @@ public class DatabaseService {
 
     /**
      * Batch create or update multiple models
-     * 
+     *
      * @param <ID>       ID type
      * @param <MODEL>    Model type
      * @param modelClass Class of the model
@@ -1256,12 +1248,12 @@ public class DatabaseService {
 
     /**
      * Check if a stop is in user's favorites
-     * 
+     *
      * @param userId int user ID
      * @param stopId String stop ID
-     * @author Samuele Lombardi
-     * @throws SQLException if query fails
      * @return true if stop is favorite, false otherwise
+     * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public boolean isFavoriteStop(int userId, String stopId) throws SQLException {
         Dao<FavoriteStopModel, String> favoriteStopDao = getDao(FavoriteStopModel.class);
@@ -1278,11 +1270,11 @@ public class DatabaseService {
 
     /**
      * Add route to user's favorite routes
-     * 
+     *
      * @param userId  int user ID
      * @param routeId String route ID
-     * @author Samuele Lombardi
      * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public void addFavRoute(int userId, String routeId) throws SQLException {
         Dao<FavoriteRouteModel, String> favoriteRouteDao = getDao(FavoriteRouteModel.class);
@@ -1301,11 +1293,11 @@ public class DatabaseService {
 
     /**
      * Remove route from user's favorite routes
-     * 
+     *
      * @param userId  int user ID
      * @param routeId String route ID
-     * @author Samuele Lombardi
      * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public void removeFavRoute(int userId, String routeId) throws SQLException {
         Dao<FavoriteRouteModel, String> favoriteRouteDao = getDao(FavoriteRouteModel.class);
@@ -1321,11 +1313,11 @@ public class DatabaseService {
 
     /**
      * Get user's favorite routes
-     * 
+     *
      * @param userId int user ID
-     * @author Samuele Lombardi
-     * @throws SQLException if query fails
      * @return List of user's favorite routes
+     * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public List<RouteModel> getFavoriteRoutes(int userId) throws SQLException {
         Dao<FavoriteRouteModel, String> favoriteRouteDao = getDao(FavoriteRouteModel.class);
@@ -1345,11 +1337,11 @@ public class DatabaseService {
 
     /**
      * Get user's favorite routes with direction information
-     * 
+     *
      * @param userId int user ID
-     * @author Samuele Lombardi
-     * @throws SQLException if query fails
      * @return List of directioned routes from user's favorites
+     * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public List<RouteDirection> getFavoriteDirectionRoutes(int userId) throws SQLException {
         List<RouteModel> routes = getFavoriteRoutes(userId);
@@ -1358,12 +1350,12 @@ public class DatabaseService {
 
     /**
      * Check if a route is in user's favorites
-     * 
+     *
      * @param userId  int user ID
      * @param routeId String route ID
-     * @author Samuele Lombardi
-     * @throws SQLException if query fails
      * @return true if route is favorite, false otherwise
+     * @throws SQLException if query fails
+     * @author Samuele Lombardi
      */
     public boolean isFavouriteRoute(int userId, String routeId) throws SQLException {
         Dao<FavoriteRouteModel, String> favoriteRouteDao = getDao(FavoriteRouteModel.class);
@@ -1381,9 +1373,9 @@ public class DatabaseService {
     /**
      * Get all realtime metrics grouped by type
      *
-     * @author Davide Galilei
-     * @throws SQLException if query fails
      * @return Map of RealtimeMetricType to list of RealtimeMetricModel
+     * @throws SQLException if query fails
+     * @author Davide Galilei
      */
     public Map<RealtimeMetricType, List<RealtimeMetricModel>> getAllMetrics() throws SQLException {
         Dao<RealtimeMetricModel, String> metricDao = getDao(RealtimeMetricModel.class);

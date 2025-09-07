@@ -5,11 +5,10 @@ import java.awt.*;
 
 /**
  * Custom {@link JPanel} that create a generic information bar with a {@link JLabel} and a {@link JTextField}.
- *
+ * <p>
  * It can be used to display information when you want a label-text relationship, such as displaying a label with a text field next to it.
  *
  * @author Riccardo Finocchiaro
- *
  * @see JPanel
  * @see JLabel
  * @see JTextField
@@ -17,13 +16,14 @@ import java.awt.*;
 public class CustomInfoBar extends JPanel {
 
     // ATTRIBUTES //
-    private JLabel label;
-    private JTextField textField;
+    private final JLabel label;
+    private final JTextField textField;
 
     // CONSTRUCTOR //
 
     /**
      * Creates a CustomInfoBar with a specified label name, using the.
+     *
      * @param labelName the name of the label that will be displayed in the {@link JLabel} of the {@link CustomInfoBar}.
      */
     public CustomInfoBar(String labelName) {
@@ -50,6 +50,7 @@ public class CustomInfoBar extends JPanel {
     }
 
     // GETTERS AND SETTERS //
+
     /**
      * Set the text of the label.
      *

@@ -6,7 +6,7 @@ public enum RouteType {
     TRAM("Tram"),
     METRO("Metro");
 
-    private String value;
+    private final String value;
 
     RouteType(String value) {
         this.value = value;

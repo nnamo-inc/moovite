@@ -8,7 +8,6 @@ import java.awt.*;
  * It is used to input passwords in a user interface.
  *
  * @author Samuele Lombardi
- *
  * @see JPanel
  * @see JLabel
  * @see JPasswordField
@@ -18,6 +17,7 @@ public class PasswordBar extends JPanel {
     private final JPasswordField passwordField;
 
     // CONSTRUCTOR //
+
     /**
      * Constructs a PasswordBar with a label and a password field.
      *
@@ -40,6 +40,7 @@ public class PasswordBar extends JPanel {
     }
 
     // GETTERS AND SETTERS //
+
     /**
      * Returns the label of the password field.
      *

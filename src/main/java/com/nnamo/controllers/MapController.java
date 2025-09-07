@@ -1,16 +1,17 @@
 package com.nnamo.controllers;
 
 import com.google.transit.realtime.GtfsRealtime;
-import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.nnamo.enums.Direction;
 import com.nnamo.interfaces.WaypointBehaviour;
-import com.nnamo.models.*;
+import com.nnamo.models.StaticVehiclePosition;
+import com.nnamo.models.StopModel;
+import com.nnamo.models.UserModel;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
-import com.nnamo.services.StaticGtfsService;
 import com.nnamo.view.frame.MainFrame;
+import org.jxmapviewer.viewer.GeoPosition;
 
-import java.awt.Color;
+import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -19,20 +20,17 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jxmapviewer.viewer.GeoPosition;
-
 /**
  * Controller responsible for managing map-related functionalities,
  * including waypoint interactions, route rendering, and vehicle position updates.
  * It interacts with the DatabaseService, MainFrame, and RealtimeGtfsService
  * to provide a seamless user experience on the map interface.
  *
+ * @author Samuele Lombardi
+ * @author Riccardo Finocchiaro
  * @see DatabaseService
  * @see MainFrame
  * @see RealtimeGtfsService
- *
- * @author Samuele Lombardi
- * @author Riccardo Finocchiaro
  */
 public class MapController {
     private final DatabaseService db;
@@ -119,7 +117,7 @@ public class MapController {
     }
 
     public static void renderRoutesVehicles(List<StopModel> stopModels, RealtimeGtfsService realtimeService,
-            MainFrame mainFrame, DatabaseService db, String routeId, Direction direction) throws SQLException {
+                                            MainFrame mainFrame, DatabaseService db, String routeId, Direction direction) throws SQLException {
         GeoPosition geoPosition = MapController.calculateBarycenter(stopModels);
         int zoomLevel = MapController.calculateZoomLevel(stopModels);
 
@@ -133,7 +131,7 @@ public class MapController {
     }
 
     public static void updateVehiclePositions(String routeId, MainFrame mainFrame,
-            RealtimeGtfsService realtimeService, DatabaseService db) throws SQLException {
+                                              RealtimeGtfsService realtimeService, DatabaseService db) throws SQLException {
         List<GtfsRealtime.VehiclePosition> realtimePositions = realtimeService.getRoutesVehiclePositions(routeId);
         List<StaticVehiclePosition> staticPositions = new ArrayList<>();
         staticPositions.add(db.getStaticPosition(routeId, Direction.INBOUND, LocalTime.now()));
@@ -187,7 +185,7 @@ public class MapController {
                     mainFrame.updateStopPanelVisibility(false);
                     mainFrame.updatePreferBarVisibility(false);
                     mainFrame.setCurrentStop(null, null); // Current stop id needs to get removed, since no stop is
-                                                          // still
+                    // still
                     // seleced
                     mainFrame.repaintMap();
                 } else {

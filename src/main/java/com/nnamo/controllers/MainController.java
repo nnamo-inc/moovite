@@ -1,12 +1,18 @@
 package com.nnamo.controllers;
 
-import com.nnamo.enums.*;
-import com.nnamo.interfaces.*;
-import com.nnamo.models.*;
-import com.nnamo.view.customcomponents.statistic.MetricCollector;
-import com.nnamo.view.frame.MainFrame;
+import com.nnamo.enums.RealtimeMetricType;
+import com.nnamo.enums.RealtimeStatus;
+import com.nnamo.interfaces.LogoutBehaviour;
+import com.nnamo.interfaces.SearchBarListener;
+import com.nnamo.interfaces.SessionListener;
+import com.nnamo.models.RouteDirection;
+import com.nnamo.models.StopModel;
+import com.nnamo.models.UserModel;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
+import com.nnamo.view.customcomponents.statistic.MetricCollector;
+import com.nnamo.view.frame.MainFrame;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -20,6 +26,9 @@ import java.util.Map;
  * handles user sessions, and initializes the main application frame.
  * It also sets up listeners for search and preference panels, and manages real-time data updates.
  *
+ * @author Samuele Lombardi
+ * @author Riccardo Finocchiaro
+ * @author Davide Galilei
  * @see UserController
  * @see MapController
  * @see UIController
@@ -27,10 +36,6 @@ import java.util.Map;
  * @see MainFrame
  * @see DatabaseService
  * @see RealtimeGtfsService
- *
- * @author Samuele Lombardi
- * @author Riccardo Finocchiaro
- * @author Davide Galilei
  */
 public class MainController {
 
@@ -129,13 +134,11 @@ public class MainController {
      * The results are then rendered in the search panel of the main frame.
      *
      * @return a {@link SearchBarListener} for handling search queries in the search panel
-     *
+     * @author Davide Galilei
      * @see SearchBarListener
      * @see StopModel
      * @see RouteDirection
      * @see DatabaseService
-     *
-     * @author Davide Galilei
      */
     public SearchBarListener createSearchPanelQueryBehavior() {
         Map<String, List<StopModel>> stopCache = new HashMap<>();
@@ -179,13 +182,11 @@ public class MainController {
      * This listener does not use caching since favorite items are user-specific and may change frequently.
      *
      * @return a {@link SearchBarListener} for handling search queries in the prefer panel
-     *
+     * @author Davide Galilei
      * @see SearchBarListener
      * @see StopModel
      * @see RouteDirection
      * @see DatabaseService
-     *
-     * @author Davide Galilei
      */
     public SearchBarListener createPreferPanelQueryBehavior() {
         return new SearchBarListener() {

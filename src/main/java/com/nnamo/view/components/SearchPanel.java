@@ -14,7 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.nnamo.enums.ColumnName.*;
-import static com.nnamo.enums.DataType.*;
+import static com.nnamo.enums.DataType.ROUTE;
+import static com.nnamo.enums.DataType.STOP;
 
 /**
  * Custom {@link JPanel} that provides a search interface for stops and routes, featuring a {@link CustomSearchBar} and two {@link CustomTable} components for displaying search results.
@@ -23,7 +24,6 @@ import static com.nnamo.enums.DataType.*;
  * @author Riccardo Finocchiaro
  * @author Samuele Lombardi
  * @author Davide Galilei
- *
  * @see JPanel
  * @see CustomSearchBar
  * @see CustomTable
@@ -40,6 +40,7 @@ public class SearchPanel extends JPanel {
     JPanel routePanel;
 
     // CONSTRUCTOR //
+
     /**
      * Creates a {@link SearchPanel} with a title bar, a {@link CustomSearchBar} for filtering, and {@link CustomTable} for displaying stops and routes.
      *
@@ -92,7 +93,7 @@ public class SearchPanel extends JPanel {
                 .setInsets(4, 5, -3, 5));
 
         stopTable = new CustomTable.Builder()
-                .setTableColumns(new ColumnName[] {CODE, STOPNAME})
+                .setTableColumns(new ColumnName[]{CODE, STOPNAME})
                 .setDataType(STOP)
                 .build();
         stopTable.setOpaque(false);
@@ -130,8 +131,8 @@ public class SearchPanel extends JPanel {
         }
 
         routeTable = new CustomTable.Builder()
-                .setTableColumns(new ColumnName[] {CODE, TYPE, TERMINAL, DIRECTION})
-                .setHiddenColumns(new ColumnName[] {DIRECTION})
+                .setTableColumns(new ColumnName[]{CODE, TYPE, TERMINAL, DIRECTION})
+                .setHiddenColumns(new ColumnName[]{DIRECTION})
                 .setCustomRadioButtons(buttons)
                 .setDataType(ROUTE)
                 .build();
@@ -155,9 +156,8 @@ public class SearchPanel extends JPanel {
      * Updates the tables with the provided lists of {@link StopModel} and {@link RouteDirection}.
      * Clears previous results and populates the tables with new data.
      *
-     * @param stopModels the list of stops to display in the stop table
+     * @param stopModels  the list of stops to display in the stop table
      * @param routeModels the list of route directions to display in the route table
-     *
      * @see StopModel
      * @see RouteDirection
      * @see CustomTable
@@ -167,12 +167,12 @@ public class SearchPanel extends JPanel {
         routeTable.clear();
 
         for (StopModel stop : stopModels) {
-            stopTable.addRow(new Object[] { stop.getId(), stop.getName() });
+            stopTable.addRow(new Object[]{stop.getId(), stop.getName()});
         }
 
         for (RouteDirection route : routeModels) {
             String shortName = route.getShortName() != null ? route.getShortName() : "";
-            routeTable.addRow(new Object[] {
+            routeTable.addRow(new Object[]{
                     shortName,
                     route.getType().name(),
                     route.getDirectionName(),
@@ -182,11 +182,11 @@ public class SearchPanel extends JPanel {
     }
 
     // METHODS BEHAVIOUR //
+
     /**
      * Adds a {@link SearchBarListener} to the {@link CustomSearchBar} to handle search actions.
      *
      * @param listener the implementation of {@link SearchBarListener} to handle search events
-     *
      * @see SearchBarListener
      * @see CustomSearchBar
      */
@@ -198,7 +198,6 @@ public class SearchPanel extends JPanel {
      * Sets the {@link TableRowClickBehaviour} for both the stop and route tables.
      *
      * @param listener the implementation of {@link TableRowClickBehaviour} to handle row clicks
-     *
      * @see TableRowClickBehaviour
      * @see CustomTable
      */

@@ -9,8 +9,6 @@ import com.nnamo.view.customcomponents.CustomSwitchBar;
 import com.nnamo.view.customcomponents.CustomTitle;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,7 +19,6 @@ import java.awt.event.ActionListener;
  * @author Riccardo Finocchiaro
  * @author Samuele Lombardi
  * @author Davide Galilei
- *
  * @see JPanel
  * @see CustomSwitchBar
  * @see CustomLogout
@@ -36,6 +33,7 @@ public class SettingsPanel extends JPanel {
     private CustomTitle title;
 
     // CONSTRUCTOR //
+
     /**
      * Creates a {@link SettingsPanel} with sections for online status and logout.
      * Initializes the layout, titles, and custom components for user interaction.
@@ -127,11 +125,11 @@ public class SettingsPanel extends JPanel {
                 .setFill(GridBagConstraints.HORIZONTAL)
                 .setInsets(5, 5, 5, 5));
     }
+
     /**
      * Sets the current {@link RealtimeStatus} for the online status switch bar.
      *
      * @param status the {@link RealtimeStatus} to display and control
-     *
      * @see RealtimeStatus
      * @see CustomSwitchBar
      */
@@ -140,11 +138,11 @@ public class SettingsPanel extends JPanel {
     }
 
     // BEHAVIOR //
+
     /**
      * Sets the listener for changes to the real-time status switch.
      *
      * @param listener the implementation of {@link SwitchBarListener} to handle switch events
-     *
      * @see SwitchBarListener
      * @see CustomSwitchBar
      */
@@ -156,7 +154,6 @@ public class SettingsPanel extends JPanel {
      * Sets the behavior to execute when the logout action is triggered.
      *
      * @param behaviour the implementation of {@link LogoutBehaviour} to handle logout events
-     *
      * @see LogoutBehaviour
      * @see CustomLogout
      */
@@ -179,13 +176,14 @@ public class SettingsPanel extends JPanel {
         LogoutBehaviour logoutBehaviour;
 
         // CONSTRUCTOR //
+
         /**
          * Creates a {@link CustomLogout} with a logout {@link JButton}.
          * The {@link JButton} will trigger the {@link LogoutBehaviour} when clicked.
          *
-         *  @see JPanel
-         *  @see JButton
-         *  @see LogoutBehaviour
+         * @see JPanel
+         * @see JButton
+         * @see LogoutBehaviour
          */
         public CustomLogout() {
             super();
@@ -199,12 +197,13 @@ public class SettingsPanel extends JPanel {
         }
 
         // METHODS BEHAVIOUR //
+
         /**
          * Initializes the {@link ActionListener} for the logout {@link JButton} that trigger the {@link LogoutBehaviour}..
          *
-         *  @see ActionListener
-         *  @see LogoutBehaviour
-         *  @see JButton
+         * @see ActionListener
+         * @see LogoutBehaviour
+         * @see JButton
          */
         private void initListener() {
             button.addActionListener(new ActionListener() {
@@ -221,7 +220,6 @@ public class SettingsPanel extends JPanel {
          * Sets the {@link LogoutBehaviour} to be executed when the logout button is clicked.
          *
          * @param behaviour the {@link LogoutBehaviour} implementation that defines the logout action.
-         *
          * @see LogoutBehaviour
          */
         public void setLogoutBehaviour(LogoutBehaviour behaviour) {

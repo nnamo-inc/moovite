@@ -1,6 +1,5 @@
 package com.nnamo.models;
 
-import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import com.nnamo.enums.Direction;
 import com.nnamo.enums.RouteType;
@@ -8,11 +7,11 @@ import com.nnamo.enums.RouteType;
 @DatabaseTable(tableName = "routes")
 public class RouteDirection {
 
-    private String id;
-    private AgencyModel agency;
-    private String longName;
-    private String shortName;
-    private RouteType type;
+    private final String id;
+    private final AgencyModel agency;
+    private final String longName;
+    private final String shortName;
+    private final RouteType type;
     private Direction routeDirection = Direction.OUTBOUND;
     private String directionName;
 

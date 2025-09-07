@@ -1,30 +1,28 @@
 package com.nnamo.view.painter;
 
-import java.awt.Graphics2D;
-import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Objects;
-import javax.imageio.ImageIO;
-
+import com.nnamo.view.waypoints.StopWaypoint;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.viewer.Waypoint;
 import org.jxmapviewer.viewer.WaypointPainter;
 import org.jxmapviewer.viewer.WaypointRenderer;
 
-import com.nnamo.view.waypoints.StopWaypoint;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * A specialized {@link WaypointPainter} for rendering stop waypoints on a map.
  * This class manages different icon sizes and updates the displayed icon based on the map's zoom level.
  * It also highlights a specific stop if its ID is provided during repainting by using a larger icon.
  *
+ * @author Samuele Lombardi
  * @see WaypointPainter
  * @see JXMapViewer
  * @see StopWaypoint
- *
- * @author Samuele Lombardi
  */
 public class StopPainter extends WaypointPainter<Waypoint> {
     private final JXMapViewer map;
@@ -79,10 +77,9 @@ public class StopPainter extends WaypointPainter<Waypoint> {
                 int x = (int) point.getX() - icon.getWidth() / 2;
                 int y = (int) point.getY() - icon.getHeight();
 
-                if (waypoint instanceof StopWaypoint) {
-                    StopWaypoint stopWaypoint = (StopWaypoint) waypoint;
+                if (waypoint instanceof StopWaypoint stopWaypoint) {
                     String waypointStopId = stopWaypoint.getStopId();
-                    if (stopId != null && waypointStopId != null && waypointStopId.equals(stopId)) {
+                    if (waypointStopId != null && waypointStopId.equals(stopId)) {
                         g.drawImage(biggerIcon, x, y, null);
                     } else {
                         g.drawImage(icon, x, y, null);

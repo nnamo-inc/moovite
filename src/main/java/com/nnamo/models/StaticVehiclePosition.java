@@ -3,8 +3,8 @@ package com.nnamo.models;
 import org.jxmapviewer.viewer.GeoPosition;
 
 public class StaticVehiclePosition {
-    private double latitude;
-    private double longitude;
+    private final double latitude;
+    private final double longitude;
 
     public StaticVehiclePosition(double latitude, double longitude) {
         this.latitude = latitude;

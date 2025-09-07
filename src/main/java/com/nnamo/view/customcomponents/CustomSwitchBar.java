@@ -15,7 +15,6 @@ import java.util.ArrayList;
  *
  * @author Riccardo Finocchiaro
  * @author Samuele Lombardi
- *
  * @see JPanel
  * @see RealtimeStatus
  * @see SwitchBarListener
@@ -23,9 +22,9 @@ import java.util.ArrayList;
 public class CustomSwitchBar extends JPanel {
 
     // ATTRIBUTES //
-    private JLabel label;
-    private JButton button;
-    private ArrayList<SwitchBarListener> listeners = new ArrayList<>();
+    private final JLabel label;
+    private final JButton button;
+    private final ArrayList<SwitchBarListener> listeners = new ArrayList<>();
 
     private RealtimeStatus status;
 
@@ -51,7 +50,7 @@ public class CustomSwitchBar extends JPanel {
                 .setInsets(2, 5, 2, 5));
 
         // Button
-        button = new JButton("Toggle");;
+        button = new JButton("Toggle");
         button.setMinimumSize(new Dimension(50, Integer.MAX_VALUE));
         add(button, new CustomGbc().setPosition(0, 1).setFill(GridBagConstraints.HORIZONTAL).setWeight(1.0, 1.0)
                 .setWeight(1.0, 1.0).setInsets(2, 5, 2, 5));
@@ -60,6 +59,7 @@ public class CustomSwitchBar extends JPanel {
     }
 
     // METHODS //
+
     /**
      * Toggles the status between {@link RealtimeStatus#ONLINE} and {@link RealtimeStatus#OFFLINE}.
      * If the current status is {@link RealtimeStatus#ONLINE}, it changes to {@link RealtimeStatus#OFFLINE} and vice versa.
@@ -116,7 +116,6 @@ public class CustomSwitchBar extends JPanel {
      * The listener will be notified when the status of the switch bar changes.
      *
      * @param listener
-     *
      * @see SwitchBarListener
      */
     public void addSwitchListener(SwitchBarListener listener) {

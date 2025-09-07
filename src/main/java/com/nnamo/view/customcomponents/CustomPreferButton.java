@@ -15,7 +15,6 @@ import java.util.Objects;
  *
  * @author Riccardo Finocchiaro
  * @author Davide Galilei
- *
  * @see JButton
  */
 public class CustomPreferButton extends JButton {
@@ -31,6 +30,7 @@ public class CustomPreferButton extends JButton {
     private final ImageIcon unfavoriteIcon;
 
     // CONSTRUCTOR //
+
     /**
      * Creates a {@link CustomPreferButton} with a default text and background {@link CustomColor}.
      * The {@link JButton} is initially disabled and not visible until an item is selected.
@@ -65,13 +65,13 @@ public class CustomPreferButton extends JButton {
     }
 
     // METHODS //
+
     /**
      * Updates the {@link JButton} text and background {@link CustomColor} based on the favorite status of the item.
      * If the item is a favorite, it shows "Remove from Favorites" and sets the background to red.
      * If not, it shows "Add to Favorites" and sets the background {@link CustomColor} to green.
      *
      * @param isFavorite true if the item is a favorite, false otherwise
-     *
      * @see JButton
      * @see CustomColor
      */
@@ -119,7 +119,6 @@ public class CustomPreferButton extends JButton {
      * Sets the behavior to execute when the {@link JButton} is clicked.
      *
      * @param behaviour the implementation of {@link FavoriteBehaviour} that defines the behavior for favorite actions.
-     *
      * @see FavoriteBehaviour
      * @see JButton
      */
@@ -133,8 +132,7 @@ public class CustomPreferButton extends JButton {
      * Sets the data type for the item associated with this {@link JButton}.
      *
      * @param mode set the {@link DataType} of the item, which can be one of the types defined in the {@link DataType} enum.
-     * This is used to determine the type of data the item represents, such as a route, user, or other entities.
-     *
+     *             This is used to determine the type of data the item represents, such as a route, user, or other entities.
      * @see DataType
      * @see JButton
      */
@@ -147,7 +145,6 @@ public class CustomPreferButton extends JButton {
      * This is used to uniquely identify the item that the {@link JButton} is currently representing.
      *
      * @param itemId the unique identifier for the item
-     *
      * @see JButton
      */
     public void setItemId(String itemId) {
@@ -159,7 +156,6 @@ public class CustomPreferButton extends JButton {
      * This is used to display the name of the item in the button text.
      *
      * @param itemName the name of the item
-     *
      * @see JButton
      */
     public void setItemName(String itemName) {

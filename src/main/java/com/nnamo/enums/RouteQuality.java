@@ -9,7 +9,7 @@ public enum RouteQuality {
 
     String text;
 
-    private RouteQuality(String text) {
+    RouteQuality(String text) {
         this.text = text;
     }
 

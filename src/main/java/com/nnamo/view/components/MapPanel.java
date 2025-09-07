@@ -10,7 +10,6 @@ import com.nnamo.view.painter.RoutePainter;
 import com.nnamo.view.painter.StaticPositionPainter;
 import com.nnamo.view.painter.StopPainter;
 import com.nnamo.view.waypoints.StopWaypoint;
-
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
 import org.jxmapviewer.cache.FileBasedLocalCache;
@@ -22,18 +21,12 @@ import org.jxmapviewer.viewer.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Custom {@link JPanel} that displays an interactive map using
@@ -42,7 +35,6 @@ import java.util.Set;
  *
  * @author Riccardo Finocchiaro
  * @author Samuele Lombardi
- *
  * @see JPanel
  * @see JXMapViewer
  * @see StopModel
@@ -56,33 +48,33 @@ import java.util.Set;
 public class MapPanel extends JPanel {
 
     // ATTRIBUTES //
-    private JXMapViewer map = new JXMapViewer();
+    private final JXMapViewer map = new JXMapViewer();
     private final GeoPosition ROMEPOSITION = new GeoPosition(41.902782, 12.496366);
-    private DefaultTileFactory tileFactory;
+    private final DefaultTileFactory tileFactory;
 
-    private List<Painter<JXMapViewer>> stopsPaintersList;
-    private List<Painter<JXMapViewer>> routePaintersList;
+    private final List<Painter<JXMapViewer>> stopsPaintersList;
+    private final List<Painter<JXMapViewer>> routePaintersList;
 
     private CompoundPainter<JXMapViewer> currentPainter;
-    private CompoundPainter<JXMapViewer> stopsCompoundPainter;
-    private CompoundPainter<JXMapViewer> routeCompoundPainter;
+    private final CompoundPainter<JXMapViewer> stopsCompoundPainter;
+    private final CompoundPainter<JXMapViewer> routeCompoundPainter;
 
     private String currentRouteId;
     private String currentStopId;
     private GeoPosition stopPosition;
 
-    private RoutePainter routePainter;
-    private RealtimePositionPainter realtimePositionPainter;
-    private StaticPositionPainter staticPositionPainter;
-    private StopPainter stopPainter;
-    private StopPainter routeStopPainter;
-    private ZoomBehaviour zoomBehaviour;
+    private final RoutePainter routePainter;
+    private final RealtimePositionPainter realtimePositionPainter;
+    private final StaticPositionPainter staticPositionPainter;
+    private final StopPainter stopPainter;
+    private final StopPainter routeStopPainter;
+    private final ZoomBehaviour zoomBehaviour;
 
     private int currentZoomLimit; // Default zoom level
     private final int STOPSZOOMLIMIT = 4;
     private final int ROUTESZOOMLIMIT = 8;
 
-    private JButton resetRouteButton;
+    private final JButton resetRouteButton;
     private List<StopModel> stops;
 
     private WaypointBehaviour waypointBehaviour;
@@ -94,7 +86,6 @@ public class MapPanel extends JPanel {
      * interaction.
      *
      * @throws IOException if there is an error initializing the map tile factory
-     *
      * @see JPanel
      * @see JXMapViewer
      * @see StopPainter
@@ -240,11 +231,7 @@ public class MapPanel extends JPanel {
         this.currentZoomLimit = (painter == stopsCompoundPainter) ? STOPSZOOMLIMIT : ROUTESZOOMLIMIT;
         this.currentPainter = painter;
 
-        if (painter == routeCompoundPainter) {
-            this.resetRouteButton.setVisible(true);
-        } else {
-            this.resetRouteButton.setVisible(false);
-        }
+        this.resetRouteButton.setVisible(painter == routeCompoundPainter);
     }
 
     /**
@@ -282,7 +269,6 @@ public class MapPanel extends JPanel {
      * Updates the overlay painter and saves the stops for future resets.
      *
      * @param stops the list of stops to display as waypoints
-     *
      * @see StopModel
      * @see StopPainter
      */
@@ -305,7 +291,6 @@ public class MapPanel extends JPanel {
      * updating the route overlay and painter.
      *
      * @param stops the list of stops representing the route to display
-     *
      * @see StopModel
      * @see RoutePainter
      * @see StopPainter
@@ -338,12 +323,11 @@ public class MapPanel extends JPanel {
      * waypoints on the map.
      *
      * @param positions the list of vehicle positions to display
-     *
      * @see VehiclePosition
      * @see RealtimePositionPainter
      */
     public void renderVehiclePositions(List<VehiclePosition> realtimePositions,
-            List<com.nnamo.models.StaticVehiclePosition> staticPositions) {
+                                       List<com.nnamo.models.StaticVehiclePosition> staticPositions) {
         Set<Waypoint> waypoints = new HashSet<Waypoint>();
         if (realtimePositions.isEmpty()) {
             for (com.nnamo.models.StaticVehiclePosition vehiclePosition : staticPositions) {
@@ -371,13 +355,12 @@ public class MapPanel extends JPanel {
     @SafeVarargs
     private List<Painter<JXMapViewer>> createPaintersList(Painter<JXMapViewer>... painters) {
         List<Painter<JXMapViewer>> paintersList = new ArrayList<Painter<JXMapViewer>>();
-        for (Painter<JXMapViewer> painter : painters) {
-            paintersList.add(painter);
-        }
+        Collections.addAll(paintersList, painters);
         return paintersList;
     }
 
     // GETTERS AND SETTERS //
+
     /**
      * Gets the current route ID.
      *

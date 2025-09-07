@@ -13,10 +13,9 @@ import java.util.List;
  * Extends {@link StatisticUnit} to display the count of detour buses.
  * Implements {@link FeedUpdateListener} to update the count based on feed data.
  *
+ * @author Davide Galilei
  * @see StatisticUnit
  * @see FeedUpdateListener
- *
- * @author Davide Galilei
  */
 public class StatisticLateBus extends StatisticUnit {
     private final static Duration LATE_THRESHOLD_DURATION = Duration.ofMinutes(2);

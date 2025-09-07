@@ -12,10 +12,9 @@ import java.util.List;
  * Extends {@link StatisticUnit} to display the count of detour buses.
  * Implements {@link FeedUpdateListener} to update the count based on feed data.
  *
+ * @author Davide Galilei
  * @see StatisticUnit
  * @see FeedUpdateListener
- *
- * @author Davide Galilei
  */
 public class StatisticStoppedBus extends StatisticUnit {
     public StatisticStoppedBus() {

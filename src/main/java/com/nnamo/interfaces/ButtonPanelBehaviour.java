@@ -14,7 +14,6 @@ public interface ButtonPanelBehaviour {
      * Method to be executed when the {@link com.nnamo.view.customcomponents.CustomButtonPanel} of the of the {@link com.nnamo.view.components.ButtonPanel} is clicked.
      *
      * @param panel the JPanel that will be affected by the click
-     *
      * @see com.nnamo.view.customcomponents.CustomButtonPanel
      * @see com.nnamo.view.components.ButtonPanel
      * @see javax.swing.JPanel

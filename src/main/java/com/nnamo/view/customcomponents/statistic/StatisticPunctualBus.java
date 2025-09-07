@@ -13,10 +13,9 @@ import java.util.List;
  * Extends {@link StatisticUnit} to display the count of detour buses.
  * Implements {@link FeedUpdateListener} to update the count based on feed data.
  *
+ * @author Davide Galilei
  * @see StatisticUnit
  * @see FeedUpdateListener
- *
- * @author Davide Galilei
  */
 public class StatisticPunctualBus extends StatisticUnit {
     private final static Duration PUNCTUAL_THRESHOLD_DURATION = Duration.ofMinutes(2);
@@ -35,7 +34,7 @@ public class StatisticPunctualBus extends StatisticUnit {
                     Duration delayDuration = Duration.ofSeconds(tripUpdate.getDelay());
                     // if between -2 and 2 minutes, we count it as punctual
                     if (delayDuration.compareTo(PUNCTUAL_THRESHOLD_DURATION.negated()) >= 0 &&
-                        delayDuration.compareTo(PUNCTUAL_THRESHOLD_DURATION) <= 0) {
+                            delayDuration.compareTo(PUNCTUAL_THRESHOLD_DURATION) <= 0) {
                         busCount++;
                     }
                 }

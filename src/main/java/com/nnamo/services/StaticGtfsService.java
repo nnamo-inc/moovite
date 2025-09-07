@@ -3,16 +3,9 @@ package com.nnamo.services;
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.serialization.GtfsReader;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Paths;
-import java.util.Objects;
 
 /**
  * Service to load and provide access to static GTFS data.
@@ -24,10 +17,9 @@ import java.util.Objects;
  *   <li>Use {@link #getStore()} to access the loaded GTFS data through the {@link GtfsRelationalDaoImpl} instance.</li>
  * </ul>
  *
+ * @author Samuele Lombardi
  * @see GtfsRelationalDaoImpl
  * @see GtfsReader
- *
- * @author Samuele Lombardi
  */
 public class StaticGtfsService {
 

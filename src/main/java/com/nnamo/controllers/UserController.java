@@ -1,13 +1,5 @@
 package com.nnamo.controllers;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.sql.SQLException;
-
 import com.nnamo.enums.AuthResult;
 import com.nnamo.enums.RegisterResult;
 import com.nnamo.interfaces.LoginBehaviour;
@@ -17,9 +9,16 @@ import com.nnamo.models.UserModel;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.utils.UserDataUtils;
 import com.nnamo.view.frame.LoginFrame;
-
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.sql.SQLException;
 
 /**
  * Controller responsible for managing user authentication and session management.
@@ -27,11 +26,10 @@ import de.mkammerer.argon2.Argon2Factory;
  * user registration. It also manages user sessions by creating, deleting, and
  * checking for active sessions.
  *
- * @see DatabaseService
- * @see LoginFrame
- *
  * @author Samuele Lombardi
  * @author Riccardo Finocchiaro
+ * @see DatabaseService
+ * @see LoginFrame
  */
 public class UserController {
     private final DatabaseService db;

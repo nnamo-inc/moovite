@@ -1,26 +1,27 @@
 package com.nnamo.view.components;
 
-import javax.swing.*;
-
 import com.nnamo.enums.ColumnName;
 import com.nnamo.enums.RouteType;
 import com.nnamo.interfaces.TableCheckIsFavBehaviour;
 import com.nnamo.interfaces.TableRowClickBehaviour;
+import com.nnamo.models.RealtimeStopUpdate;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.TripModel;
-import com.nnamo.models.RealtimeStopUpdate;
 import com.nnamo.view.customcomponents.CustomGbc;
 import com.nnamo.view.customcomponents.CustomInfoBar;
 import com.nnamo.view.customcomponents.CustomRoundedBorder;
 import com.nnamo.view.customcomponents.CustomTable;
+
+import javax.swing.*;
 import java.awt.*;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.nnamo.enums.ColumnName.*;
-import static com.nnamo.enums.DataType.*;
+import static com.nnamo.enums.DataType.ROUTE;
 
 /**
  * Custom {@link JPanel} that displays detailed information about a transit stop,
@@ -28,7 +29,6 @@ import static com.nnamo.enums.DataType.*;
  *
  * @author Riccardo Finocchiaro
  * @author Samuele Lombardi
- *
  * @see JPanel
  * @see CustomInfoBar
  * @see CustomTable
@@ -44,6 +44,7 @@ public class StopPanel extends JPanel {
     // Route service components
     private CustomTable tableService;
     // CONSTRUCTOR //
+
     /**
      * Creates a {@link StopPanel} with {@link CustomInfoBar} for stop information, route services, and upcoming departures.
      *
@@ -58,7 +59,6 @@ public class StopPanel extends JPanel {
         // set the layout, create the border and the gbc, set the background color
         setLayout(new GridBagLayout());
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
 
 
         // Stop info Panel
@@ -142,8 +142,8 @@ public class StopPanel extends JPanel {
         }
 
         tableService = new CustomTable.Builder()
-                .setTableColumns(new ColumnName[] {ROUTENAME, CODE, TYPE, TERMINAL, DIRECTION, INFORMATION})
-                .setHiddenColumns(new ColumnName[] {DIRECTION})
+                .setTableColumns(new ColumnName[]{ROUTENAME, CODE, TYPE, TERMINAL, DIRECTION, INFORMATION})
+                .setHiddenColumns(new ColumnName[]{DIRECTION})
 //                .setSearchColumns(new ColumnName[] { ROUTENAME, CODE })
                 .setCustomRadioButtons(buttons)
                 .setDataType(ROUTE)
@@ -180,8 +180,8 @@ public class StopPanel extends JPanel {
                 .setInsets(2, 5, -3, 5));
 
         tableTime = new CustomTable.Builder()
-                .setTableColumns(new ColumnName[] {ROUTENAME, DIRECTION, TIME, STATE, MINUTESLEFT, AVAILABLESEATS, TYPE, TRIP })
-                .setHiddenColumns(new ColumnName[] { TRIP })
+                .setTableColumns(new ColumnName[]{ROUTENAME, DIRECTION, TIME, STATE, MINUTESLEFT, AVAILABLESEATS, TYPE, TRIP})
+                .setHiddenColumns(new ColumnName[]{TRIP})
                 .setDataType(ROUTE)
                 .build();
 
@@ -201,13 +201,13 @@ public class StopPanel extends JPanel {
                 .setInsets(5, 5, 5, 5));
     }
     // METHODS //
+
     /**
      * Updates the departures table with a list of {@link StopTimeModel} and their associated {@link RealtimeStopUpdate} data.
      * Sorts the {@link CustomTable} by remaining minutes and displays real-time status and occupancy if available.
      *
-     * @param stopTimes the list of scheduled stop times to display
+     * @param stopTimes       the list of scheduled stop times to display
      * @param realtimeUpdates the list of real-time updates for the stop times
-     *
      * @see StopTimeModel
      * @see RealtimeStopUpdate
      * @see CustomTable
@@ -249,7 +249,7 @@ public class StopPanel extends JPanel {
                 occupancyStatus = timeUpdate.getVehiclePosition().getOccupancyStatus().name();
             }
 
-            tableRows.add(new Object[] {
+            tableRows.add(new Object[]{
                     route.getShortName(),
                     trip.getHeadsign(),
                     stopTime.getArrivalTimeAsStr(),
@@ -287,7 +287,6 @@ public class StopPanel extends JPanel {
      * Updates the route services table with a list of unique routes serving the stop.
      *
      * @param uniqueRoutes a list of route data, where each inner list represents a route's attributes
-     *
      * @see CustomTable
      */
     public void updateStopRoutes(List<List<String>> uniqueRoutes) {
@@ -301,9 +300,8 @@ public class StopPanel extends JPanel {
     /**
      * Updates the stop information section with the specified stop ID and name.
      *
-     * @param id the stop ID to display
+     * @param id   the stop ID to display
      * @param nome the stop name to display
-     *
      * @see CustomInfoBar
      */
     public void updateStopInfo(String id, String nome) {
@@ -330,11 +328,11 @@ public class StopPanel extends JPanel {
     }
 
     // GETTERS AND SETTERS //
+
     /**
      * Returns the table displaying upcoming departures.
      *
      * @return the {@link CustomTable} for departures
-     *
      * @see CustomTable
      */
     public CustomTable getTimeTable() {
@@ -342,11 +340,11 @@ public class StopPanel extends JPanel {
     }
 
     // LISTENERS METHODS //
+
     /**
      * Sets a generic row click behavior for both the route services and departures tables.
      *
      * @param listener the implementation of {@link TableRowClickBehaviour} to handle row clicks
-     *
      * @see TableRowClickBehaviour
      * @see CustomTable
      */

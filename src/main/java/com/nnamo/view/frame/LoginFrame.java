@@ -1,7 +1,5 @@
 package com.nnamo.view.frame;
 
-import javax.swing.*;
-
 import com.nnamo.enums.AuthResult;
 import com.nnamo.enums.RegisterResult;
 import com.nnamo.interfaces.LoginBehaviour;
@@ -10,6 +8,7 @@ import com.nnamo.view.customcomponents.CustomGbc;
 import com.nnamo.view.customcomponents.CustomInfoBar;
 import com.nnamo.view.customcomponents.PasswordBar;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -155,7 +154,6 @@ public class LoginFrame extends JFrame {
      * Sets the login behaviour to handle authentication logic.
      *
      * @param behaviour the {@link LoginBehaviour} implementation
-     *
      * @see LoginBehaviour
      */
     public void setLoginBehaviour(LoginBehaviour behaviour) {
@@ -166,7 +164,6 @@ public class LoginFrame extends JFrame {
      * Sets the register behaviour to handle user registration logic.
      *
      * @param behaviour the {@link RegisterBehaviour} implementation
-     *
      * @see RegisterBehaviour
      */
     public void setRegisterBehaviour(RegisterBehaviour behaviour) {

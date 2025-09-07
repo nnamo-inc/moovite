@@ -1,35 +1,25 @@
 package com.nnamo.controllers;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-
-import javax.swing.JPanel;
-
-import org.jxmapviewer.viewer.GeoPosition;
-
 import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.nnamo.enums.ColumnName;
 import com.nnamo.enums.DataType;
 import com.nnamo.enums.Direction;
 import com.nnamo.enums.UpdateMode;
-import com.nnamo.interfaces.*;
-import com.nnamo.models.RealtimeStopUpdate;
-import com.nnamo.models.RouteDirection;
-import com.nnamo.models.RouteModel;
-import com.nnamo.models.StopModel;
-import com.nnamo.models.StopTimeModel;
-import com.nnamo.models.TripModel;
-import com.nnamo.models.UserModel;
+import com.nnamo.interfaces.ButtonPanelBehaviour;
+import com.nnamo.interfaces.FavoriteBehaviour;
+import com.nnamo.interfaces.TableRowClickBehaviour;
+import com.nnamo.models.*;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
 import com.nnamo.utils.Utils;
 import com.nnamo.view.frame.MainFrame;
+import org.jxmapviewer.viewer.GeoPosition;
+
+import javax.swing.*;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.time.LocalTime;
+import java.util.*;
 
 public class UIController {
     private final DatabaseService db;
@@ -74,7 +64,7 @@ public class UIController {
     // panels on the left)
     public void setupButtonPanelBehaviours() {
         var buttonPanelBehaviour = createButtonPanelBehaviour(); // Behaviour of general buttons that open panels on the
-                                                                 // Left panel
+        // Left panel
         mainFrame.setButtonPanelGeneralBehaviour(buttonPanelBehaviour);
 
         // Behaviour specific to the favorite panel, since duplicates can appear without
@@ -148,7 +138,7 @@ public class UIController {
                             position.getPosition().getLongitude());
                     mainFrame.setMapPanelMapPosition(busPosition, 1);
                     mainFrame.removeRoutePainting();
-                    mainFrame.renderVehiclePositions(Arrays.asList(new VehiclePosition[] { position }),
+                    mainFrame.renderVehiclePositions(Arrays.asList(position),
                             new ArrayList<>());
                 }
 
@@ -172,7 +162,7 @@ public class UIController {
                         case ROUTE: {
                             db.addFavRoute(user.getId(), itemId);
                             RouteModel route = db.getRouteById(itemId);
-                            List<RouteModel> routeList = Arrays.asList(new RouteModel[] { route });
+                            List<RouteModel> routeList = Arrays.asList(route);
                             List<RouteDirection> directionRoutes = db.getDirectionedRoutes(routeList);
                             mainFrame.updateFavRouteTable(directionRoutes, UpdateMode.ADD);
                             mainFrame.updatePreferButton(itemId, true, DataType.ROUTE);
@@ -199,7 +189,7 @@ public class UIController {
                         }
                         case ROUTE: {
                             RouteModel route = db.getRouteById(itemId);
-                            List<RouteModel> routeList = Arrays.asList(new RouteModel[] { route });
+                            List<RouteModel> routeList = Arrays.asList(route);
                             List<RouteDirection> directionRoutes = db.getDirectionedRoutes(routeList);
                             db.removeFavRoute(user.getId(), itemId);
                             mainFrame.updateFavRouteTable(directionRoutes, UpdateMode.REMOVE);
@@ -247,13 +237,14 @@ public class UIController {
                     }
                 }
                 baseButtonPanelBehaviour.onButtonPanelClick(panel); // TODO: not sure, but maybe need to refactor this
-            };
+            }
+
         };
     }
 
     public static void handleStopSelection(StopModel stop, UserModel user, GeoPosition position,
-            RealtimeGtfsService realtimeService,
-            MainFrame mainFrame, DatabaseService db) throws IOException, SQLException {
+                                           RealtimeGtfsService realtimeService,
+                                           MainFrame mainFrame, DatabaseService db) throws IOException, SQLException {
 
         int nextHoursRange = 6;
         Date currentDate = Utils.getCurrentDate();
@@ -275,12 +266,12 @@ public class UIController {
     }
 
     private void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes,
-            List<RealtimeStopUpdate> realtimeUpdates) throws SQLException, IOException {
+                                 List<RealtimeStopUpdate> realtimeUpdates) throws SQLException, IOException {
         UIController.updateStopPanel(stop, stopTimes, realtimeUpdates, this.mainFrame, this.db);
     }
 
     public static void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes,
-            List<RealtimeStopUpdate> realtimeUpdates, MainFrame mainFrame, DatabaseService db)
+                                       List<RealtimeStopUpdate> realtimeUpdates, MainFrame mainFrame, DatabaseService db)
             throws SQLException, IOException {
         mainFrame.updateStopPanelInfo(stop.getId(), stop.getName());
         mainFrame.updateStopPanelTimes(stopTimes, realtimeUpdates);
@@ -300,14 +291,12 @@ public class UIController {
             TripModel trip = stopTime.getTrip();
             RouteModel route = trip.getRoute();
 
-            uniqueRoutes.add(Arrays.asList(new String[] {
-                    route.getLongName() != null ? route.getLongName() : route.getShortName(),
+            uniqueRoutes.add(Arrays.asList(route.getLongName() != null ? route.getLongName() : route.getShortName(),
                     route.getId(),
                     route.getType().toString(),
                     trip.getHeadsign(),
                     trip.getDirection().name(),
-                    RealtimeGtfsService.getRouteQuality(db.getAverageDelayForRoute(route.getId())).toString()
-            }));
+                    RealtimeGtfsService.getRouteQuality(db.getAverageDelayForRoute(route.getId())).toString()));
         }
 
         System.out.println("Unique routes found: " + uniqueRoutes.size());

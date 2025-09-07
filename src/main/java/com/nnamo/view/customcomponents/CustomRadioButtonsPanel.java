@@ -7,11 +7,11 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class CustomRadioButtonsPanel extends JPanel{
+public class CustomRadioButtonsPanel extends JPanel {
 
-    private JLabel filterLabel;
-    private ButtonGroup buttonGroup;
-    private ArrayList<JRadioButton> radioButtons;
+    private final JLabel filterLabel;
+    private final ButtonGroup buttonGroup;
+    private final ArrayList<JRadioButton> radioButtons;
 
     public CustomRadioButtonsPanel(ArrayList<JRadioButton> radioButtons, String itemName) {
 

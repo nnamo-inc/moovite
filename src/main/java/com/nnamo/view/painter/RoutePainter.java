@@ -13,12 +13,11 @@ import java.util.List;
  * Custom painter to draw route lines connecting consecutive stops on the map.
  * Extends the {@link Painter} interface to provide custom rendering logic.
  *
+ * @author Davide Galilei
+ * @author Samuele Lombardi
  * @see Painter
  * @see JXMapViewer
  * @see StopModel
- *
- * @author Davide Galilei
- * @author Samuele Lombardi
  */
 public class RoutePainter implements Painter<JXMapViewer> {
 
@@ -39,16 +38,14 @@ public class RoutePainter implements Painter<JXMapViewer> {
     /**
      * Paints the route lines on the map by connecting consecutive stops.
      *
-     * @param g the graphics context
-     * @param map the map viewer
-     * @param width the width of the drawing area
+     * @param g      the graphics context
+     * @param map    the map viewer
+     * @param width  the width of the drawing area
      * @param height the height of the drawing area
-     *
+     * @author Davide Galilei
      * @see Painter
      * @see JXMapViewer
      * @see StopModel
-     *
-     * @author Davide Galilei
      */
     @Override
     public void paint(Graphics2D g, JXMapViewer map, int width, int height) {

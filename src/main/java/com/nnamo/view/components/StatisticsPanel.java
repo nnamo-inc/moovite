@@ -3,15 +3,16 @@ package com.nnamo.view.components;
 import com.nnamo.enums.RealtimeMetricType;
 import com.nnamo.models.RealtimeMetricModel;
 import com.nnamo.services.RealtimeGtfsService;
-import com.nnamo.view.customcomponents.*;
+import com.nnamo.view.customcomponents.CustomGbc;
+import com.nnamo.view.customcomponents.CustomTitle;
 import com.nnamo.view.customcomponents.statistic.*;
+import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.title.TextTitle;
-import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.title.TextTitle;
+import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -25,19 +26,19 @@ import java.util.Map;
 
 public class StatisticsPanel extends JPanel {
     private final JPanel tileContainer = new JPanel();
-    private CustomTitle title;
+    private final CustomTitle title;
     private final ArrayList<StatisticUnit> statisticTiles = new ArrayList<>();
     private static final int TILE_WIDTH = 120;
     private static final int TILE_HEIGHT = 80;
     private static final int GAP = 10;
 
-    private StatisticTotalBus statBusTile = new StatisticTotalBus();
-    private StatisticEarlyBus statEarlyBusTile = new StatisticEarlyBus();
-    private StatisticLateBus statLateBusTile = new StatisticLateBus();
-    private StatisticPunctualBus statPunctualBusTile = new StatisticPunctualBus();
-    private StatisticStoppedBus statStoppedBusTile = new StatisticStoppedBus();
-    private StatisticDetourBus statDetourBusTile = new StatisticDetourBus();
-    private JFreeChart chart;
+    private final StatisticTotalBus statBusTile = new StatisticTotalBus();
+    private final StatisticEarlyBus statEarlyBusTile = new StatisticEarlyBus();
+    private final StatisticLateBus statLateBusTile = new StatisticLateBus();
+    private final StatisticPunctualBus statPunctualBusTile = new StatisticPunctualBus();
+    private final StatisticStoppedBus statStoppedBusTile = new StatisticStoppedBus();
+    private final StatisticDetourBus statDetourBusTile = new StatisticDetourBus();
+    private final JFreeChart chart;
 
     public StatisticsPanel() {
         super();
@@ -150,7 +151,7 @@ public class StatisticsPanel extends JPanel {
 
         // Get the actual available width from the viewport
         int containerWidth = tileContainer.getParent() instanceof JViewport ?
-                ((JViewport) tileContainer.getParent()).getWidth() : tileContainer.getWidth();
+                tileContainer.getParent().getWidth() : tileContainer.getWidth();
 
         // Fallback to parent panel width if viewport width is not available
         if (containerWidth <= 0) {
@@ -237,7 +238,6 @@ public class StatisticsPanel extends JPanel {
      * It populates the chart. It also sets up a listener to update the chart in real-time.
      *
      * @param metricsMap a map containing lists of {@link RealtimeMetricModel} for each {@link RealtimeMetricType}
-     *
      * @author Davide Galilei
      */
     public void updateView(Map<RealtimeMetricType, List<RealtimeMetricModel>> metricsMap) {
@@ -264,18 +264,18 @@ public class StatisticsPanel extends JPanel {
             plot.setRenderer(renderer);
 
             setupMetricsListener(
-                (type, value) -> {
-                    // Update the chart with the new value
-                    TimeSeries series = dataset.getSeries(type.name().toLowerCase());
-                    if (series != null) {
-                        series.addOrUpdate(new Second(), value);
-                    } else {
-                        series = new TimeSeries(type.name().toLowerCase());
-                        series.add(new Second(), value);
-                        dataset.addSeries(series);
+                    (type, value) -> {
+                        // Update the chart with the new value
+                        TimeSeries series = dataset.getSeries(type.name().toLowerCase());
+                        if (series != null) {
+                            series.addOrUpdate(new Second(), value);
+                        } else {
+                            series = new TimeSeries(type.name().toLowerCase());
+                            series.add(new Second(), value);
+                            dataset.addSeries(series);
+                        }
+                        chart.fireChartChanged(); // Refresh the chart
                     }
-                    chart.fireChartChanged(); // Refresh the chart
-                }
             );
         } catch (Exception e) {
             e.printStackTrace();
@@ -288,11 +288,9 @@ public class StatisticsPanel extends JPanel {
      *
      * @param dataset the {@link TimeSeriesCollection} containing the time series data to be rendered
      * @return a configured {@link XYLineAndShapeRenderer} for rendering the time series data
-     *
+     * @author Davide Galilei
      * @see XYLineAndShapeRenderer
      * @see TimeSeriesCollection
-     *
-     * @author Davide Galilei
      */
     private static XYLineAndShapeRenderer getXyLineAndShapeRenderer(TimeSeriesCollection dataset) {
         // Enable both lines and shapes (dots) - true, true
@@ -300,14 +298,14 @@ public class StatisticsPanel extends JPanel {
 
         // Define bright colors for each series
         Color[] brightColors = {
-            new Color(255, 69, 0),    // Red-Orange
-            new Color(0, 191, 255),   // Deep Sky Blue
-            new Color(50, 205, 50),   // Lime Green
-            new Color(255, 20, 147),  // Deep Pink
-            new Color(255, 215, 0),   // Gold
-            new Color(138, 43, 226),  // Blue Violet
-            new Color(255, 140, 0),   // Dark Orange
-            new Color(0, 255, 127)    // Spring Green
+                new Color(255, 69, 0),    // Red-Orange
+                new Color(0, 191, 255),   // Deep Sky Blue
+                new Color(50, 205, 50),   // Lime Green
+                new Color(255, 20, 147),  // Deep Pink
+                new Color(255, 215, 0),   // Gold
+                new Color(138, 43, 226),  // Blue Violet
+                new Color(255, 140, 0),   // Dark Orange
+                new Color(0, 255, 127)    // Spring Green
         };
 
         // Apply thick strokes and bright colors to each series

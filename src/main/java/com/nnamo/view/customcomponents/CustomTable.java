@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Vector;
 
-import static com.nnamo.enums.ColumnName.*;
+import static com.nnamo.enums.ColumnName.TYPE;
 
 /**
  * Custom {@link JPanel} that provides a {@link JTable} with search functionality and sorting capabilities.
@@ -29,27 +29,26 @@ import static com.nnamo.enums.ColumnName.*;
  *
  * @author Riccardo Finocchiaro
  * @author Samuele Lombardi
- *
  * @see JPanel
  * @see JTable
  * @see CustomSearchBar
  */
 public class CustomTable extends JPanel {
 
-    private JTable table;
-    private JButton resetButton;
+    private final JTable table;
+    private final JButton resetButton;
     private CustomSearchBar searchBar;
 
-    private JScrollPane scrollPane;
-    private ColumnName[] tableColumns;
-    private ColumnName[] hiddenColumns;
+    private final JScrollPane scrollPane;
+    private final ColumnName[] tableColumns;
+    private final ColumnName[] hiddenColumns;
     private ColumnName[] searchColumns;
-    private DataType dataType;
-    private DefaultTableModel model;
-    private TableRowSorter sorter;
+    private final DataType dataType;
+    private final DefaultTableModel model;
+    private final TableRowSorter sorter;
     private Vector<Object> rowData;
     private boolean isSearchable;
-    private CustomRadioButtonsPanel radioButtonsPanel;
+    private final CustomRadioButtonsPanel radioButtonsPanel;
 
     TableRowClickBehaviour tableRowClickBehaviour;
 
@@ -95,7 +94,7 @@ public class CustomTable extends JPanel {
                 .setFill(GridBagConstraints.HORIZONTAL)
                 .setInsets(-3, 5, 5, 5));
 
-        if ( !(builder.searchColumns.length == 0) ) {
+        if (!(builder.searchColumns.length == 0)) {
             System.out.println("Search columns set to: " + Arrays.toString(searchColumns));
 
             searchBar = new CustomSearchBar();
@@ -108,7 +107,7 @@ public class CustomTable extends JPanel {
                     .setInsets(2, 5, 2, 5));
             isSearchable = true;
         }
-        if ( !(builder.hiddenColumns.length == 0) ) {
+        if (!(builder.hiddenColumns.length == 0)) {
             System.out.println("Hidden columns set to: " + Arrays.toString(hiddenColumns));
 
             System.out.println("\n" + "\n");
@@ -124,7 +123,7 @@ public class CustomTable extends JPanel {
             }
         }
 
-        if ( radioButtonsPanel != null ) {
+        if (radioButtonsPanel != null) {
             add(radioButtonsPanel, new CustomGbc()
                     .setPosition(0, 1)
                     .setWeight(1.0, 0.0)
@@ -150,6 +149,7 @@ public class CustomTable extends JPanel {
         }
         return false;
     }
+
     /**
      * Adds a new row to the {@link JTable} with the specified data.
      *
@@ -169,7 +169,7 @@ public class CustomTable extends JPanel {
      * Adds a new row to the table with the specified data.
      * If the row already exists, it will not be added again.
      *
-     * @param string the string used to check if the row exists.
+     * @param string     the string used to check if the row exists.
      * @param columnName the column name to check for the string.
      *
      */
@@ -195,8 +195,8 @@ public class CustomTable extends JPanel {
     public void clear() {
         model.setRowCount(0);
     }
-    
-    ////////////// AI STUFF! //////////////
+
+    /// /////////// AI STUFF! //////////////
     private void initDefaultComparator() {
         Comparator<Object> comparator = (o1, o2) -> {
             String s1 = o1 == null ? "" : o1.toString().trim();
@@ -293,16 +293,16 @@ public class CustomTable extends JPanel {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 int selectedRow = table.getSelectedRow();
-                    if (selectedRow != -1 && tableRowClickBehaviour != null) {
-                        int modelRow = table.convertRowIndexToModel(selectedRow);
-                        rowData = (Vector<Object>) model.getDataVector().get(modelRow);
-                        try {
-                            tableRowClickBehaviour.onRowClick(rowData, tableColumns, dataType);
-                        } catch (SQLException | IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
+                if (selectedRow != -1 && tableRowClickBehaviour != null) {
+                    int modelRow = table.convertRowIndexToModel(selectedRow);
+                    rowData = (Vector<Object>) model.getDataVector().get(modelRow);
+                    try {
+                        tableRowClickBehaviour.onRowClick(rowData, tableColumns, dataType);
+                    } catch (SQLException | IOException ex) {
+                        throw new RuntimeException(ex);
                     }
                 }
+            }
         });
 
         resetButton.addActionListener(new ActionListener() {
@@ -346,7 +346,7 @@ public class CustomTable extends JPanel {
             });
         }
 
-        if ( radioButtonsPanel != null ) {
+        if (radioButtonsPanel != null) {
             for (JRadioButton radioButton : radioButtonsPanel.getRadioButtons()) {
                 radioButton.addActionListener(new ActionListener() {
                     @Override
@@ -369,13 +369,13 @@ public class CustomTable extends JPanel {
      * Sets the {@link TableCheckIsFavBehaviour} to check if a row is marked as favorite.
      *
      * @param tableRowClickBehaviour The behavior to set.
-     *
      * @see TableCheckIsFavBehaviour
      */
     public void setTableRowClickBehaviour(TableRowClickBehaviour tableRowClickBehaviour) {
         this.tableRowClickBehaviour = tableRowClickBehaviour;
     }
     // GETTERS AND SETTERS //
+
     /**
      * Sets the columns to be used for searching in the table.
      *
@@ -400,7 +400,6 @@ public class CustomTable extends JPanel {
      * Gets the {@link JTable}.
      *
      * @return the {@link JTable} instance.
-     *
      * @see JTable
      */
     public JTable getTable() {
@@ -417,9 +416,9 @@ public class CustomTable extends JPanel {
 
     public static class Builder {
 
-        ColumnName[] tableColumns = new ColumnName[] {};
-        ColumnName[] hiddenColumns =  new ColumnName[] {};
-        ColumnName[] searchColumns = new ColumnName[] {};
+        ColumnName[] tableColumns = new ColumnName[]{};
+        ColumnName[] hiddenColumns = new ColumnName[]{};
+        ColumnName[] searchColumns = new ColumnName[]{};
         CustomRadioButtonsPanel radioButtonsPanel = null;
         DataType dataType;
 

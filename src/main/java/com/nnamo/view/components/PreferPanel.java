@@ -1,8 +1,8 @@
 package com.nnamo.view.components;
 
 import com.nnamo.enums.ColumnName;
-import com.nnamo.enums.UpdateMode;
 import com.nnamo.enums.RouteType;
+import com.nnamo.enums.UpdateMode;
 import com.nnamo.interfaces.SearchBarListener;
 import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.models.RouteDirection;
@@ -15,14 +15,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.nnamo.enums.ColumnName.*;
-import static com.nnamo.enums.DataType.*;
+import static com.nnamo.enums.DataType.ROUTE;
+import static com.nnamo.enums.DataType.STOP;
 
 /**
  * Custom {@link JPanel} that displays stop and route preferences with two {@link CustomTable},
  *
  * @author Riccardo Finocchiaro
  * @author Samuele Lombardi
- *
  * @see JPanel
  * @see CustomSearchBar
  * @see CustomTable
@@ -41,6 +41,7 @@ public class PreferPanel extends JPanel {
     CustomTable routeTable;
 
     // CONSTRUCTOR //
+
     /**
      * Creates a {@link PreferPanel} with a title bar, a {@link CustomSearchBar}
      * for searching and filtering, and {@link CustomTable} for displaying favorite stops and routes.
@@ -93,7 +94,7 @@ public class PreferPanel extends JPanel {
                 .setInsets(4, 5, -3, 5));
 
         stopTable = new CustomTable.Builder()
-                .setTableColumns(new ColumnName[] {STOPNAME, CODE})
+                .setTableColumns(new ColumnName[]{STOPNAME, CODE})
                 .setDataType(STOP)
                 .build();
         stopTable.setOpaque(false);
@@ -105,7 +106,7 @@ public class PreferPanel extends JPanel {
                 .setInsets(2, 5, 2, 5));
 
 
-        stopPanel.setBorder( new CustomRoundedBorder(20, 1.7f));
+        stopPanel.setBorder(new CustomRoundedBorder(20, 1.7f));
         add(stopPanel, new CustomGbc()
                 .setPosition(0, 2)
                 .setFill(GridBagConstraints.BOTH)
@@ -131,8 +132,8 @@ public class PreferPanel extends JPanel {
         }
 
         routeTable = new CustomTable.Builder()
-                .setTableColumns(new ColumnName[] {ROUTENAME, CODE, TYPE, TERMINAL, DIRECTION})
-                .setHiddenColumns(new ColumnName[] {DIRECTION})
+                .setTableColumns(new ColumnName[]{ROUTENAME, CODE, TYPE, TERMINAL, DIRECTION})
+                .setHiddenColumns(new ColumnName[]{DIRECTION})
                 .setCustomRadioButtons(buttons)
                 .setDataType(ROUTE)
                 .build();
@@ -162,7 +163,7 @@ public class PreferPanel extends JPanel {
     public void updateFavStopTable(StopModel stop, UpdateMode updateMode) {
         switch (updateMode) {
             case ADD:
-                stopTable.addRow(new Object[] { stop.getName(), stop.getId() });
+                stopTable.addRow(new Object[]{stop.getName(), stop.getId()});
                 break;
             case REMOVE:
                 stopTable.removeRow(stop.getId(), ColumnName.CODE);
@@ -174,7 +175,7 @@ public class PreferPanel extends JPanel {
         for (RouteDirection route : directedRoutes) {
             switch (updateMode) {
                 case ADD:
-                    routeTable.addRow(new Object[] {
+                    routeTable.addRow(new Object[]{
                             route.getLongName() != null ? route.getLongName() : route.getShortName(),
                             route.getId(),
                             route.getType(),

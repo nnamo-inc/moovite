@@ -1,23 +1,18 @@
 package com.nnamo.models;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-
-import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate;
+import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.nnamo.utils.Utils;
 
 public class RealtimeStopUpdate {
     private final String tripId;
-    private String routeId;
+    private final String routeId;
     private final String stopId;
     private final StopTimeUpdate timeUpdate;
     private final VehiclePosition vehiclePosition;
 
     public RealtimeStopUpdate(String tripId, String routeId, StopTimeUpdate timeUpdate,
-            VehiclePosition vehiclePosition) {
+                              VehiclePosition vehiclePosition) {
         this.tripId = tripId;
         this.routeId = routeId;
         this.stopId = timeUpdate.getStopId();

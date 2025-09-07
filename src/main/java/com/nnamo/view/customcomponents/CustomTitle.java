@@ -8,7 +8,7 @@ public class CustomTitle extends JPanel {
     JLabel titleLabel;
     Font titleFont;
 
-    public CustomTitle (String title) {
+    public CustomTitle(String title) {
         titleLabel = new JLabel(title);
         titleFont = new Font("Arial", Font.BOLD, 25);
         titleLabel.setFont(titleFont);

@@ -3,9 +3,7 @@ package com.nnamo.view.customcomponents.statistic;
 import com.google.transit.realtime.GtfsRealtime;
 import com.nnamo.enums.RealtimeMetricType;
 import com.nnamo.interfaces.StatisticInterface;
-import com.nnamo.services.DatabaseService;
 import com.nnamo.services.FeedUpdateListener;
-import org.jspecify.annotations.NonNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,15 +16,14 @@ import java.util.List;
  * and {@link FeedUpdateListener} to update statistics based on feed data.
  *
  * @author Davide Galilei
- *
  * @see JLabel
  * @see StatisticInterface
  * @see FeedUpdateListener
  */
 public abstract class StatisticUnit extends JLabel implements StatisticInterface, FeedUpdateListener {
-    private String name;
+    private final String name;
     private String value;
-    private String unit;
+    private final String unit;
     private final int CORNER_RADIUS = 15;
 
     private final List<StatisticUpdateListener> listeners = new java.util.ArrayList<>();
@@ -50,7 +47,6 @@ public abstract class StatisticUnit extends JLabel implements StatisticInterface
      * Uses relative luminance formula for better accessibility
      *
      * @param backgroundColor the background color of the tile
-     *
      * @author AI
      */
     private Color getAdaptiveTextColor(Color backgroundColor) {

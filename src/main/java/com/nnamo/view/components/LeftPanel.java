@@ -1,12 +1,5 @@
 package com.nnamo.view.components;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import com.nnamo.enums.RealtimeMetricType;
 import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.enums.UpdateMode;
@@ -14,9 +7,15 @@ import com.nnamo.interfaces.*;
 import com.nnamo.models.RealtimeMetricModel;
 import com.nnamo.models.RouteDirection;
 import com.nnamo.models.StopModel;
-import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
 import com.nnamo.view.customcomponents.statistic.MetricCollector;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Custom {@link JPanel} that serves as the left panel of the application,
@@ -25,7 +24,6 @@ import com.nnamo.view.customcomponents.statistic.MetricCollector;
  *
  * @author Riccardo Finocchiaro
  * @author Samuele Lombardi
- *
  * @see JPanel
  * @see SearchPanel
  * @see PreferPanel
@@ -40,10 +38,11 @@ public class LeftPanel extends JPanel {
     private StatisticsPanel statsPanel;
     private SettingsPanel settingsPanel;
 
-    private JPanel modularPanel;
-    private ButtonPanel buttonPanel;
+    private final JPanel modularPanel;
+    private final ButtonPanel buttonPanel;
 
     // CONSTRUCTOR //
+
     /**
      * Creates a {@link LeftPanel} with a layout that includes a button panel
      * and a modular panel for displaying different sub-panels.
@@ -87,6 +86,7 @@ public class LeftPanel extends JPanel {
     }
 
     // METHODS //
+
     /**
      * Updates the modular panel to display the specified panel.
      * If the panel is set to be visible, it will be added to the modular panel.
@@ -114,6 +114,7 @@ public class LeftPanel extends JPanel {
     }
 
     // GETTERS AND SETTERS //
+
     /**
      * Returns the {@link SearchPanel} instance contained in this LeftPanel.
      *
@@ -142,6 +143,7 @@ public class LeftPanel extends JPanel {
     }
 
     // BEHAVIOURS METHODS //
+
     /**
      * Sets the click behaviour for table rows in both the search and prefer panels.
      *
@@ -189,6 +191,7 @@ public class LeftPanel extends JPanel {
     }
 
     // TRANSIT METHODS //
+
     /**
      * Updates the favorite stop table in the prefer panel with the specified stop
      * and update mode.

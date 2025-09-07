@@ -1,11 +1,6 @@
 package com.nnamo.services;
 
-import com.google.transit.realtime.GtfsRealtime;
-import com.google.transit.realtime.GtfsRealtime.FeedEntity;
-import com.google.transit.realtime.GtfsRealtime.FeedMessage;
-import com.google.transit.realtime.GtfsRealtime.TripDescriptor;
-import com.google.transit.realtime.GtfsRealtime.TripUpdate;
-import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
+import com.google.transit.realtime.GtfsRealtime.*;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate;
 import com.nnamo.enums.Direction;
 import com.nnamo.enums.RealtimeStatus;
@@ -37,15 +32,15 @@ public class RealtimeGtfsService {
     private final Thread statisticsThread;
     private RealtimeStatus realtimeStatus = RealtimeStatus.ONLINE;
     private RealtimeStatusChangeListener statusChangeListener; // Listener for when status changes automatically (and
-                                                               // not by pressing button in mainframe)
+    // not by pressing button in mainframe)
     private final URL tripFeedUrl;
     private final URL positionsFeedUrl;
 
     private List<FeedEntity> positionEntityList;
     private HashMap<String, List<VehiclePosition>> routesPositionsMap = new HashMap<>(); // Maps Route ID with all its
-                                                                                         // vehicle positions
-    private HashMap<String, VehiclePosition> tripsPositionMap = new HashMap<>(); // Maps a Trip ID with its vehicle
-                                                                                 // position
+    // vehicle positions
+    private final HashMap<String, VehiclePosition> tripsPositionMap = new HashMap<>(); // Maps a Trip ID with its vehicle
+    // position
 
     private List<FeedEntity> tripEntityList;
     private HashMap<String, FeedEntity> tripsMap = new HashMap<>();

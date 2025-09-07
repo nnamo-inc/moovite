@@ -11,13 +11,12 @@ import java.awt.event.ActionListener;
  * It is designed to work with a {@link JPanel} and a {@link ButtonPanelBehaviour} interface.
  *
  * @author Riccardo Finocchiaro
- *
  * @see JButton
  * @see ButtonPanelBehaviour
  */
 public class CustomButtonPanel extends JButton {
 
-    private JPanel PANEL;
+    private final JPanel PANEL;
     private ButtonPanelBehaviour buttonPanelBehaviour;
 
     /**
@@ -25,7 +24,6 @@ public class CustomButtonPanel extends JButton {
      *
      * @param nome  the button label that will be displayed on the button
      * @param panel the JPanel the button will interact with
-     *
      * @see JButton
      * @see JPanel
      */
@@ -50,7 +48,6 @@ public class CustomButtonPanel extends JButton {
      * Sets the behavior to execute when the button is clicked.
      *
      * @param buttonPanelBehaviour the behavior implementation
-     *
      * @see ButtonPanelBehaviour
      */
     public void setButtonPanelBehaviour(ButtonPanelBehaviour buttonPanelBehaviour) {

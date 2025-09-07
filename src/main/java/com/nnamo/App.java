@@ -1,12 +1,5 @@
 package com.nnamo;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.sql.SQLException;
-
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.nnamo.controllers.MainController;
 import com.nnamo.services.DatabaseService;
@@ -16,6 +9,12 @@ import com.nnamo.utils.UserDataUtils;
 import com.nnamo.view.frame.StartupLoadingFrame;
 
 import javax.swing.*;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.sql.SQLException;
 
 public class App {
     /**

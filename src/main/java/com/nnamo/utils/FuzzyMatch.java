@@ -2,15 +2,16 @@ package com.nnamo.utils;
 
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.sqlite.Function;
+
 import java.sql.SQLException;
 
 /**
  * SQLite custom function to perform fuzzy matching using Levenshtein distance ({@link LevenshteinDistance}).
  * This function can be used in SQL queries to compare two strings and return a similarity score.
- *
+ * <p>
  * Usage in SQL:
  * <code>SELECT FuzzyMatch(column1, 'searchTerm') AS similarityScore FROM tableName;</code>
- *
+ * <p>
  * The similarity score is returned as a percentage (0 to 100).
  *
  * @author Davide Galilei

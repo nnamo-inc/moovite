@@ -6,7 +6,6 @@ import com.nnamo.utils.CustomColor;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,12 +13,11 @@ import java.util.ArrayList;
 
 /**
  * Custom {@link JPanel} that provides a search bar with a {@link JTextField}, a clear {@link JButton}, and a set of {@link JRadioButton} for filtering search results.
- *
+ * <p>
  * This component allows users to input search queries, clear the input, and select a route type for filtering results.
  *
  * @author Riccardo Finocchiaro
  * @author Davide Galilei
- *
  * @see JPanel
  * @see JTextField
  * @see JButton
@@ -37,6 +35,7 @@ public class CustomSearchBar extends JPanel {
     private ArrayList<SearchBarListener> listeners;
 
     // CONSTRUCTOR //
+
     /**
      * Creates a {@link CustomSearchBar} with a {@link JLabel} for the {@link JTextField}, a {@link JTextField} for input, and a {@link JButton} to clear the input.
      * The search bar is designed to be used in applications where users need to search for items or data.
@@ -69,7 +68,6 @@ public class CustomSearchBar extends JPanel {
      * The radio buttons allow users to select a specific route type for their search.
      *
      * @param radioButtons an {@link ArrayList} of {@link JRadioButton} representing different route types.
-     *
      * @see CustomSearchBar
      * @see JRadioButton
      * @see RouteType
@@ -165,6 +163,7 @@ public class CustomSearchBar extends JPanel {
     }
 
     // METHODS BEHAVIOUR //
+
     /**
      * Initializes the action listeners for the search bar components.
      * The {@link JTextField} listens for text input, and the {@link JButton} listens for clicks to clear the input.
@@ -207,11 +206,11 @@ public class CustomSearchBar extends JPanel {
         }
     }
     // GETTERS AND SETTERS //
+
     /**
      * Gets the {@link JTextField} used for input in the {@link CustomSearchBar}.
      *
      * @return the {@link JTextField} of the search bar
-     *
      * @see JTextField
      * @see CustomSearchBar
      */
@@ -223,7 +222,6 @@ public class CustomSearchBar extends JPanel {
      * Sets the text of the {@link JTextField} in the {@link CustomSearchBar}.
      *
      * @param field the text to set in the {@link JTextField}
-     *
      * @see JTextField
      * @see CustomSearchBar
      */
@@ -235,7 +233,6 @@ public class CustomSearchBar extends JPanel {
      * Gets the text currently entered in the {@link JTextField} of the {@link CustomSearchBar}.
      *
      * @return the text from the {@link JTextField}
-     *
      * @see JTextField
      * @see CustomSearchBar
      */
@@ -247,7 +244,6 @@ public class CustomSearchBar extends JPanel {
      * Gets the {@link JButton} used to clear the input in the {@link CustomSearchBar}.
      *
      * @return the {@link JButton} of the search bar
-     *
      * @see JButton
      * @see CustomSearchBar
      */

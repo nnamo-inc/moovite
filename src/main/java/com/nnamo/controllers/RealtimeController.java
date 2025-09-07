@@ -4,21 +4,19 @@ import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.interfaces.RealtimeStatusChangeListener;
 import com.nnamo.interfaces.SwitchBarListener;
-import com.nnamo.models.*;
+import com.nnamo.models.StopModel;
+import com.nnamo.models.UserModel;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.FeedUpdateListener;
 import com.nnamo.services.RealtimeGtfsService;
 import com.nnamo.services.StatisticsBehaviour;
-import com.nnamo.utils.Utils;
 import com.nnamo.view.frame.MainFrame;
+import org.jxmapviewer.viewer.GeoPosition;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
-
-import javax.swing.JOptionPane;
-
-import org.jxmapviewer.viewer.GeoPosition;
 
 /**
  * Controller responsible for managing real-time functionalities,
@@ -27,16 +25,15 @@ import org.jxmapviewer.viewer.GeoPosition;
  * It interacts with the DatabaseService, MainFrame, and RealtimeGtfsService
  * to provide a seamless user experience with real-time data.
  *
+ * @author Samuele Lombardi
  * @see DatabaseService
  * @see MainFrame
  * @see RealtimeGtfsService
- *
- * @author Samuele Lombardi
  */
 public class RealtimeController {
     private final DatabaseService db;
     private final MainFrame mainFrame;
-    private RealtimeGtfsService realtimeService;
+    private final RealtimeGtfsService realtimeService;
     private UserModel sessionUser;
 
     public RealtimeController(DatabaseService db, MainFrame mainFrame, RealtimeGtfsService realtimeService) {
@@ -93,7 +90,6 @@ public class RealtimeController {
                     db.createTripUpdateDelays(tripEntities);
                 } catch (SQLException e) {
                     e.printStackTrace();
-                    return;
                 }
             }
         });
