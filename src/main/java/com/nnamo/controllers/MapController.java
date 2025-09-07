@@ -21,6 +21,19 @@ import java.util.List;
 
 import org.jxmapviewer.viewer.GeoPosition;
 
+/**
+ * Controller responsible for managing map-related functionalities,
+ * including waypoint interactions, route rendering, and vehicle position updates.
+ * It interacts with the DatabaseService, MainFrame, and RealtimeGtfsService
+ * to provide a seamless user experience on the map interface.
+ *
+ * @see DatabaseService
+ * @see MainFrame
+ * @see RealtimeGtfsService
+ *
+ * @author Samuele Lombardi
+ * @author Riccardo Finocchiaro
+ */
 public class MapController {
     private final DatabaseService db;
     private final MainFrame mainFrame;

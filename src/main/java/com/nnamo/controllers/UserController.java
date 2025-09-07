@@ -21,6 +21,18 @@ import com.nnamo.view.frame.LoginFrame;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 
+/**
+ * Controller responsible for managing user authentication and session management.
+ * It interacts with the DatabaseService to verify user credentials and handle
+ * user registration. It also manages user sessions by creating, deleting, and
+ * checking for active sessions.
+ *
+ * @see DatabaseService
+ * @see LoginFrame
+ *
+ * @author Samuele Lombardi
+ * @author Riccardo Finocchiaro
+ */
 public class UserController {
     private final DatabaseService db;
     private final LoginFrame loginFrame;

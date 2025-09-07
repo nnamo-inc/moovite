@@ -2,10 +2,21 @@ package com.nnamo.view.customcomponents.statistic;
 
 import com.google.transit.realtime.GtfsRealtime;
 import com.nnamo.enums.RealtimeMetricType;
+import com.nnamo.services.FeedUpdateListener;
 
 import java.awt.*;
 import java.util.List;
 
+/**
+ * Statistic unit that counts the number of stopped buses.
+ * Extends {@link StatisticUnit} to display the count of detour buses.
+ * Implements {@link FeedUpdateListener} to update the count based on feed data.
+ *
+ * @see StatisticUnit
+ * @see FeedUpdateListener
+ *
+ * @author Davide Galilei
+ */
 public class StatisticStoppedBus extends StatisticUnit {
     public StatisticStoppedBus() {
         super("Stopped Bus", "Buses", new Color(255, 152, 0)); // Material Orange 500

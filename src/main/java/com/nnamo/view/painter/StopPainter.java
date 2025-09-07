@@ -15,6 +15,17 @@ import org.jxmapviewer.viewer.WaypointRenderer;
 
 import com.nnamo.view.waypoints.StopWaypoint;
 
+/**
+ * A specialized {@link WaypointPainter} for rendering stop waypoints on a map.
+ * This class manages different icon sizes and updates the displayed icon based on the map's zoom level.
+ * It also highlights a specific stop if its ID is provided during repainting by using a larger icon.
+ *
+ * @see WaypointPainter
+ * @see JXMapViewer
+ * @see StopWaypoint
+ *
+ * @author Samuele Lombardi
+ */
 public class StopPainter extends WaypointPainter<Waypoint> {
     private final JXMapViewer map;
     private final HashMap<Sizes, BufferedImage> icons = new HashMap<Sizes, BufferedImage>();

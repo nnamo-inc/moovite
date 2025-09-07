@@ -12,6 +12,8 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Custom {@link JPanel} that provides a settings interface, including online status control and logout functionality.
@@ -22,7 +24,7 @@ import java.awt.*;
  *
  * @see JPanel
  * @see CustomSwitchBar
- * @see StatisticsPanel.CustomLogout
+ * @see CustomLogout
  * @see RealtimeStatus
  * @see SwitchBarListener
  * @see LogoutBehaviour
@@ -30,7 +32,7 @@ import java.awt.*;
 public class SettingsPanel extends JPanel {
 
     private CustomSwitchBar switchBar;
-    private StatisticsPanel.CustomLogout logout;
+    private CustomLogout logout;
     private CustomTitle title;
 
     // CONSTRUCTOR //
@@ -40,7 +42,7 @@ public class SettingsPanel extends JPanel {
      *
      * @see JPanel
      * @see CustomSwitchBar
-     * @see StatisticsPanel.CustomLogout
+     * @see CustomLogout
      */
     public SettingsPanel() {
         super();
@@ -110,7 +112,7 @@ public class SettingsPanel extends JPanel {
                 .setFill(GridBagConstraints.NONE)
                 .setInsets(2, 5, 2, 5));
 
-        logout = new StatisticsPanel.CustomLogout();
+        logout = new CustomLogout();
         logoutPanel.add(logout, new CustomGbc()
                 .setPosition(0, 1)
                 .setAnchor(GridBagConstraints.NORTH)
@@ -156,9 +158,74 @@ public class SettingsPanel extends JPanel {
      * @param behaviour the implementation of {@link LogoutBehaviour} to handle logout events
      *
      * @see LogoutBehaviour
-     * @see StatisticsPanel.CustomLogout
+     * @see CustomLogout
      */
     public void setLogoutBehaviour(LogoutBehaviour behaviour) {
         logout.setLogoutBehaviour(behaviour);
+    }
+
+
+    /**
+     * Custom {@link JPanel} that creates a logout button to handle user logout actions using a specified {@link LogoutBehaviour}.
+     *
+     * @see JPanel
+     * @see JButton
+     * @see LogoutBehaviour
+     */
+    public static class CustomLogout extends JPanel {
+
+        // ATTRIBUTES //
+        JButton button;
+        LogoutBehaviour logoutBehaviour;
+
+        // CONSTRUCTOR //
+        /**
+         * Creates a {@link CustomLogout} with a logout {@link JButton}.
+         * The {@link JButton} will trigger the {@link LogoutBehaviour} when clicked.
+         *
+         *  @see JPanel
+         *  @see JButton
+         *  @see LogoutBehaviour
+         */
+        public CustomLogout() {
+            super();
+            setLayout(new GridBagLayout());
+
+            // Button
+            button = new JButton("Logout");
+            add(button, new CustomGbc().setPosition(0, 0).setAnchor(GridBagConstraints.CENTER).setWeight(1.0, 1.0)
+                    .setFill(GridBagConstraints.HORIZONTAL).setInsets(2, 5, 2, 5));
+            initListener();
+        }
+
+        // METHODS BEHAVIOUR //
+        /**
+         * Initializes the {@link ActionListener} for the logout {@link JButton} that trigger the {@link LogoutBehaviour}..
+         *
+         *  @see ActionListener
+         *  @see LogoutBehaviour
+         *  @see JButton
+         */
+        private void initListener() {
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (logoutBehaviour != null) {
+                        logoutBehaviour.onLogout();
+                    }
+                }
+            });
+        }
+
+        /**
+         * Sets the {@link LogoutBehaviour} to be executed when the logout button is clicked.
+         *
+         * @param behaviour the {@link LogoutBehaviour} implementation that defines the logout action.
+         *
+         * @see LogoutBehaviour
+         */
+        public void setLogoutBehaviour(LogoutBehaviour behaviour) {
+            this.logoutBehaviour = behaviour;
+        }
     }
 }

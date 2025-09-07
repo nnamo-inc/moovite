@@ -11,6 +11,18 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+/**
+ * Abstract class representing a statistic unit tile in the UI.
+ * Extends {@link JLabel} to display the statistic name, value, and unit.
+ * Implements {@link StatisticInterface} for getting/setting values and units,
+ * and {@link FeedUpdateListener} to update statistics based on feed data.
+ *
+ * @author Davide Galilei
+ *
+ * @see JLabel
+ * @see StatisticInterface
+ * @see FeedUpdateListener
+ */
 public abstract class StatisticUnit extends JLabel implements StatisticInterface, FeedUpdateListener {
     private String name;
     private String value;
@@ -36,6 +48,10 @@ public abstract class StatisticUnit extends JLabel implements StatisticInterface
     /**
      * Calculate appropriate text color based on background brightness
      * Uses relative luminance formula for better accessibility
+     *
+     * @param backgroundColor the background color of the tile
+     *
+     * @author AI
      */
     private Color getAdaptiveTextColor(Color backgroundColor) {
         // Calculate relative luminance using sRGB formula

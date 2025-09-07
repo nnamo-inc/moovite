@@ -2,11 +2,22 @@ package com.nnamo.view.customcomponents.statistic;
 
 import com.google.transit.realtime.GtfsRealtime;
 import com.nnamo.enums.RealtimeMetricType;
+import com.nnamo.services.FeedUpdateListener;
 
 import java.awt.*;
 import java.time.Duration;
 import java.util.List;
 
+/**
+ * Statistic unit that counts the number of late buses with a tolerance threshold.
+ * Extends {@link StatisticUnit} to display the count of detour buses.
+ * Implements {@link FeedUpdateListener} to update the count based on feed data.
+ *
+ * @see StatisticUnit
+ * @see FeedUpdateListener
+ *
+ * @author Davide Galilei
+ */
 public class StatisticLateBus extends StatisticUnit {
     private final static Duration LATE_THRESHOLD_DURATION = Duration.ofMinutes(2);
 

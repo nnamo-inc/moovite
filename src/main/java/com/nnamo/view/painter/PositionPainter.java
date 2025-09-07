@@ -13,6 +13,17 @@ import org.jxmapviewer.viewer.WaypointRenderer;
 
 import com.nnamo.enums.IconSize;
 
+/**
+ * An abstract class that extends {@link WaypointPainter} to provide functionality for rendering
+ * waypoints on a map with different icon sizes based on the zoom level.
+ * This class manages a collection of icons and updates the displayed icon according to the map's zoom level.
+ *
+ * @see WaypointPainter
+ * @see JXMapViewer
+ * @see IconSize
+ *
+ * @author Samuele Lombardi
+ */
 public abstract class PositionPainter extends WaypointPainter<Waypoint> {
     private final JXMapViewer map;
     protected final HashMap<IconSize, BufferedImage> icons = new HashMap<IconSize, BufferedImage>();

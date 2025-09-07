@@ -17,6 +17,8 @@ import java.util.HashMap;
  * @see Icon
  * @see CustomButtonPanel
  * @see ButtonPanelBehaviour
+ *
+ * @author Riccardo Finocchiaro
  */
 public class ButtonPanel extends JPanel {
 

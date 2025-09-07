@@ -54,7 +54,8 @@ import java.util.concurrent.Callable;
  * <li>Manages realtime metrics and trip updates</li>
  * </ul>
  *
- * @author Samuele Lombardi, Davide Galilei
+ * @author Samuele Lombardi
+ * @author Davide Galilei
  */
 public class DatabaseService {
 

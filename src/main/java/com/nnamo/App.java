@@ -13,6 +13,7 @@ import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
 import com.nnamo.services.StaticGtfsService;
 import com.nnamo.utils.UserDataUtils;
+import com.nnamo.view.frame.StartupLoadingFrame;
 
 import javax.swing.*;
 
@@ -27,18 +28,13 @@ public class App {
             RealtimeGtfsService realtimeGtfs = new RealtimeGtfsService();
 
             // Processing... window
-            JFrame processingFrame = new JFrame("Processing...");
-            processingFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            processingFrame.setSize(300, 100);
-            processingFrame.setLocationRelativeTo(null);
-            JLabel processingLabel = new JLabel("Loading GTFS data, please wait...", SwingConstants.CENTER);
-            processingFrame.add(processingLabel);
-            processingFrame.setVisible(true);
+            StartupLoadingFrame loadingFrame = new StartupLoadingFrame();
+            loadingFrame.setVisible(true);
 
             db.preloadGtfsData(staticGtfs);
 
             // Close processing frame after loading GTFS data
-            processingFrame.dispose();
+            loadingFrame.close();
 
             try {
                 UIManager.setLookAndFeel(new FlatDarculaLaf());

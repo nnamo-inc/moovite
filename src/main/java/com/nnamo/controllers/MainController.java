@@ -13,6 +13,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Main controller that manages the overall application flow.
+ * It coordinates between the user, map, UI, and real-time controllers,
+ * handles user sessions, and initializes the main application frame.
+ * It also sets up listeners for search and preference panels, and manages real-time data updates.
+ *
+ * @see UserController
+ * @see MapController
+ * @see UIController
+ * @see RealtimeController
+ * @see MainFrame
+ * @see DatabaseService
+ * @see RealtimeGtfsService
+ * 
+ * @author Samuele Lombardi
+ * @author Riccardo Finocchiaro
+ * @author Davide Galilei
+ */
 public class MainController {
 
     UserController userController;

@@ -14,6 +14,21 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.util.Objects;
 
+/**
+ * Service to load and provide access to static GTFS data.
+ * It reads GTFS data from a zip file located in the resources folder
+ * and stores it in a GtfsRelationalDaoImpl for easy querying.
+ *
+ * <ul>
+ *   <li>Use {@link #load()} to load the GTFS data from the zip file.</li>
+ *   <li>Use {@link #getStore()} to access the loaded GTFS data through the {@link GtfsRelationalDaoImpl} instance.</li>
+ * </ul>
+ *
+ * @see GtfsRelationalDaoImpl
+ * @see GtfsReader
+ *
+ * @author Samuele Lombardi
+ */
 public class StaticGtfsService {
 
     private final GtfsRelationalDaoImpl store;

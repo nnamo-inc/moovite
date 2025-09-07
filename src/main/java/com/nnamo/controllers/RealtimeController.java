@@ -20,6 +20,19 @@ import javax.swing.JOptionPane;
 
 import org.jxmapviewer.viewer.GeoPosition;
 
+/**
+ * Controller responsible for managing real-time functionalities,
+ * including handling real-time data updates, user interactions with
+ * the real-time switch, and updating the UI based on real-time status changes.
+ * It interacts with the DatabaseService, MainFrame, and RealtimeGtfsService
+ * to provide a seamless user experience with real-time data.
+ *
+ * @see DatabaseService
+ * @see MainFrame
+ * @see RealtimeGtfsService
+ *
+ * @author Samuele Lombardi
+ */
 public class RealtimeController {
     private final DatabaseService db;
     private final MainFrame mainFrame;
