@@ -183,17 +183,26 @@ jobs:
             @"
         @echo off
         set DIR=%~dp0
-        "%DIR%..\bin\java.exe" -Djava.awt.headless=false -jar "%DIR%..\lib\moovite-1.0-SNAPSHOT.jar" %*
-        "@ | Out-File -FilePath "native-binary\moovite\moovite.exe" -Encoding ASCII
+        "%DIR%java.exe" -Djava.awt.headless=false -jar "%DIR%..\lib\moovite-1.0-SNAPSHOT.jar" %*
+        "@ | Out-File -FilePath "native-binary\moovite\bin\moovite.bat" -Encoding ASCII
             Write-Output "✅ jlink alternative completed"
         }
 
-    - name: Verify bundle structure
+    - name: Verify bundle structure (Linux)
+      if: matrix.os == 'ubuntu-latest'
       run: |
         echo "Bundle created successfully"
         du -sh native-binary/moovite/
         ls -la native-binary/moovite/bin/ | head -5
         ls -la native-binary/moovite/lib/ | head -5
+
+    - name: Verify bundle structure (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        echo "Bundle created successfully"
+        Get-ChildItem -Path native-binary/moovite/ -Recurse | Measure-Object -Property Length -Sum | ForEach-Object { "Total size: $($_.Sum / 1MB) MB" }
+        Get-ChildItem -Path native-binary/moovite/bin/ -Force | Select-Object -First 5
+        Get-ChildItem -Path native-binary/moovite/lib/ -Force | Select-Object -First 5
         
     - name: Package binary (Linux)
       if: matrix.os == 'ubuntu-latest'
