@@ -1,4 +1,4 @@
-package com.nnamo.view.components;
+package com.nnamo.view.custompanels;
 
 import com.nnamo.enums.ColumnName;
 import com.nnamo.enums.RouteType;
@@ -8,10 +8,7 @@ import com.nnamo.models.RealtimeStopUpdate;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.TripModel;
-import com.nnamo.view.customcomponents.CustomGbc;
-import com.nnamo.view.customcomponents.CustomInfoBar;
-import com.nnamo.view.customcomponents.CustomRoundedBorder;
-import com.nnamo.view.customcomponents.CustomTable;
+import com.nnamo.view.customcomponents.*;
 
 import javax.swing.*;
 import java.awt.*;

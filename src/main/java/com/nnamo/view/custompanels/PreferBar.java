@@ -1,4 +1,4 @@
-package com.nnamo.view.components;
+package com.nnamo.view.custompanels;
 
 import com.nnamo.enums.DataType;
 import com.nnamo.interfaces.FavoriteBehaviour;

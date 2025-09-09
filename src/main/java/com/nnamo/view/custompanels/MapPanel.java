@@ -1,4 +1,4 @@
-package com.nnamo.view.components;
+package com.nnamo.view.custompanels;
 
 import com.google.transit.realtime.GtfsRealtime.Position;
 import com.google.transit.realtime.GtfsRealtime.VehiclePosition;

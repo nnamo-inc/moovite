@@ -1,12 +1,9 @@
-package com.nnamo.view.components;
+package com.nnamo.view.custompanels;
 
 import com.nnamo.enums.RealtimeStatus;
 import com.nnamo.interfaces.LogoutBehaviour;
 import com.nnamo.interfaces.SwitchBarListener;
-import com.nnamo.view.customcomponents.CustomGbc;
-import com.nnamo.view.customcomponents.CustomRoundedBorder;
-import com.nnamo.view.customcomponents.CustomSwitchBar;
-import com.nnamo.view.customcomponents.CustomTitle;
+import com.nnamo.view.customcomponents.*;
 
 import javax.swing.*;
 import java.awt.*;

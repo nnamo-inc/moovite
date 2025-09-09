@@ -1,7 +1,6 @@
-package com.nnamo.view.components;
+package com.nnamo.view.customcomponents;
 
 import com.nnamo.interfaces.ButtonPanelBehaviour;
-import com.nnamo.view.customcomponents.CustomButtonPanel;
 
 import javax.swing.*;
 import java.awt.*;

@@ -26,7 +26,7 @@ import java.sql.SQLException;
  * @see CustomInfoBar
  * @see PasswordBar
  */
-public class LoginFrame extends MainFrame {
+public class LoginFrame extends JFrame {
 
     private final CustomInfoBar usernameField = new CustomInfoBar("Username:");
     private final PasswordBar passwordField = new PasswordBar();

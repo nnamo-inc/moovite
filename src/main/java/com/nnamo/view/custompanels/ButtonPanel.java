@@ -1,4 +1,4 @@
-package com.nnamo.view.components;
+package com.nnamo.view.custompanels;
 
 import com.nnamo.interfaces.ButtonPanelBehaviour;
 import com.nnamo.view.customcomponents.CustomButtonPanel;
