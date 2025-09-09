@@ -189,6 +189,7 @@ public class MapPanel extends JPanel {
      */
     public void setClickWaypointBehaviour(WaypointBehaviour waypointBehaviour) {
         this.waypointBehaviour = waypointBehaviour;
+
     }
 
     // METHODS //
