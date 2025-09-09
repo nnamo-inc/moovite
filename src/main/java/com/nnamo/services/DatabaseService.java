@@ -55,14 +55,23 @@ public class DatabaseService {
      * Creates the DatabaseService by creating a connection to the SQLite database
      * and by initializing tables and DAOs
      */
-    public DatabaseService() throws SQLException {
-        this.connection = new JdbcConnectionSource("jdbc:sqlite:data.db");
+    public DatabaseService(JdbcConnectionSource connection) throws SQLException {
+        this.connection = connection;
 
         initDaos();
         initTables();
 
         Function.create(this.connection.getReadWriteConnection(null).getUnderlyingConnection(), "FUZZY_SCORE",
                 new FuzzyMatch());
+
+    }
+
+    public DatabaseService(String connectionUrl) throws SQLException {
+        this(new JdbcConnectionSource(connectionUrl));
+    }
+
+    public DatabaseService() throws SQLException {
+        this("jdbc:sqlite:data.db");
     }
 
     private void initDaos() throws SQLException {
@@ -79,7 +88,7 @@ public class DatabaseService {
         this.daos.put(RealtimeMetricModel.class, DaoManager.createDao(connection, RealtimeMetricModel.class));
     }
 
-    private void initTables() throws SQLException {
+    public void initTables() throws SQLException {
         TableUtils.createTableIfNotExists(connection, StopModel.class);
         TableUtils.createTableIfNotExists(connection, RouteModel.class);
         TableUtils.createTableIfNotExists(connection, AgencyModel.class);
@@ -91,6 +100,20 @@ public class DatabaseService {
         TableUtils.createTableIfNotExists(connection, FavoriteRouteModel.class);
         TableUtils.createTableIfNotExists(connection, TripUpdateModel.class);
         TableUtils.createTableIfNotExists(connection, RealtimeMetricModel.class);
+    }
+
+    public void wipeTables() throws SQLException {
+        TableUtils.dropTable(this.getDao(StopModel.class), true);
+        TableUtils.dropTable(this.getDao(RouteModel.class), true);
+        TableUtils.dropTable(this.getDao(AgencyModel.class), true);
+        TableUtils.dropTable(this.getDao(TripModel.class), true);
+        TableUtils.dropTable(this.getDao(ServiceModel.class), true);
+        TableUtils.dropTable(this.getDao(UserModel.class), true);
+        TableUtils.dropTable(this.getDao(StopTimeModel.class), true);
+        TableUtils.dropTable(this.getDao(FavoriteStopModel.class), true);
+        TableUtils.dropTable(this.getDao(FavoriteRouteModel.class), true);
+        TableUtils.dropTable(this.getDao(TripUpdateModel.class), true);
+        TableUtils.dropTable(this.getDao(RealtimeMetricModel.class), true);
     }
 
     /**
@@ -583,7 +606,7 @@ public class DatabaseService {
      * @param stopId The ID of the stop
      * @param time   the time from when we want the stop times to start
      * @return the list of next 6 hours (based on the time provided) stoptimes for
-     * that stop
+     *         that stop
      * @throws SQLException if query fails
      * @author Samuele Lombardi
      */
@@ -599,7 +622,7 @@ public class DatabaseService {
      * @param time   the time from when we want the stop times to start
      * @param hours  the hours range from the time provided
      * @return the list of next X hours (based on the time provided) stoptimes for
-     * that stop
+     *         that stop
      * @throws SQLException if query fails
      * @author Samuele Lombardi
      */
@@ -631,8 +654,8 @@ public class DatabaseService {
      * @param hours  the hours range from the time provided
      * @param date   the date of the returned stop times
      * @return the list of next X hours (based on the time and date provided)
-     * stoptimes for
-     * that stop
+     *         stoptimes for
+     *         that stop
      * @throws SQLException if query fails
      * @author Samuele Lombardi
      */
@@ -667,13 +690,13 @@ public class DatabaseService {
      * @param date        the date of the returned stop times
      * @param tripUpdates the trip updates for that stop
      * @return the list of next X hours (based on the time and date provided + the
-     * realtime trips) stoptimes for
-     * that stop
+     *         realtime trips) stoptimes for
+     *         that stop
      * @throws SQLException if query fails
      * @author Samuele Lombardi
      */
     public List<StopTimeModel> getNextStopTimes(String stopId, LocalTime time, int hours, Date date,
-                                                List<RealtimeStopUpdate> tripUpdates)
+            List<RealtimeStopUpdate> tripUpdates)
             throws SQLException {
         Dao<StopTimeModel, String> stopTimeDao = getDao(StopTimeModel.class);
         List<StopTimeModel> filteredStopTimes = getNextStopTimes(stopId, time, date, hours);
@@ -999,7 +1022,7 @@ public class DatabaseService {
      * @param routeId   String route ID
      * @param direction Direction enum (INBOUND/OUTBOUND)
      * @return TripModel for the route in the specified direction, or null if not
-     * found
+     *         found
      * @throws SQLException if query fails
      * @author Samuele Lombardi
      */
@@ -1026,7 +1049,7 @@ public class DatabaseService {
      * @param routeId   String route ID
      * @param direction Direction enum (INBOUND/OUTBOUND)
      * @return TripModel for the route in the specified direction, or null if not
-     * found
+     *         found
      * @throws SQLException if query fails
      * @author Samuele Lombardi
      */
