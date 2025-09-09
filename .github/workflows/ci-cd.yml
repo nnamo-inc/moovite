@@ -433,9 +433,9 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         files: |
-          build-artifacts/target/*.jar
-          moovite-linux/moovite-linux
-          moovite-windows.exe/moovite-windows.exe
+          build-artifacts/*.jar
+          moovite-linux/*
+          moovite-windows.exe/*
         generate_release_notes: true
         draft: false
         prerelease: false
