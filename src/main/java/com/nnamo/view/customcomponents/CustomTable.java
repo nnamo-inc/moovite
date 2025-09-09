@@ -53,6 +53,11 @@ public class CustomTable extends JPanel {
     TableRowClickBehaviour tableRowClickBehaviour;
 
     // CONSTRUCTOR //
+    /**
+     * Create a {@link CustomTable} with the specified parameters inside the builder.
+     *
+     * @param builder The builder containing the configuration parameters for the table.
+     */
     public CustomTable(Builder builder) {
         super(new GridBagLayout());
         System.out.println("Building CustomTable with builder: " + builder);
@@ -155,7 +160,6 @@ public class CustomTable extends JPanel {
      *
      * @param rowData An array of objects representing the data for the new row.
      */
-
     public void addRow(Object[] rowData) {
         if (!rowExists(rowData)) {
             model.addRow(rowData);
@@ -423,14 +427,11 @@ public class CustomTable extends JPanel {
         return table;
     }
 
-    public CustomRadioButtonsPanel getRadioButtonsPanel() {
-        return radioButtonsPanel;
-    }
-
-    public CustomSearchBar getSearchBar() {
-        return searchBar;
-    }
-
+    /**
+     * Builder class for constructing a {@link CustomTable} instance with customizable parameters.
+     *
+     * @see CustomTable
+     */
     public static class Builder {
 
         ColumnName[] tableColumns = new ColumnName[]{};
@@ -439,35 +440,69 @@ public class CustomTable extends JPanel {
         CustomRadioButtonsPanel radioButtonsPanel = null;
         DataType dataType;
 
+        /**
+         * Sets the columns to be displayed in the table.
+         *
+         * @param tableColumns
+         * @return
+         */
         public Builder setTableColumns(ColumnName[] tableColumns) {
             System.out.println("Setting table columns: " + Arrays.toString(tableColumns));
             this.tableColumns = tableColumns;
             return this;
         }
 
+        /**
+         * sets the columns to be hidden in the table.
+         *
+         * @param hiddenColumns
+         * @return
+         */
         public Builder setHiddenColumns(ColumnName[] hiddenColumns) {
             System.out.println("Setting hidden columns: " + Arrays.toString(hiddenColumns));
             this.hiddenColumns = hiddenColumns;
             return this;
         }
 
+        /**
+         * Sets the columns to be used for searching in the table.
+         * @param searchColumns
+         * @return
+         */
         public Builder setSearchColumns(ColumnName[] searchColumns) {
             System.out.println("Setting search columns: " + Arrays.toString(searchColumns));
             this.searchColumns = searchColumns;
             return this;
         }
 
+        /**
+         * Sets the data type for the table.
+         *
+         * @param dataType
+         * @return
+         */
         public Builder setDataType(DataType dataType) {
             System.out.println("Setting data type: " + dataType);
             this.dataType = dataType;
             return this;
         }
 
+        /**
+         * Sets custom radio buttons for filtering in the table.
+         *
+         * @param radioButtons
+         * @return
+         */
         public Builder setCustomRadioButtons(ArrayList<JRadioButton> radioButtons) {
             this.radioButtonsPanel = new CustomRadioButtonsPanel(radioButtons, "Route");
             return this;
         }
 
+        /**
+         * Builds and returns a {@link CustomTable} instance with the specified parameters.
+         *
+         * @return a new {@link CustomTable} instance.
+         */
         public CustomTable build() {
             return new CustomTable(this);
         }

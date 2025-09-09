@@ -38,6 +38,17 @@ public class MapController {
     private UserModel sessionUser;
     private final RealtimeGtfsService realtimeService;
 
+    // CONSTRUCTORS //
+    /**
+     * Creates a {@link MapController} with the specified {@link DatabaseService}, {@link MainFrame}, and {@link RealtimeGtfsService}.
+     *
+     * @param db              the database service for data access
+     * @param mainFrame       the main application frame for UI interactions
+     * @param realtimeService the real-time GTFS service for fetching live data
+     * @see DatabaseService
+     * @see MainFrame
+     * @see RealtimeGtfsService
+     */
     public MapController(DatabaseService db, MainFrame mainFrame, RealtimeGtfsService realtimeService) {
         this.db = db;
         this.mainFrame = mainFrame;
@@ -62,6 +73,13 @@ public class MapController {
         });
     }
 
+    /**
+     * Calculate the geographical barycenter of a list of stops.
+     *
+     * @param stopList List of StopModel objects representing the stops.
+     * @return GeoPosition representing the calculated barycenter.
+     * @throws ArithmeticException if the stopList is empty.
+     */
     public static GeoPosition calculateBarycenter(List<StopModel> stopList) {
         if (stopList.isEmpty()) {
             throw new ArithmeticException("Cannot calculate barycenter for an empty list of stops.");
@@ -78,6 +96,12 @@ public class MapController {
         return new GeoPosition(latStop / divider, lonStop / divider);
     }
 
+    /**
+     * Calculate an appropriate zoom level based on the geographical spread of a list of stops.
+     *
+     * @param stopList List of StopModel objects representing the stops.
+     * @return An integer representing the calculated zoom level.
+     */
     public static int calculateZoomLevel(List<StopModel> stopList) {
         int zoomLevel;
         double topPosition = Double.MIN_VALUE;

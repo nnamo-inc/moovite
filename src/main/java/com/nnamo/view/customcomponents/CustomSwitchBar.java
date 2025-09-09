@@ -13,7 +13,6 @@ import java.util.ArrayList;
  * Custom {@link JPanel} that provides a switch bar with a {@link JLabel} and a {@link JButton} to toggle the status between online and offline.
  * It notifies registered {@link SwitchBarListener} when the status changes.
  *
- * @author Riccardo Finocchiaro
  * @author Samuele Lombardi
  * @see JPanel
  * @see RealtimeStatus

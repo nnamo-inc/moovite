@@ -5,6 +5,12 @@ import com.nnamo.utils.CustomColor;
 import javax.swing.border.Border;
 import java.awt.*;
 
+/**
+ * Custom rounded {@link Border} with corners and specified thickness.
+ * @author Riccardo Finocchiaro
+ *
+ * @see Border
+ */
 public class CustomRoundedBorder implements Border {
     private final int arc;
     private final float thickness;

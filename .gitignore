@@ -1,5 +1,6 @@
 target/
 javadoc/
+UML/
 data.db*
 dependency-reduced-pom.xml
 assets/gtfs/*.txt

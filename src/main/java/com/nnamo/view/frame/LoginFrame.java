@@ -12,6 +12,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.sql.SQLException;
 
 /**
@@ -25,7 +26,7 @@ import java.sql.SQLException;
  * @see CustomInfoBar
  * @see PasswordBar
  */
-public class LoginFrame extends JFrame {
+public class LoginFrame extends MainFrame {
 
     private final CustomInfoBar usernameField = new CustomInfoBar("Username:");
     private final PasswordBar passwordField = new PasswordBar();
@@ -43,7 +44,7 @@ public class LoginFrame extends JFrame {
      * @see JFrame
      * @see CustomInfoBar
      */
-    public LoginFrame() {
+    public LoginFrame() throws IOException {
         super();
         setLayout(new GridBagLayout());
         setSize(400, 250);

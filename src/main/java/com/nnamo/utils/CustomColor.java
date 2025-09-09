@@ -2,6 +2,12 @@ package com.nnamo.utils;
 
 import java.awt.*;
 
+/**
+ * Custom {@link Color} used in the application.
+ *
+ * @author Riccardo Finocchiaro
+ * @see Color
+ */
 public class CustomColor {
     public static final Color RED = new Color(105, 16, 0);
     public static final Color GREEN = new Color(37, 105, 0);

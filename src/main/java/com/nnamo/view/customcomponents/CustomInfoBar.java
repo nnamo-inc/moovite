@@ -61,15 +61,6 @@ public class CustomInfoBar extends JPanel {
     }
 
     /**
-     * Get the text from the text field.
-     *
-     * @return the text currently in the text field.
-     */
-    public String getTextField() {
-        return this.textField.getText();
-    }
-
-    /**
      * Get the {@link JLabel} of the {@link CustomInfoBar}.
      *
      * @return the {@link JLabel} of the {@link CustomInfoBar}.

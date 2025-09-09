@@ -41,7 +41,7 @@ public class UserController {
 
     private SessionListener sessionListener;
 
-    public UserController(DatabaseService db) {
+    public UserController(DatabaseService db) throws IOException {
         this.db = db;
         this.loginFrame = new LoginFrame();
     }
@@ -80,6 +80,7 @@ public class UserController {
                 return AuthResult.WRONG_CREDENTIALS;
             }
         });
+
         loginFrame.setRegisterBehaviour(new RegisterBehaviour() {
             @Override
             public RegisterResult register(String username, String password) throws SQLException {

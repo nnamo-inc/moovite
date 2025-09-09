@@ -7,12 +7,27 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * Custom {@link JPanel} that contains a group of {@link JRadioButton} components for filtering items.
+ * It includes a label indicating the type of filters and a scrollable panel for the radio buttons.
+ *
+ * @author Riccardo Finocchiaro
+ * @see JPanel
+ * @see JRadioButton
+ */
 public class CustomRadioButtonsPanel extends JPanel {
 
     private final JLabel filterLabel;
     private final ButtonGroup buttonGroup;
     private final ArrayList<JRadioButton> radioButtons;
 
+
+    /**
+     * Creates a {@link CustomRadioButtonsPanel} with a label and a scrollable panel of {@link JRadioButton} components.
+     *
+     * @param radioButtons
+     * @param itemName
+     */
     public CustomRadioButtonsPanel(ArrayList<JRadioButton> radioButtons, String itemName) {
 
         setLayout(new GridBagLayout());
@@ -66,6 +81,13 @@ public class CustomRadioButtonsPanel extends JPanel {
 
     // GETTERS AND SETTERS //
 
+    /**
+     * Returns the currently selected {@link RouteType} based on the selected {@link JRadioButton}.
+     *
+     * @return the selected {@link RouteType}
+     * @see RouteType
+     * @see JRadioButton
+     */
     public ArrayList<JRadioButton> getRadioButtons() {
         return radioButtons;
     }

@@ -51,6 +51,14 @@ public class MainController {
     boolean loaded = false;
 
     // CONSTRUCTORS //
+
+    /**
+     * Creates a {@link MainController} with the specified {@link DatabaseService} and {@link RealtimeGtfsService}.
+     *
+     * @param db
+     * @param realtimeService
+     * @throws IOException
+     */
     public MainController(DatabaseService db, RealtimeGtfsService realtimeService) throws IOException {
         this.db = db;
         this.realtimeService = realtimeService;
