@@ -270,7 +270,10 @@ public class UIController {
      * 
      * @param stop The selected stop
      * @param user The user clicking on the stop
-     * @param The  position of the stop
+     * @param position The  position of the stop
+     * @param realtimeService The realtime service to fetch real-time updates
+     * @param mainFrame The main frame to update the UI
+     * @param db The database service to fetch stop times and favorite status
      * @throws IOException
      * @throws SQLException Database queries
      */

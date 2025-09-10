@@ -76,8 +76,6 @@ public class MainController {
     /**
      * Initialize the view and runs all the sub-controllers
      *
-     * @param db
-     * @param realtimeService
      * @throws IOException
      * @see UserController
      * @see MapController
