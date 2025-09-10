@@ -12,6 +12,7 @@ import com.nnamo.models.*;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
 import com.nnamo.utils.Utils;
+import com.nnamo.view.frame.LoginFrame;
 import com.nnamo.view.frame.MainFrame;
 import org.jxmapviewer.viewer.GeoPosition;
 
@@ -21,6 +22,15 @@ import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.*;
 
+/**
+ * Controller responsible to directly interact with the mainframe
+ * functionalities.
+ * It defines different behaviours for the various views
+ *
+ * @see DatabaseService
+ * @see MainFrame
+ * @see LoginFrame
+ */
 public class UIController {
     private final DatabaseService db;
     private final RealtimeGtfsService realtimeService;
@@ -34,12 +44,21 @@ public class UIController {
         this.realtimeService = realtimeService;
     }
 
+    /**
+     * It setups up all the different behaviours
+     */
     public void run() {
         setupTableBehavior();
         setupFavoriteBehavior();
         setupButtonPanelBehaviours();
     }
 
+    /**
+     * It setups up all the different behaviours and defines the user interacting
+     * with the UI
+     * 
+     * @param sessionUser The session user that interacts with the UI
+     */
     public void run(UserModel sessionUser) {
         this.setUser(sessionUser);
         setupTableBehavior();
@@ -60,8 +79,10 @@ public class UIController {
         mainFrame.setGeneralFavBehaviour(createFavoriteBehaviour());
     }
 
-    // Handles behaviour when clicking on the left panel's buttons (which open the
-    // panels on the left)
+    /**
+     * Handles behaviour when clicking on the left panel's buttons (which open the
+     * panels on the left)
+     */
     public void setupButtonPanelBehaviours() {
         var buttonPanelBehaviour = createButtonPanelBehaviour(); // Behaviour of general buttons that open panels on the
         // Left panel
@@ -122,7 +143,9 @@ public class UIController {
         };
     }
 
-    // Click on row that shows vehicle position of clicked line
+    /**
+     * Click on row that shows vehicle position of clicked line
+     */
     private TableRowClickBehaviour createRouteClickBehaviour() {
         return new TableRowClickBehaviour() {
             @Override
@@ -242,9 +265,18 @@ public class UIController {
         };
     }
 
+    /**
+     * It defines the behaviour of when the user clicks on a stop
+     * 
+     * @param stop The selected stop
+     * @param user The user clicking on the stop
+     * @param The  position of the stop
+     * @throws IOException
+     * @throws SQLException Database queries
+     */
     public static void handleStopSelection(StopModel stop, UserModel user, GeoPosition position,
-                                           RealtimeGtfsService realtimeService,
-                                           MainFrame mainFrame, DatabaseService db) throws IOException, SQLException {
+            RealtimeGtfsService realtimeService,
+            MainFrame mainFrame, DatabaseService db) throws IOException, SQLException {
 
         int nextHoursRange = 6;
         Date currentDate = Utils.getCurrentDate();
@@ -266,12 +298,12 @@ public class UIController {
     }
 
     private void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes,
-                                 List<RealtimeStopUpdate> realtimeUpdates) throws SQLException, IOException {
+            List<RealtimeStopUpdate> realtimeUpdates) throws SQLException, IOException {
         UIController.updateStopPanel(stop, stopTimes, realtimeUpdates, this.mainFrame, this.db);
     }
 
     public static void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes,
-                                       List<RealtimeStopUpdate> realtimeUpdates, MainFrame mainFrame, DatabaseService db)
+            List<RealtimeStopUpdate> realtimeUpdates, MainFrame mainFrame, DatabaseService db)
             throws SQLException, IOException {
         mainFrame.updateStopPanelInfo(stop.getId(), stop.getName());
         mainFrame.updateStopPanelTimes(stopTimes, realtimeUpdates);

@@ -24,7 +24,8 @@ import java.util.Map;
  * Main controller that manages the overall application flow.
  * It coordinates between the user, map, UI, and real-time controllers,
  * handles user sessions, and initializes the main application frame.
- * It also sets up listeners for search and preference panels, and manages real-time data updates.
+ * It also sets up listeners for search and preference panels, and manages
+ * real-time data updates.
  *
  * @author Samuele Lombardi
  * @author Riccardo Finocchiaro
@@ -53,7 +54,8 @@ public class MainController {
     // CONSTRUCTORS //
 
     /**
-     * Creates a {@link MainController} with the specified {@link DatabaseService} and {@link RealtimeGtfsService}.
+     * Creates a {@link MainController} with the specified {@link DatabaseService}
+     * and {@link RealtimeGtfsService}.
      *
      * @param db
      * @param realtimeService
@@ -71,6 +73,20 @@ public class MainController {
     }
 
     // METHODS //
+    /**
+     * Initialize the view and runs all the sub-controllers
+     *
+     * @param db
+     * @param realtimeService
+     * @throws IOException
+     * @see UserController
+     * @see MapController
+     * @see UIController
+     * @see RealtimeController
+     * @see MainFrame
+     * @see DatabaseService
+     * @see RealtimeGtfsService
+     */
     public void run() throws InterruptedException, SQLException, IOException {
 
         SearchBarListener searchQueryListener = createSearchPanelQueryBehavior();
@@ -131,17 +147,26 @@ public class MainController {
         searchQueryListener.onSearch("");
     }
 
+    /**
+     * Sets the local tiles cache from a directory
+     * 
+     * @param cacheDir Where the cache is located
+     */
     public void setLocalMapCache(File cacheDir) {
         mainFrame.setLocalMapCache(cacheDir);
     }
 
     /**
-     * Creates a {@link SearchBarListener} that handles search queries for the search panel.
-     * It uses caching to store previously fetched results for stops and routes to improve performance on repeated searches.
-     * When a search is performed, it checks the cache first before querying the database.
+     * Creates a {@link SearchBarListener} that handles search queries for the
+     * search panel.
+     * It uses caching to store previously fetched results for stops and routes to
+     * improve performance on repeated searches.
+     * When a search is performed, it checks the cache first before querying the
+     * database.
      * The results are then rendered in the search panel of the main frame.
      *
-     * @return a {@link SearchBarListener} for handling search queries in the search panel
+     * @return a {@link SearchBarListener} for handling search queries in the search
+     *         panel
      * @author Davide Galilei
      * @see SearchBarListener
      * @see StopModel
@@ -182,12 +207,16 @@ public class MainController {
     }
 
     /**
-     * Creates a {@link SearchBarListener} that handles search queries for the prefer panel.
-     * It fetches favorite stops and routes for the logged-in user based on the search text.
+     * Creates a {@link SearchBarListener} that handles search queries for the
+     * prefer panel.
+     * It fetches favorite stops and routes for the logged-in user based on the
+     * search text.
      * The results are then displayed in the prefer panel of the main frame.
-     * This listener does not use caching since favorite items are user-specific and may change frequently.
+     * This listener does not use caching since favorite items are user-specific and
+     * may change frequently.
      *
-     * @return a {@link SearchBarListener} for handling search queries in the prefer panel
+     * @return a {@link SearchBarListener} for handling search queries in the prefer
+     *         panel
      * @author Davide Galilei
      * @see SearchBarListener
      * @see StopModel
