@@ -29,21 +29,23 @@ public class FuzzyMatch extends Function {
         String textToSearch = value_text(0);
         String searchTerm = value_text(1);
 
+        double score = fuzzyMatch(textToSearch, searchTerm);
+
+        // Return the score as a percentage (0 to 100)
+        result((int) (score * 100));
+    }
+
+    public static double fuzzyMatch(String textToSearch, String searchTerm) {
         if (textToSearch == null || searchTerm == null) {
-            result(0); // Return a score of 0 if either string is null
-            return;
+            return 0.0;
         }
-
-        // Calculate Levenshtein distance
         int distance = LEVENSHTEIN.apply(textToSearch.toLowerCase(), searchTerm.toLowerCase());
-
-        // Convert distance to a similarity score (0.0 to 1.0)
         int longerLength = Math.max(textToSearch.length(), searchTerm.length());
         if (longerLength == 0) {
-            result(1.0); // Both strings are empty
+            return 1.0; // Both strings are empty
         } else {
-            double similarity = (longerLength - distance) / (double) longerLength;
-            result(similarity * 100); // Return score as a percentage (e.g., 85.5)
+            // Return score as a fraction (e.g., 0.855)
+            return (longerLength - distance) / (double) longerLength;
         }
     }
 }

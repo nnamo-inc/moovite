@@ -11,6 +11,9 @@ br: compile run # Build and Run
 docs: 
 	mvn clean javadoc:javadoc
 
+test:
+	mvn test
+
 clean:
 	mvn clean
 

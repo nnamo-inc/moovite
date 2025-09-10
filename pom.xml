@@ -116,6 +116,16 @@
       </resource>
     </resources>
     <plugins>
+      <!-- Run tests in headless mode to avoid X11/AWT native deps in CI/containers -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <java.awt.headless>true</java.awt.headless>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
       <!-- Plugin to bundle dependencies inside JAR -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

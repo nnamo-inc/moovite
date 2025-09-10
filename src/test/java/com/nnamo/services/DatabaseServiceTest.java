@@ -22,7 +22,7 @@ import java.util.Date;
 
 public class DatabaseServiceTest extends TestCase {
 
-    private final DatabaseService service = new DatabaseService(new JdbcConnectionSource("jdbc:sqlite:test.db"));
+    private final DatabaseService service = new DatabaseService(new JdbcConnectionSource("jdbc:sqlite::memory:"));
 
     public DatabaseServiceTest() throws SQLException {
         var agencyDao = this.service.getDao(AgencyModel.class);
