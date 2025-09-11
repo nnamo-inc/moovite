@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MapControllerTest extends TestCase {
 
-    // Calculate Barycenter Tests //
     public void testCalculateBarycenterSingleStop() {
         StopModel stop = new StopModel("1", "Stop1", 45.0, 9.0);
         List<StopModel> stops = Collections.singletonList(stop);
@@ -55,44 +54,35 @@ public class MapControllerTest extends TestCase {
         assertThrows(ArithmeticException.class, () -> MapController.calculateBarycenter(stops));
     }
 
-    // Calculate Zoom Level Tests //
     public void testCalculateZoomLevelSingleStop() {
         StopModel stop = new StopModel("1", "Stop1", 45.0, 9.0);
         List<StopModel> stops = Collections.singletonList(stop);
-        int zoom = MapController.calculateZoomLevel(stops);
-        assertEquals(1, zoom);
+        assertEquals(1, MapController.calculateZoomLevel(stops));
     }
 
     public void testCalculateZoomLevel_SmallDifference() {
         StopModel stop1 = new StopModel("1", "Stop1", 45.000, 9.000);
         StopModel stop2 = new StopModel("2", "Stop2", 45.010, 9.010);
-
         List<StopModel> stops = Arrays.asList(stop1, stop2);
-
-        int zoom = MapController.calculateZoomLevel(stops);
-        assertEquals(2, zoom);
+        assertEquals(2, MapController.calculateZoomLevel(stops));
     }
 
     public void testCalculateZoomLevelMediumDifference() {
         StopModel stop1 = new StopModel("1", "Stop1", 45.000, 9.000);
         StopModel stop2 = new StopModel("2", "Stop2", 45.030, 9.030);
         List<StopModel> stops = Arrays.asList(stop1, stop2);
-        int zoom = MapController.calculateZoomLevel(stops);
-        assertEquals(5, zoom);
+        assertEquals(5, MapController.calculateZoomLevel(stops));
     }
 
     public void testCalculateZoomLevelLargeDifference() {
         StopModel stop1 = new StopModel("1", "Stop1", 45.000, 9.000);
         StopModel stop2 = new StopModel("2", "Stop2", 45.200, 9.200);
         List<StopModel> stops = Arrays.asList(stop1, stop2);
-        int zoom = MapController.calculateZoomLevel(stops);
-        assertEquals(7, zoom);
+        assertEquals(7, MapController.calculateZoomLevel(stops));
     }
 
     public void testCalculateZoomLevelEmptyList() {
         List<StopModel> stops = Collections.emptyList();
-        int zoom = MapController.calculateZoomLevel(stops);
-        // With no stops, the method returns 1 (since absoluteDiff is 0)
-        assertEquals(1, zoom);
+        assertEquals(1, MapController.calculateZoomLevel(stops));
     }
 }
