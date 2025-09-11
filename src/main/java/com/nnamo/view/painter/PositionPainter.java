@@ -13,36 +13,20 @@ import java.io.IOException;
 import java.util.HashMap;
 
 /**
- * An abstract class that extends {@link WaypointPainter} to provide functionality for rendering
+ * An abstract class that extends {@link WaypointPainter} to provide
+ * functionality for rendering
  * waypoints on a map with different icon sizes based on the zoom level.
- * This class manages a collection of icons and updates the displayed icon according to the map's zoom level.
+ * This class manages a collection of icons and updates the displayed icon
+ * according to the map's zoom level.
  *
  * @author Samuele Lombardi
  * @see WaypointPainter
  * @see JXMapViewer
  * @see IconSize
  */
-public abstract class PositionPainter extends WaypointPainter<Waypoint> {
-    private final JXMapViewer map;
-    protected final HashMap<IconSize, BufferedImage> icons = new HashMap<IconSize, BufferedImage>();
-    private BufferedImage currentIcon;
-
+public abstract class PositionPainter extends CustomPainter {
     public PositionPainter(JXMapViewer map) throws IOException {
-        super();
-        this.map = map;
-    }
-
-    // GETTERS AND SETTERS OUTER CLASS //
-    public BufferedImage getIcon(IconSize size) {
-        return icons.get(size);
-    }
-
-    public BufferedImage getCurrentIcon() {
-        return this.currentIcon;
-    }
-
-    protected HashMap<IconSize, BufferedImage> getIcons() {
-        return this.icons;
+        super(map);
     }
 
     public void repaint() {

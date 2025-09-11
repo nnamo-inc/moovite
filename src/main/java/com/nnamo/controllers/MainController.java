@@ -40,16 +40,16 @@ import java.util.Map;
  */
 public class MainController {
 
-    UserController userController;
-    MapController mapController;
-    UIController uiController;
-    RealtimeController realtimeController;
+    private UserController userController;
+    private MapController mapController;
+    private UIController uiController;
+    private RealtimeController realtimeController;
 
-    DatabaseService db;
-    RealtimeGtfsService realtimeService;
-    MainFrame mainFrame;
-    UserModel sessionUser;
-    boolean loaded = false;
+    private DatabaseService db;
+    private RealtimeGtfsService realtimeService;
+    private MainFrame mainFrame;
+    private UserModel sessionUser;
+    private boolean loaded = false;
 
     // CONSTRUCTORS //
 
