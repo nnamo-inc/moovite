@@ -33,7 +33,7 @@ import java.util.Map;
  * @see MapPanel
  * @see StopPanel
  * @see LeftPanel
- * @see PreferBar
+ * @see PreferBarPanel
  * @see SearchPanel
  * @see DataType
  * @see UpdateMode
@@ -49,7 +49,7 @@ public class MainFrame extends JFrame {
     private final MapPanel mapPanel = new MapPanel();
     private final StopPanel stopPanel = new StopPanel();
     private final LeftPanel leftPanel = new LeftPanel();
-    private final PreferBar preferBar = new PreferBar();
+    private final PreferBarPanel preferBarPanel = new PreferBarPanel();
 
     private final JSplitPane splitMapStop;
     private final JSplitPane splitLeftMap;
@@ -64,7 +64,7 @@ public class MainFrame extends JFrame {
      * @see MapPanel
      * @see StopPanel
      * @see LeftPanel
-     * @see PreferBar
+     * @see PreferBarPanel
      */
     public MainFrame() throws IOException {
         super("Moovite Map View");
@@ -85,7 +85,7 @@ public class MainFrame extends JFrame {
 
         // Map Panel + Stop Panel
         JPanel rightPanel = new JPanel(new BorderLayout());
-        rightPanel.add(preferBar, BorderLayout.SOUTH); // PreferBar sopra la mappa
+        rightPanel.add(preferBarPanel, BorderLayout.SOUTH); // PreferBar sopra la mappa
 
         // Vertical Spilt beetween Map Panel and Stop Panel
         splitMapStop = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mapPanel, stopPanel);
@@ -257,9 +257,9 @@ public class MainFrame extends JFrame {
      */
     public void updatePreferBarVisibility(boolean visible) {
         if (visible) {
-            preferBar.open();
+            preferBarPanel.open();
         } else {
-            preferBar.close();
+            preferBarPanel.close();
         }
     }
 
@@ -300,7 +300,7 @@ public class MainFrame extends JFrame {
      * @see DataType
      */
     public void updatePreferButton(String itemId, boolean isFav, DataType dataType) {
-        this.preferBar.updatePreferButton(itemId, isFav, dataType);
+        this.preferBarPanel.updatePreferButton(itemId, isFav, dataType);
     }
 
     /**
@@ -473,7 +473,7 @@ public class MainFrame extends JFrame {
      * @see FavoriteBehaviour
      */
     public void setGeneralFavBehaviour(FavoriteBehaviour behaviour) {
-        this.preferBar.setGeneralFavBehaviour(behaviour);
+        this.preferBarPanel.setGeneralFavBehaviour(behaviour);
     }
 
     /**

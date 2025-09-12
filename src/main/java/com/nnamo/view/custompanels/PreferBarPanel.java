@@ -17,7 +17,7 @@ import java.awt.*;
  * @see FavoriteBehaviour
  * @see DataType
  */
-public class PreferBar extends JPanel {
+public class PreferBarPanel extends JPanel {
 
     // ATTRIBUTES //
     private final CustomPreferButton preferButton;
@@ -25,12 +25,12 @@ public class PreferBar extends JPanel {
     // CONSTRUCTOR //
 
     /**
-     * Creates a {@link PreferBar} with a {@link CustomPreferButton} for managing favorite status.
+     * Creates a {@link PreferBarPanel} with a {@link CustomPreferButton} for managing favorite status.
      *
      * @see JPanel
      * @see CustomPreferButton
      */
-    public PreferBar() {
+    public PreferBarPanel() {
         super(new GridBagLayout());
 
         preferButton = new CustomPreferButton();
@@ -43,7 +43,7 @@ public class PreferBar extends JPanel {
     // METHODS //
 
     /**
-     * Makes the {@link PreferBar} visible.
+     * Makes the {@link PreferBarPanel} visible.
      *
      * @see JPanel
      */
@@ -52,7 +52,7 @@ public class PreferBar extends JPanel {
     }
 
     /**
-     * Hides the {@link PreferBar}.
+     * Hides the {@link PreferBarPanel}.
      *
      * @see JPanel
      */

@@ -349,15 +349,4 @@ public class StopPanel extends JPanel {
         this.tableService.setTableRowClickBehaviour(listener);
         this.tableTime.setTableRowClickBehaviour(listener);
     }
-
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Test StopPanel");
-        frame.setLayout(new BorderLayout());
-        StopPanel stopPanel = new StopPanel();
-        stopPanel.setVisible(true);
-        frame.add(stopPanel, BorderLayout.CENTER);
-        frame.setSize(800, 600);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-    }
 }
