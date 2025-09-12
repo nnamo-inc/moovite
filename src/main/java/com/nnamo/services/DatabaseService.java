@@ -606,7 +606,7 @@ public class DatabaseService {
      * @param stopId The ID of the stop
      * @param time   the time from when we want the stop times to start
      * @return the list of next 6 hours (based on the time provided) stoptimes for
-     *         that stop
+     * that stop
      * @throws SQLException if query fails
      * @author Samuele Lombardi
      */
@@ -622,7 +622,7 @@ public class DatabaseService {
      * @param time   the time from when we want the stop times to start
      * @param hours  the hours range from the time provided
      * @return the list of next X hours (based on the time provided) stoptimes for
-     *         that stop
+     * that stop
      * @throws SQLException if query fails
      * @author Samuele Lombardi
      */
@@ -654,8 +654,8 @@ public class DatabaseService {
      * @param hours  the hours range from the time provided
      * @param date   the date of the returned stop times
      * @return the list of next X hours (based on the time and date provided)
-     *         stoptimes for
-     *         that stop
+     * stoptimes for
+     * that stop
      * @throws SQLException if query fails
      * @author Samuele Lombardi
      */
@@ -690,13 +690,13 @@ public class DatabaseService {
      * @param date        the date of the returned stop times
      * @param tripUpdates the trip updates for that stop
      * @return the list of next X hours (based on the time and date provided + the
-     *         realtime trips) stoptimes for
-     *         that stop
+     * realtime trips) stoptimes for
+     * that stop
      * @throws SQLException if query fails
      * @author Samuele Lombardi
      */
     public List<StopTimeModel> getNextStopTimes(String stopId, LocalTime time, int hours, Date date,
-            List<RealtimeStopUpdate> tripUpdates)
+                                                List<RealtimeStopUpdate> tripUpdates)
             throws SQLException {
         Dao<StopTimeModel, String> stopTimeDao = getDao(StopTimeModel.class);
         List<StopTimeModel> filteredStopTimes = getNextStopTimes(stopId, time, date, hours);
@@ -1022,7 +1022,7 @@ public class DatabaseService {
      * @param routeId   String route ID
      * @param direction Direction enum (INBOUND/OUTBOUND)
      * @return TripModel for the route in the specified direction, or null if not
-     *         found
+     * found
      * @throws SQLException if query fails
      * @author Samuele Lombardi
      */
@@ -1049,7 +1049,7 @@ public class DatabaseService {
      * @param routeId   String route ID
      * @param direction Direction enum (INBOUND/OUTBOUND)
      * @return TripModel for the route in the specified direction, or null if not
-     *         found
+     * found
      * @throws SQLException if query fails
      * @author Samuele Lombardi
      */

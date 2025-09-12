@@ -96,7 +96,7 @@ public class PreferPanel extends JPanel {
                 .setInsets(4, 5, -3, 5));
 
         stopTable = new CustomTable.Builder()
-                .setTableColumns(new ColumnName[] { STOPNAME, CODE })
+                .setTableColumns(new ColumnName[]{STOPNAME, CODE})
                 .setDataType(STOP)
                 .build();
         stopTable.setOpaque(false);
@@ -133,8 +133,8 @@ public class PreferPanel extends JPanel {
         }
 
         routeTable = new CustomTable.Builder()
-                .setTableColumns(new ColumnName[] { ROUTENAME, CODE, TYPE, TERMINAL, DIRECTION })
-                .setHiddenColumns(new ColumnName[] { DIRECTION })
+                .setTableColumns(new ColumnName[]{ROUTENAME, CODE, TYPE, TERMINAL, DIRECTION})
+                .setHiddenColumns(new ColumnName[]{DIRECTION})
                 .setCustomRadioButtons(buttons)
                 .setDataType(ROUTE)
                 .build();
@@ -164,7 +164,7 @@ public class PreferPanel extends JPanel {
     public void updateFavStopTable(StopModel stop, UpdateMode updateMode) {
         switch (updateMode) {
             case ADD:
-                stopTable.addRow(new Object[] { stop.getName(), stop.getId() });
+                stopTable.addRow(new Object[]{stop.getName(), stop.getId()});
                 break;
             case REMOVE:
                 stopTable.removeRow(stop.getId(), ColumnName.CODE);
@@ -176,7 +176,7 @@ public class PreferPanel extends JPanel {
         for (RouteDirection route : directedRoutes) {
             switch (updateMode) {
                 case ADD:
-                    routeTable.addRow(new Object[] {
+                    routeTable.addRow(new Object[]{
                             route.getLongName() != null ? route.getLongName() : route.getShortName(),
                             route.getId(),
                             route.getType(),

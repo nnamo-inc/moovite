@@ -16,10 +16,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Vector;
+import java.util.*;
 
 import static com.nnamo.enums.ColumnName.TYPE;
 
@@ -53,6 +50,7 @@ public class CustomTable extends JPanel {
     TableRowClickBehaviour tableRowClickBehaviour;
 
     // CONSTRUCTOR //
+
     /**
      * Create a {@link CustomTable} with the specified parameters inside the builder.
      *
@@ -205,9 +203,7 @@ public class CustomTable extends JPanel {
         for (Object[] rowData : rowsData) {
             if (!rowExists(rowData)) {
                 Vector<Object> row = new Vector<>();
-                for (Object data : rowData) {
-                    row.add(data);
-                }
+                Collections.addAll(row, rowData);
                 dataVector.add(row);
             }
         }
@@ -466,6 +462,7 @@ public class CustomTable extends JPanel {
 
         /**
          * Sets the columns to be used for searching in the table.
+         *
          * @param searchColumns
          * @return
          */

@@ -56,7 +56,7 @@ public class UIController {
     /**
      * It setups up all the different behaviours and defines the user interacting
      * with the UI
-     * 
+     *
      * @param sessionUser The session user that interacts with the UI
      */
     public void run(UserModel sessionUser) {
@@ -161,7 +161,7 @@ public class UIController {
                             position.getPosition().getLongitude());
                     mainFrame.setMapPanelMapPosition(busPosition, 1);
                     mainFrame.removeRoutePainting();
-                    mainFrame.renderVehiclePositions(Arrays.asList(position),
+                    mainFrame.renderVehiclePositions(List.of(position),
                             new ArrayList<>());
                 }
 
@@ -185,7 +185,7 @@ public class UIController {
                         case ROUTE: {
                             db.addFavRoute(user.getId(), itemId);
                             RouteModel route = db.getRouteById(itemId);
-                            List<RouteModel> routeList = Arrays.asList(route);
+                            List<RouteModel> routeList = Collections.singletonList(route);
                             List<RouteDirection> directionRoutes = db.getDirectionedRoutes(routeList);
                             mainFrame.updateFavRouteTable(directionRoutes, UpdateMode.ADD);
                             mainFrame.updatePreferButton(itemId, true, DataType.ROUTE);
@@ -212,7 +212,7 @@ public class UIController {
                         }
                         case ROUTE: {
                             RouteModel route = db.getRouteById(itemId);
-                            List<RouteModel> routeList = Arrays.asList(route);
+                            List<RouteModel> routeList = Collections.singletonList(route);
                             List<RouteDirection> directionRoutes = db.getDirectionedRoutes(routeList);
                             db.removeFavRoute(user.getId(), itemId);
                             mainFrame.updateFavRouteTable(directionRoutes, UpdateMode.REMOVE);
@@ -267,19 +267,19 @@ public class UIController {
 
     /**
      * It defines the behaviour of when the user clicks on a stop
-     * 
-     * @param stop The selected stop
-     * @param user The user clicking on the stop
-     * @param position The  position of the stop
+     *
+     * @param stop            The selected stop
+     * @param user            The user clicking on the stop
+     * @param position        The  position of the stop
      * @param realtimeService The realtime service to fetch real-time updates
-     * @param mainFrame The main frame to update the UI
-     * @param db The database service to fetch stop times and favorite status
+     * @param mainFrame       The main frame to update the UI
+     * @param db              The database service to fetch stop times and favorite status
      * @throws IOException
      * @throws SQLException Database queries
      */
     public static void handleStopSelection(StopModel stop, UserModel user, GeoPosition position,
-            RealtimeGtfsService realtimeService,
-            MainFrame mainFrame, DatabaseService db) throws IOException, SQLException {
+                                           RealtimeGtfsService realtimeService,
+                                           MainFrame mainFrame, DatabaseService db) throws IOException, SQLException {
 
         int nextHoursRange = 6;
         Date currentDate = Utils.getCurrentDate();
@@ -301,12 +301,12 @@ public class UIController {
     }
 
     private void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes,
-            List<RealtimeStopUpdate> realtimeUpdates) throws SQLException, IOException {
+                                 List<RealtimeStopUpdate> realtimeUpdates) throws SQLException, IOException {
         UIController.updateStopPanel(stop, stopTimes, realtimeUpdates, this.mainFrame, this.db);
     }
 
     public static void updateStopPanel(StopModel stop, List<StopTimeModel> stopTimes,
-            List<RealtimeStopUpdate> realtimeUpdates, MainFrame mainFrame, DatabaseService db)
+                                       List<RealtimeStopUpdate> realtimeUpdates, MainFrame mainFrame, DatabaseService db)
             throws SQLException, IOException {
         mainFrame.updateStopPanelInfo(stop.getId(), stop.getName());
         mainFrame.updateStopPanelTimes(stopTimes, realtimeUpdates);

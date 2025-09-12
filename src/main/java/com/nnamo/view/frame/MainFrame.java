@@ -9,8 +9,8 @@ import com.nnamo.interfaces.*;
 import com.nnamo.models.*;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
-import com.nnamo.view.custompanels.*;
 import com.nnamo.view.customcomponents.statistic.MetricCollector;
+import com.nnamo.view.custompanels.*;
 import org.jxmapviewer.viewer.GeoPosition;
 
 import javax.swing.*;

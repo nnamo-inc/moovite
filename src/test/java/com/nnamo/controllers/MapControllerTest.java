@@ -4,15 +4,13 @@ package com.nnamo.controllers;
 
 import com.nnamo.models.StopModel;
 import junit.framework.TestCase;
-import org.junit.jupiter.api.Test;
 import org.jxmapviewer.viewer.GeoPosition;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class MapControllerTest extends TestCase {
 

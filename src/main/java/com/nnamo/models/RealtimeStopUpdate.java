@@ -27,7 +27,7 @@ public class RealtimeStopUpdate {
      * @param vehiclePosition the vehicle position
      */
     public RealtimeStopUpdate(String tripId, String routeId, StopTimeUpdate timeUpdate,
-            VehiclePosition vehiclePosition) {
+                              VehiclePosition vehiclePosition) {
         this.tripId = tripId;
         this.routeId = routeId;
         this.stopId = timeUpdate.getStopId();

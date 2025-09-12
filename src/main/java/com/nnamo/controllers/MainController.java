@@ -40,16 +40,16 @@ import java.util.Map;
  */
 public class MainController {
 
-    private UserController userController;
-    private MapController mapController;
-    private UIController uiController;
-    private RealtimeController realtimeController;
+    private final UserController userController;
+    private final MapController mapController;
+    private final UIController uiController;
+    private final RealtimeController realtimeController;
 
-    private DatabaseService db;
-    private RealtimeGtfsService realtimeService;
-    private MainFrame mainFrame;
+    private final DatabaseService db;
+    private final RealtimeGtfsService realtimeService;
+    private final MainFrame mainFrame;
     private UserModel sessionUser;
-    private boolean loaded = false;
+    private final boolean loaded = false;
 
     // CONSTRUCTORS //
 
@@ -73,6 +73,7 @@ public class MainController {
     }
 
     // METHODS //
+
     /**
      * Initialize the view and runs all the sub-controllers
      *
@@ -147,7 +148,7 @@ public class MainController {
 
     /**
      * Sets the local tiles cache from a directory
-     * 
+     *
      * @param cacheDir Where the cache is located
      */
     public void setLocalMapCache(File cacheDir) {
@@ -164,7 +165,7 @@ public class MainController {
      * The results are then rendered in the search panel of the main frame.
      *
      * @return a {@link SearchBarListener} for handling search queries in the search
-     *         panel
+     * panel
      * @author Davide Galilei
      * @see SearchBarListener
      * @see StopModel
@@ -214,7 +215,7 @@ public class MainController {
      * may change frequently.
      *
      * @return a {@link SearchBarListener} for handling search queries in the prefer
-     *         panel
+     * panel
      * @author Davide Galilei
      * @see SearchBarListener
      * @see StopModel

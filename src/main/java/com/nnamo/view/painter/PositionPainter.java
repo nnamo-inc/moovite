@@ -10,7 +10,6 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.HashMap;
 
 /**
  * An abstract class that extends {@link WaypointPainter} to provide

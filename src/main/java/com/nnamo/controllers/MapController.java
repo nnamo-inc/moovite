@@ -39,6 +39,7 @@ public class MapController {
     private final RealtimeGtfsService realtimeService;
 
     // CONSTRUCTORS //
+
     /**
      * Creates a {@link MapController} with the specified {@link DatabaseService}, {@link MainFrame}, and {@link RealtimeGtfsService}.
      *

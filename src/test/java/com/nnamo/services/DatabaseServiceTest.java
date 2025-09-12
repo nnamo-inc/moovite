@@ -1,19 +1,10 @@
 package com.nnamo.services;
 
-import junit.framework.TestCase;
-import org.junit.jupiter.api.Test;
-
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.nnamo.enums.Direction;
 import com.nnamo.enums.RouteType;
-import com.nnamo.models.AgencyModel;
-import com.nnamo.models.RouteModel;
-import com.nnamo.models.ServiceModel;
-import com.nnamo.models.StopModel;
-import com.nnamo.models.StopTimeModel;
-import com.nnamo.models.TripModel;
-import com.nnamo.models.UserModel;
-import com.nnamo.models.ServiceModel.ExceptionType;
+import com.nnamo.models.*;
+import junit.framework.TestCase;
 
 import java.sql.SQLException;
 import java.time.LocalTime;
@@ -40,13 +31,13 @@ public class DatabaseServiceTest extends TestCase {
         userDao.create(user);
 
         AgencyModel agency = new AgencyModel("0", "Atac", "", "");
-        StopModel[] stops = new StopModel[] {
+        StopModel[] stops = new StopModel[]{
                 new StopModel("0", "Verano", 100.0, 100.0),
                 new StopModel("1", "Rebibbia", 130.0, 100.0),
                 new StopModel("2", "Policlinico", 170.0, 100.0),
         };
 
-        RouteModel[] routes = new RouteModel[] {
+        RouteModel[] routes = new RouteModel[]{
                 new RouteModel("0", agency, "163", "163", RouteType.BUS),
                 new RouteModel("1", agency, "71", "71", RouteType.BUS),
         };

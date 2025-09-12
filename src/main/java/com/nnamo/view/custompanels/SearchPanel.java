@@ -96,7 +96,7 @@ public class SearchPanel extends JPanel {
                 .setInsets(4, 5, -3, 5));
 
         stopTable = new CustomTable.Builder()
-                .setTableColumns(new ColumnName[] { CODE, STOPNAME })
+                .setTableColumns(new ColumnName[]{CODE, STOPNAME})
                 .setDataType(STOP)
                 .build();
         stopTable.setOpaque(false);
@@ -134,8 +134,8 @@ public class SearchPanel extends JPanel {
         }
 
         routeTable = new CustomTable.Builder()
-                .setTableColumns(new ColumnName[] { CODE, TYPE, TERMINAL, DIRECTION })
-                .setHiddenColumns(new ColumnName[] { DIRECTION })
+                .setTableColumns(new ColumnName[]{CODE, TYPE, TERMINAL, DIRECTION})
+                .setHiddenColumns(new ColumnName[]{DIRECTION})
                 .setCustomRadioButtons(buttons)
                 .setDataType(ROUTE)
                 .build();
@@ -173,14 +173,14 @@ public class SearchPanel extends JPanel {
         Object[][] stopData = new Object[stopModels.size()][2];
         for (int i = 0; i < stopModels.size(); i++) {
             StopModel stop = stopModels.get(i);
-            stopData[i] = new Object[] { stop.getId(), stop.getName() };
+            stopData[i] = new Object[]{stop.getId(), stop.getName()};
         }
 
         Object[][] routeData = new Object[routeModels.size()][4];
         for (int i = 0; i < routeModels.size(); i++) {
             RouteDirection route = routeModels.get(i);
             String shortName = route.getShortName() != null ? route.getShortName() : "";
-            routeData[i] = new Object[] {
+            routeData[i] = new Object[]{
                     shortName,
                     route.getType().name(),
                     route.getDirectionName(),

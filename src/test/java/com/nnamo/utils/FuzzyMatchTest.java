@@ -1,31 +1,8 @@
 package com.nnamo.utils;
 
 import junit.framework.TestCase;
-import org.junit.jupiter.api.Test;
-
-import com.j256.ormlite.jdbc.JdbcConnectionSource;
-import com.nnamo.enums.Direction;
-import com.nnamo.enums.RouteType;
-import com.nnamo.models.AgencyModel;
-import com.nnamo.models.RouteModel;
-import com.nnamo.models.ServiceModel;
-import com.nnamo.models.StopModel;
-import com.nnamo.models.StopTimeModel;
-import com.nnamo.models.TripModel;
-import com.nnamo.models.UserModel;
-import com.nnamo.models.ServiceModel.ExceptionType;
 
 import java.sql.SQLException;
-import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.Date;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import com.nnamo.services.DatabaseService;
-
-import junit.framework.TestCase;
 
 public class FuzzyMatchTest extends TestCase {
     public FuzzyMatchTest() throws SQLException {

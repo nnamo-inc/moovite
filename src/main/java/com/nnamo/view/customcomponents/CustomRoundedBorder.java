@@ -7,8 +7,8 @@ import java.awt.*;
 
 /**
  * Custom rounded {@link Border} with corners and specified thickness.
- * @author Riccardo Finocchiaro
  *
+ * @author Riccardo Finocchiaro
  * @see Border
  */
 public class CustomRoundedBorder implements Border {

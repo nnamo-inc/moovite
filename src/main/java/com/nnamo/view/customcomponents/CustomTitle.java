@@ -17,6 +17,7 @@ public class CustomTitle extends JPanel {
 
     /**
      * Creates a {@link CustomTitle} with specific title font and size for title purposes.
+     *
      * @param title
      */
     public CustomTitle(String title) {
