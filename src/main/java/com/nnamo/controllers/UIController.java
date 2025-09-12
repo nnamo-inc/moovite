@@ -11,6 +11,7 @@ import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.models.*;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
+import com.nnamo.utils.Log;
 import com.nnamo.utils.Utils;
 import com.nnamo.view.frame.LoginFrame;
 import com.nnamo.view.frame.MainFrame;
@@ -128,7 +129,7 @@ public class UIController {
                         // get model from the db
                         List<StopModel> stopModels = db.getOrderedStopsForRoute(itemId, direction);
                         if (stopModels.isEmpty()) {
-                            System.out.println("No stops found for route: " + itemId);
+                            Log.info("No stops found for route " + itemId);
                         }
 
                         MapController.renderRoutesVehicles(stopModels, realtimeService, mainFrame, db, itemId,
@@ -179,7 +180,7 @@ public class UIController {
                             db.addFavStop(user.getId(), itemId);
                             mainFrame.updateFavStopTable(db.getStopById(itemId), UpdateMode.ADD);
                             mainFrame.updatePreferButton(itemId, true, DataType.STOP);
-                            System.out.println(db.getFavoriteStops(user.getId()).stream().count());
+                            Log.debug("Favorite stops count: " + db.getFavoriteStops(user.getId()).stream().count());
                             break;
                         }
                         case ROUTE: {
@@ -189,7 +190,7 @@ public class UIController {
                             List<RouteDirection> directionRoutes = db.getDirectionedRoutes(routeList);
                             mainFrame.updateFavRouteTable(directionRoutes, UpdateMode.ADD);
                             mainFrame.updatePreferButton(itemId, true, DataType.ROUTE);
-                            System.out.println(db.getFavoriteRoutes(user.getId()).stream().count());
+                            Log.debug("Favorite routes count: " + db.getFavoriteRoutes(user.getId()).stream().count());
                             break;
                         }
                     }
@@ -207,7 +208,7 @@ public class UIController {
                             db.removeFavStop(user.getId(), itemId);
                             mainFrame.updateFavStopTable(db.getStopById(itemId), UpdateMode.REMOVE);
                             mainFrame.updatePreferButton(itemId, false, dataType);
-                            System.out.println(db.getFavoriteStops(user.getId()).stream().count());
+                            Log.debug("Favorite stops count: " + db.getFavoriteStops(user.getId()).stream().count());
                             break;
                         }
                         case ROUTE: {
@@ -217,7 +218,7 @@ public class UIController {
                             db.removeFavRoute(user.getId(), itemId);
                             mainFrame.updateFavRouteTable(directionRoutes, UpdateMode.REMOVE);
                             mainFrame.updatePreferButton(itemId, false, dataType);
-                            System.out.println(db.getFavoriteRoutes(user.getId()).stream().count());
+                            Log.debug("Favorite routes count: " + db.getFavoriteRoutes(user.getId()).stream().count());
                             break;
                         }
                     }
@@ -334,7 +335,7 @@ public class UIController {
                     RealtimeGtfsService.getRouteQuality(db.getAverageDelayForRoute(route.getId())).toString()));
         }
 
-        System.out.println("Unique routes found: " + uniqueRoutes.size());
+        Log.info("Unique routes found: " + uniqueRoutes.size());
 
         mainFrame.updateStopPanelRoutes(uniqueRoutes);
     }

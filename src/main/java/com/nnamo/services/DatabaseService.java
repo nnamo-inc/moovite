@@ -17,6 +17,7 @@ import com.nnamo.enums.RealtimeMetricType;
 import com.nnamo.enums.RouteType;
 import com.nnamo.models.*;
 import com.nnamo.utils.FuzzyMatch;
+import com.nnamo.utils.Log;
 import org.apache.commons.lang3.time.DateUtils;
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.model.*;
@@ -126,7 +127,7 @@ public class DatabaseService {
      */
     public void preloadGtfsData(StaticGtfsService gtfs) throws SQLException, IOException, URISyntaxException {
         if (needsCaching()) {
-            System.out.println("Starting GTFS data import...");
+            Log.info("Starting GTFS data import");
             gtfs.load();
 
             importServicesFromGtfs(gtfs);
@@ -134,9 +135,9 @@ public class DatabaseService {
             importTripsFromGtfs(gtfs);
             importStopTimesFromGtfs(gtfs);
 
-            System.out.println("GTFS import completed successfully.");
+            Log.info("GTFS import completed");
         } else {
-            System.out.println("GTFS data already cached.");
+            Log.info("GTFS data already cached");
         }
     }
 
@@ -158,7 +159,7 @@ public class DatabaseService {
         if (stopDao.countOf() != 0)
             return;
 
-        System.out.println("Starting stops import...");
+        Log.info("Importing stops");
 
         TransactionManager.callInTransaction(connection, (Callable<Void>) () -> {
             ArrayList<StopModel> stops = new ArrayList<>(20000);
@@ -175,7 +176,7 @@ public class DatabaseService {
                     stopDao.create(stops);
                     totalProcessed += stops.size();
                     stops.clear();
-                    System.out.println("Processed " + totalProcessed + " stops...");
+                    Log.debug("Processed " + totalProcessed + " stops");
                 }
             }
 
@@ -184,7 +185,7 @@ public class DatabaseService {
                 totalProcessed += stops.size();
             }
 
-            System.out.println("Stops imported. Total: " + totalProcessed + " records");
+            Log.info("Stops imported: " + totalProcessed);
             return null;
         });
     }
@@ -199,7 +200,7 @@ public class DatabaseService {
         if (tripDao.countOf() != 0)
             return;
 
-        System.out.println("Starting agencies, routes, and trips import...");
+        Log.info("Importing agencies, routes, trips");
 
         TransactionManager.callInTransaction(connection, (Callable<Void>) () -> {
             HashMap<String, AgencyModel> agencyMap = new HashMap<>();
@@ -250,12 +251,12 @@ public class DatabaseService {
 
             if (!agencies.isEmpty()) {
                 agencyDao.create(agencies);
-                System.out.println("Agencies imported: " + agencies.size());
+                Log.info("Agencies imported: " + agencies.size());
             }
 
             if (!routes.isEmpty()) {
                 routeDao.create(routes);
-                System.out.println("Routes imported: " + routes.size());
+                Log.info("Routes imported: " + routes.size());
             }
 
             int totalProcessed = 0;
@@ -282,7 +283,7 @@ public class DatabaseService {
                     tripDao.create(trips);
                     totalProcessed += trips.size();
                     trips.clear();
-                    System.out.println("Processed " + totalProcessed + " trips...");
+                    Log.debug("Processed " + totalProcessed + " trips");
                 }
             }
 
@@ -291,7 +292,7 @@ public class DatabaseService {
                 totalProcessed += trips.size();
             }
 
-            System.out.println("Trips imported. Total: " + totalProcessed + " records");
+            Log.info("Trips imported: " + totalProcessed);
             return null;
         });
     }
@@ -306,25 +307,25 @@ public class DatabaseService {
             return;
 
         if (tripDao.countOf() == 0) {
-            System.out.println("No trips found - skipping stop times");
+            Log.warn("No trips found - skipping stop times");
             return;
         }
 
-        System.out.println("Loading trips into memory...");
+        Log.info("Loading trips into memory");
         HashMap<String, TripModel> tripMap = new HashMap<>();
         for (TripModel trip : tripDao.queryForAll()) {
             tripMap.put(trip.getId(), trip);
         }
-        System.out.println("Loaded " + tripMap.size() + " trips");
+        Log.info("Trips loaded: " + tripMap.size());
 
-        System.out.println("Loading stops into memory...");
+        Log.info("Loading stops into memory");
         HashMap<String, StopModel> stopMap = new HashMap<>();
         for (StopModel stop : stopDao.queryForAll()) {
             stopMap.put(stop.getId(), stop);
         }
-        System.out.println("Loaded " + stopMap.size() + " stops");
+        Log.info("Stops loaded: " + stopMap.size());
 
-        System.out.println("Starting stop times import...");
+        Log.info("Importing stop times");
 
         TransactionManager.callInTransaction(connection, (Callable<Void>) () -> {
             ArrayList<StopTimeModel> stopTimes = new ArrayList<>(100000);
@@ -351,7 +352,7 @@ public class DatabaseService {
                     stopTimeDao.create(stopTimes);
                     totalProcessed += stopTimes.size();
                     stopTimes.clear();
-                    System.out.println("Processed " + totalProcessed + " stop times...");
+                    Log.debug("Processed " + totalProcessed + " stop times");
                 }
             }
 
@@ -360,9 +361,9 @@ public class DatabaseService {
                 totalProcessed += stopTimes.size();
             }
 
-            System.out.println("Stop times imported. Total: " + totalProcessed + " records");
+            Log.info("Stop times imported: " + totalProcessed);
             if (skipped > 0) {
-                System.out.println("Skipped " + skipped + " invalid stop times");
+                Log.warn("Skipped invalid stop times: " + skipped);
             }
             return null;
         });
@@ -375,7 +376,7 @@ public class DatabaseService {
         if (serviceDao.countOf() != 0)
             return;
 
-        System.out.println("Starting services import...");
+        Log.info("Importing services");
 
         TransactionManager.callInTransaction(connection, (Callable<Void>) () -> {
             ArrayList<ServiceModel> services = new ArrayList<>(1000);
@@ -386,14 +387,14 @@ public class DatabaseService {
                         service.getServiceId().getId(),
                         service.getDate().getAsDate(),
                         service.getExceptionType());
-                System.out.println(serviceModel.getServiceId() + " - " + serviceModel.getDate());
+                Log.debug(serviceModel.getServiceId() + " - " + serviceModel.getDate());
                 services.add(serviceModel);
 
                 if (services.size() >= 1000) {
                     serviceDao.create(services);
                     totalProcessed += services.size();
                     services.clear();
-                    System.out.println("Processed " + totalProcessed + " services...");
+                    Log.debug("Processed " + totalProcessed + " services");
                 }
             }
 
@@ -402,7 +403,7 @@ public class DatabaseService {
                 totalProcessed += services.size();
             }
 
-            System.out.println("Services imported. Total: " + totalProcessed + " records");
+            Log.info("Services imported: " + totalProcessed);
             return null;
         });
     }
@@ -713,7 +714,7 @@ public class DatabaseService {
 
         // Realtime trips are not filtered since some of those trips do not respect
         // service days
-        System.out.println(stopId);
+        Log.debug("Stop ID: " + stopId);
         List<StopTimeModel> realtimeStopModels = stopTimeDao
                 .queryBuilder()
                 .where()
@@ -726,7 +727,7 @@ public class DatabaseService {
         for (StopTimeModel stopTime : realtimeStopModels) {
             if (stopTimesMap.get(stopTime.getTrip().getId()) == null) { // Checks if the realtime stoptime is already
                 // present
-                System.out.println();
+                // removed empty println
                 filteredStopTimes.add(stopTime);
             }
         }
@@ -1222,7 +1223,7 @@ public class DatabaseService {
     public <ID, MODEL> void batchCreateOrUpdate(Class<MODEL> modelClass, List<MODEL> data) {
         Dao<MODEL, ID> dao = getDao(modelClass);
         if (dao == null) {
-            System.out.println("Create or update failed: " + modelClass.getName() + " not found in the DAOs");
+            Log.error("Create or update failed: DAO not found for " + modelClass.getName());
             return;
         }
 
@@ -1250,7 +1251,7 @@ public class DatabaseService {
     public <ID, MODEL> void batchCreate(Class<MODEL> modelClass, List<MODEL> data) {
         Dao<MODEL, ID> dao = getDao(modelClass);
         if (dao == null) {
-            System.out.println("Create or update failed: " + modelClass.getName() + " not found in the DAOs");
+            Log.error("Create or update failed: DAO not found for " + modelClass.getName());
             return;
         }
 

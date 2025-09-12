@@ -1,5 +1,6 @@
 package com.nnamo.services;
 
+import com.nnamo.utils.Log;
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.serialization.GtfsReader;
 
@@ -26,10 +27,7 @@ public class StaticGtfsService {
     private final GtfsRelationalDaoImpl store;
 
     public StaticGtfsService() {
-        GtfsReader reader = new GtfsReader(); // Lettore del buffer
-        GtfsRelationalDaoImpl store = new GtfsRelationalDaoImpl(); // API per interagire con i dati letti
-
-        this.store = store;
+        this.store = new GtfsRelationalDaoImpl();
     }
 
     public void load() throws IOException, URISyntaxException {
@@ -56,7 +54,7 @@ public class StaticGtfsService {
 
         reader.setInputLocation(tempFile);
         reader.run();
-        System.out.println("Dati GTFS statici caricati con successo.");
+        Log.info("Static GTFS data loaded");
     }
 
     public GtfsRelationalDaoImpl getStore() {

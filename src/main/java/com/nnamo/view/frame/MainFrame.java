@@ -9,6 +9,7 @@ import com.nnamo.interfaces.*;
 import com.nnamo.models.*;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
+import com.nnamo.utils.Log;
 import com.nnamo.view.customcomponents.statistic.MetricCollector;
 import com.nnamo.view.custompanels.*;
 import org.jxmapviewer.viewer.GeoPosition;
@@ -79,7 +80,7 @@ public class MainFrame extends JFrame {
                     Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/application-bar-icon.png")));
         } catch (NullPointerException e) {
             e.printStackTrace();
-            System.err.println("Icon not found, using default icon.");
+            Log.warn("Icon not found, using default icon");
         }
 
         // Map Panel + Stop Panel

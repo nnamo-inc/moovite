@@ -7,6 +7,7 @@ import com.nnamo.interfaces.RegisterBehaviour;
 import com.nnamo.interfaces.SessionListener;
 import com.nnamo.models.UserModel;
 import com.nnamo.services.DatabaseService;
+import com.nnamo.utils.Log;
 import com.nnamo.utils.UserDataUtils;
 import com.nnamo.view.frame.LoginFrame;
 import de.mkammerer.argon2.Argon2;
@@ -59,7 +60,7 @@ public class UserController {
             }
 
             if (sessionListener == null) {
-                System.out.println("[!] Session listener is not implemented");
+                Log.warn("Session listener not implemented");
                 return;
             }
 

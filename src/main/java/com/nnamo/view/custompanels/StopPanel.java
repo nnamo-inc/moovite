@@ -8,6 +8,7 @@ import com.nnamo.models.RealtimeStopUpdate;
 import com.nnamo.models.RouteModel;
 import com.nnamo.models.StopTimeModel;
 import com.nnamo.models.TripModel;
+import com.nnamo.utils.Log;
 import com.nnamo.view.customcomponents.*;
 
 import javax.swing.*;
@@ -214,7 +215,7 @@ public class StopPanel extends JPanel {
 
         HashMap<String, RealtimeStopUpdate> realtimeTrips = new HashMap<>();
         for (RealtimeStopUpdate update : realtimeUpdates) {
-            System.out.println("Adding realtime update for trip ID: " + update.getTripId());
+            Log.debug("Adding realtime update for trip ID: " + update.getTripId());
             realtimeTrips.put(update.getTripId(), update);
         }
 
@@ -238,8 +239,7 @@ public class StopPanel extends JPanel {
             String state = "Programmato";
             String occupancyStatus = "N/A";
             if (timeUpdate != null) {
-                System.out.println("Found realtime update for trip ID: " + timeUpdate.getTripId() + " for stop "
-                        + timeUpdate.getStopId());
+                Log.debug("Found realtime update for trip ID: " + timeUpdate.getTripId() + " for stop " + timeUpdate.getStopId());
 
                 state = "In Arrivo";
                 remainingMinutes = (timeUpdate.getArrivalTime() - currentTime) / 60;

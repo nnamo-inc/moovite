@@ -10,6 +10,7 @@ import com.nnamo.services.DatabaseService;
 import com.nnamo.services.FeedUpdateListener;
 import com.nnamo.services.RealtimeGtfsService;
 import com.nnamo.services.StatisticsBehaviour;
+import com.nnamo.utils.Log;
 import com.nnamo.view.frame.MainFrame;
 import org.jxmapviewer.viewer.GeoPosition;
 
@@ -64,18 +65,19 @@ public class RealtimeController {
                     String stopId = mainFrame.getCurrentStopId();
                     if (stopId != null && !stopId.isEmpty()) {
                         GeoPosition stopPosition = mainFrame.getCurrentStopPosition();
-                        int nextHoursRange = 6;
                         StopModel stop = db.getStopById(stopId);
                         UIController.handleStopSelection(stop, sessionUser, stopPosition, realtimeService, mainFrame,
                                 db);
-                        System.out.println("Updated realtime details on feed update on stop " + stopId);
+                        Log.debug("Updated realtime details on feed update for stop " + stopId);
+
                     }
 
                     // Updates route vehicle positions
                     String routeId = mainFrame.getCurrentRouteId();
                     if (routeId != null && !routeId.isEmpty()) {
                         MapController.updateVehiclePositions(routeId, mainFrame, realtimeService, db);
-                        System.out.println("Updated realtime vehicle positions on feed update on route " + routeId);
+                        Log.debug("Updated realtime vehicle positions on feed update for route " + routeId);
+
                     }
                 } catch (SQLException | IOException e) {
                     e.printStackTrace();

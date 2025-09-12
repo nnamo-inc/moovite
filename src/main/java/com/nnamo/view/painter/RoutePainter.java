@@ -1,6 +1,7 @@
 package com.nnamo.view.painter;
 
 import com.nnamo.models.StopModel;
+import com.nnamo.utils.Log;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.painter.Painter;
 import org.jxmapviewer.viewer.GeoPosition;
@@ -69,7 +70,7 @@ public class RoutePainter implements Painter<JXMapViewer> {
             if (currentStop == null || nextStop == null ||
                     currentStop.getLatitude() == 0.0 || currentStop.getLongitude() == 0.0 ||
                     nextStop.getLatitude() == 0.0 || nextStop.getLongitude() == 0.0) {
-                System.out.println("Skipping line " + i + " due to invalid coordinates");
+                Log.warn("Skipping line " + i + " due to invalid coordinates");
                 continue;
             }
 

@@ -5,6 +5,7 @@ import com.nnamo.controllers.MainController;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
 import com.nnamo.services.StaticGtfsService;
+import com.nnamo.utils.Log;
 import com.nnamo.utils.UserDataUtils;
 import com.nnamo.view.frame.StartupLoadingFrame;
 
@@ -55,7 +56,7 @@ public class App {
                 UIManager.put("ProgressBar.arc", 15);
                 UIManager.put("TextComponent.arc", 15);
             } catch (Exception ex) {
-                System.err.println("Failed to initialize LaF");
+                Log.error("Failed to initialize LaF");
             }
 
             // Create user directory if it doesn't exist
@@ -68,10 +69,10 @@ public class App {
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            System.err.println("Error loading GTFS data");
+            Log.error("Error loading GTFS data");
             e.printStackTrace();
         } catch (URISyntaxException e) {
-            System.err.println("Error loading realtime GTFS data");
+            Log.error("Error loading realtime GTFS data");
             e.printStackTrace();
         }
     }

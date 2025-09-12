@@ -8,6 +8,7 @@ import com.nnamo.models.StopModel;
 import com.nnamo.models.UserModel;
 import com.nnamo.services.DatabaseService;
 import com.nnamo.services.RealtimeGtfsService;
+import com.nnamo.utils.Log;
 import com.nnamo.view.frame.MainFrame;
 import org.jxmapviewer.viewer.GeoPosition;
 
@@ -121,7 +122,7 @@ public class MapController {
         double lonDiff = rightPosition - leftPosition;
         double absoluteDiff = Math.max(latDiff, lonDiff);
 
-        System.out.println(absoluteDiff);
+        Log.debug("Zoom calculation absolute diff: " + absoluteDiff);
 
         if (absoluteDiff > 0.12) {
             zoomLevel = 7;
@@ -186,7 +187,6 @@ public class MapController {
                         int iconImgHeight = currentIcon.getHeight();
                         // Get icon pixel pointer position
                         int iconPointerWidth = iconWidth / 2;
-                        int iconPointerHeight = iconImgHeight;
                         // Calculate the click position relative to the icon
                         int clickXIcon = (int) (clickPixel.getX() - (stopPixel.getX() - iconPointerWidth));
                         int clickYIcon = (int) (clickPixel.getY() - (stopPixel.getY() - iconImgHeight));
@@ -199,7 +199,7 @@ public class MapController {
                             int alpha = new Color(argb, true).getAlpha();
                             // Check alpha
                             if (alpha > 0) {
-                                System.out.println("icon clicked");
+                                Log.debug("Icon clicked");
                                 UIController.handleStopSelection(stop, sessionUser, stopPosition, realtimeService,
                                         mainFrame, db);
                                 return;

@@ -8,6 +8,7 @@ import com.nnamo.enums.RouteQuality;
 import com.nnamo.interfaces.RealtimeStatusChangeListener;
 import com.nnamo.models.RealtimeStopUpdate;
 import com.nnamo.models.StopTimeModel;
+import com.nnamo.utils.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,13 +59,13 @@ public class RealtimeGtfsService {
                 while (true) {
                     try {
                         if (realtimeStatus == RealtimeStatus.ONLINE) {
-                            System.out.println("Updating trip feed from " + tripFeedUrl);
-                            System.out.println("Updating vehicle feed from " + positionsFeedUrl);
+                            Log.debug("Updating trip feed from " + tripFeedUrl);
+                            Log.debug("Updating vehicle feed from " + positionsFeedUrl);
                             updateFeed();
-                            System.out.println("Feed updated successfully. Waiting 30s for the next update...");
+                            Log.info("Realtime feed updated. Next update in 30s");
                         }
                     } catch (IOException e) {
-                        System.err.println("Error updating feed: " + e.getMessage() + ". Switching to offline");
+                        Log.error("Error updating feed: " + e.getMessage() + " - switching to offline");
                         this.setRealtimeStatus(RealtimeStatus.OFFLINE); // If Realtime is unavailable, switch to offline
 
                         if (statusChangeListener != null) {
@@ -90,7 +91,7 @@ public class RealtimeGtfsService {
                     if (realtimeStatus == RealtimeStatus.ONLINE && statisticsBehaviour != null
                             && tripEntityList != null) {
                         statisticsBehaviour.updateStatistics(tripEntityList);
-                        System.out.println("Updated trips' history");
+                        Log.debug("Updated trips history");
                     }
                     Thread.sleep(STATISTICS_INTERVAL);
                 }
@@ -105,12 +106,12 @@ public class RealtimeGtfsService {
 
     public void startFeedThread() {
         if (feedThread == null) {
-            System.out.println("Couldn't start Realtime Thread");
+            Log.error("Couldn't start realtime thread");
             return;
         }
         feedThread.start();
         this.realtimeStatus = RealtimeStatus.ONLINE;
-        System.out.println("Starting background thread for RealtimeGtfsService");
+        Log.info("Starting realtime background thread");
     }
 
     public void startStatisticsThread() {
@@ -119,11 +120,11 @@ public class RealtimeGtfsService {
         }
 
         if (statisticsThread == null) {
-            System.out.println("Couldn't start Statistics Thread");
+            Log.error("Couldn't start statistics thread");
             return;
         }
         statisticsThread.start();
-        System.out.println("Starting background thread for updating statistics in database");
+        Log.info("Starting statistics background thread");
     }
 
     public synchronized void updateFeed() throws IOException {
@@ -161,7 +162,7 @@ public class RealtimeGtfsService {
                 stopsMap.computeIfAbsent(stopId, k -> new ArrayList<>()).add(stopUpdate);
             }
         }
-        System.out.println(tripEntityList.size() + " trip entities");
+        Log.debug(tripEntityList.size() + " trip entities");
 
         this.positionEntityList = positionFeed.getEntityList();
         for (FeedEntity entity : positionEntityList) {
@@ -171,11 +172,9 @@ public class RealtimeGtfsService {
                 continue;
             }
             tripsPositionMap.put(tripId, entity.getVehicle());
-            // System.out.println(getTripVehiclePosition(tripId) + " vehicle position for
-            // trip " + tripId);
             routesPositionsMap.computeIfAbsent(routeId, x -> new ArrayList<>()).add(entity.getVehicle());
         }
-        System.out.println(positionEntityList.size() + " vehicle position entities");
+        Log.debug(positionEntityList.size() + " vehicle position entities");
 
         startStatisticsThread(); // Statistics thread starts after first feed update
         notifyFeedUpdateListeners();
@@ -185,10 +184,10 @@ public class RealtimeGtfsService {
         this.realtimeStatus = newStatus;
         switch (newStatus) {
             case ONLINE:
-                System.out.println("Realtime status switched to ONLINE");
+                Log.info("Realtime status ONLINE");
                 break;
             case OFFLINE:
-                System.out.println("Realtime status switched to OFFLINE");
+                Log.warn("Realtime status OFFLINE");
                 if (this.tripEntityList != null) {
                     this.tripEntityList = new ArrayList<>();
                     this.tripsMap.clear();
@@ -246,19 +245,7 @@ public class RealtimeGtfsService {
                     k -> new ArrayList<>()).add(stopTime);
         }
 
-        for (FeedEntity entity : tripEntityList) {
-            TripUpdate tripUpdate = entity.getTripUpdate();
-            TripDescriptor trip = tripUpdate.getTrip();
-            String tripId = trip.getTripId();
-
-            List<StopTimeModel> tripStopTimes = stopTimesMap.get(tripId);
-            if (tripStopTimes == null) {
-                continue;
-            }
-
-            for (StopTimeModel stopTime : tripStopTimes) {
-            }
-        }
+        // Intentionally left blank - method retained for potential future logic
     }
 
     public synchronized VehiclePosition getTripVehiclePosition(String tripId) {
@@ -268,7 +255,7 @@ public class RealtimeGtfsService {
     public synchronized List<VehiclePosition> getRoutesVehiclePositions(String routeId) {
         List<VehiclePosition> routePositions = this.routesPositionsMap.get(routeId);
         if (routePositions == null) {
-            System.out.println("No feed found for route " + routeId);
+            Log.debug("No feed found for route " + routeId);
             return new ArrayList<>();
         }
         return routePositions;

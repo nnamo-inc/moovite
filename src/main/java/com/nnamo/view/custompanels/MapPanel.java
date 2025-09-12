@@ -5,6 +5,7 @@ import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 import com.nnamo.interfaces.WaypointBehaviour;
 import com.nnamo.interfaces.ZoomBehaviour;
 import com.nnamo.models.StopModel;
+import com.nnamo.utils.Log;
 import com.nnamo.view.painter.RealtimePositionPainter;
 import com.nnamo.view.painter.RoutePainter;
 import com.nnamo.view.painter.StaticPositionPainter;
@@ -227,7 +228,7 @@ public class MapPanel extends JPanel {
     }
 
     private void updateCurrentCompoundPainter(CompoundPainter<JXMapViewer> painter) {
-        System.out.println("Updated compound painter");
+        Log.debug("Updated compound painter");
         this.currentZoomLimit = (painter == stopsCompoundPainter) ? STOPSZOOMLIMIT : ROUTESZOOMLIMIT;
         this.currentPainter = painter;
 
@@ -296,7 +297,7 @@ public class MapPanel extends JPanel {
      * @see StopPainter
      */
     public void renderStopsRoute(List<StopModel> stops) {
-        System.out.println("MapPanel.renderStopsRoute() called with " + stops.size() + " stops");
+        Log.debug("Rendering route with " + stops.size() + " stops");
 
         Set<StopWaypoint> waypoints = new HashSet<StopWaypoint>();
         for (StopModel stop : stops) {
@@ -334,18 +335,14 @@ public class MapPanel extends JPanel {
             for (com.nnamo.models.StaticVehiclePosition vehiclePosition : staticPositions) {
                 GeoPosition position = vehiclePosition.getPosition();
                 waypoints.add(new DefaultWaypoint(position.getLatitude(), position.getLongitude()));
-                System.out.println(
-                        "Adding static vehicle position at " + position.getLatitude() + " "
-                                + position.getLongitude());
+                Log.debug("Adding static vehicle position at " + position.getLatitude() + "," + position.getLongitude());
             }
             this.staticPositionPainter.setWaypoints(waypoints);
         } else {
             for (VehiclePosition vehiclePosition : realtimePositions) {
                 Position position = vehiclePosition.getPosition();
                 waypoints.add(new DefaultWaypoint(position.getLatitude(), position.getLongitude()));
-                System.out.println(
-                        "Adding realtime vehicle position at " + position.getLatitude() + " "
-                                + position.getLongitude());
+                Log.debug("Adding realtime vehicle position at " + position.getLatitude() + "," + position.getLongitude());
             }
             this.realtimePositionPainter.setWaypoints(waypoints);
         }
@@ -386,7 +383,7 @@ public class MapPanel extends JPanel {
      * @param routeId the ID of the current route
      */
     public void setCurrentRouteId(String routeId) {
-        System.out.println("Updated current route id to " + routeId);
+        Log.debug("Updated current route ID to " + routeId);
         this.currentRouteId = routeId;
     }
 

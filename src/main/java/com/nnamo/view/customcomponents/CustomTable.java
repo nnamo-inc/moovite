@@ -5,6 +5,7 @@ import com.nnamo.enums.DataType;
 import com.nnamo.interfaces.TableCheckIsFavBehaviour;
 import com.nnamo.interfaces.TableRowClickBehaviour;
 import com.nnamo.utils.CustomColor;
+import com.nnamo.utils.Log;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -58,7 +59,7 @@ public class CustomTable extends JPanel {
      */
     public CustomTable(Builder builder) {
         super(new GridBagLayout());
-        System.out.println("Building CustomTable with builder: " + builder);
+        Log.debug("Building CustomTable with builder " + builder);
 
         this.tableColumns = builder.tableColumns;
         this.dataType = builder.dataType;
@@ -98,7 +99,7 @@ public class CustomTable extends JPanel {
                 .setInsets(-3, 5, 5, 5));
 
         if (!(builder.searchColumns.length == 0)) {
-            System.out.println("Search columns set to: " + Arrays.toString(searchColumns));
+            Log.debug("Search columns: " + Arrays.toString(searchColumns));
 
             searchBar = new CustomSearchBar();
             setSearchColumns(searchColumns);
@@ -111,14 +112,11 @@ public class CustomTable extends JPanel {
             isSearchable = true;
         }
         if (!(builder.hiddenColumns.length == 0)) {
-            System.out.println("Hidden columns set to: " + Arrays.toString(hiddenColumns));
-
-            System.out.println("\n" + "\n");
-            System.out.println("table columns: " + Arrays.toString(tableColumns));
-            System.out.println("hidden columns: " + Arrays.toString(hiddenColumns));
+            Log.debug("Hidden columns: " + Arrays.toString(hiddenColumns));
+            Log.debug("Table columns: " + Arrays.toString(tableColumns));
             for (ColumnName columnName : hiddenColumns) {
                 int colIndex = Arrays.asList(tableColumns).indexOf(columnName);
-                System.out.println("Hiding column: " + columnName + " at index " + colIndex);
+                Log.debug("Hiding column " + columnName + " at index " + colIndex);
                 var column = table.getColumnModel().getColumn(colIndex);
                 if (column != null) {
                     table.removeColumn(column);
@@ -162,7 +160,7 @@ public class CustomTable extends JPanel {
         if (!rowExists(rowData)) {
             model.addRow(rowData);
         } else {
-            System.out.println("Row already exists in the table");
+            Log.debug("Row already exists");
 
         }
     }
@@ -184,7 +182,7 @@ public class CustomTable extends JPanel {
                     break;
                 }
             } catch (ArrayIndexOutOfBoundsException e) {
-                System.err.println("Column " + columnName + " not found in table.");
+                Log.error("Column " + columnName + " not found in table");
             }
         }
     }
@@ -334,7 +332,7 @@ public class CustomTable extends JPanel {
             searchBar.getField().addKeyListener(new KeyAdapter() {
                 @Override
                 public void keyReleased(KeyEvent e) {
-                    System.out.println("Key released: " + e.getKeyChar());
+                    Log.debug("Key released: " + e.getKeyChar());
                     String searchText = searchBar.getFieldText().trim();
                     if (searchText.isEmpty()) {
                         sorter.setRowFilter(null);
@@ -399,10 +397,10 @@ public class CustomTable extends JPanel {
      * @param columns
      */
     public void setSearchColumns(ColumnName[] columns) {
-        System.out.println("Setting search columns: " + Arrays.toString(columns));
+        Log.debug("Setting search columns: " + Arrays.toString(columns));
         for (ColumnName column : columns) {
             int index = Arrays.asList(tableColumns).indexOf(column);
-            System.out.println("    Column: " + column + ", Index: " + index);
+            Log.debug("Column: " + column + ", Index: " + index);
             if (index >= 0 && index < tableColumns.length) {
                 ArrayList<ColumnName> temp = new ArrayList<>(Arrays.asList(searchColumns));
                 temp.add(column);
@@ -443,7 +441,7 @@ public class CustomTable extends JPanel {
          * @return
          */
         public Builder setTableColumns(ColumnName[] tableColumns) {
-            System.out.println("Setting table columns: " + Arrays.toString(tableColumns));
+            Log.debug("Setting table columns: " + Arrays.toString(tableColumns));
             this.tableColumns = tableColumns;
             return this;
         }
@@ -455,7 +453,7 @@ public class CustomTable extends JPanel {
          * @return
          */
         public Builder setHiddenColumns(ColumnName[] hiddenColumns) {
-            System.out.println("Setting hidden columns: " + Arrays.toString(hiddenColumns));
+            Log.debug("Setting hidden columns: " + Arrays.toString(hiddenColumns));
             this.hiddenColumns = hiddenColumns;
             return this;
         }
@@ -467,7 +465,7 @@ public class CustomTable extends JPanel {
          * @return
          */
         public Builder setSearchColumns(ColumnName[] searchColumns) {
-            System.out.println("Setting search columns: " + Arrays.toString(searchColumns));
+            Log.debug("Setting search columns: " + Arrays.toString(searchColumns));
             this.searchColumns = searchColumns;
             return this;
         }
@@ -479,7 +477,7 @@ public class CustomTable extends JPanel {
          * @return
          */
         public Builder setDataType(DataType dataType) {
-            System.out.println("Setting data type: " + dataType);
+            Log.debug("Setting data type: " + dataType);
             this.dataType = dataType;
             return this;
         }
