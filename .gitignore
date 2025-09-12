@@ -1,6 +1,5 @@
 target/
 javadoc/
-UML/
 data.db*
 test.db
 dependency-reduced-pom.xml
