@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component LANGUAGE_LEVEL="JDK_21" inheritJdk="true">
+	<output-test url="file://$MODULE_DIR$/target/test-classes"/>
+	<contentEntry url="file://$MODULE_DIR$">
+		<testFolder url="file://$MODULE_DIR$/src/test/java"/>
+		<testFolder url="file://$MODULE_DIR$/src/test/resources"/>
+		<testFolder url="file://$MODULE_DIR$/target/generated-test-sources/test-annotations"/>
+		<excludeFolder url="file://$MODULE_DIR$/target"/>
+	</contentEntry>
+	<lib name="Maven: org.junit.jupiter:junit-jupiter-api:5.8.0" scope="TEST"/>
+	<lib name="Maven: org.opentest4j:opentest4j:1.2.0" scope="TEST"/>
+	<lib name="Maven: org.junit.platform:junit-platform-commons:1.8.0" scope="TEST"/>
+	<lib name="Maven: org.apiguardian:apiguardian-api:1.1.2" scope="TEST"/>
+	<lib name="Maven: junit:junit:3.8.1" scope="TEST"/>
+	<levels>
+		<level name="Maven: org.junit.jupiter:junit-jupiter-api:5.8.0" value="project"/>
+		<level name="Maven: org.opentest4j:opentest4j:1.2.0" value="project"/>
+		<level name="Maven: org.junit.platform:junit-platform-commons:1.8.0" value="project"/>
+		<level name="Maven: org.apiguardian:apiguardian-api:1.1.2" value="project"/>
+		<level name="Maven: org.onebusaway:onebusaway-gtfs:8.0.0" value="project"/>
+		<level name="Maven: org.onebusaway:onebusaway-csv-entities:8.0.0" value="project"/>
+		<level name="Maven: org.apache.commons:commons-beanutils2:2.0.0-M2" value="project"/>
+		<level name="Maven: org.apache.commons:commons-collections4:4.5.0" value="project"/>
+		<level name="Maven: org.slf4j:slf4j-api:2.0.17" value="project"/>
+		<level name="Maven: com.fasterxml.jackson.core:jackson-databind:2.19.1" value="project"/>
+		<level name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.19.1" value="project"/>
+		<level name="Maven: com.fasterxml.jackson.core:jackson-core:2.19.1" value="project"/>
+		<level name="Maven: de.grundid.opendatalab:geojson-jackson:1.14" value="project"/>
+		<level name="Maven: org.jspecify:jspecify:1.0.0" value="project"/>
+		<level name="Maven: org.mobilitydata:gtfs-realtime-bindings:0.0.8" value="project"/>
+		<level name="Maven: com.google.protobuf:protobuf-java:3.16.1" value="project"/>
+		<level name="Maven: com.j256.ormlite:ormlite-core:6.1" value="project"/>
+		<level name="Maven: com.j256.ormlite:ormlite-jdbc:6.1" value="project"/>
+		<level name="Maven: org.xerial:sqlite-jdbc:3.45.2.0" value="project"/>
+		<level name="Maven: net.harawata:appdirs:1.4.0" value="project"/>
+		<level name="Maven: net.java.dev.jna:jna-platform:5.16.0" value="project"/>
+		<level name="Maven: net.java.dev.jna:jna:5.16.0" value="project"/>
+		<level name="Maven: org.jxmapviewer:jxmapviewer2:2.8" value="project"/>
+		<level name="Maven: commons-logging:commons-logging:1.2" value="project"/>
+		<level name="Maven: org.apache.commons:commons-text:1.13.1" value="project"/>
+		<level name="Maven: org.apache.commons:commons-lang3:3.17.0" value="project"/>
+		<level name="Maven: de.mkammerer:argon2-jvm:2.12" value="project"/>
+		<level name="Maven: de.mkammerer:argon2-jvm-nolibs:2.12" value="project"/>
+		<level name="Maven: com.formdev:flatlaf:3.6" value="project"/>
+		<level name="Maven: org.jfree:jfreechart:1.5.6" value="project"/>
+		<level name="Maven: junit:junit:3.8.1" value="project"/>
+	</levels>
+</component>
