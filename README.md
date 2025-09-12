@@ -94,7 +94,7 @@ The app continuously processes updates with live vehicle positions and trip upda
 
 ### Running locally
 ```bash
-mvn clean compile exec:java -Dexec.mainClass="com.nnamo.App"
+mvn clean compile exec:java -Dexec.mainClass="com.nnamo.Main"
 ```
 
 ### Documentation

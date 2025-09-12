@@ -29,7 +29,7 @@ import java.sql.SQLException;
  * @see RealtimeGtfsService
  * @see MainController
  */
-public class App {
+public class Main {
     /**
      * Starts the main application, by initializing the available services
      */

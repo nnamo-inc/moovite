@@ -112,7 +112,7 @@ jobs:
         if jpackage \
           --input target \
           --main-jar moovite-1.0-SNAPSHOT.jar \
-          --main-class com.nnamo.App \
+          --main-class com.nnamo.Main \
           --name moovite \
           --app-version 1.0 \
           --type app-image \
@@ -203,7 +203,7 @@ jobs:
         # Try jpackage first
         $jpackageSuccess = $false
         try {
-            $result = & jpackage --input target --main-jar moovite-1.0-SNAPSHOT.jar --main-class com.nnamo.App --name moovite --app-version 1.0 --type app-image --dest native-binary --java-options "-Djava.awt.headless=false" --runtime-image "$env:JAVA_HOME" 2>&1
+            $result = & jpackage --input target --main-jar moovite-1.0-SNAPSHOT.jar --main-class com.nnamo.Main --name moovite --app-version 1.0 --type app-image --dest native-binary --java-options "-Djava.awt.headless=false" --runtime-image "$env:JAVA_HOME" 2>&1
             if ($LASTEXITCODE -eq 0 -and (Test-Path "native-binary\moovite\moovite.exe")) {
                 $jpackageSuccess = $true
                 Write-Output "✅ jpackage succeeded"
